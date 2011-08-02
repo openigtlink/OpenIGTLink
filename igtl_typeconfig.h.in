@@ -1,0 +1,80 @@
+/*=========================================================================
+
+  Program:   Open IGT Link Library
+  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/igtl_typeconfig.h.in $
+  Language:  C
+  Date:      $Date: 2008-12-22 18:59:18 -0500 (Mon, 22 Dec 2008) $
+  Version:   $Revision: 3459 $
+
+  Copyright (c) Insight Software Consortium. All rights reserved.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.  See the above copyright notices for more information.
+
+=========================================================================*/
+
+#ifndef __IGTL_TYPECONFIG_H
+#define __IGTL_TYPECONFIG_H
+
+#cmakedefine CMAKE_SIZEOF_CHAR
+#ifdef CMAKE_SIZEOF_CHAR
+  #define IGTL_SIZEOF_CHAR    @CMAKE_SIZEOF_CHAR@
+#endif
+
+#cmakedefine CMAKE_SIZEOF_INT
+#ifdef CMAKE_SIZEOF_INT
+  #define IGTL_SIZEOF_INT     @CMAKE_SIZEOF_INT@
+#endif
+
+#cmakedefine CMAKE_SIZEOF_SHORT
+#ifdef CMAKE_SIZEOF_SHORT
+  #define IGTL_SIZEOF_SHORT   @CMAKE_SIZEOF_SHORT@
+#endif
+
+#cmakedefine CMAKE_SIZEOF_LONG
+#ifdef CMAKE_SIZEOF_LONG
+  #define IGTL_SIZEOF_LONG    @CMAKE_SIZEOF_LONG@
+#endif
+
+#cmakedefine CMAKE_SIZEOF_FLOAT
+#ifdef CMAKE_SIZEOF_FLOAT
+  #define IGTL_SIZEOF_FLOAT   @CMAKE_SIZEOF_FLOAT@
+#endif
+
+#cmakedefine CMAKE_SIZEOF_DOUBLE
+#ifdef CMAKE_SIZEOF_DOUBLE
+  #define IGTL_SIZEOF_DOUBLE  @CMAKE_SIZEOF_DOUBLE@
+#endif
+
+#cmakedefine CMAKE_SIZEOF_LONG_LONG
+#cmakedefine CMAKE_SIZEOF___INT64
+#cmakedefine CMAKE_SIZEOF_INT64_T
+#ifdef CMAKE_SIZEOF_LONG_LONG
+  #define IGTL_TYPE_USE_LONG_LONG 1
+  #define IGTL_SIZEOF_LONG_LONG   @CMAKE_SIZEOF_LONG_LONG@
+#elif defined(CMAKE_SIZEOF___INT64)
+  #define IGTL_TYPE_USE___INT64   1
+  #define IGTL_SIZEOF___INT64     @CMAKE_SIZEOF___INT64@
+#elif defined(CMAKE_SIZEOF_INT64_T)
+  #define IGTL_TYPE_USE_INT64_T   1
+  #define IGTL_SIZEOF_INT64_T     @CMAKE_SIZEOF_INT64_T@
+#endif
+
+#cmakedefine CMAKE_SIZEOF_VOID_P
+
+#cmakedefine OpenIGTLink_PLATFORM_WIN32
+#ifdef OpenIGTLink_PLATFORM_WIN32
+  #ifndef _WIN32
+    #define _WIN32
+  #endif
+  #ifndef WIN32
+    #define WIN32
+  #endif
+  #define IGTLCommon_EXPORTS
+#endif
+
+#endif /*__IGTL_TYPECONFIG_H*/
+
+
+

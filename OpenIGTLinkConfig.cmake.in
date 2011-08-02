@@ -1,0 +1,58 @@
+#-----------------------------------------------------------------------------
+#
+# OpenIGTLinkConfig.cmake - OpenIGTLink CMake configuration file for external projects.
+#
+# This file is configured by OpenIGTLink and used by the UseOpenIGTLink.cmake module
+# to load OpenIGTLink's settings for an external project.
+@OpenIGTLink_CONFIG_CODE@
+
+# The OpenIGTLink include file directories.
+SET(OpenIGTLink_INCLUDE_DIRS "@OpenIGTLink_INCLUDE_DIRS_CONFIG@")
+
+# The OpenIGTLink library directories.
+SET(OpenIGTLink_LIBRARY_DIRS "@OpenIGTLink_LIBRARY_DIRS_CONFIG@")
+
+# The C and C++ flags added by OpenIGTLink to the cmake-configured flags.
+SET(OpenIGTLink_REQUIRED_C_FLAGS "@OpenIGTLink_REQUIRED_C_FLAGS@")
+SET(OpenIGTLink_REQUIRED_CXX_FLAGS "@OpenIGTLink_REQUIRED_CXX_FLAGS@")
+SET(OpenIGTLink_REQUIRED_LINK_FLAGS "@OpenIGTLink_REQUIRED_LINK_FLAGS@")
+
+# The OpenIGTLink Library version number
+SET(OpenIGTLink_VERSION_MAJOR "@OpenIGTLink_VERSION_MAJOR@")
+SET(OpenIGTLink_VERSION_MINOR "@OpenIGTLink_VERSION_MINOR@")
+SET(OpenIGTLink_VERSION_PATCH "@OpenIGTLink_VERSION_PATCH@")
+
+# The OpenIGTLink Protocol version number
+SET(OpenIGTLink_PROTOCOL_VERSION "@OpenIGTLink_PROTOCOL_VERSION@")
+
+# The location of the UseOpenIGTLink.cmake file.
+SET(OpenIGTLink_USE_FILE "@OpenIGTLink_USE_FILE@")
+
+# The build settings file.
+SET(OpenIGTLink_BUILD_SETTINGS_FILE "@OpenIGTLink_BUILD_SETTINGS_FILE@")
+
+# The library dependencies file.
+SET(OpenIGTLink_LIBRARY_DEPENDS_FILE "@OpenIGTLink_LIBRARY_DEPENDS_FILE@")
+
+# Whether OpenIGTLink was built with shared libraries.
+SET(OpenIGTLink_BUILD_SHARED "@BUILD_SHARED_LIBS@")
+
+# Whether OpenIGTLink was built with Tcl wrapping support.
+SET(OpenIGTLink_CSWIG_TCL "@OpenIGTLink_CSWIG_TCL@")
+SET(OpenIGTLink_CSWIG_PYTHON "@OpenIGTLink_CSWIG_PYTHON@")
+SET(OpenIGTLink_CSWIG_JAVA "@OpenIGTLink_CSWIG_JAVA@")
+
+# Path to CableSwig configuration used by OpenIGTLink.
+SET(OpenIGTLink_CableSwig_DIR "@OpenIGTLink_CableSwig_DIR_CONFIG@")
+
+# A list of all libraries for OpenIGTLink.  Those listed here should
+# automatically pull in their dependencies.
+#SET(OpenIGTLink_LIBRARIES OpenIGTLinkAlgorithms OpenIGTLinkStatistics OpenIGTLinkFEM)
+SET(OpenIGTLink_LIBRARIES OpenIGTLink)
+
+# The OpenIGTLink library dependencies.
+IF(NOT OpenIGTLink_NO_LIBRARY_DEPENDS AND
+    EXISTS "${OpenIGTLink_LIBRARY_DEPENDS_FILE}")
+  INCLUDE("${OpenIGTLink_LIBRARY_DEPENDS_FILE}")
+ENDIF(NOT OpenIGTLink_NO_LIBRARY_DEPENDS AND
+  EXISTS "${OpenIGTLink_LIBRARY_DEPENDS_FILE}")

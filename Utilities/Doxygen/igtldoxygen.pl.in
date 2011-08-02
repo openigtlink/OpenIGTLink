@@ -1,0 +1,3 @@
+
+system ("perl @OpenIGTLink_SOURCE_DIR@/Utilities/Doxygen/igtlgroup.pl $ARGV[0]");
+
