@@ -240,3 +240,38 @@ void igtl_export igtl_message_dump_hex(FILE* stream, const void* message, int by
   fprintf(stream, "\n");
   
 }
+
+
+/* Calculate number of bytes / element */
+igtl_uint32 igtl_export igtl_get_scalar_size(int type)
+{
+  igtl_uint32 bytes;
+
+  switch (type)
+    {
+    case IGTL_SCALAR_INT8:
+    case IGTL_SCALAR_UINT8:
+      bytes = 1;
+      break;
+    case IGTL_SCALAR_INT16:
+    case IGTL_SCALAR_UINT16:
+      bytes = 2;
+      break;
+    case IGTL_SCALAR_INT32:
+    case IGTL_SCALAR_UINT32:
+    case IGTL_SCALAR_FLOAT32:
+      bytes = 4;
+      break;
+    case IGTL_SCALAR_FLOAT64:
+      bytes = 8;
+      break;
+    case IGTL_SCALAR_COMPLEX:
+      bytes = 16;
+      break;
+    default:
+      bytes = 0;
+      break;
+    }
+
+  return bytes;
+}
