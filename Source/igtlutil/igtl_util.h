@@ -36,6 +36,7 @@ extern "C" {
 #define IGTL_SCALAR_UINT32    7
 #define IGTL_SCALAR_FLOAT32   10
 #define IGTL_SCALAR_FLOAT64   11
+#define IGTL_SCALAR_COMPLEX   13
 
 
 /*

@@ -34,14 +34,13 @@ void igtl_export igtl_polydata_init_info(igtl_polydata_info * info)
     info->header.size_polygons = 0;
     info->header.ntriangle_strips = 0;
     info->header.size_triangle_strips = 0;
+    info->header.nattributes = 0;
     info->points = NULL;
     info->vertices = NULL;
     info->lines = NULL;
     info->polygons = NULL;
     info->triangle_strips = NULL;
-
-    info->nattributes = 0;
-    info->attributes = NULL:
+    info->attributes = NULL;
     }
 }
 
@@ -64,7 +63,7 @@ int igtl_export igtl_polydata_alloc_info(igtl_polydata_info * info)
     }
   if (info->header.npoints > 0)
     {
-    info->points = malloc(info->header.size_points);
+    info->points = malloc(info->header.npoints * sizeof(igtl_float64) * 3);
     if (info->points == NULL)
       {
       return 0;
@@ -130,9 +129,9 @@ int igtl_export igtl_polydata_alloc_info(igtl_polydata_info * info)
     }
 
   /** Attributes **/
-  if (info->attribute)
+  if (info->attributes)
     {
-    for (i = 0; i < info->nattributes; i ++)
+    for (i = 0; i < info->header.nattributes; i ++)
       {
       if (info->attributes[i].name)
         {
@@ -160,6 +159,7 @@ int igtl_export igtl_polydata_alloc_info(igtl_polydata_info * info)
 
 int igtl_export igtl_polydata_free_info(igtl_polydata_info * info)
 {
+  int i;
 
   if (info == NULL)
     {
@@ -202,9 +202,9 @@ int igtl_export igtl_polydata_free_info(igtl_polydata_info * info)
     }
 
   /** Attributes **/
-  if (info->attribute)
+  if (info->attributes)
     {
-    for (i = 0; i < info->nattributes; i ++)
+    for (i = 0; i < info->header.nattributes; i ++)
       {
       if (info->attributes[i].name)
         {
@@ -263,10 +263,12 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
   igtl_polydata_attribute_header * att_header;
   igtl_polydata_attribute * att;
 
-  int size;
+  int total_name_length;
   int name_length;
   char name_buf[IGTL_POLY_MAX_ATTR_NAME_LEN+1];
- 
+
+  int i;
+  int n;
 
   if (byte_array == NULL || info == NULL | size == 0)
     {
@@ -353,21 +355,21 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
     {
     att = &(info->attributes[i]);
     att_header = (igtl_polydata_attribute_header *) ptr;
+    att->type        = att_header->type;
+    att->ncomponents = att_header->ncomponents;
     if (igtl_is_little_endian())
       {
-      att->type        = BYTE_SWAP_INT32(att_header->type);
-      att->ncomponents = BYTE_SWAP_INT32(att_header->size);
+      att->size = BYTE_SWAP_INT32(att_header->size);
       }
     else
       {
-      att->type        = att_header->type;
-      att->ncomponents = att_header->ncomponents;
+      att->size = att_header->size;
       }
     ptr += sizeof(igtl_polydata_attribute_header);
     }
   
   /* Attribute names */
-  size = 0;
+  total_name_length = 0;
   name_buf[IGTL_POLY_MAX_ATTR_NAME_LEN] = NULL;
   for (i = 0; i < info->header.nattributes; i ++)
     {
@@ -382,11 +384,11 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
       /* invalid name length */
       return 0;
       }
-    size += name_length;
+    total_name_length += name_length;
     ptr += (name_length+1);
     }
 
-  if (size % 2 > 0)
+  if (total_name_length % 2 > 0)
     {
     /* add padding */
     ptr ++;
@@ -395,24 +397,24 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
   /* Attributes */
   for (i = 0; i < info->header.nattributes; i ++)
     {
-    if (info->attributres[i].type == IGTL_POLY_ATTR_TYPE_SCALAR)
+    if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_SCALAR)
       {
-      n = info->attributres[i].ncomponents * info->attributres[i].size;
+      n = info->attributes[i].ncomponents * info->attributes[i].size;
       size = n * sizeof(igtl_float64);
       }
     else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_NORMAL)
       {
-      n = 3 * info->attributres[i].size;
+      n = 3 * info->attributes[i].size;
       size = n * sizeof(igtl_float64);
       }
     else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_VECTOR)
       {
-      n = 3 * info->attributres[i].size;
+      n = 3 * info->attributes[i].size;
       size = n * sizeof(igtl_float64);
       }
     else /* TENSOR */
       {
-      n = 9 * info->attributres[i].size;
+      n = 9 * info->attributes[i].size;
       size = n * sizeof(igtl_float64);
       }
     info->attributes[i].data = (igtl_float64*)malloc(size);
@@ -442,6 +444,16 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
   igtl_uint64 * ptr64_src;
   igtl_uint64 * ptr64_src_end;
   igtl_uint64 * ptr64_dst;
+
+  igtl_polydata_attribute_header * att_header;
+  igtl_polydata_attribute * att;
+
+  int total_name_length;
+  int name_length;
+
+  int i;
+  int n;
+  int size;
 
   if (byte_array == NULL || info == NULL)
     {
@@ -524,21 +536,21 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
     {
     att = &(info->attributes[i]);
     att_header = (igtl_polydata_attribute_header *) ptr;
+    att_header->type = att->type;
+    att_header->ncomponents = att->ncomponents;
     if (igtl_is_little_endian())
       {
-      att_header->type = BYTE_SWAP_INT32(att->type);
-      att_header->size = BYTE_SWAP_INT32(att->ncomponents);
+      att_header->size = BYTE_SWAP_INT32(att->size);
       }
     else
       {
-      att_header->type        = att->type;
-      att_header->ncomponents = att->ncomponents;
+      att_header->size = att->size;
       }
     ptr += sizeof(igtl_polydata_attribute_header);
     }
   
   /* Attribute names */
-  size = 0;
+  total_name_length = 0;
   for (i = 0; i < info->header.nattributes; i ++)
     {
     name_length = strlen(info->attributes[i].name);
@@ -547,38 +559,38 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
       return 0;
       }
     strcpy(ptr, info->attributes[i].name);
-    size += name_length;
+    total_name_length += name_length;
     ptr += (name_length+1);
     }
 
-  if (size % 2 > 0)
+  if (total_name_length % 2 > 0)
     {
     /* add padding */
-    *ptr = NULL:
+    *(char*)ptr = NULL;
     ptr ++;
     }
 
   /* Attributes */
   for (i = 0; i < info->header.nattributes; i ++)
     {
-    if (info->attributres[i].type == IGTL_POLY_ATTR_TYPE_SCALAR)
+    if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_SCALAR)
       {
-      n = info->attributres[i].ncomponents * info->attributres[i].size;
+      n = info->attributes[i].ncomponents * info->attributes[i].size;
       size = n * sizeof(igtl_float64);
       }
     else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_NORMAL)
       {
-      n = 3 * info->attributres[i].size;
+      n = 3 * info->attributes[i].size;
       size = n * sizeof(igtl_float64);
       }
     else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_VECTOR)
       {
-      n = 3 * info->attributres[i].size;
+      n = 3 * info->attributes[i].size;
       size = n * sizeof(igtl_float64);
       }
     else /* TENSOR */
       {
-      n = 9 * info->attributres[i].size;
+      n = 9 * info->attributes[i].size;
       size = n * sizeof(igtl_float64);
       }
     ptr64_dst = (igtl_uint64*)ptr;
@@ -602,6 +614,8 @@ igtl_uint64 igtl_export igtl_polydata_get_size(igtl_polydata_info * info, int ty
   igtl_uint64 data_size;
   int name_len;
   int i;
+  int n;
+  int size;
 
   /* Header */
   data_size = sizeof(igtl_polydata_header);
@@ -614,7 +628,7 @@ igtl_uint64 igtl_export igtl_polydata_get_size(igtl_polydata_info * info, int ty
   /* POLYGONS */
   data_size += info->header.size_polygons;
   /* TRIANGLE_STRIPS */
-  data_size += info->header.size_trinagle_strips;
+  data_size += info->header.size_triangle_strips;
   /* Attribute header */
   data_size += sizeof(igtl_polydata_attribute_header) * info->header.nattributes;
   /* Attribute names */
@@ -632,24 +646,24 @@ igtl_uint64 igtl_export igtl_polydata_get_size(igtl_polydata_info * info, int ty
   /* Attributes */
   for (i = 0; i < info->header.nattributes; i ++)
     {
-    if (info->attributres[i].type == IGTL_POLY_ATTR_TYPE_SCALAR)
+    if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_SCALAR)
       {
-      n = info->attributres[i].ncomponents * info->attributres[i].size;
+      n = info->attributes[i].ncomponents * info->attributes[i].size;
       size = n * sizeof(igtl_float64);
       }
     else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_NORMAL)
       {
-      n = 3 * info->attributres[i].size;
+      n = 3 * info->attributes[i].size;
       size = n * sizeof(igtl_float64);
       }
     else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_VECTOR)
       {
-      n = 3 * info->attributres[i].size;
+      n = 3 * info->attributes[i].size;
       size = n * sizeof(igtl_float64);
       }
     else /* TENSOR */
       {
-      n = 9 * info->attributres[i].size;
+      n = 9 * info->attributes[i].size;
       size = n * sizeof(igtl_float64);
       }
     data_size += size;

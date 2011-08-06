@@ -74,7 +74,8 @@ typedef struct {
 
 typedef struct {
   igtl_uint8       type;
-  igtl_uint16      ncomponents;
+  igtl_uint8       ncomponents;
+  igtl_uint32      size;
   char *           name;
   igtl_float64 *   data;
 } igtl_polydata_attribute;
