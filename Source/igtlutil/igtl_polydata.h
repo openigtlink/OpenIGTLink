@@ -29,6 +29,8 @@ extern "C" {
 #endif
 
 
+#define IGTL_POLY_MAX_ATTR_NAME_LEN 255
+
 #define IGTL_POLY_ATTR_TYPE_SCALAR 0
 #define IGTL_POLY_ATTR_TYPE_VECTOR 1
 #define IGTL_POLY_ATTR_TYPE_NORMAL 2
@@ -42,8 +44,6 @@ extern "C" {
  */
 typedef struct {
   igtl_uint32      npoints;                  /* Number of points */
-  igtl_uint8       type_point;               /* Type of points (IGTL_TYPE_*) */
-  igtl_uint8       reserved;                 /* Points */
 
   igtl_uint32      nvertices;                /* Number of vertices */
   igtl_uint32      size_vertices;            /* Size of vertice data (bytes) */
@@ -63,7 +63,6 @@ typedef struct {
 typedef struct {
   igtl_uint8       type;
   igtl_uint8       ncomponents;
-  igtl_uint16      namesize;
   igtl_uint32      size;
 } igtl_polydata_attribute_header;
 
@@ -75,10 +74,9 @@ typedef struct {
 
 typedef struct {
   igtl_uint8       type;
-  igtl_uint16      namesize;
   igtl_uint16      ncomponents;
   char *           name;
-  void *           data;
+  igtl_float64 *   data;
 } igtl_polydata_attribute;
 
 /*
