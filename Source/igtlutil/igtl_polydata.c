@@ -537,7 +537,23 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
     att = &(info->attributes[i]);
     att_header = (igtl_polydata_attribute_header *) ptr;
     att_header->type = att->type;
-    att_header->ncomponents = att->ncomponents;
+    if (att->type == IGTL_POLY_ATTR_TYPE_SCALAR)
+      {
+      att_header->ncomponents = att->ncomponents;
+      }
+    else if (att->type == IGTL_POLY_ATTR_TYPE_VECTOR)
+      {
+      att_header->ncomponents = 3;
+      }
+    else if (att->type == IGTL_POLY_ATTR_TYPE_NORMAL)
+      {
+      att_header->ncomponents = 3;
+      }
+    else /* att->type == IGTL_POLY_ATTR_TYPE_TENSOR */
+      {
+      att_header->ncomponents = 9;
+      }
+
     if (igtl_is_little_endian())
       {
       att_header->size = BYTE_SWAP_INT32(att->size);

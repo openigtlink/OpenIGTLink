@@ -34,43 +34,65 @@ int main( int argc, char * argv [] )
   void * body;
   
   igtl_polydata_info info;
-  
-
-
-
-
   igtl_float64 * array;
 
   int rh; /* Comparison result for header */
   int rb; /* Comparison result for body */
 
-  int s;
-
+  int i;
+  igtl_float64 * ptr_f;
+  igtl_uint32 *  ptr_i;
+  
+  static double points[8][3]={{0,0,0}, {1,0,0}, {1,1,0}, {0,1,0},
+                        {0,0,1}, {1,0,1}, {1,1,1}, {0,1,1}};
+  static igtl_uint32 poly[6][4]={{0,1,2,3}, {4,5,6,7}, {0,1,5,4},
+                        {1,2,6,5}, {2,3,7,6}, {3,0,4,7}};
 
   /*** Generate test data ***/
   igtl_polydata_init_info(&info);
-  info.type = IGTL_POLYDATA_STYPE_TYPE_FLOAT64;
-  /* Array size is 5x4x3 */
-  info.dim  = 3;
-  size[0] = 5;
-  size[1] = 4;
-  size[2] = 3;
+  info.header.npoints           = 8;
+  info.header.nvertices         = 0;
+  info.header.size_vertices     = 0;
+  info.header.nlines            = 0;
+  info.header.size_nlines       = 0;
+  info.header.npolygon          = 6;
+  info.header.size_npolygon     = 6 * 4 * sizeof(iglt_float64);
+  info.header.ntriangle_striops = 0;
+  info.header.ntriangle_striops = 0;
+  info.nattributes              = 8;
 
-  if (igtl_polydata_alloc_info(&info, size) == 0)
+  if (igtl_polydata_alloc_info(&info) == 0)
     {
     return EXIT_FAILURE;
     }
 
-  /* Generate dummy array */
-  array = (igtl_float64 *) info.array;
-  for (i = 0; i < 5; i ++)
+  /*** Substitute cube data ***/
+  if (info.points)
     {
-    for (j = 0; j < 4; j ++)
+    ptr_f = info.points;
+    for (i = 0; i < 8; i ++)
       {
-      for (k = 0; k < 3; k ++)
-        {
-        array[i*(4*3) + j*3 + k] = (igtl_float64) (i*(4*3) + j*3 + k);
-        }
+      *(ptr_f++) = points[i][0];
+      *(ptr_f++) = points[i][1];
+      *(ptr_f++) = points[i][2];
+      }
+    }
+  else
+    {
+    return EXIT_FAILURE;
+    }
+
+  /*** Substitute polygon data ***/
+  if (info.polygons)
+    {
+    ptr_i = info.polygons;
+    for (i = 0; i  < 6; i ++)
+      {
+      *(ptr_i++) = 4;  /* Number of points in the polygon */
+      *(ptr_i++) = poly[i][0];
+      *(ptr_i++) = poly[i][1];
+      *(ptr_i++) = poly[i][2];
+      *(ptr_i++) = poly[i][3];
       }
     }
 
