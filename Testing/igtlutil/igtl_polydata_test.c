@@ -34,43 +34,51 @@ int main( int argc, char * argv [] )
   void * body;
   
   igtl_polydata_info info;
-  igtl_float64 * array;
 
   int rh; /* Comparison result for header */
   int rb; /* Comparison result for body */
 
   int i;
-  igtl_float64 * ptr_f;
+  int s;
+  igtl_float32 * ptr_f;
   igtl_uint32 *  ptr_i;
+  igtl_uint32 body_size;
   
-  static double points[8][3]={{0,0,0}, {1,0,0}, {1,1,0}, {0,1,0},
-                        {0,0,1}, {1,0,1}, {1,1,1}, {0,1,1}};
+  
+  static igtl_float32 points[8][3]={{0,0,0}, {1,0,0}, {1,1,0}, {0,1,0},
+                                    {0,0,1}, {1,0,1}, {1,1,1}, {0,1,1}};
   static igtl_uint32 poly[6][4]={{0,1,2,3}, {4,5,6,7}, {0,1,5,4},
-                        {1,2,6,5}, {2,3,7,6}, {3,0,4,7}};
+                                 {1,2,6,5}, {2,3,7,6}, {3,0,4,7}};
+  static igtl_float32 attribute[8]={0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0};
 
   /*** Generate test data ***/
+  /* Note that the size of polygon data (or other cell data) is calculated by
+   * number of polygons * (number of points + 1)
+   * '+ 1' is required because of the number of points in the polygon (uint32)
+   * is stored at the begining of polygon data.
+   */
   igtl_polydata_init_info(&info);
   info.header.npoints           = 8;
   info.header.nvertices         = 0;
   info.header.size_vertices     = 0;
   info.header.nlines            = 0;
-  info.header.size_nlines       = 0;
-  info.header.npolygon          = 6;
-  info.header.size_npolygon     = 6 * 4 * sizeof(iglt_float64);
-  info.header.ntriangle_striops = 0;
-  info.header.ntriangle_striops = 0;
-  info.nattributes              = 8;
+  info.header.size_lines        = 0;
+  info.header.npolygons         = 6;
+  info.header.size_polygons     = 6 * ((4+1) * sizeof(igtl_float32));
+  info.header.ntriangle_strips  = 0;
+  info.header.size_triangle_strips = 0;
+  info.header.nattributes       = 1;
 
   if (igtl_polydata_alloc_info(&info) == 0)
     {
     return EXIT_FAILURE;
     }
 
-  /*** Substitute cube data ***/
+  /*** Substitute cube point data ***/
   if (info.points)
     {
     ptr_f = info.points;
-    for (i = 0; i < 8; i ++)
+    for (i = 0; i < info.header.npoints; i ++)
       {
       *(ptr_f++) = points[i][0];
       *(ptr_f++) = points[i][1];
@@ -86,13 +94,29 @@ int main( int argc, char * argv [] )
   if (info.polygons)
     {
     ptr_i = info.polygons;
-    for (i = 0; i  < 6; i ++)
+    for (i = 0; i  < info.header.npolygons; i ++)
       {
       *(ptr_i++) = 4;  /* Number of points in the polygon */
       *(ptr_i++) = poly[i][0];
       *(ptr_i++) = poly[i][1];
       *(ptr_i++) = poly[i][2];
       *(ptr_i++) = poly[i][3];
+      }
+    }
+
+  /*** Substitute attribute data ***/
+  if (info.attributes)
+    {
+    info.attributes[0].type        = IGTL_POLY_ATTR_TYPE_SCALAR;
+    info.attributes[0].ncomponents = 1;
+    info.attributes[0].n           = 8;
+    info.attributes[0].name        = malloc(5);
+    strcpy(info.attributes[0].name, "attr");
+    info.attributes[0].data        = malloc(sizeof(igtl_float32) * 8);
+    ptr_f = info.attributes[0].data;
+    for (i = 0; i < 8; i ++)
+      {
+      *(ptr_f++) = attribute[i];
       }
     }
 
@@ -118,7 +142,6 @@ int main( int argc, char * argv [] )
   igtl_header_convert_byte_order( &(header) );
 
   /* Dumping data -- for testing */
-
   FILE *fp;
   fp = fopen("polydata.bin", "w");
   fwrite(&(header), IGTL_HEADER_SIZE, 1, fp);

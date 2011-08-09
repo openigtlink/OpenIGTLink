@@ -63,7 +63,7 @@ typedef struct {
 typedef struct {
   igtl_uint8       type;
   igtl_uint8       ncomponents;
-  igtl_uint32      size;
+  igtl_uint32      n;
 } igtl_polydata_attribute_header;
 
 #pragma pack(0)
@@ -75,9 +75,9 @@ typedef struct {
 typedef struct {
   igtl_uint8       type;
   igtl_uint8       ncomponents;
-  igtl_uint32      size;
+  igtl_uint32      n;
   char *           name;
-  igtl_float64 *   data;
+  igtl_float32 *   data;
 } igtl_polydata_attribute;
 
 /*
@@ -102,9 +102,14 @@ void igtl_export igtl_polydata_init_info(igtl_polydata_info * info);
 /*
  * Allocate / free an array of igtl_polydata_info structure
  *
- * Allocate / free an array of igtl_polydata_child_info in polydata_info with length of 'ncmessages.'
- * This function assumes that all memory blocks pointed from igtl_polydata_attribute_info
- * have been allocated by malloc(). Return 1 if the array is successfully allocated/freed.
+ * Allocate / free arrays in polydata_info.
+ * Note that igtl_polydata_alloc_info() does not allocate memory for 'name' and 'data'
+ * in each igtl_polydata_attribute. Those elements have to be allocated in the developers
+ * responsibility. 
+ * igtl_polydata_free_info() function assumes that igtl_polydata_info is allocated by
+ * igtl_polydata_alloc_info() and all memory blocks pointed from igtl_polydata_attribute
+ * have been allocated by malloc().
+ * Return 1 if the array is successfully allocated/freed.
  */
 
 int igtl_export igtl_polydata_alloc_info(igtl_polydata_info * info);
