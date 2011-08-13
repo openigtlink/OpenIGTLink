@@ -39,6 +39,7 @@ SET(OpenIGTLink_SOURCES
   igtlConditionVariable.cxx
   igtlFastMutexLock.cxx
   igtlImageMessage.cxx
+  igtlImageMessage2.cxx
   igtlLightObject.cxx
   igtlMath.cxx
   igtlMessageBase.cxx
@@ -68,6 +69,7 @@ SET(OpenIGTLink_INCLUDE_FILES
   igtlCreateObjectFunction.h
   igtlFastMutexLock.h
   igtlImageMessage.h
+  igtlImageMessage2.h
   igtlLightObject.h
   igtlMacro.h
   igtlMath.h

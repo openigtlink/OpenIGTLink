@@ -161,6 +161,10 @@ public:
   void  AllocateScalars();
   void* GetScalarPointer();
 
+#ifdef FLAGMENTED_PACK  
+  void  SetScalarPOinter(void * p);
+#endif
+
 protected:
   ImageMessage();
   ~ImageMessage();
