@@ -22,11 +22,47 @@
 
 void igtl_export igtl_capability_init_info(igtl_capability_info * info)
 {
+  if (info)
+    {
+    info->nsize = 0;
+    info->typenames = NULL;
+    }
 }
 
 
 int igtl_export igtl_capability_alloc_info(igtl_capability_info * info, int ntypes)
 {
+  int i, j;
+
+  if (info == NULL)
+    {
+    return 0;
+    }
+
+  info->typenames = malloc(sizeof(unsigned char*) * info->ntypes);
+  if (info->typenames == NULL)
+    {
+    /* failed to allocate memory */
+    return 0;
+    }
+
+  for (i = 0; i < info->ntypes; i ++)
+    {
+    info->typenames[i] = malloc(sizeof(unsigned char) * IGTL_HEADER_TYPE_SIZE);
+    if (info->typenames[i] == NULL)
+      {
+      /* failed to allocate memory */
+      /* -- free memories already allocated */ 
+      for (j = 0; j < i; j ++)
+        {
+        free(info->typenames[j]);
+        }
+      free(info->typenames);
+      return 0;
+      }
+    }
+
+  return 1;
 }
 
 
