@@ -44,7 +44,8 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtl_string.h
     igtl_ndarray.h
     igtl_bind.h
-#    igtl_polydata.h
+    igtl_qtrans.h
+    igtl_polydata.h
     )
   SET(igtlutil_SOURCES
     ${igtlutil_SOURCES}
@@ -60,7 +61,8 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtl_string.c
     igtl_ndarray.c
     igtl_bind.c
-#    igtl_polydata.c
+    igtl_qtrans.c
+    igtl_polydata.c
     )
 endif (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
 
