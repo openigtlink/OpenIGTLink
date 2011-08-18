@@ -16,6 +16,8 @@
 
 #include "igtlImageMessage2.h"
 
+#include <cstring>
+
 #include "igtl_header.h"
 #include "igtl_image.h"
 
