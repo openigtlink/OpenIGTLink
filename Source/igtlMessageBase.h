@@ -89,7 +89,7 @@ public:
 
   // Pack() serializes the header and body based on the member variables.
   // PackBody() must be implemented in the child class.
-  int   Pack();
+  virtual int   Pack();
 
   // Unpack() deserializes the header and/or body, extracting data from
   // the byte stream. If the header has already been deserilized, Unpack()
@@ -143,7 +143,7 @@ protected:
 
   // Allocate memory specifying the body size
   // (used when create a brank package to receive data)
-  void AllocatePack(int bodySize);
+  virtual void AllocatePack(int bodySize);
 
   // Copy data 
   int CopyHeader(const MessageBase *mb);

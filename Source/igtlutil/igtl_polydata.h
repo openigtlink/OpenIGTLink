@@ -28,15 +28,13 @@
 extern "C" {
 #endif
 
-/* Scalar type for point data */
-#define IGTL_POLYDATA_TYPE_INT8      2
-#define IGTL_POLYDATA_TYPE_UINT8     3
-#define IGTL_POLYDATA_TYPE_INT16     4
-#define IGTL_POLYDATA_TYPE_UINT16    5
-#define IGTL_POLYDATA_TYPE_INT32     6
-#define IGTL_POLYDATA_TYPE_UINT32    7
-#define IGTL_POLYDATA_TYPE_FLOAT32   10
-#define IGTL_POLYDATA_TYPE_FLOAT64   11
+
+#define IGTL_POLY_MAX_ATTR_NAME_LEN 255
+
+#define IGTL_POLY_ATTR_TYPE_SCALAR 0
+#define IGTL_POLY_ATTR_TYPE_VECTOR 1
+#define IGTL_POLY_ATTR_TYPE_NORMAL 2
+#define IGTL_POLY_ATTR_TYPE_TENSOR 3
 
 
 #pragma pack(1)     /* For 1-byte boundary in memroy */
@@ -46,26 +44,41 @@ extern "C" {
  */
 typedef struct {
   igtl_uint32      npoints;                  /* Number of points */
-  igtl_uint8       type_point;               /* Type of points */
-  igtl_uint8       reserved;                 /* Points */
 
   igtl_uint32      nvertices;                /* Number of vertices */
-  igtl_uint32      size_vertices;            /* Size of vertices */
+  igtl_uint32      size_vertices;            /* Size of vertice data (bytes) */
 
   igtl_uint32      nlines;                   /* Number of lines */
-  igtl_uint32      size_lines;               /* Size of lines */
+  igtl_uint32      size_lines;               /* Size of line data (bytes) */
 
   igtl_uint32      npolygons;                /* Number of polygons */
-  igtl_uint32      size_polygons;            /* Size of polygons */
+  igtl_uint32      size_polygons;            /* Size of polygon data (bytes) */
 
   igtl_uint32      ntriangle_strips;         /* Number of triangle strips */
-  igtl_uint32      size_triangle_strips;     /* Size of triangle strips */
+  igtl_uint32      size_triangle_strips;     /* Size of triangle strips data (bytes) */
 
-  
-  
+  igtl_uint32      nattributes;              /* Number of attributes */
 } igtl_polydata_header;
 
+typedef struct {
+  igtl_uint8       type;
+  igtl_uint8       ncomponents;
+  igtl_uint32      n;
+} igtl_polydata_attribute_header;
+
 #pragma pack(0)
+
+/*
+ * Attribute info
+ */
+
+typedef struct {
+  igtl_uint8       type;
+  igtl_uint8       ncomponents;
+  igtl_uint32      n;
+  char *           name;
+  igtl_float32 *   data;
+} igtl_polydata_attribute;
 
 /*
  * POLYDATA info
@@ -77,6 +90,7 @@ typedef struct {
   igtl_uint32 *          lines;              /* Lines -- array of (N, i1, i2, i3 ...iN) */
   igtl_uint32 *          polygons;           /* Polygons -- array of (N, i1, i2, i3 ...iN) */
   igtl_uint32 *          triangle_strips;    /* Triangle strips -- array of (N, i1, i2, i3 ...iN) */
+  igtl_polydata_attribute * attributes; /* Array of attributes */
 } igtl_polydata_info;
 
 
@@ -88,8 +102,14 @@ void igtl_export igtl_polydata_init_info(igtl_polydata_info * info);
 /*
  * Allocate / free an array of igtl_polydata_info structure
  *
- * Allocate / free an array of igtl_polydata_child_info in polydata_info with length of 'ncmessages.'
- * Return 1 if the array is successfully allocated/freed
+ * Allocate / free arrays in polydata_info.
+ * Note that igtl_polydata_alloc_info() does not allocate memory for 'name' and 'data'
+ * in each igtl_polydata_attribute. Those elements have to be allocated in the developers
+ * responsibility. 
+ * igtl_polydata_free_info() function assumes that igtl_polydata_info is allocated by
+ * igtl_polydata_alloc_info() and all memory blocks pointed from igtl_polydata_attribute
+ * have been allocated by malloc().
+ * Return 1 if the array is successfully allocated/freed.
  */
 
 int igtl_export igtl_polydata_alloc_info(igtl_polydata_info * info);

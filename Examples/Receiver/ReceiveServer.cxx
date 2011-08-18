@@ -141,6 +141,7 @@ int main(int argc, char* argv[])
           {
           // if the data type is unknown, skip reading.
           std::cerr << "Receiving : " << headerMsg->GetDeviceType() << std::endl;
+          std::cerr << "Size : " << headerMsg->GetBodySizeToRead() << std::endl;
           socket->Skip(headerMsg->GetBodySizeToRead(), 0);
           }
         }

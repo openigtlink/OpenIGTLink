@@ -25,6 +25,20 @@
 extern "C" {
 #endif
 
+
+
+/* Scalar type for point data */
+#define IGTL_SCALAR_INT8      2
+#define IGTL_SCALAR_UINT8     3
+#define IGTL_SCALAR_INT16     4
+#define IGTL_SCALAR_UINT16    5
+#define IGTL_SCALAR_INT32     6
+#define IGTL_SCALAR_UINT32    7
+#define IGTL_SCALAR_FLOAT32   10
+#define IGTL_SCALAR_FLOAT64   11
+#define IGTL_SCALAR_COMPLEX   13
+
+
 /*
  * Byte order conversion macros
  *
@@ -51,6 +65,12 @@ igtl_uint64 igtl_export crc64(unsigned char *data, igtl_uint64 len, igtl_uint64 
 igtl_uint32 igtl_export igtl_nanosec_to_frac(igtl_uint32 nanosec);
 igtl_uint32 igtl_export igtl_frac_to_nanosec(igtl_uint32 frac);
 void igtl_export igtl_message_dump_hex(FILE* stream, const void* message, int max_size);
+
+/*
+ * Get size of scalar. Type should be IGTL_SCALAR_*
+ */
+igtl_uint32 igtl_get_scalar_size(int type);
+
 
 #ifdef __cplusplus
 }

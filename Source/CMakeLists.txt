@@ -39,6 +39,7 @@ SET(OpenIGTLink_SOURCES
   igtlConditionVariable.cxx
   igtlFastMutexLock.cxx
   igtlImageMessage.cxx
+  igtlImageMessage2.cxx
   igtlLightObject.cxx
   igtlMath.cxx
   igtlMessageBase.cxx
@@ -68,6 +69,7 @@ SET(OpenIGTLink_INCLUDE_FILES
   igtlCreateObjectFunction.h
   igtlFastMutexLock.h
   igtlImageMessage.h
+  igtlImageMessage2.h
   igtlLightObject.h
   igtlMacro.h
   igtlMath.h
@@ -138,7 +140,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtlutil/igtl_ndarray.h
     igtlutil/igtl_bind.h
     igtlutil/igtl_qtrans.h
-    igtlutil/igtl_polydata.c
+    igtlutil/igtl_polydata.h
     igtlColorTableMessage.h
     igtlImageMetaMessage.h
     igtlLabelMetaMessage.h

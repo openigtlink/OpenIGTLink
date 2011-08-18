@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Open IGT Link Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlImageMessage.h $
+  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlImageMessage2.h $
   Language:  C++
   Date:      $Date: 2011-05-06 16:55:54 -0400 (Fri, 06 May 2011) $
   Version:   $Revision: 7472 $
@@ -14,8 +14,8 @@
 
 =========================================================================*/
 
-#ifndef __igtlImageMessage_h
-#define __igtlImageMessage_h
+#ifndef __igtlImageMessage2_h
+#define __igtlImageMessage2_h
 
 #include "igtlObject.h"
 //#include "igtlMacros.h"
@@ -23,23 +23,36 @@
 #include "igtlMath.h"
 #include "igtlMessageBase.h"
 
+
+
+// Image message that supports fragmented pack
+// 
+// Fragmeted pack allows allocating memory for each segment independently.
+// The version 1 library assumes that the memory area for entire message pack
+// is allocated at once, causing extra memory copies in some applications.
+// (For example, copying image from source into the pack memory)
+
+#define  FRAGMENTED_PACK 
+
+
 namespace igtl
 {
 
-class IGTLCommon_EXPORT GetImageMessage: public MessageBase
+class IGTLCommon_EXPORT GetImageMessage2: public MessageBase
 {
 public:
-  typedef GetImageMessage                Self;
+  typedef GetImageMessage2                Self;
   typedef MessageBase                    Superclass;
   typedef SmartPointer<Self>             Pointer;
   typedef SmartPointer<const Self>       ConstPointer;
 
-  igtlTypeMacro(igtl::GetImageMessage, igtl::MessageBase);
-  igtlNewMacro(igtl::GetImageMessage);
+  igtlTypeMacro(igtl::GetImageMessage2, igtl::MessageBase);
+  igtlNewMacro(igtl::GetImageMessage2);
 
+  
 protected:
-  GetImageMessage() : MessageBase() { this->m_DefaultBodyType  = "GET_IMAGE"; };
-  ~GetImageMessage() {};
+  GetImageMessage2() : MessageBase() { this->m_DefaultBodyType  = "GET_IMAGE"; };
+  ~GetImageMessage2() {};
 protected:
   virtual int  GetBodyPackSize() { return 0; };
   virtual int  PackBody()        { AllocatePack(); return 1; };
@@ -47,16 +60,16 @@ protected:
 };
 
 
-class IGTLCommon_EXPORT ImageMessage: public MessageBase
+class IGTLCommon_EXPORT ImageMessage2: public MessageBase
 {
 public:
-  typedef ImageMessage              Self;
+  typedef ImageMessage2              Self;
   typedef MessageBase               Superclass;
   typedef SmartPointer<Self>        Pointer;
   typedef SmartPointer<const Self>  ConstPointer;
 
-  igtlTypeMacro(igtl::ImageMessage, igtl::MessageBase)
-  igtlNewMacro(igtl::ImageMessage);
+  igtlTypeMacro(igtl::ImageMessage2, igtl::MessageBase)
+  igtlNewMacro(igtl::ImageMessage2);
 
 public:
 
@@ -158,23 +171,48 @@ public:
     return subDimensions[0]*subDimensions[1]*subDimensions[2]*GetScalarSize()*numComponents;
   };
 
-  void  AllocateScalars();
-  void* GetScalarPointer();
 
-#ifdef FLAGMENTED_PACK  
-  void  SetScalarPOinter(void * p);
-#endif
+  // Note: If FragmentedPack is active, GetScalarPointer() causes extra memory allocation to
+  // create a single pack memroy degrading the performance.
+  virtual void  AllocateScalars();
+  virtual void* GetScalarPointer();
+
+#ifdef  FRAGMENTED_PACK 
+  virtual void  SetScalarPointer(void * p);
+
+  void* GetPackPointer();
+
+  int   GetNumberOfPackFragments() { return 3;  /* header, image header and image body */ }
+  void* GetPackFragmentPointer(int id);
+  int   GetPackFragmentSize(int id);
+#endif // FRAGMENTED_PACK 
+
 
 protected:
-  ImageMessage();
-  ~ImageMessage();
+  ImageMessage2();
+  ~ImageMessage2();
   
 protected:
 
   virtual int  GetBodyPackSize();
+
+#ifdef FRAGMENTED_PACK  
+public:  
+  // Pack() serializes the header and body based on the member variables.
+  // PackBody() must be implemented in the child class.
+  virtual int   Pack();
+public:
+#endif //FRAGMENTED_PACK  
+
   virtual int  PackBody();
   virtual int  UnpackBody();
-  
+
+#ifdef FRAGMENTED_PACK  
+  // Allocate memory specifying the body size
+  // (used when create a brank package to receive data)
+  virtual void AllocatePack(int bodySize);
+#endif //FRAGMENTED_PACK  
+
   int    dimensions[3];
   float  spacing[3];
   int    subDimensions[3];
@@ -191,12 +229,29 @@ protected:
   unsigned char*  m_ImageHeader;
   unsigned char*  m_Image;
 
+#ifdef  FRAGMENTED_PACK 
+  unsigned char*  m_SinglePack;
+  int             m_SinglePackSize; 
+  int             m_ImageSize;
+
+  int             m_SelfAllocatedImage;
+  int             m_SelfAllocatedImageHeader;
+
+#endif 
+
+  // NOTE on size parameters:
+  // Following size parameters are used in the image message class:
+  //   m_PackSize       : active pack size (header + body)
+  //   m_ImageSize      : memory size of this->m_Image
+  //   m_SinglePackSize : memory size of this->m_SinglePack
+
+
   int ScalarSizeTable[12];
 };
 
 
 } // namespace igtl
 
-#endif // _igtlImageMessage_h
+#endif // _igtlImageMessage2_h
 
 

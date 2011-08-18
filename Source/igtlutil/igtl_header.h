@@ -36,7 +36,6 @@
 #define IGTL_TYPE_PREFIX_RTS      4
 #define IGTL_NUM_TYPE_PREFIX      5
 
-
 #include "igtl_types.h"
 #include "igtl_win32header.h"
 
