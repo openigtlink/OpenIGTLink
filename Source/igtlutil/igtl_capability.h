@@ -59,7 +59,7 @@ int igtl_export igtl_capability_free_info(igtl_capability_info * info);
  * transferred with the specified header.
  */
 
-igtl_uint32 igtl_export igtl_capability_get_capability_length(igtl_capability_info * info);
+igtl_uint32 igtl_export igtl_capability_get_length(igtl_capability_info * info);
 
 
 /*
@@ -71,7 +71,7 @@ igtl_uint32 igtl_export igtl_capability_get_capability_length(igtl_capability_in
  * Returns 1 if success, otherwise 0.
  */
 
-int igtl_export igtl_capability_unpack(int type, void * byte_array, igtl_capability_info * info, igtl_uint64 pack_size);
+int igtl_export igtl_capability_unpack(void * byte_array, igtl_capability_info * info, igtl_uint64 pack_size);
 
 
 /*
@@ -83,7 +83,7 @@ int igtl_export igtl_capability_unpack(int type, void * byte_array, igtl_capabil
  * (none, or GET_) by IGTL_TYPE_PREFIX_* macro. Returns 1 if success, otherwise 0.
  */
 
-int igtl_export igtl_capability_pack(igtl_capability_info * info, void * byte_array, int type);
+int igtl_export igtl_capability_pack(igtl_capability_info * info, void * byte_array);
 
 
 /*
@@ -94,7 +94,7 @@ int igtl_export igtl_capability_pack(igtl_capability_info * info, void * byte_ar
  *
  */
 
-igtl_uint64 igtl_export igtl_capability_get_crc(igtl_capability_info, int type, void* capability);
+igtl_uint64 igtl_export igtl_capability_get_crc(igtl_capability_info* info, void* capability);
 
 #ifdef __cplusplus
 }

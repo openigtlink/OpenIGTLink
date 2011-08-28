@@ -689,7 +689,7 @@ igtl_uint64 igtl_export igtl_bind_get_crc(igtl_bind_info * info, int type, void*
   igtl_uint16   i;
   igtl_uint16   nc;
 
-  bind_length = (igtl_uint32)igtl_bind_get_size(info, type);
+  bind_length = (igtl_uint64)igtl_bind_get_size(info, type);
   crc = crc64(0, 0, 0);
   crc = crc64((unsigned char*) bind_message, (int)bind_length, crc);
 

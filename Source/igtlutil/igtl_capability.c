@@ -19,12 +19,13 @@
 
 #include "igtl_capability.h"
 #include "igtl_util.h"
+#include "igtl_header.h"
 
 void igtl_export igtl_capability_init_info(igtl_capability_info * info)
 {
   if (info)
     {
-    info->nsize = 0;
+    info->ntypes = 0;
     info->typenames = NULL;
     }
 }
@@ -33,11 +34,14 @@ void igtl_export igtl_capability_init_info(igtl_capability_info * info)
 int igtl_export igtl_capability_alloc_info(igtl_capability_info * info, int ntypes)
 {
   int i, j;
+  unsigned char * ptr;
 
   if (info == NULL)
     {
     return 0;
     }
+  
+  info->ntypes = ntypes;
 
   info->typenames = malloc(sizeof(unsigned char*) * info->ntypes);
   if (info->typenames == NULL)
@@ -46,20 +50,18 @@ int igtl_export igtl_capability_alloc_info(igtl_capability_info * info, int ntyp
     return 0;
     }
 
+  ptr = malloc(sizeof(unsigned char) * (IGTL_HEADER_TYPE_SIZE+1) * info->ntypes);
+  if (ptr == NULL)
+    {
+    free(info->typenames);
+    info->ntypes = 0;
+    return 0;
+    }
+  
   for (i = 0; i < info->ntypes; i ++)
     {
-    info->typenames[i] = malloc(sizeof(unsigned char) * IGTL_HEADER_TYPE_SIZE);
-    if (info->typenames[i] == NULL)
-      {
-      /* failed to allocate memory */
-      /* -- free memories already allocated */ 
-      for (j = 0; j < i; j ++)
-        {
-        free(info->typenames[j]);
-        }
-      free(info->typenames);
-      return 0;
-      }
+    info->typenames[i] = ptr;
+    ptr += sizeof(unsigned char) * (IGTL_HEADER_TYPE_SIZE+1);
     }
 
   return 1;
@@ -68,26 +70,113 @@ int igtl_export igtl_capability_alloc_info(igtl_capability_info * info, int ntyp
 
 int igtl_export igtl_capability_free_info(igtl_capability_info * info)
 {
+  int i;
+
+  if (info == NULL)
+    {
+    return 0;
+    }
+
+  if (info->typenames == NULL)
+    {
+    return 0;
+    }
+
+  free(info->typenames[0]);
+  free(info->typenames);
+  info->ntypes = 0;
+
+  return 1;
 }
 
 
-igtl_uint32 igtl_export igtl_capability_get_capability_length(igtl_capability_info * info)
+igtl_uint32 igtl_export igtl_capability_get_length(igtl_capability_info * info)
 {
+
+  if (info == NULL)
+    {
+    return 0;
+    }
+
+  return (info->ntypes * IGTL_HEADER_TYPE_SIZE);
 }
 
 
-int igtl_export igtl_capability_unpack(int type, void * byte_array, igtl_capability_info * info, igtl_uint64 pack_size)
+int igtl_export igtl_capability_unpack(void * byte_array, igtl_capability_info * info, igtl_uint64 pack_size)
 {
+  int ntypes;
+  int i;
+  unsigned char * ptr;
+
+  if (pack_size % IGTL_HEADER_TYPE_SIZE > 0)
+    {
+    /* In valid body size */
+    return 0;
+    }
+
+  if (info == NULL)
+    {
+    return 0;
+    }
+
+  ntypes = pack_size / IGTL_HEADER_TYPE_SIZE;
+
+  /* Adjust the size of info->typenames */
+  if (info->ntypes != ntypes)
+    {
+    igtl_capability_free_info(info);
+    igtl_capability_alloc_info(info, ntypes);
+    }
+
+  ptr = byte_array;
+  for (i = 0; i < ntypes; i ++)
+    {
+    strncpy(info->typenames[i], ptr, IGTL_HEADER_TYPE_SIZE);
+    info->typenames[i][IGTL_HEADER_TYPE_SIZE] = '\0';
+    }
+
+  return 1;
+
 }
 
 
-int igtl_export igtl_capability_pack(igtl_capability_info * info, void * byte_array, int type)
+int igtl_export igtl_capability_pack(igtl_capability_info * info, void * byte_array)
 {
+  int i;
+  unsigned char * ptr;
+  
+  if (info == NULL)
+    {
+    return 0;
+    }
+  
+  if (byte_array == NULL)
+    {
+    return 0;
+    }
+  
+  ptr = byte_array;
+  
+  for (i = 0; i < info->ntypes; i ++)
+    {
+    strncpy(ptr, info->typenames[i], IGTL_HEADER_TYPE_SIZE);
+    }
+  
+  return 1;
+  
 }
 
-
-igtl_uint64 igtl_export igtl_capability_get_crc(igtl_capability_info, int type, void* capability)
+igtl_uint64 igtl_export igtl_capability_get_crc(igtl_capability_info * info, void* capability)
 {
+  igtl_uint64   crc;
+  igtl_uint64   message_length;
+  int i;
+  
+  message_length = (igtl_uint32)igtl_capability_get_length(info);
+  crc = crc64(0, 0, 0);
+  crc = crc64((unsigned char*) capability, (int)message_length, crc);
+  
+  return crc;
 }
 
 
