@@ -160,6 +160,7 @@ int igtl_export igtl_capability_pack(igtl_capability_info * info, void * byte_ar
   for (i = 0; i < info->ntypes; i ++)
     {
     strncpy(ptr, info->typenames[i], IGTL_HEADER_TYPE_SIZE);
+    ptr += IGTL_HEADER_TYPE_SIZE;
     }
   
   return 1;

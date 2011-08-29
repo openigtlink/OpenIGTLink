@@ -35,6 +35,7 @@ SET(OpenIGTLink_SOURCES
   igtlutil/igtl_status.c
   igtlutil/igtl_util.c
   igtlutil/igtl_position.c
+  igtlutil/igtl_capability.c
   igtlClientSocket.cxx
   igtlConditionVariable.cxx
   igtlFastMutexLock.cxx
@@ -64,6 +65,7 @@ SET(OpenIGTLink_INCLUDE_FILES
   igtlutil/igtl_transform.h
   igtlutil/igtl_types.h
   igtlutil/igtl_util.h
+  igtlutil/igtl_capability.h
   igtlClientSocket.h
   igtlConditionVariable.h
   igtlCreateObjectFunction.h
