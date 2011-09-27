@@ -47,6 +47,13 @@
 #include "igtlMacro.h"
 #include "igtlWin32Header.h"
 
+
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#else
+#include <sys/time.h>
+#endif
+
+
 namespace igtl
 {
 
