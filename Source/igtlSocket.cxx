@@ -75,6 +75,7 @@ namespace igtl
 Socket::Socket()
 {
   this->m_SocketDescriptor = -1;
+  this->m_TimeoutFlag = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -273,8 +274,10 @@ int Socket::Connect(int socketdescriptor, const char* hostName, int port)
   memcpy(&name.sin_addr, hp->h_addr, hp->h_length);
   name.sin_port = htons(port);
 
-  return connect(socketdescriptor, reinterpret_cast<sockaddr*>(&name), 
-    sizeof(name));
+  int r = connect(socketdescriptor, reinterpret_cast<sockaddr*>(&name), 
+                 sizeof(name));
+
+  return r;
 }
 
 //-----------------------------------------------------------------------------
@@ -375,6 +378,42 @@ int Socket::Receive(void* data, int length, int readFully/*=1*/)
     } while(readFully && total < length);
   return total;
 }
+
+
+//-----------------------------------------------------------------------------
+int Socket::SetTimeout(int timeout)
+{
+  if (!this->GetConnected())
+    {
+    return 0;
+    }
+  
+#if defined(_WIN32) && !defined(__CYGWIN__)
+  this->m_Timeout = timeout;
+  int len;
+#else
+  this->m_Timeout.tv_sec  = timeout/1000;          /* second */
+  this->m_Timeout.tv_usec = (timeout%1000) * 1000; /* microsecond */
+  socklen_t len;
+#endif
+  if ( timeout > 0 )
+    {
+    getsockopt(this->m_SocketDescriptor, SOL_SOCKET, SO_RCVTIMEO,
+               (char*)&(this->m_OrigTimeout), &len);
+    setsockopt(this->m_SocketDescriptor, SOL_SOCKET, SO_RCVTIMEO,
+               (char*)&(this->m_Timeout), sizeof(this->m_Timeout));
+    this->m_TimeoutFlag = 1;
+    }
+  else if (this->m_TimeoutFlag)
+    {
+    setsockopt(this->m_SocketDescriptor, SOL_SOCKET, SO_RCVTIMEO,
+               (char*)&(this->m_OrigTimeout), sizeof(this->m_OrigTimeout));
+    this->m_TimeoutFlag = 0;
+    }
+
+  return timeout;
+}
+
 
 //-----------------------------------------------------------------------------
 int Socket::Skip(int length, int skipFully/*=1*/)

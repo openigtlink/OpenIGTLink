@@ -91,6 +91,11 @@ public:
   int Receive(void* data, int length, int readFully=1);
 
   // Description:
+  // Set timeout for the existing socket in millisecond.
+  // This function should be called after opening the socket.
+  int SetTimeout(int timeout);
+
+  // Description:
   // Skip reading data from the socket.
   // The Skip() call has been newly introduced to the igtlSocket,
   // after the class is imported from VTK, thus the call is
@@ -154,9 +159,20 @@ protected:
   // selected_index
   static int SelectSockets(const int* sockets_to_select, int size,
     unsigned long msec, int* selected_index);
+
 private:
   Socket(const Socket&); // Not implemented.
   void operator=(const Socket&); // Not implemented.
+
+#if defined(_WIN32) && !defined(__CYGWIN__)
+  DWORD m_Timeout;
+  DWORD m_OrigTimeout;
+#else
+  struct timeval m_Timeout;
+  struct timeval m_OrigTimeout;
+#endif
+  int m_TimeoutFlag;
+
 };
 
 }
