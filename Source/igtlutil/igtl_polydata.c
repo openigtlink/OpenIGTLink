@@ -305,7 +305,7 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
     }
   else
     {
-    memcpy(&(info->header), &header, sizeof(igtl_polydata_header));
+    memcpy(&(info->header), header, sizeof(igtl_polydata_header));
     }
   
   /* Allocate memory to read data */
@@ -490,7 +490,7 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
     }
   else
     {
-    memcpy(&header, &(info->header), sizeof(igtl_polydata_header));
+    memcpy(header, &(info->header), sizeof(igtl_polydata_header));
     }
   
   /* POINT serction */
@@ -622,14 +622,21 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
       n = 9 * info->attributes[i].n;
       size = n * sizeof(igtl_float32);
       }
-    ptr32_dst = (igtl_uint32*)ptr;
-    ptr32_src = (igtl_uint32*)info->attributes[i].data;
-    ptr32_src_end = ptr32_src + n;
-    while (ptr32_src < ptr32_src_end)
+    if (igtl_is_little_endian())
       {
-      *ptr32_dst = BYTE_SWAP_INT32(*ptr32_src);
-      ptr32_dst ++;
-      ptr32_src ++;
+      ptr32_dst = (igtl_uint32*)ptr;
+      ptr32_src = (igtl_uint32*)info->attributes[i].data;
+      ptr32_src_end = ptr32_src + n;
+      while (ptr32_src < ptr32_src_end)
+        {
+        *ptr32_dst = BYTE_SWAP_INT32(*ptr32_src);
+        ptr32_dst ++;
+        ptr32_src ++;
+        }
+      }
+    else
+      {
+      memcpy(ptr, info->attributes[i].data, size);
       }
     ptr += size;
     }
