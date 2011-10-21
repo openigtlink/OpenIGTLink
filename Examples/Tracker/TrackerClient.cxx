@@ -65,12 +65,19 @@ int main(int argc, char* argv[])
   transMsg->SetDeviceName("Tracker");
 
   //------------------------------------------------------------
+  // Allocate TimeStamp class
+  igtl::TimeStamp::Pointer ts;
+  ts = igtl::TimeStamp::New();
+
+  //------------------------------------------------------------
   // loop
   while (1)
     {
     igtl::Matrix4x4 matrix;
     GetRandomTestMatrix(matrix);
+    ts->GetTime();
     transMsg->SetMatrix(matrix);
+    transMsg->SetTimeStamp(ts);
     transMsg->Pack();
     socket->Send(transMsg->GetPackPointer(), transMsg->GetPackSize());
     igtl::Sleep(interval); // wait

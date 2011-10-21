@@ -15,6 +15,7 @@
 =========================================================================*/
 
 #include <iostream>
+#include <iomanip>
 #include <math.h>
 #include <cstdlib>
 #include <cstring>
@@ -80,6 +81,12 @@ int main(int argc, char* argv[])
   igtl::MessageHeader::Pointer headerMsg;
   headerMsg = igtl::MessageHeader::New();
   
+  //------------------------------------------------------------
+  // Allocate a time stamp 
+  igtl::TimeStamp::Pointer ts;
+  ts = igtl::TimeStamp::New();
+
+
   while (1)
     {
     //------------------------------------------------------------
@@ -104,6 +111,17 @@ int main(int argc, char* argv[])
       
       // Deserialize the header
       headerMsg->Unpack();
+
+      // Get time stamp
+      igtlUint32 sec;
+      igtlUint32 nanosec;
+
+      headerMsg->GetTimeStamp(ts);
+      ts->GetTimeStamp(&sec, &nanosec);
+
+      std::cerr << "Time stamp: "
+                << sec << "." << std::setw(9) << std::setfill('0') 
+                << nanosec << std::endl;
       
       // Check data type and receive data body
       if (strcmp(headerMsg->GetDeviceType(), "TRANSFORM") == 0)
