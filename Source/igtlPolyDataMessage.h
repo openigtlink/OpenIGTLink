@@ -24,10 +24,38 @@
 #include "igtlMessageBase.h"
 #include "igtlTypes.h"
 
-#define IGTL_STRING_MESSAGE_DEFAULT_ENCODING 3 /* Default encoding -- ANSI-X3.5-1968 */
-
 namespace igtl
 {
+
+//
+//
+//
+
+class IGTLCommon_EXPORT Cell{
+  public:
+    void Clear() {
+      this->m_Size.clear();
+      this->m_Data.clear();
+    }
+  private:
+    std::list<igtlUint32> m_Size;
+    std::list<igtlUint32> m_Data;
+};
+
+  class IGTLCommon_EXPORT Attribute{
+  public:
+    void Clear()
+    {
+      
+    }
+  private:
+    igtlUint8              m_Type;
+    igtlUint8              m_NComponents;
+    std::string            m_Name;
+    std::list<igtlUint32>  m_Data;
+  } Attribute;
+
+
 
 class IGTLCommon_EXPORT PolyDataMessage: public MessageBase
 {
@@ -55,9 +83,24 @@ public:
 
 public:
 
-  int         SetArray(int type, ArrayBase * a);
-  ArrayBase * GetArray();
-  int         GetType();
+  // POLYDATA parameters
+  void ClearPoints();
+  void SetPoints(std::list<igtlFloat32> points);
+  void SetPoints(int n, igtlFloat32 * points);
+  void SetNumberOfPoints(int n);
+  void SetPoint(int id, igtlFloat32 * point);
+  void SetPoint(int id, igtlFloat32 x, igtlFloat32 y, igtlFloat32 z);
+  void AddPoint(igtlFloat32 * point);
+  void AddPoint(igtlFloat32 x, igtlFloat32 y, igtlFloat32 z);
+
+  int  GetNumberOfPoints();
+  int  GetPoint(int id, igtlFloat32 & x, igtlFloat32 & y, igtlFloat32 & z);
+  igtlFloat32 * GetPoint(int id);
+
+  void ClearVertices();
+  void GetNumberOfVertices();
+ 
+
 
 protected:
   PolyDataMessage();
@@ -69,23 +112,18 @@ protected:
   virtual int  PackBody();
   virtual int  UnpackBody();
 
-  // Parameters in POLYDATA header
-  igtl_uint32  m_NPoints;             // Number of points
-  igtl_uint32  m_NVertices;           // Number of vertices
-  igtl_uint32  m_SizeVertices;        // Size of vertice data (bytes)
-  igtl_uint32  m_NLines;              // Number of lines
-  igtl_uint32  m_SizeLines;           // Size of line data (bytes)
-  igtl_uint32  m_NPolygons;           // Number of polygons
-  igtl_uint32  m_SizePolygons;        // Size of polygon data (bytes)
-  igtl_uint32  m_NTriangleStrips;     // Number of triangle strips
-  igtl_uint32  m_SizeTriangleStrips;  // Size of triangle strips data (bytes)
-  igtl_uint32  m_NAttributes;         // Number of attributes
+  // POLYDATA parameters
+  std::list<igtlFloat32>  m_Points;
+  std::list<igtlUint32>   m_VerticesSize;
+  std::list<igtlUint32>   m_VerticesData;
+  std::list<igtlUint32>   m_LinesSize;
+  std::list<igtlUint32>   m_LinesData;
+  std::list<igtlUint32>   m_PolygonsSize;
+  std::list<igtlUint32>   m_PolygonsData;
+  std::list<igtlUint32>   m_TriangleStripsSize;
+  std::list<igtlUint32>   m_TriangleStripsData;
 
-  // Parameters in POLYDATA header
-  igtlUint8    m_AttributeType;
-  igtlUint8    m_AttributeNComponents;
-  igtlUint32   m_AttributeN;
-
+  std::list<Attribute>    m_Attributes;
 };
 
 } // namespace igtl

@@ -60,10 +60,20 @@ typedef struct {
   igtl_uint32      nattributes;              /* Number of attributes */
 } igtl_polydata_header;
 
+
 typedef struct {
-  igtl_uint8       type;
-  igtl_uint8       ncomponents;
-  igtl_uint32      n;
+  igtl_uint8       type;                     /* attribute type */
+                                             /* Values for TYPE_ATTRIBUTE (16-bit)
+                                                0x00: POINT_DATA / Scalars
+                                                0x01: POINT_DATA / Vectors
+                                                0x02: POINT_DATA / Normals
+                                                0x03: POINT_DATA / Tensors
+                                                0x10: CELL_DATA / Scalars
+                                                0x11: CELL_DATA / Vectors
+                                                0x12: CELL_DATA / Normals
+                                                0x13: CELL_DATA Tensors  */
+  igtl_uint8       ncomponents;              /* number of components */
+  igtl_uint32      n;                        /* must be 3 for Vectors and Normal, 9 for Tensor.*/
 } igtl_polydata_attribute_header;
 
 #pragma pack(0)

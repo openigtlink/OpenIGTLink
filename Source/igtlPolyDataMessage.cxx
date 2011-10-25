@@ -31,8 +31,12 @@ namespace igtl {
 
 ArrayBase::ArrayBase()
 {
-  this->m_ByteArray = NULL;
-  this->m_Size.clear();
+  this->m_Points.clear();
+  this->m_Vertices.clear();
+  this->m_Lines.clear();
+  this->m_Polygons.clear();
+  this->m_TriangleStrips.clear();
+  this->m_Attributes.clear();
 }
 
 

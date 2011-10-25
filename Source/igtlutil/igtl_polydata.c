@@ -493,7 +493,7 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
     memcpy(header, &(info->header), sizeof(igtl_polydata_header));
     }
   
-  /* POINT serction */
+  /* POINT section */
   ptr = byte_array + sizeof(igtl_polydata_header);
   if (!igtl_is_little_endian())
     {
