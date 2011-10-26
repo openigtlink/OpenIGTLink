@@ -29,6 +29,113 @@
 namespace igtl {
 
 
+
+PolyDataPointArray::PolyDataPointArray()
+{
+  Clear();
+}
+
+PolyDataPointArray::~PolyDataPointArray()
+{
+}
+
+void PolyDataPointArray::Clear()
+{
+  this->m_Data.clear();
+}
+
+void PolyDataPointArray::SetNumberOfPoints(int n)
+{
+  this->m_Data.resize(n);
+}
+  
+int PolyDataPointArray::GetNumberOfPoints()
+{
+  return this->m_Data.size();
+}
+  
+int PolyDataPointArray::SetPoint(int id, igtlFloat32 * points)
+{
+  if (id < 0 || id > this->m_Data.size())
+    {
+      return 0;
+    }
+  Point & dst = this->m_Data[id];
+  dst[0] = points[0];
+  dst[1] = points[1];
+  dst[2] = points[2];
+  return 1;
+}
+  
+int SetPointPolyDataPointArray::(int id, igtlFloat32 x, igtlFloat32 y, igtlFloat32 z)
+{
+  if (id < 0 || id > this->m_Data.size())
+    {
+      return 0;
+    }
+  Point & dst = this->m_Data[id];
+  dst[0] = x;
+  dst[1] = y;
+  dst[2] = z;
+  return 1;
+}
+  
+int PolyDataPointArray::AddPoint(igtlFloat32 * point)
+{
+  Point newPoint;
+  newPoint.resize(3);
+  newPoint[0] = point[0];
+  newPoint[1] = point[1];
+  newPoint[2] = point[2];
+  this->m_Data.push_back(newPoint);
+  
+  return 1;
+}
+  
+int PolyDataPointArray::AddPoint(igtlFloat32 x, igtlFloat32 y, igtlFloat32 z)
+  {
+    Point newPoint;
+    newPoint.resize(3);
+    newPoint[0] = x;
+    newPoint[1] = y;
+    newPoint[2] = z;
+    this->m_Data.push_back(newPoint);
+
+    return 1;
+  }
+  
+  int GetPoint(int id, igtlFloat32 & x, igtlFloat32 & y, igtlFloat32 & z)
+  {
+    if (id < 0 || id > this->m_Data.size())
+      {
+      return 0;
+      }
+    Point & dst = this->m_Data[id];
+    x = dst[0];
+    y = dst[1];
+    z = dst[2];
+  }
+
+  int GetPoint(int id, igtlFloat32 * point)
+  {
+    if (id < 0 || id > this->m_Data.size())
+      {
+      return 0;
+      }
+    Point & dst = this->m_Data[id];
+    point[0] = dst[0];
+    point[1] = dst[1];
+    point[2] = dst[2];
+  }
+
+
+
+
+
+
+
+
+
 PolyDataMessage::PolyDataMessage():
   MessageBase()
 {

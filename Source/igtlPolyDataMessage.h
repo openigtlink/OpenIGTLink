@@ -35,20 +35,11 @@ class IGTLCommon_EXPORT PolyDataPointArray {
   typedef std::vector<igtlFloat32> Point;
 
  public:
-  PolyDataPointArray()
-  {
-    Clear();
-  }
-  ~PolyDataPointArray()
-  {
-  }
+  PolyDataPointArray();
+  ~PolyDataPointArray();
 
-  void Clear()
-  {
-    this->m_Data.clear();
-  }
-
-  void SetNumberOfPoints(int n)
+  void Clear();
+  void SetNumberOfPoints(int n);
   {
     this->m_Data.resize(n);
   }
@@ -119,7 +110,6 @@ class IGTLCommon_EXPORT PolyDataPointArray {
     y = dst[1];
     z = dst[2];
   }
-
   int GetPoint(int id, igtlFloat32 * point)
   {
     if (id < 0 || id > this->m_Data.size())
