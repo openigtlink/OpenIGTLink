@@ -29,99 +29,34 @@ namespace igtl
 
 // Description:
 // PolyDataPointArray class
-class IGTLCommon_EXPORT PolyDataPointArray {
+class IGTLCommon_EXPORT PolyDataPointArray : public Object {
 
  public:
   typedef std::vector<igtlFloat32> Point;
 
  public:
+  typedef PolyDataPointArray        Self;
+  typedef Object                    Superclass;
+  typedef SmartPointer<Self>        Pointer;
+  typedef SmartPointer<const Self>  ConstPointer;
+
+  igtlTypeMacro(igtl::PolyDataPointArray, igtl::Object);
+  igtlNewMacro(igtl::PolyDataPointArray);
+  
+ protected:
   PolyDataPointArray();
   ~PolyDataPointArray();
 
+ public:
   void Clear();
   void SetNumberOfPoints(int n);
-  {
-    this->m_Data.resize(n);
-  }
-
-  int GetNumberOfPoints()
-  {
-    return this->m_Data.size();
-  }
-
-  int SetPoint(int id, igtlFloat32 * points)
-  {
-    if (id < 0 || id > this->m_Data.size())
-      {
-      return 0;
-      }
-    Point & dst = this->m_Data[id];
-    dst[0] = points[0];
-    dst[1] = points[1];
-    dst[2] = points[2];
-    return 1;
-  }
-
-  int SetPoint(int id, igtlFloat32 x, igtlFloat32 y, igtlFloat32 z)
-  {
-    if (id < 0 || id > this->m_Data.size())
-      {
-      return 0;
-      }
-    Point & dst = this->m_Data[id];
-    dst[0] = x;
-    dst[1] = y;
-    dst[2] = z;
-    return 1;
-  }
-
-  int AddPoint(igtlFloat32 * point)
-  {
-    Point newPoint;
-    newPoint.resize(3);
-    newPoint[0] = point[0];
-    newPoint[1] = point[1];
-    newPoint[2] = point[2];
-    this->m_Data.push_back(newPoint);
-
-    return 1;
-  }
-  
-  int AddPoint(igtlFloat32 x, igtlFloat32 y, igtlFloat32 z)
-  {
-    Point newPoint;
-    newPoint.resize(3);
-    newPoint[0] = x;
-    newPoint[1] = y;
-    newPoint[2] = z;
-    this->m_Data.push_back(newPoint);
-
-    return 1;
-  }
-  
-  int GetPoint(int id, igtlFloat32 & x, igtlFloat32 & y, igtlFloat32 & z)
-  {
-    if (id < 0 || id > this->m_Data.size())
-      {
-      return 0;
-      }
-    Point & dst = this->m_Data[id];
-    x = dst[0];
-    y = dst[1];
-    z = dst[2];
-  }
-  int GetPoint(int id, igtlFloat32 * point)
-  {
-    if (id < 0 || id > this->m_Data.size())
-      {
-      return 0;
-      }
-    Point & dst = this->m_Data[id];
-    point[0] = dst[0];
-    point[1] = dst[1];
-    point[2] = dst[2];
-  }
-
+  int  GetNumberOfPoints();
+  int  SetPoint(int id, igtlFloat32 * points);
+  int  SetPoint(int id, igtlFloat32 x, igtlFloat32 y, igtlFloat32 z);
+  int  AddPoint(igtlFloat32 * point);
+  int  AddPoint(igtlFloat32 x, igtlFloat32 y, igtlFloat32 z);
+  int  GetPoint(int id, igtlFloat32 & x, igtlFloat32 & y, igtlFloat32 & z);
+  int  GetPoint(int id, igtlFloat32 * point);
 
  private:
   std::vector< Point > m_Data;
@@ -130,7 +65,7 @@ class IGTLCommon_EXPORT PolyDataPointArray {
 
 // Description:
 // PolyDataCellArray class to pass vertices, lines, polygons, and triangle strips
-class IGTLCommon_EXPORT PolyDataCellArray {
+class IGTLCommon_EXPORT PolyDataCellArray : public Object {
   
  public:
   enum {
@@ -138,69 +73,34 @@ class IGTLCommon_EXPORT PolyDataCellArray {
   };
 
  public:
-  PolyDataCellArray()
-  {
-    Clear();
-  }
-  ~PolyDataCellArray()  {}
+  typedef PolyDataCellArray         Self;
+  typedef Object                    Superclass;
+  typedef SmartPointer<Self>        Pointer;
+  typedef SmartPointer<const Self>  ConstPointer;
+  
+  igtlTypeMacro(igtl::PolyDataCellArray, igtl::Object);
+  igtlNewMacro(igtl::PolyDataCellArray);
 
-  void Clear()
-  {
-    this->m_Data.clear();
-  }
+ protected:
+  PolyDataCellArray();
+  ~PolyDataCellArray();
 
-  igtlUint32 GetNCells()
-  {
-    return this->m_Data.size();
-  }
-
-  void AddCell(int n, igtlUint32 * cell)
-  {
-    std::list<igtlUint32> newCell;
-    for (int i = 0; i < n; i ++)
-      {
-      newCell.push_back(cell[i]);
-      }
-    this->m_Data.push_back(newCell);
-  }
-
-  void AddCell(std::list<igtlUint32> cell)
-  {
-    this->m_Data.push_back(cell);
-  }
-
-  igtlUint32 GetCellSize(int id) {
-    if (id < 0 || id > this->m_Data.size())
-      {
-      return 0;
-      }
-    return this->m_Data[id].size();
-  }
-
-  int GetCell(int id, igtlUint32 * cell)
-  {
-    if (id < 0 || id > this->m_Data.size())
-      {
-      return 0;
-      }
-    std::list<igtlUint32> & src = this->m_Data[id];
-    std::list<igtlUint32>::iterator iter;
-
-    for (iter = src.begin(); iter != src.end(); iter ++)
-      {
-      *cell = *iter;
-      cell ++;
-      }
-    return 1;
-  }
+ public:
+  void       Clear();
+  igtlUint32 GetNCells();
+  void       AddCell(int n, igtlUint32 * cell);
+  void       AddCell(std::list<igtlUint32> cell);
+  igtlUint32 GetCellSize(int id);
+  int        GetCell(int id, igtlUint32 * cell);
 
  private:
   std::vector< std::list<igtlUint32> > m_Data;
 };
 
+
 // Description:
 // Attribute class used for passing attribute data
-class IGTLCommon_EXPORT PolyDataAttribute{
+class IGTLCommon_EXPORT PolyDataAttribute : public Object {
  public:
   enum {
     TYPE_INT8     = 2,
@@ -227,58 +127,25 @@ class IGTLCommon_EXPORT PolyDataAttribute{
   };
 
  public:
-  PolyDataAttribute()
-  {
-    Clear();
-  }
-  ~PolyDataAttribute() {}
+  typedef PolyDataAttribute         Self;
+  typedef Object                    Superclass;
+  typedef SmartPointer<Self>        Pointer;
+  typedef SmartPointer<const Self>  ConstPointer;
+  
+  igtlTypeMacro(igtl::PolyDataAttribute, igtl::Object);
+  igtlNewMacro(igtl::PolyDataAttribute);
 
-  void Clear()
-  {
-    this->m_Type        = POINT_SCALAR;
-    this->m_NComponents = 1;
-    this->m_Name        = "";
-    this->m_Data.clear();
-  }
+ protected:
+  PolyDataAttribute();
+  ~PolyDataAttribute();
 
-  void SetType(int t)
-  {
-    this->m_Type = t; 
-  }
-
-  int SetNComponents(int n)
-  {
-    if (n > 0 || n < 256)
-      {
-      this->m_NComponents = n;
-      return n;
-      }
-    else
-      {
-      return 0;
-      }
-  }
-
-  igtlUint32 GetSize() 
-  {
-    return this->m_Data.size();
-  }
-
-  void SetName(const char * name)
-  {
-    this->m_Name = name;
-  }
-
-  void SetData(int n, igtlFloat32 * data)
-  {
-    this->m_Data.resize(n);
-    std::list<igtlFloat32>::iterator iter;
-    for (iter = this->m_Data.begin(); iter != this->m_Data.end(); iter ++)
-      {
-      *iter = *data;
-      data ++;
-      }
-  }
+ public:
+  void       Clear();
+  void       SetType(int t);
+  int        SetNComponents(int n);
+  igtlUint32 GetSize();
+  void       SetName(const char * name);
+  void       SetData(int n, igtlFloat32 * data);
 
  private:
   igtlUint8              m_Type;
@@ -288,11 +155,10 @@ class IGTLCommon_EXPORT PolyDataAttribute{
 };
 
 
-
 class IGTLCommon_EXPORT PolyDataMessage: public MessageBase
 {
 public:
-  typedef PolyDataMessage                 Self;
+  typedef PolyDataMessage                Self;
   typedef MessageBase                    Superclass;
   typedef SmartPointer<Self>             Pointer;
   typedef SmartPointer<const Self>       ConstPointer;
@@ -302,17 +168,19 @@ public:
 
 public:
 
-  // POLYDATA parameters
-  void ClearPoints();
-  void SetNumberOfPoints(int n);
-
-  void ClearVertices();
-  void GetNumberOfVertices();
+  void Clear();
+  void SetPoints(PolyDataPointArray * points);
+  void SetVertices(PolyDataCellArray * vertices);
+  void SetLines(PolyDataCellArray * lines);
+  void SetPolygons(PolyDataCellArray * polygons);
+  void SetTriangleStrips(PolyDataCellArray * triangleStrips);
+  void ClearAttributes();
+  void AddAttribute(PolyDataAttribute * att);
  
 protected:
   PolyDataMessage();
   ~PolyDataMessage();
-  
+
 protected:
 
   virtual int  GetBodyPackSize();
@@ -320,17 +188,13 @@ protected:
   virtual int  UnpackBody();
 
   // POLYDATA parameters
-  std::list<igtlFloat32>  m_Points;
-  std::list<igtlUint32>   m_VerticesSize;
-  std::list<igtlUint32>   m_VerticesData;
-  std::list<igtlUint32>   m_LinesSize;
-  std::list<igtlUint32>   m_LinesData;
-  std::list<igtlUint32>   m_PolygonsSize;
-  std::list<igtlUint32>   m_PolygonsData;
-  std::list<igtlUint32>   m_TriangleStripsSize;
-  std::list<igtlUint32>   m_TriangleStripsData;
+  PolyDataPointArray * m_Points;
+  PolyDataCellArray  * m_Vertices;
+  PolyDataCellArray  * m_Lines;
+  PolyDataCellArray  * m_Polygons;
+  PolyDataCellArray  * m_TriangleStrips;
 
-  //std::list<Attribute>    m_Attributes;
+  std::list<PolyDataAttribute*>    m_Attributes;
 };
 
 } // namespace igtl
