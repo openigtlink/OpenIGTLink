@@ -19,7 +19,7 @@
 #include "igtlTypes.h"
 
 #include "igtl_header.h"
-#include "igtl_ndarray.h"
+#include "igtl_polydata.h"
 
 // Disable warning C4996 (strncpy() may be unsafe) in Windows. 
 #define _CRT_SECURE_NO_WARNINGS
@@ -230,6 +230,11 @@ int PolyDataAttribute::SetNComponents(int n)
     }
 }
 
+int PolyDataAttribute::GetNComponents()
+{
+  return this->m_NComponents;
+}
+
 igtlUint32 PolyDataAttribute::GetSize() 
 {
   return this->m_Data.size();
@@ -270,17 +275,88 @@ PolyDataMessage::~PolyDataMessage()
 int PolyDataMessage::GetBodyPackSize()
 {
   int dataSize;
-  int dim;
 
-  //if (this->m_Array == NULL)
-  //  {
-  //  return 0;
-  //  }
-  //
-  //dim = this->m_Array->GetDimension();
-  //dataSize = sizeof(igtlUint8) * 2 + sizeof(igtlUint16) * (igtl_uint64) dim
-  //  + this->m_Array->GetRawArraySize();
-  dataSize = 0;
+  igtl_polydata_info info;
+  
+  if (this->m_Points)
+    {
+    info.header.npoints = this->m_Points->GetNumberOfPoints();
+    }
+  else
+    {
+    info.header.npoints = 0;
+    }
+
+  if (this->m_Vertices)
+    {
+    info.header.nvertices = this->m_Vertices->GetNCells();
+    info.header.size_vertices = this->m_Vertices->TotalSize();
+    }
+  else
+    {
+    info.header.nvertices = 0;
+    info.header.size_vertices = 0;
+    }
+
+  if (this->m_Lines)
+    {
+    info.header.nlines = this->m_Lines->GetNCells();
+    info.header.size_lines = this->m_Lines->TotalSize();
+    }
+  else
+    {
+    info.header.nlines = 0;
+    info.header.size_lines = 0;
+    }
+    
+  if (this->m_Polygons)
+    {
+    info.header.npolygons = this->m_Polygons->GetNCells();
+    info.header.size_polygons = this->m_Polygons->TotalSize();
+    }
+  else
+    {
+    info.header.npolygons = 0;
+    info.header.size_polygons = 0;
+    }
+
+  if (this->m_TriangleStrips)
+    {
+    info.header.ntriangle_strips = this->m_TriangleStrips->GetNCells();
+    info.header.size_triangle_strips = this->m_TriangleStrips->TotalSize();
+    }
+  else
+    {
+    info.header.ntriangle_strips = 0;
+    info.header.size_triangle_strips = 0;
+    }
+    
+  if (this->m_Polygons)
+    {
+    info.header.npolygons = this->m_Polygons->GetNCells();
+    info.header.size_polygons = this->m_Polygons->TotalSize();
+    }
+  else
+    {
+    info.header.npolygons = 0;
+    info.header.size_polygons = 0;
+    }
+
+  info.header.nattributes = this->m_Attributes.size();
+  info.attributes = new igtl_polydata_attribute[info.header.nattributes];
+
+  igtl_polydata_attribute * attr = info.attributes;
+  std::list<PolyDataAttribute*>::iterator iter;
+  for (iter = this->m_Attributes.begin(); iter != this->m_Attributes.end(); iter ++)
+    {
+    (*attr)->type = (*iter)->GetType();
+    (*attr)->ncomponents = (*iter)->GetNComponents();
+    (*attr)->n = (*iter)->GetSize();
+    (*attr)->name = (*iter)->GetName();
+    }
+
+  dataSize = igtl_polydata_get_size(info, IGTL_TYPE_PREFIX_NONE);
+
   return  dataSize;
 }
 

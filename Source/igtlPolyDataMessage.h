@@ -140,12 +140,15 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
   ~PolyDataAttribute();
 
  public:
-  void       Clear();
-  void       SetType(int t);
-  int        SetNComponents(int n);
-  igtlUint32 GetSize();
-  void       SetName(const char * name);
-  void       SetData(int n, igtlFloat32 * data);
+  void        Clear();
+  void        SetType(int t);
+  igtlUint8   GetType();
+  int         SetNComponents(int n);
+  int         GetNComponents();
+  igtlUint32  GetSize();
+  void        SetName(const char * name);
+  const char* GetName();
+  void        SetData(int n, igtlFloat32 * data);
 
  private:
   igtlUint8              m_Type;
