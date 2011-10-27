@@ -91,6 +91,7 @@ class IGTLCommon_EXPORT PolyDataCellArray : public Object {
   void       AddCell(int n, igtlUint32 * cell);
   void       AddCell(std::list<igtlUint32> cell);
   igtlUint32 GetCellSize(int id);
+  igtlUint32 GetTotalSize();
   int        GetCell(int id, igtlUint32 * cell);
 
  private:

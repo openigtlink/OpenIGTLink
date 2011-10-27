@@ -167,13 +167,28 @@ void PolyDataCellArray::AddCell(std::list<igtlUint32> cell)
   this->m_Data.push_back(cell);
 }
 
-igtlUint32 PolyDataCellArray::GetCellSize(int id) {
-    if (id < 0 || id > this->m_Data.size())
-      {
+igtlUint32 PolyDataCellArray::GetCellSize(int id)
+{
+  if (id < 0 || id > this->m_Data.size())
+    {
       return 0;
-      }
-    return this->m_Data[id].size();
-  }
+    }
+  return this->m_Data[id].size();
+}
+  
+igtlUint32 PolyDataCellArray::GetTotalSize()
+{
+  igtlUint32 size;
+
+  size = 0;
+  std::vector< std::list<igtlUint32> >::iterator iter;
+  for (iter = this->m_Data.begin(); iter != this->m_Data.end(); iter ++)
+    {
+    size += (*iter).size();
+    }
+
+  return size;
+}
 
 int PolyDataCellArray::GetCell(int id, igtlUint32 * cell)
 {
@@ -290,7 +305,7 @@ int PolyDataMessage::GetBodyPackSize()
   if (this->m_Vertices)
     {
     info.header.nvertices = this->m_Vertices->GetNCells();
-    info.header.size_vertices = this->m_Vertices->TotalSize();
+    info.header.size_vertices = this->m_Vertices->GetTotalSize();
     }
   else
     {
@@ -301,7 +316,7 @@ int PolyDataMessage::GetBodyPackSize()
   if (this->m_Lines)
     {
     info.header.nlines = this->m_Lines->GetNCells();
-    info.header.size_lines = this->m_Lines->TotalSize();
+    info.header.size_lines = this->m_Lines->GetTotalSize();
     }
   else
     {
@@ -312,7 +327,7 @@ int PolyDataMessage::GetBodyPackSize()
   if (this->m_Polygons)
     {
     info.header.npolygons = this->m_Polygons->GetNCells();
-    info.header.size_polygons = this->m_Polygons->TotalSize();
+    info.header.size_polygons = this->m_Polygons->GetTotalSize();
     }
   else
     {
@@ -323,7 +338,7 @@ int PolyDataMessage::GetBodyPackSize()
   if (this->m_TriangleStrips)
     {
     info.header.ntriangle_strips = this->m_TriangleStrips->GetNCells();
-    info.header.size_triangle_strips = this->m_TriangleStrips->TotalSize();
+    info.header.size_triangle_strips = this->m_TriangleStrips->GetTotalSize();
     }
   else
     {
@@ -334,7 +349,7 @@ int PolyDataMessage::GetBodyPackSize()
   if (this->m_Polygons)
     {
     info.header.npolygons = this->m_Polygons->GetNCells();
-    info.header.size_polygons = this->m_Polygons->TotalSize();
+    info.header.size_polygons = this->m_Polygons->GetTotalSize();
     }
   else
     {
@@ -349,13 +364,16 @@ int PolyDataMessage::GetBodyPackSize()
   std::list<PolyDataAttribute*>::iterator iter;
   for (iter = this->m_Attributes.begin(); iter != this->m_Attributes.end(); iter ++)
     {
-    (*attr)->type = (*iter)->GetType();
-    (*attr)->ncomponents = (*iter)->GetNComponents();
-    (*attr)->n = (*iter)->GetSize();
-    (*attr)->name = (*iter)->GetName();
+    attr->type = (*iter)->GetType();
+    attr->ncomponents = (*iter)->GetNComponents();
+    attr->n = (*iter)->GetSize();
+    attr->name = const_cast<char*>((*iter)->GetName());
+    attr ++;
     }
 
-  dataSize = igtl_polydata_get_size(info, IGTL_TYPE_PREFIX_NONE);
+  delete [] info.attributes;
+
+  dataSize = igtl_polydata_get_size(&info, IGTL_TYPE_PREFIX_NONE);
 
   return  dataSize;
 }
