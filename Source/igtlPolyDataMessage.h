@@ -178,8 +178,16 @@ public:
   void SetLines(PolyDataCellArray * lines);
   void SetPolygons(PolyDataCellArray * polygons);
   void SetTriangleStrips(PolyDataCellArray * triangleStrips);
+  PolyDataPointArray * GetPoints();
+  PolyDataCellArray  * GetVertices();
+  PolyDataCellArray  * GetLines();
+  PolyDataCellArray  * GetPolygons();
+  PolyDataCellArray  * GetTriangleStrips();
+
   void ClearAttributes();
   void AddAttribute(PolyDataAttribute * att);
+  int  GetNumberOfAttributes();
+  PolyDataAttribute * GetAttribute(int id);
  
 protected:
   PolyDataMessage();
@@ -197,8 +205,8 @@ protected:
   PolyDataCellArray  * m_Lines;
   PolyDataCellArray  * m_Polygons;
   PolyDataCellArray  * m_TriangleStrips;
-
-  std::list<PolyDataAttribute*>    m_Attributes;
+  
+  std::vector<PolyDataAttribute*>    m_Attributes;
 };
 
 } // namespace igtl

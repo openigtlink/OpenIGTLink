@@ -95,7 +95,7 @@ typedef struct {
  */
 typedef struct {
   igtl_polydata_header   header;             /* Header */
-  void *                 points;             /* Points */
+  igtl_float32*                 points;             /* Points */
   igtl_uint32 *          vertices;           /* Vertices -- array of (N, i1, i2, i3 ...iN) */
   igtl_uint32 *          lines;              /* Lines -- array of (N, i1, i2, i3 ...iN) */
   igtl_uint32 *          polygons;           /* Polygons -- array of (N, i1, i2, i3 ...iN) */
