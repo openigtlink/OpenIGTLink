@@ -51,12 +51,12 @@ class IGTLCommon_EXPORT PolyDataPointArray : public Object {
   void Clear();
   void SetNumberOfPoints(int n);
   int  GetNumberOfPoints();
-  int  SetPoint(int id, igtlFloat32 * points);
-  int  SetPoint(int id, igtlFloat32 x, igtlFloat32 y, igtlFloat32 z);
+  int  SetPoint(unsigned int id, igtlFloat32 * points);
+  int  SetPoint(unsigned int id, igtlFloat32 x, igtlFloat32 y, igtlFloat32 z);
   int  AddPoint(igtlFloat32 * point);
   int  AddPoint(igtlFloat32 x, igtlFloat32 y, igtlFloat32 z);
-  int  GetPoint(int id, igtlFloat32 & x, igtlFloat32 & y, igtlFloat32 & z);
-  int  GetPoint(int id, igtlFloat32 * point);
+  int  GetPoint(unsigned int id, igtlFloat32 & x, igtlFloat32 & y, igtlFloat32 & z);
+  int  GetPoint(unsigned int id, igtlFloat32 * point);
 
  private:
   std::vector< Point > m_Data;
@@ -90,9 +90,9 @@ class IGTLCommon_EXPORT PolyDataCellArray : public Object {
   igtlUint32 GetNCells();
   void       AddCell(int n, igtlUint32 * cell);
   void       AddCell(std::list<igtlUint32> cell);
-  igtlUint32 GetCellSize(int id);
+  igtlUint32 GetCellSize(unsigned int id);
   igtlUint32 GetTotalSize();
-  int        GetCell(int id, igtlUint32 * cell);
+  int        GetCell(unsigned int id, igtlUint32 * cell);
 
  private:
   std::vector< std::list<igtlUint32> > m_Data;
@@ -187,7 +187,7 @@ public:
   void ClearAttributes();
   void AddAttribute(PolyDataAttribute * att);
   int  GetNumberOfAttributes();
-  PolyDataAttribute * GetAttribute(int id);
+  PolyDataAttribute * GetAttribute(unsigned int id);
  
 protected:
   PolyDataMessage();

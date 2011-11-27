@@ -434,7 +434,7 @@ void* ImageMessage2::GetPackPointer()
 
   // 
   int vs = this->GetSubVolumeImageSize();
-  if (this->m_SinglePackSize < IGTL_HEADER_SIZE + IGTL_IMAGE_HEADER_SIZE + vs);
+  if (this->m_SinglePackSize < IGTL_HEADER_SIZE + IGTL_IMAGE_HEADER_SIZE + vs)
     {
     if (this->m_SinglePack)
       {

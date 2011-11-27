@@ -47,8 +47,8 @@ void igtl_export igtl_polydata_init_info(igtl_polydata_info * info)
 
 int igtl_export igtl_polydata_alloc_info(igtl_polydata_info * info)
 {
-  size_t size;
-  int    i;
+  /*size_t size;*/
+  unsigned int i;
   
   if (info == NULL)
     {
@@ -160,7 +160,7 @@ int igtl_export igtl_polydata_alloc_info(igtl_polydata_info * info)
 
 int igtl_export igtl_polydata_free_info(igtl_polydata_info * info)
 {
-  int i;
+  unsigned int i;
 
   if (info == NULL)
     {
@@ -267,7 +267,7 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
   /* size = number of ponits (not number of bytes). In case of vertices, this is specfied 
      by size_vertices in igtl_polydata_header. */
   igtl_polydata_header * header;
-  void * ptr;
+  char * ptr;
 
   igtl_uint32 * ptr32_src;
   igtl_uint32 * ptr32_src_end;
@@ -280,10 +280,10 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
   int name_length;
   char name_buf[IGTL_POLY_MAX_ATTR_NAME_LEN+1];
 
-  int i;
+  unsigned int i;
   int n;
 
-  if (byte_array == NULL || info == NULL | size == 0)
+  if (byte_array == NULL || info == NULL || size == 0)
     {
     return 0;
     }
@@ -317,7 +317,7 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
     }
   
   /* POINT section */
-  ptr = byte_array + sizeof(igtl_polydata_header);
+  ptr = (char*) byte_array + sizeof(igtl_polydata_header);
   if (!igtl_is_little_endian())
     {
     memcpy(info->points, ptr, sizeof(igtl_float32)*info->header.npoints*3);
@@ -348,19 +348,19 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
     }
 
   /* VERTICES section */
-  igtl_polydata_convert_byteorder_topology(info->vertices, ptr, info->header.size_vertices);
+  igtl_polydata_convert_byteorder_topology(info->vertices, (igtl_uint32*)ptr, info->header.size_vertices);
   ptr += info->header.size_vertices;
 
   /* LINES section */
-  igtl_polydata_convert_byteorder_topology(info->lines, ptr, info->header.size_lines);
+  igtl_polydata_convert_byteorder_topology(info->lines, (igtl_uint32*)ptr, info->header.size_lines);
   ptr += info->header.size_lines;
 
   /* POLYGONS section */
-  igtl_polydata_convert_byteorder_topology(info->polygons, ptr, info->header.size_polygons);
+  igtl_polydata_convert_byteorder_topology(info->polygons, (igtl_uint32*)ptr, info->header.size_polygons);
   ptr += info->header.size_polygons;
 
   /* TRIANGLE_STRIPS section */
-  igtl_polydata_convert_byteorder_topology(info->triangle_strips, ptr, info->header.size_triangle_strips);
+  igtl_polydata_convert_byteorder_topology(info->triangle_strips, (igtl_uint32*)ptr, info->header.size_triangle_strips);
   ptr += info->header.size_triangle_strips;
 
   /* Attribute header */
@@ -383,7 +383,7 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
   
   /* Attribute names */
   total_name_length = 0;
-  name_buf[IGTL_POLY_MAX_ATTR_NAME_LEN] = NULL;
+  name_buf[IGTL_POLY_MAX_ATTR_NAME_LEN] = '\0';
   for (i = 0; i < info->header.nattributes; i ++)
     {
     name_length = strlen(ptr);
@@ -430,7 +430,7 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
       n = 9 * info->attributes[i].n;
       size = n * sizeof(igtl_float32);
       }
-    info->attributes[i].data = (igtl_float32*)malloc(size);
+    info->attributes[i].data = (igtl_float32*)malloc((size_t)size);
     ptr32_dst = (igtl_uint32*)info->attributes[i].data;
     ptr32_src = (igtl_uint32*)ptr;
     ptr32_src_end = ptr32_src + n;
@@ -452,7 +452,7 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
   /* size = number of ponits (not number of bytes). In case of vertices, this is specfied 
      by size_vertices in igtl_polydata_header. */
   igtl_polydata_header * header;
-  void * ptr;
+  char * ptr;
 
   igtl_uint32 * ptr32_src;
   igtl_uint32 * ptr32_src_end;
@@ -464,7 +464,7 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
   int total_name_length;
   int name_length;
 
-  int i;
+  unsigned int i;
   int n;
   int size;
 
@@ -494,7 +494,7 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
     }
   
   /* POINT section */
-  ptr = byte_array + sizeof(igtl_polydata_header);
+  ptr = (char*) byte_array + sizeof(igtl_polydata_header);
   if (!igtl_is_little_endian())
     {
     memcpy((void*)ptr, (void*)info->points, sizeof(igtl_float32)*info->header.npoints*3);
@@ -525,22 +525,22 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
     }
 
   /* VERTICES section */
-  igtl_polydata_convert_byteorder_topology(ptr, info->vertices,
+  igtl_polydata_convert_byteorder_topology((igtl_uint32*)ptr, info->vertices,
                                            info->header.size_vertices);
   ptr += info->header.size_vertices;
 
   /* LINES section */
-  igtl_polydata_convert_byteorder_topology(ptr, info->lines,
+  igtl_polydata_convert_byteorder_topology((igtl_uint32*)ptr, info->lines,
                                            info->header.size_lines);
   ptr += info->header.size_lines;
 
   /* POLYGONS section */
-  igtl_polydata_convert_byteorder_topology(ptr, info->polygons,
+  igtl_polydata_convert_byteorder_topology((igtl_uint32*)ptr, info->polygons,
                                            info->header.size_polygons);
   ptr += info->header.size_polygons;
 
   /* TRIANGLE_STRIPS section */
-  igtl_polydata_convert_byteorder_topology(ptr, info->triangle_strips,
+  igtl_polydata_convert_byteorder_topology((igtl_uint32*)ptr, info->triangle_strips,
                                            info->header.size_triangle_strips);
   ptr += info->header.size_triangle_strips;
 
@@ -595,7 +595,7 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
   if (total_name_length % 2 > 0)
     {
     /* add padding */
-    *(char*)ptr = NULL;
+    *(char*)ptr = '\0';
     ptr ++;
     }
 
@@ -649,7 +649,7 @@ igtl_uint64 igtl_export igtl_polydata_get_size(igtl_polydata_info * info, int ty
 {
   igtl_uint64 data_size;
   int name_len;
-  int i;
+  unsigned int i;
   int n;
   int size;
 
@@ -719,8 +719,8 @@ igtl_uint64 igtl_export igtl_polydata_get_crc(igtl_polydata_info * info, int typ
 {
   igtl_uint64   crc;
   igtl_uint64   polydata_length;
-  igtl_uint16   i;
-  igtl_uint16   nc;
+  /*igtl_uint16   i;*/
+  /*igtl_uint16   nc;*/
 
   polydata_length = (igtl_uint32)igtl_polydata_get_size(info, type);
   crc = crc64(0, 0, 0);

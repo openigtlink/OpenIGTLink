@@ -69,7 +69,7 @@ void igtl_export igtl_message_dump_hex(FILE* stream, const void* message, int ma
 /*
  * Get size of scalar. Type should be IGTL_SCALAR_*
  */
-igtl_uint32 igtl_get_scalar_size(int type);
+igtl_uint32 igtl_export igtl_get_scalar_size(int type);
 
 
 #ifdef __cplusplus

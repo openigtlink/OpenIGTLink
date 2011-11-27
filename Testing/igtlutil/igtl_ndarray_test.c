@@ -76,7 +76,7 @@ int main( int argc, char * argv [] )
     }
 
   /** Allocate memory for pack **/
-  body_size = igtl_ndarray_get_size(&info, IGTL_TYPE_PREFIX_NONE);
+  body_size = (size_t)igtl_ndarray_get_size(&info, IGTL_TYPE_PREFIX_NONE);
   body = malloc(body_size);
 
   if (body == NULL)

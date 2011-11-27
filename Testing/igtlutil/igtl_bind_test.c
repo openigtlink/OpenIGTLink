@@ -21,6 +21,7 @@
 #include "igtl_sensor.h"
 #include "igtl_bind.h"
 #include "igtl_util.h"
+#include "igtl_transform.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -136,8 +137,6 @@ unsigned int generate_sensor_body(sensor_message_body * body)
 
   /*igtl_uint64 crc;*/
   unsigned int value_size;
-  int r;
-  int s;
 
   /* Create unit (m/s^2) */
   igtl_unit_init(&unit_data);
@@ -214,7 +213,7 @@ int main( int argc, char * argv [] )
   bind_info.child_info_array[2].size = sizeof(sensor_message_body);
   bind_info.child_info_array[2].ptr = (void*)&child_body.sensor;
 
-  bind_size = igtl_bind_get_size(&bind_info, IGTL_TYPE_PREFIX_NONE);
+  bind_size = (size_t)igtl_bind_get_size(&bind_info, IGTL_TYPE_PREFIX_NONE);
   bind_header = malloc(bind_size);
 
 
@@ -228,10 +227,10 @@ int main( int argc, char * argv [] )
   igtl_bind_pack(&bind_info, bind_header, IGTL_TYPE_PREFIX_NONE);
 
   /* Calculate the sum of child body size and paddings (0 in this test program) */
-  child_body_size = 
-    bind_info.child_info_array[0].size +
+  child_body_size = (size_t)
+    (bind_info.child_info_array[0].size +
     bind_info.child_info_array[1].size +
-    bind_info.child_info_array[2].size;
+    bind_info.child_info_array[2].size);
 
   /* Set header */
   header.version = 1;

@@ -165,10 +165,10 @@ int GetTestImage(igtl::ImageMessage::Pointer& msg, const char* dir, int i)
 // Function to generate random matrix.
 void GetRandomTestMatrix(igtl::Matrix4x4& matrix)
 {
+  /*
   float position[3];
   float orientation[4];
 
-  /*
   // random position
   static float phi = 0.0;
   position[0] = 50.0 * cos(phi);

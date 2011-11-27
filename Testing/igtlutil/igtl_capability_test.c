@@ -41,10 +41,8 @@ int main( int argc, char * argv [] )
 
   igtl_capability_info info;
   struct capability_message message;
-  igtl_uint64 message_size;
   int r;
   int s;
-  int i;
 
   igtl_capability_alloc_info(&info, 4);
 

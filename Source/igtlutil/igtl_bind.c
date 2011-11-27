@@ -294,7 +294,6 @@ int igtl_bind_unpack_request(void * byte_array, igtl_bind_info * info, igtl_uint
 int igtl_export igtl_bind_unpack(int type, void * byte_array, igtl_bind_info * info, igtl_uint64 size)
 {
   char * ptr;
-  igtl_uint64 tmp64;
 
   switch (type)
     {

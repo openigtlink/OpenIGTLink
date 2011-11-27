@@ -38,18 +38,18 @@ int main( int argc, char * argv [] )
   int rh; /* Comparison result for header */
   int rb; /* Comparison result for body */
 
-  int i;
+  unsigned int i;
   int s;
   igtl_float32 * ptr_f;
   igtl_uint32 *  ptr_i;
-  igtl_uint32 body_size;
+  igtl_uint64 body_size;
   
   
   static igtl_float32 points[8][3]={{0,0,0}, {1,0,0}, {1,1,0}, {0,1,0},
                                     {0,0,1}, {1,0,1}, {1,1,1}, {0,1,1}};
   static igtl_uint32 poly[6][4]={{0,1,2,3}, {4,5,6,7}, {0,1,5,4},
                                  {1,2,6,5}, {2,3,7,6}, {3,0,4,7}};
-  static igtl_float32 attribute[8]={0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0};
+  static igtl_float32 attribute[8]={0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0};
 
   /*** Generate test data ***/
   /* Note that the size of polygon data (or other cell data) is calculated by
@@ -122,7 +122,7 @@ int main( int argc, char * argv [] )
 
   /** Allocate memory for pack **/
   body_size = igtl_polydata_get_size(&info, IGTL_TYPE_PREFIX_NONE);
-  body = malloc(body_size);
+  body = malloc((igtl_uint32)body_size);
 
   if (body == NULL)
     {
@@ -142,14 +142,16 @@ int main( int argc, char * argv [] )
   igtl_header_convert_byte_order( &(header) );
 
   /* Dumping data -- for testing */
+  /*
   FILE *fp;
   fp = fopen("polydata.bin", "w");
   fwrite(&(header), IGTL_HEADER_SIZE, 1, fp);
   fwrite(body, body_size, 1, fp);
   fclose(fp);
+  */
 
   rh = memcmp((const void*)&header, (const void*)test_polydata_message_header, IGTL_HEADER_SIZE);
-  rb = memcmp((const void*)body, (const void*)test_polydata_message_body, body_size);
+  rb = memcmp((const void*)body, (const void*)test_polydata_message_body, (size_t) body_size);
 
   igtl_polydata_free_info(&info);
   free(body);
@@ -161,7 +163,7 @@ int main( int argc, char * argv [] )
   else
     {
     /* Print first 256 bytes as HEX values in STDERR for debug */
-    s = IGTL_HEADER_SIZE + body_size;
+    s = IGTL_HEADER_SIZE + (int)body_size;
     if (s > 256)
       {
       s = 256;

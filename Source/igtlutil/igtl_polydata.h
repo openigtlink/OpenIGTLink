@@ -76,7 +76,7 @@ typedef struct {
   igtl_uint32      n;                        /* must be 3 for Vectors and Normal, 9 for Tensor.*/
 } igtl_polydata_attribute_header;
 
-#pragma pack(0)
+#pragma pack()
 
 /*
  * Attribute info

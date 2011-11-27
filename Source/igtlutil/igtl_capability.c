@@ -33,7 +33,7 @@ void igtl_export igtl_capability_init_info(igtl_capability_info * info)
 
 int igtl_export igtl_capability_alloc_info(igtl_capability_info * info, int ntypes)
 {
-  int i, j;
+  unsigned int i;
   unsigned char * ptr;
 
   if (info == NULL)
@@ -70,7 +70,6 @@ int igtl_export igtl_capability_alloc_info(igtl_capability_info * info, int ntyp
 
 int igtl_export igtl_capability_free_info(igtl_capability_info * info)
 {
-  int i;
 
   if (info == NULL)
     {
@@ -119,7 +118,7 @@ int igtl_export igtl_capability_unpack(void * byte_array, igtl_capability_info *
     return 0;
     }
 
-  ntypes = pack_size / IGTL_HEADER_TYPE_SIZE;
+  ntypes = (int)((int)pack_size / IGTL_HEADER_TYPE_SIZE);
 
   /* Adjust the size of info->typenames */
   if (info->ntypes != ntypes)
@@ -142,7 +141,7 @@ int igtl_export igtl_capability_unpack(void * byte_array, igtl_capability_info *
 
 int igtl_export igtl_capability_pack(igtl_capability_info * info, void * byte_array)
 {
-  int i;
+  unsigned int i;
   unsigned char * ptr;
   
   if (info == NULL)
@@ -171,7 +170,6 @@ igtl_uint64 igtl_export igtl_capability_get_crc(igtl_capability_info * info, voi
 {
   igtl_uint64   crc;
   igtl_uint64   message_length;
-  int i;
   
   message_length = (igtl_uint32)igtl_capability_get_length(info);
   crc = crc64(0, 0, 0);
