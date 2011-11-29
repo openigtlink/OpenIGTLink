@@ -23,6 +23,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     ImageDatabaseServer
     String
     Bind
+    PolyData
     )
 endif (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
 
