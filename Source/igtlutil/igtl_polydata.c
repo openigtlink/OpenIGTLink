@@ -107,7 +107,7 @@ int igtl_export igtl_polydata_alloc_info(igtl_polydata_info * info)
     }
   if (info->header.npolygons > 0)
     {
-    info->polygons = malloc(info->header.size_polygons);  
+    info->polygons = malloc(info->header.size_polygons);
     if (info->polygons == NULL)
       {
       return 0;
@@ -142,6 +142,7 @@ int igtl_export igtl_polydata_alloc_info(igtl_polydata_info * info)
         free(info->attributes[i].data);
         }
       }
+    free(info->attributes);
     }
 
   if (info->header.nattributes > 0)
@@ -150,6 +151,14 @@ int igtl_export igtl_polydata_alloc_info(igtl_polydata_info * info)
     if (info->attributes == NULL)
       {
       return 0;
+      }
+    for (i = 0; i < info->header.nattributes; i ++)
+      {
+      info->attributes[i].type = 0;
+      info->attributes[i].ncomponents = 1;
+      info->attributes[i].n = 0;
+      info->attributes[i].name = NULL;
+      info->attributes[i].data = NULL;
       }
     }
 

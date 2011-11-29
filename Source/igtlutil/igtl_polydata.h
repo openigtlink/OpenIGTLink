@@ -73,7 +73,8 @@ typedef struct {
                                                 0x12: CELL_DATA / Normals
                                                 0x13: CELL_DATA Tensors  */
   igtl_uint8       ncomponents;              /* number of components */
-  igtl_uint32      n;                        /* must be 3 for Vectors and Normal, 9 for Tensor.*/
+                                             /* must be 3 for Vectors and Normal, 9 for Tensor.*/
+  igtl_uint32      n;
 } igtl_polydata_attribute_header;
 
 #pragma pack()
