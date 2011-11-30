@@ -20,6 +20,7 @@
 #include <string>
 
 #include "igtlObject.h"
+#include "igtlMacro.h"
 #include "igtlMath.h"
 #include "igtlMessageBase.h"
 #include "igtlTypes.h"
@@ -111,8 +112,19 @@ class IGTLCommon_EXPORT PolyDataCellArray : public Object {
   igtlUint32 GetNumberOfCells();
   void       AddCell(int n, igtlUint32 * cell);
   void       AddCell(std::list<igtlUint32> cell);
-  igtlUint32 GetCellSize(unsigned int id);
+
+  // Description:
+  // GetTotalSize() returns the total memory size of the cell data array in
+  // POLYDATA message. Cell data array is array of cell data, consisting of
+  // <number of points> and array of <point indecies>. Both <number of points>
+  // and <point indecies> are unsigned 32-bit integer. 
+  // Consequently, the total size can be calculated by: 
+  // sizeof(igtlUint32) * (number of points for 0th cell + 1) + (number of points for 1th cell + 1)
+  // ... + (number of points for (N-1)th cell + 1). Note that this includes the first igtlUint32 value
+  // that specifies the number of points in each cell.
   igtlUint32 GetTotalSize();
+
+  igtlUint32 GetCellSize(unsigned int id);
   int        GetCell(unsigned int id, igtlUint32 * cell);
   int        GetCell(unsigned int id, std::list<igtlUint32>& cell);
 
@@ -217,17 +229,32 @@ public:
 public:
 
   void Clear();
+  /*
   void SetPoints(PolyDataPointArray * points);
   void SetVertices(PolyDataCellArray * vertices);
   void SetLines(PolyDataCellArray * lines);
   void SetPolygons(PolyDataCellArray * polygons);
   void SetTriangleStrips(PolyDataCellArray * triangleStrips);
-  
+  */
+
+  igtlSetObjectMacro(Points,   PolyDataPointArray);
+  igtlGetObjectMacro(Points,   PolyDataPointArray);
+  igtlSetObjectMacro(Vertices, PolyDataCellArray);
+  igtlGetObjectMacro(Vertices, PolyDataCellArray);
+  igtlSetObjectMacro(Lines,    PolyDataCellArray);
+  igtlGetObjectMacro(Lines,    PolyDataCellArray);
+  igtlSetObjectMacro(Polygons, PolyDataCellArray);
+  igtlGetObjectMacro(Polygons, PolyDataCellArray);
+  igtlSetObjectMacro(TriangleStrips, PolyDataCellArray);
+  igtlGetObjectMacro(TriangleStrips, PolyDataCellArray);
+
+  /*
   PolyDataPointArray * GetPoints();
   PolyDataCellArray  * GetVertices();
   PolyDataCellArray  * GetLines();
   PolyDataCellArray  * GetPolygons();
   PolyDataCellArray  * GetTriangleStrips();
+  */
 
   void ClearAttributes();
   void AddAttribute(PolyDataAttribute * att);
@@ -245,13 +272,13 @@ protected:
   virtual int  UnpackBody();
 
   // POLYDATA parameters
-  PolyDataPointArray * m_Points;
-  PolyDataCellArray  * m_Vertices;
-  PolyDataCellArray  * m_Lines;
-  PolyDataCellArray  * m_Polygons;
-  PolyDataCellArray  * m_TriangleStrips;
+  PolyDataPointArray::Pointer m_Points;
+  PolyDataCellArray::Pointer  m_Vertices;
+  PolyDataCellArray::Pointer  m_Lines;
+  PolyDataCellArray::Pointer  m_Polygons;
+  PolyDataCellArray::Pointer  m_TriangleStrips;
   
-  std::vector<PolyDataAttribute*>    m_Attributes;
+  std::vector<PolyDataAttribute::Pointer> m_Attributes;
 
 };
 

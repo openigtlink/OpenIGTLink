@@ -281,6 +281,7 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
   igtl_uint32 * ptr32_src;
   igtl_uint32 * ptr32_src_end;
   igtl_uint32 * ptr32_dst;
+  igtl_uint32   s;
 
   igtl_polydata_attribute_header * att_header;
   igtl_polydata_attribute * att;
@@ -422,24 +423,24 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
     if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_SCALAR)
       {
       n = info->attributes[i].ncomponents * info->attributes[i].n;
-      size = n * sizeof(igtl_float32);
+      s = n * sizeof(igtl_float32);
       }
     else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_NORMAL)
       {
       n = 3 * info->attributes[i].n;
-      size = n * sizeof(igtl_float32);
+      s = n * sizeof(igtl_float32);
       }
     else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_VECTOR)
       {
       n = 3 * info->attributes[i].n;
-      size = n * sizeof(igtl_float32);
+      s = n * sizeof(igtl_float32);
       }
     else /* TENSOR */
       {
       n = 9 * info->attributes[i].n;
-      size = n * sizeof(igtl_float32);
+      s = n * sizeof(igtl_float32);
       }
-    info->attributes[i].data = (igtl_float32*)malloc((size_t)size);
+    info->attributes[i].data = (igtl_float32*)malloc((size_t)s);
     ptr32_dst = (igtl_uint32*)info->attributes[i].data;
     ptr32_src = (igtl_uint32*)ptr;
     ptr32_src_end = ptr32_src + n;
@@ -449,7 +450,7 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
       ptr32_dst ++;
       ptr32_src ++;
       }
-    ptr += size;
+    ptr += s;
     }
 
   return 1;

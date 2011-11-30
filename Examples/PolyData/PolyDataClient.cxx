@@ -129,14 +129,14 @@ int ReceivePolyData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Po
   
   if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
     {
-    igtl::PolyDataPointArray * pointsArray         = PolyData->GetPoints();        
-    igtl::PolyDataCellArray  * verticesArray       = PolyData->GetVertices();      
-    igtl::PolyDataCellArray  * linesArray          = PolyData->GetLines();         
-    igtl::PolyDataCellArray  * polygonsArray       = PolyData->GetPolygons();      
-    igtl::PolyDataCellArray  * triangleStripsArray = PolyData->GetTriangleStrips();
+    igtl::PolyDataPointArray::Pointer pointsArray        = PolyData->GetPoints();        
+    igtl::PolyDataCellArray::Pointer verticesArray       = PolyData->GetVertices();      
+    igtl::PolyDataCellArray::Pointer linesArray          = PolyData->GetLines();         
+    igtl::PolyDataCellArray::Pointer polygonsArray       = PolyData->GetPolygons();      
+    igtl::PolyDataCellArray::Pointer triangleStripsArray = PolyData->GetTriangleStrips();
 
     std::cerr << "========== PolyData Contents ==========" << std::endl;
-    if (pointsArray)
+    if (pointsArray.IsNotNull())
       {
       std::cerr << "  ------ Points ------" << std::endl;
       for (unsigned int i = 0; i < pointsArray->GetNumberOfPoints(); i ++)
@@ -148,7 +148,7 @@ int ReceivePolyData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Po
         }
       }
 
-    if (verticesArray)
+    if (verticesArray.IsNotNull())
       {
       std::cerr << "  ------ Vertices ------" << std::endl;
       for (unsigned int i = 0; i < verticesArray->GetNumberOfCells(); i ++)
@@ -159,7 +159,7 @@ int ReceivePolyData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Po
         iter = cell.begin();
         if (iter != cell.end())
           {
-          std::cerr << "  cell[" << i << "] = (" << *iter << std::endl;
+          std::cerr << "  cell[" << i << "] = (" << *iter;
           for (; iter != cell.end(); iter ++)
             {
             std::cerr << ", " << *iter;
@@ -169,7 +169,7 @@ int ReceivePolyData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Po
         }
       }
 
-    if (linesArray)
+    if (linesArray.IsNotNull())
       {
       std::cerr << "  ------ Lines ------" << std::endl;
       for (unsigned int i = 0; i < linesArray->GetNumberOfCells(); i ++)
@@ -180,7 +180,7 @@ int ReceivePolyData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Po
         iter = cell.begin();
         if (iter != cell.end())
           {
-          std::cerr << "  cell[" << i << "] = (" << *iter << std::endl;
+          std::cerr << "  cell[" << i << "] = (" << *iter;
           for (; iter != cell.end(); iter ++)
             {
             std::cerr << ", " << *iter;
@@ -190,7 +190,7 @@ int ReceivePolyData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Po
         }
       }
 
-    if (polygonsArray)
+    if (polygonsArray.IsNotNull())
       {
       std::cerr << "  ------ Polygons ------" << std::endl;
       for (unsigned int i = 0; i < polygonsArray->GetNumberOfCells(); i ++)
@@ -201,7 +201,7 @@ int ReceivePolyData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Po
         iter = cell.begin();
         if (iter != cell.end())
           {
-          std::cerr << "  cell[" << i << "] = (" << *iter << std::endl;
+          std::cerr << "  cell[" << i << "] = (" << *iter;
           for (; iter != cell.end(); iter ++)
             {
             std::cerr << ", " << *iter;
@@ -211,7 +211,7 @@ int ReceivePolyData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Po
         }
       }
 
-    if (triangleStripsArray)
+    if (triangleStripsArray.IsNotNull())
       {
       std::cerr << "  ------ TriangleStrips ------" << std::endl;
       for (unsigned int i = 0; i < triangleStripsArray->GetNumberOfCells(); i ++)
@@ -222,7 +222,7 @@ int ReceivePolyData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Po
         iter = cell.begin();
         if (iter != cell.end())
           {
-          std::cerr << "  cell[" << i << "] = (" << *iter << std::endl;
+          std::cerr << "  cell[" << i << "] = (" << *iter;
           for (; iter != cell.end(); iter ++)
             {
             std::cerr << ", " << *iter;
@@ -241,13 +241,47 @@ int ReceivePolyData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Po
       if (p)
         {
         std::cerr << "  Name = " << p->GetName() << std::endl;
+        std::cerr << "  Type = ";
+        switch (p->GetType())
+          {
+          case igtl::PolyDataAttribute::POINT_SCALAR:
+            std::cerr << "POINT_SCALAR" << std::endl;
+            break;
+          case igtl::PolyDataAttribute::POINT_VECTOR:
+            std::cerr << "POINT_VECTOR" << std::endl;
+            break;
+          case igtl::PolyDataAttribute::POINT_NORMAL:
+            std::cerr << "POINT_NORMAL" << std::endl;
+            break;
+          case igtl::PolyDataAttribute::POINT_TENSOR:
+            std::cerr << "POINT_TENSOR" << std::endl;
+            break;
+          case igtl::PolyDataAttribute::POINT_RGBA:
+            std::cerr << "POINT_RGBA" << std::endl;
+            break;
+          case igtl::PolyDataAttribute::CELL_SCALAR:
+            std::cerr << "CELL_SCALAR" << std::endl;
+            break;
+          case igtl::PolyDataAttribute::CELL_VECTOR:
+            std::cerr << "CELL_VECTOR" << std::endl;
+            break;
+          case igtl::PolyDataAttribute::CELL_NORMAL:
+            std::cerr << "CELL_NORMAL" << std::endl;
+            break;
+          case igtl::PolyDataAttribute::CELL_TENSOR:
+            std::cerr << "CELL_TENSOR" << std::endl;
+            break;
+          case igtl::PolyDataAttribute::CELL_RGBA:
+            std::cerr << "CELL_RGBA" << std::endl;
+            break;
+          }
         unsigned int size  = p->GetSize();
         unsigned int ncomp = p->GetNumberOfComponents();
         igtlFloat32 * data = new igtlFloat32[ncomp];
         for (unsigned int j = 0; j < size; j ++)
           {
           p->GetNthData(j, data);
-          std::cerr << "  Data[" << i << "] = (" << data[0];
+          std::cerr << "  data[" << j << "] = (" << data[0];
           for (unsigned int k = 1; k < ncomp; k ++)
             {
             std::cerr << ", " << data[k];

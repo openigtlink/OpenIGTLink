@@ -158,6 +158,7 @@ int SendPolyData(igtl::Socket::Pointer& socket, const char* name)
   attribute = igtl::PolyDataAttribute::New();
   attribute->SetType(igtl::PolyDataAttribute::POINT_SCALAR);
   attribute->SetName("attr");
+  attribute->SetSize(8);
   attribute->SetData(attributeData);
   polyDataMsg->ClearAttributes();
   polyDataMsg->AddAttribute(attribute);
