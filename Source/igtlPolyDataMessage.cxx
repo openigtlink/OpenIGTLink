@@ -883,7 +883,7 @@ int PolyDataMessage::GetNumberOfAttributes()
 
 PolyDataAttribute * PolyDataMessage::GetAttribute(unsigned int id)
 {
-  if (id < 0 || id >= this->m_Attributes.size())
+  if (id >= this->m_Attributes.size())
     {
     return NULL;
     }
