@@ -548,7 +548,7 @@ int ImageMessage2::Pack()
 
   return 1;
 }
-#endif FRAGMENTED_PACK  
+#endif // FRAGMENTED_PACK  
 
 
 int ImageMessage2::PackBody()
