@@ -418,6 +418,9 @@ int Socket::SetTimeout(int timeout)
 //-----------------------------------------------------------------------------
 int Socket::Skip(int length, int skipFully/*=1*/)
 {
+  if (length == 0)
+    return 0;
+
   unsigned char dummy[256];
   int block  = 256;
   int n      = 0;
