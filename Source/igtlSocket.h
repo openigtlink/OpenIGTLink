@@ -80,7 +80,10 @@ public:
 
   // Description:
   // Close the socket.
-  void CloseSocket() {this->CloseSocket(this->m_SocketDescriptor);}
+  void CloseSocket() {
+    this->CloseSocket(this->m_SocketDescriptor);
+    this->m_SocketDescriptor = -1;
+  }
  
   // ------ Communication API ---
   // Description:
@@ -98,9 +101,19 @@ public:
   int Receive(void* data, int length, int readFully=1);
 
   // Description:
-  // Set timeout for the existing socket in millisecond.
+  // Set sending/receiving timeout for the existing socket in millisecond.
   // This function should be called after opening the socket.
   int SetTimeout(int timeout);
+
+  // Description:
+  // Set reciving timeout for the existing socket in millisecond.
+  // This function should be called after opening the socket.
+  int SetReceiveTimeout(int timeout);
+
+  // Description:
+  // Set sending timeout for the existing socket in millisecond.
+  // This function should be called after opening the socket.
+  int SetSendTimeout(int timeout);
 
   // Description:
   // Skip reading data from the socket.
@@ -172,13 +185,18 @@ private:
   void operator=(const Socket&); // Not implemented.
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
-  DWORD m_Timeout;
-  DWORD m_OrigTimeout;
+  DWORD m_SendTimeout;
+  DWORD m_ReceiveTimeout;
+  DWORD m_OrigSendTimeout;
+  DWORD m_OrigReceiveTimeout;
 #else
-  struct timeval m_Timeout;
-  struct timeval m_OrigTimeout;
+  struct timeval m_SendTimeout;
+  struct timeval m_ReceiveTimeout;
+  struct timeval m_OrigSendTimeout;
+  struct timeval m_OrigReceiveTimeout;
 #endif
-  int m_TimeoutFlag;
+  int m_SendTimeoutFlag;
+  int m_ReceiveTimeoutFlag;
 
 };
 

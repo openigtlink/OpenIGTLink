@@ -75,7 +75,8 @@ namespace igtl
 Socket::Socket()
 {
   this->m_SocketDescriptor = -1;
-  this->m_TimeoutFlag = 0;
+  this->m_SendTimeoutFlag = 0;
+  this->m_ReceiveTimeoutFlag = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -383,32 +384,75 @@ int Socket::Receive(void* data, int length, int readFully/*=1*/)
 //-----------------------------------------------------------------------------
 int Socket::SetTimeout(int timeout)
 {
+  SetReceiveTimeout(timeout);
+  SetSendTimeout(timeout);
+}
+
+
+//-----------------------------------------------------------------------------
+int Socket::SetReceiveTimeout(int timeout)
+{
   if (!this->GetConnected())
     {
     return 0;
     }
   
 #if defined(_WIN32) && !defined(__CYGWIN__)
-  this->m_Timeout = timeout;
+  this->m_ReceiveTimeout = timeout;
   int len;
 #else
-  this->m_Timeout.tv_sec  = timeout/1000;          /* second */
-  this->m_Timeout.tv_usec = (timeout%1000) * 1000; /* microsecond */
+  this->m_ReceiveTimeout.tv_sec  = timeout/1000;          /* second */
+  this->m_ReceiveTimeout.tv_usec = (timeout%1000) * 1000; /* microsecond */
   socklen_t len;
 #endif
   if ( timeout > 0 )
     {
     getsockopt(this->m_SocketDescriptor, SOL_SOCKET, SO_RCVTIMEO,
-               (char*)&(this->m_OrigTimeout), &len);
+               (char*)&(this->m_OrigReceiveTimeout), &len);
     setsockopt(this->m_SocketDescriptor, SOL_SOCKET, SO_RCVTIMEO,
-               (char*)&(this->m_Timeout), sizeof(this->m_Timeout));
-    this->m_TimeoutFlag = 1;
+               (char*)&(this->m_ReceiveTimeout), sizeof(this->m_ReceiveTimeout));
+    this->m_ReceiveTimeoutFlag = 1;
     }
-  else if (this->m_TimeoutFlag)
+  else if (this->m_ReceiveTimeoutFlag)
     {
     setsockopt(this->m_SocketDescriptor, SOL_SOCKET, SO_RCVTIMEO,
-               (char*)&(this->m_OrigTimeout), sizeof(this->m_OrigTimeout));
-    this->m_TimeoutFlag = 0;
+               (char*)&(this->m_OrigReceiveTimeout), sizeof(this->m_OrigReceiveTimeout));
+    this->m_ReceiveTimeoutFlag = 0;
+    }
+
+  return timeout;
+}
+
+
+//-----------------------------------------------------------------------------
+int Socket::SetSendTimeout(int timeout)
+{
+  if (!this->GetConnected())
+    {
+    return 0;
+    }
+  
+#if defined(_WIN32) && !defined(__CYGWIN__)
+  this->m_SendTimeout = timeout;
+  int len;
+#else
+  this->m_SendTimeout.tv_sec  = timeout/1000;          /* second */
+  this->m_SendTimeout.tv_usec = (timeout%1000) * 1000; /* microsecond */
+  socklen_t len;
+#endif
+  if ( timeout > 0 )
+    {
+    getsockopt(this->m_SocketDescriptor, SOL_SOCKET, SO_SNDTIMEO,
+               (char*)&(this->m_OrigSendTimeout), &len);
+    setsockopt(this->m_SocketDescriptor, SOL_SOCKET, SO_SNDTIMEO,
+               (char*)&(this->m_SendTimeout), sizeof(this->m_SendTimeout));
+    this->m_SendTimeoutFlag = 1;
+    }
+  else if (this->m_SendTimeoutFlag)
+    {
+    setsockopt(this->m_SocketDescriptor, SOL_SOCKET, SO_SNDTIMEO,
+               (char*)&(this->m_OrigSendTimeout), sizeof(this->m_OrigSendTimeout));
+    this->m_SendTimeoutFlag = 0;
     }
 
   return timeout;
