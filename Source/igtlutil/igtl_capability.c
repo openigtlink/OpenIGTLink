@@ -132,6 +132,7 @@ int igtl_export igtl_capability_unpack(void * byte_array, igtl_capability_info *
     {
     strncpy(info->typenames[i], ptr, IGTL_HEADER_TYPE_SIZE);
     info->typenames[i][IGTL_HEADER_TYPE_SIZE] = '\0';
+    ptr += IGTL_HEADER_TYPE_SIZE;
     }
 
   return 1;
