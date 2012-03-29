@@ -384,8 +384,14 @@ int Socket::Receive(void* data, int length, int readFully/*=1*/)
 //-----------------------------------------------------------------------------
 int Socket::SetTimeout(int timeout)
 {
-  SetReceiveTimeout(timeout);
-  SetSendTimeout(timeout);
+  if (SetReceiveTimeout(timeout) && SetSendTimeout(timeout))
+    {
+    return 1;
+    }
+  else
+    {
+    return 0;
+    }
 }
 
 
@@ -456,6 +462,35 @@ int Socket::SetSendTimeout(int timeout)
     }
 
   return timeout;
+}
+
+
+//-----------------------------------------------------------------------------
+int Socket::GetSocketAddressAndPort(std::string& address, int& port)
+{
+  struct sockaddr_in sockinfo;
+
+  memset(&sockinfo, 0, sizeof(sockinfo));
+
+#if defined(OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T)
+  socklen_t sizebuf = sizeof(sockinfo);
+#else
+  int sizebuf = sizeof(sockinfo);
+#endif
+  
+  if( getsockname(this->m_SocketDescriptor, reinterpret_cast<sockaddr*>(&sockinfo), &sizebuf) != 0)
+    {
+    return 0;
+    }
+  const char* a = inet_ntoa(sockinfo.sin_addr);
+  if ( a == NULL )
+    {
+    return 0;
+    }
+  address = a;
+  port = ntohs(sockinfo.sin_port);
+
+  return 1;
 }
 
 

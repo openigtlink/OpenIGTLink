@@ -116,6 +116,10 @@ public:
   int SetSendTimeout(int timeout);
 
   // Description:
+  // Get socket address
+  int GetSocketAddressAndPort(std::string& address, int & port);
+
+  // Description:
   // Skip reading data from the socket.
   // The Skip() call has been newly introduced to the igtlSocket,
   // after the class is imported from VTK, thus the call is
