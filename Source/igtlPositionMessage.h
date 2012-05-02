@@ -50,6 +50,7 @@ public:
   void         Init();
 
   void         SetPackType(int t); /* POSITION_ONLY / WITH_QUATERNION3 / ALL */
+  int          GetPackType()  { return  m_PackType; };
 
   /** Specify pack type by body size (in most case obtained from general header) */
   int          SetPackTypeByBodySize(int s);
