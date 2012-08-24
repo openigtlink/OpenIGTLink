@@ -19,21 +19,31 @@
 
 #include "igtlOSUtil.h"
 #include "igtlMessageHeader.h"
-
 #include "igtlMessageHandler.h"
 #include "igtlMessageHandlerMacro.h"
-
 #include "igtlSessionManager.h"
 #include "igtlTransformMessage.h"
-#include "igtlImageMessage.h"
-#include "igtlServerSocket.h"
-#include "igtlStatusMessage.h"
 #include "igtlPositionMessage.h"
+#include "igtlImageMessage.h"
 
+
+//------------------------------------------------------------
+// Define message handler classes for TransformMessage,
+// PositionMessage and ImageMessage
+// igtlMessageHandlerClassMacro() defines a child class of
+// igtl::MessageHandler to handle OpenIGTLink messages for
+// the message type specified as the first argument. The
+// second argument will be used for the name of this 
+// message handler class.
 igtlMessageHandlerClassMacro(igtl::TransformMessage, TransformHandler);
 igtlMessageHandlerClassMacro(igtl::PositionMessage,  PositionHandler);
 igtlMessageHandlerClassMacro(igtl::ImageMessage,     ImageHandler);
 
+//------------------------------------------------------------
+// You need to describe how the received message is processed
+// in Process() function of the message handler class.
+
+// -- Transform message
 int TransformHandler::Process(igtl::TransformMessage * transMsg)
 {
   // Retrive the transform data
@@ -43,6 +53,7 @@ int TransformHandler::Process(igtl::TransformMessage * transMsg)
   return 1;
 }
 
+// -- Position message
 int PositionHandler::Process(igtl::PositionMessage * positionMsg)
 {
   // Retrive the transform data
@@ -58,6 +69,7 @@ int PositionHandler::Process(igtl::PositionMessage * positionMsg)
   return 1;
 }
 
+// -- Image message
 int ImageHandler::Process(igtl::ImageMessage * imgMsg)
 {
   // Retrive the image data
@@ -100,21 +112,26 @@ int main(int argc, char* argv[])
 
   int    port     = atoi(argv[1]);
 
-  // Connection
+  //------------------------------------------------------------
+  // Create a session manager
   igtl::SessionManager::Pointer sm;
   sm = igtl::SessionManager::New();
   sm->SetMode(igtl::SessionManager::MODE_SERVER);
   sm->SetPort(port);
 
-  // Set message handers
+  //------------------------------------------------------------
+  // Create message handlers
   TransformHandler::Pointer tmh = TransformHandler::New();
   PositionHandler::Pointer pmh  = PositionHandler::New();
   ImageHandler::Pointer imh     = ImageHandler::New();
 
+  //------------------------------------------------------------
+  // Register the message handlers to the session manager
   sm->AddMessageHandler(tmh);
   sm->AddMessageHandler(pmh);
   sm->AddMessageHandler(imh);
 
+  //------------------------------------------------------------
   // Start session
   if (sm->Connect())
     {
