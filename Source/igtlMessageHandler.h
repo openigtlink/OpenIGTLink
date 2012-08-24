@@ -23,63 +23,30 @@
 namespace igtl
 {
 
-class IGTLCommon_EXPORT MessageHandlerInterface: public Object
+class IGTLCommon_EXPORT MessageHandler: public Object
 {
  public:
 
-  typedef MessageHandlerInterface   Self;
+  typedef MessageHandler   Self;
   typedef Object                    Superclass;
   typedef SmartPointer<Self>        Pointer;
   typedef SmartPointer<const Self>  ConstPointer;
 
-  igtlTypeMacro(igtl::MessageHandlerInterface, igtl::Object)
-  igtlNewMacro(igtl::MessageHandlerInterface);
+  igtlTypeMacro(igtl::MessageHandler, igtl::Object)
+  igtlNewMacro(igtl::MessageHandler);
 
  public:
   virtual const char* GetMessageType() { return ""; }
-  virtual int ReceiveMessage(Socket*, MessageBase*) {};
+  virtual int ReceiveMessage(Socket*, MessageBase*) { return 0; };
 
  protected:
-  MessageHandlerInterface();
-  ~MessageHandlerInterface();
+  MessageHandler() {}
+  ~MessageHandler() {}
 
  protected:
 };
-
-
-template<typename MessageType>
-class IGTLCommon_EXPORT MessageHandler: public MessageHandlerInterface
-{
- public:
-
-  typedef MessageHandler            Self;
-  typedef MessageHandlerInterface   Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
-
-  igtlTypeMacro(MessageHandler, Object)
-  igtlNewMacro(MessageHandler);
-
- public:
-  virtual const char* GetMessageType();
-  virtual int  ReceiveMessage(Socket*, MessageBase*);
-  virtual int  Process(MessageType* message) {};
-  virtual void CheckCRC(int i);
-
- protected:
-  MessageHandler();
-  ~MessageHandler();
-
- protected:
-  int         m_CheckCRC;
-  MessageType m_Message;
-
-};
-
 
 } // namespace igtl
-
-#include "igtlMessageHandler.txx"
 
 #endif // _igtlMessageHandler_h
 

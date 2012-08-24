@@ -30,13 +30,11 @@
 #include "igtlStatusMessage.h"
 #include "igtlPositionMessage.h"
 
-namespace igtl {
-igtlMessageHandlerClassMacro(TransformMessage, TestTransformMessageHandler);
-igtlMessageHandlerClassMacro(PositionMessage,  TestPositionMessageHandler);
-igtlMessageHandlerClassMacro(ImageMessage,     TestImageMessageHandler);
+igtlMessageHandlerClassMacro(igtl::TransformMessage, TransformHandler);
+igtlMessageHandlerClassMacro(igtl::PositionMessage,  PositionHandler);
+igtlMessageHandlerClassMacro(igtl::ImageMessage,     ImageHandler);
 
-template <class TransformMessage>
-void TestTransformMessageHandler::Process(TransformMessage * transMsg)
+int TransformHandler::Process(igtl::TransformMessage * transMsg)
 {
   // Retrive the transform data
   igtl::Matrix4x4 matrix;
@@ -45,8 +43,7 @@ void TestTransformMessageHandler::Process(TransformMessage * transMsg)
   return 1;
 }
 
-template <class PositionMessage>
-void TestPositionMessageHandler::Process(PositionMessage * positionMsg)
+int PositionHandler::Process(igtl::PositionMessage * positionMsg)
 {
   // Retrive the transform data
   float position[3];
@@ -61,8 +58,7 @@ void TestPositionMessageHandler::Process(PositionMessage * positionMsg)
   return 1;
 }
 
-template <class ImageMessage>
-void TestImageMessageHandler::Process(ImageMessage * imgMsg)
+int ImageHandler::Process(igtl::ImageMessage * imgMsg)
 {
   // Retrive the image data
   int   size[3];          // image dimension
@@ -88,48 +84,52 @@ void TestImageMessageHandler::Process(ImageMessage * imgMsg)
             << svoffset[0] << ", " << svoffset[1] << ", " << svoffset[2] << ")" << std::endl;
   return 1;
 }
-}
 
 
 int main(int argc, char* argv[])
 {
+
   //------------------------------------------------------------
   // Parse Arguments
-
-  if (argc != 3) // check number of arguments
+  if (argc != 2) // check number of arguments
     {
     // If not correct, print usage
-    std::cerr << "    <hostname> : IP or host name"                    << std::endl;
     std::cerr << "    <port>     : Port # (18944 in Slicer default)"   << std::endl;
     exit(0);
     }
 
-  char*  hostname = argv[1];
-  int    port     = atoi(argv[2]);
+  int    port     = atoi(argv[1]);
 
   // Connection
   igtl::SessionManager::Pointer sm;
   sm = igtl::SessionManager::New();
-  sm->SetModeClient();
-  sm->SetAddress(hostname);
+  sm->SetMode(igtl::SessionManager::MODE_SERVER);
   sm->SetPort(port);
 
   // Set message handers
-  igtl::TestImageMessageHander::Pointer imh;
-  imh = igtl::ImageMessageHander::New();
-  igtl::TransformMessageHander::Pointer tmh;
-  tmh = igtl::ImageMessageHander::New();
+  TransformHandler::Pointer tmh = TransformHandler::New();
+  PositionHandler::Pointer pmh  = PositionHandler::New();
+  ImageHandler::Pointer imh     = ImageHandler::New();
 
   sm->AddMessageHandler(tmh);
+  sm->AddMessageHandler(pmh);
   sm->AddMessageHandler(imh);
 
   // Start session
-  sm->Start();
-
-  // Do something
-
-  // Stop session
-  sm->End();
+  if (sm->Connect())
+    {
+    while (1)
+      {
+      int r = sm->ProcessMessage();
+      if (r == 0) // Disconnected
+        {
+        break;
+        }
+      }
+    // Stop session
+    sm->Disconnect();
+    }
+  
 }
 
 

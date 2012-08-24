@@ -29,18 +29,74 @@
 //     // do something
 //   }
 
+//#define igtlMessageHandlerClassMacro(messagetype, classname)      \
+//  template <typename messagetype>                                 \
+//  class classname : public MessageHandler<messagetype>            \
+//  {                                                               \
+//    typedef classname                      Self;                  \
+//    typedef MessageHandler<messagetype>    Superclass;            \
+//    typedef SmartPointer<Self>             Pointer;               \
+//    typedef SmartPointer<const Self>       ConstPointer;          \
+//    igtlTypeMacro(classname, MessageHandler<messagetype>);        \
+//    igtlNewMacro(classname);                                      \
+//  public:                                                         \
+//    virtual void Process(messagetype*);                           \
+//  }; 
+
 #define igtlMessageHandlerClassMacro(messagetype, classname)      \
-  template <typename messagetype>                                 \
-  class classname : public MessageHandler<messagetype>            \
+  class classname : public ::igtl::MessageHandler                 \
   {                                                               \
+  public:                                                         \
     typedef classname                      Self;                  \
-    typedef MessageHandler<messagetype>    Superclass;            \
-    typedef SmartPointer<Self>             Pointer;               \
-    typedef SmartPointer<const Self>       ConstPointer;          \
-    igtlTypeMacro(classname, MessageHandler<messagetype>);        \
+    typedef ::igtl::MessageHandler    Superclass;                 \
+    typedef igtl::SmartPointer<Self>             Pointer;         \
+    typedef igtl::SmartPointer<const Self>       ConstPointer;    \
+    igtlTypeMacro(classname, ::igtl::MessageHandler);             \
     igtlNewMacro(classname);                                      \
   public:                                                         \
-    virtual void Process(messagetype);                            \
-  };                                                              \
+    virtual const char* GetMessageType()                          \
+    {                                                             \
+      return this->m_Message->GetDeviceType();                    \
+    }                                                             \
+    virtual int Process(messagetype*);                            \
+    int ReceiveMessage(::igtl::Socket* socket, ::igtl::MessageBase* header) \
+    {                                                             \
+      this->m_Message->SetMessageHeader(header);                  \
+      this->m_Message->AllocatePack();                            \
+      socket->Receive(this->m_Message->GetPackBodyPointer(),      \
+                      this->m_Message->GetPackBodySize());        \
+      int r = this->m_Message->Unpack(this->m_CheckCRC);          \
+      if (r)                                                      \
+        {                                                         \
+        Process(this->m_Message);                                 \
+        return 1;                                                 \
+        }                                                         \
+      else                                                        \
+        {                                                         \
+        return 0;                                                 \
+        }                                                         \
+    }                                                             \
+    virtual void CheckCRC(int i)                                  \
+    {                                                             \
+      if (i == 0)                                                 \
+        {                                                         \
+        this->m_CheckCRC = 0;                                     \
+        }                                                         \
+      else                                                        \
+        {                                                         \
+        this->m_CheckCRC = 1;                                     \
+        }                                                         \
+    }                                                             \
+  protected:                                                      \
+    classname()                                                   \
+    {                                                             \
+      this->m_Message  = messagetype::New();                      \
+      this->m_CheckCRC = 1;                                       \
+    }                                                             \
+    ~classname() {}                                               \
+  protected:                                                      \
+    int         m_CheckCRC;                                       \
+    messagetype::Pointer m_Message;                               \
+  }; 
 
 #endif // __igtlMessageHandlerMacro_h

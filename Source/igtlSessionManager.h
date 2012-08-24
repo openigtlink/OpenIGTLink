@@ -55,8 +55,8 @@ class IGTLCommon_EXPORT SessionManager: public Object
   int            Connect();
   int            ProcessMessage();
   int            Disconnect();
-  int            AddMessageHandler(MessageHandlerInterface*);
-  int            RemoveMessageHandler(MessageHandlerInterface*);
+  int            AddMessageHandler(MessageHandler*);
+  int            RemoveMessageHandler(MessageHandler*);
 
  protected:
   SessionManager();
@@ -68,7 +68,7 @@ class IGTLCommon_EXPORT SessionManager: public Object
   int            m_Port;
   int            m_Mode;
 
-  std::vector< MessageHandlerInterface* > m_MessageHandlerList;
+  std::vector< MessageHandler* > m_MessageHandlerList;
   Socket::Pointer  m_Socket;
 
   igtl::MessageHeader::Pointer m_Header;

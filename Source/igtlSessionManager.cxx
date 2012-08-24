@@ -44,10 +44,11 @@ SessionManager::~SessionManager()
 
 int SessionManager::Connect()
 {
+  
+  this->m_Socket = NULL;
+
   if (this->m_Mode == MODE_CLIENT)
     {
-    this->m_Socket = NULL;
-
     ClientSocket::Pointer clientSocket;
     clientSocket = ClientSocket::New();
     //this->DebugOff();
@@ -68,17 +69,18 @@ int SessionManager::Connect()
   else
     {
     ServerSocket::Pointer serverSocket;
-    if (serverSocket->CreateServer(this->m_Port))
+    serverSocket = ServerSocket::New();
+    int r = serverSocket->CreateServer(this->m_Port);
+    if (r < 0)
       {
       return 0;
       }
 
     //std::cerr << this->GetClassName() << ": WaitForConnection(): Port number # = " << this->m_Port << std::endl;
-    this->m_Socket = NULL;
     if (serverSocket.IsNotNull())
       {
       //this->ServerSocket->CreateServer(this->m_Port);
-      this->m_Socket = serverSocket->WaitForConnection(1000);
+      this->m_Socket = serverSocket->WaitForConnection(10000);
       }
     
     if (this->m_Socket.IsNotNull() && this->m_Socket->GetConnected()) // if client connected
@@ -88,6 +90,9 @@ int SessionManager::Connect()
       }
     return 0;
     }
+
+  return 0;
+
 }
 
 int SessionManager::Disconnect()
@@ -110,7 +115,7 @@ int SessionManager::ProcessMessage()
   int r = this->m_Socket->Receive(this->m_Header->GetPackPointer(), this->m_Header->GetPackSize());
   if (r == 0)
     {
-    return 0;
+    return 0; // Disconnected
     }
   if (r != this->m_Header->GetPackSize())
     {
@@ -127,20 +132,21 @@ int SessionManager::ProcessMessage()
   this->m_Header->GetTimeStamp(this->m_TimeStamp);
   this->m_TimeStamp->GetTimeStamp(&sec, &nanosec);
   
-  std::cerr << "Time stamp: "
-            << sec << "." << std::setw(9) << std::setfill('0') 
-            << nanosec << std::endl;
+  //std::cerr << "Time stamp: "
+  //          << sec << "." << std::setw(9) << std::setfill('0') 
+  //          << nanosec << std::endl;
 
   // Look for a message handler that matches to the message type.
   int found = 0;
-  std::vector< MessageHandlerInterface* >::iterator iter;
+  std::vector< MessageHandler* >::iterator iter;
   for (iter = this->m_MessageHandlerList.begin(); iter != this->m_MessageHandlerList.end(); iter ++)
     {
     if (strcmp(this->m_Header->GetDeviceType(), (*iter)->GetMessageType()) == 0)
       {
       (*iter)->ReceiveMessage(this->m_Socket, this->m_Header);
-      iter = this->m_MessageHandlerList.end();
+      //iter = this->m_MessageHandlerList.end();
       found = 1;
+      break;
       }
     }
 
@@ -150,13 +156,16 @@ int SessionManager::ProcessMessage()
     std::cerr << "Receiving : " << this->m_Header->GetDeviceType() << std::endl;
     this->m_Socket->Skip(this->m_Header->GetBodySizeToRead(), 0);
     }
+
+  return 1;
+
 }  
   
 
-int SessionManager::AddMessageHandler(MessageHandlerInterface* handler)
+int SessionManager::AddMessageHandler(MessageHandler* handler)
 {
   // Check if there is any handler for the same message type
-  std::vector< MessageHandlerInterface* >::iterator iter;
+  std::vector< MessageHandler* >::iterator iter;
   for (iter = this->m_MessageHandlerList.begin(); iter != this->m_MessageHandlerList.end(); iter ++)
     {
     if (strcmp((*iter)->GetMessageType(), handler->GetMessageType()) == 0)
@@ -172,10 +181,10 @@ int SessionManager::AddMessageHandler(MessageHandlerInterface* handler)
 }
 
 
-int SessionManager::RemoveMessageHandler(MessageHandlerInterface* handler)
+int SessionManager::RemoveMessageHandler(MessageHandler* handler)
 {
   // Check if there is any handler for the same message type
-  std::vector< MessageHandlerInterface* >::iterator iter;
+  std::vector< MessageHandler* >::iterator iter;
   for (iter = this->m_MessageHandlerList.begin(); iter != this->m_MessageHandlerList.end(); iter ++)
     {
     if (*iter == handler)
