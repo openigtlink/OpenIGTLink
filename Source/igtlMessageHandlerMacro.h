@@ -59,23 +59,33 @@
       return this->m_Message->GetDeviceType();                    \
     }                                                             \
     virtual int Process(messagetype*);                            \
-    int ReceiveMessage(::igtl::Socket* socket, ::igtl::MessageBase* header) \
-    {                                                             \
-      this->m_Message->SetMessageHeader(header);                  \
-      this->m_Message->AllocatePack();                            \
-      socket->Receive(this->m_Message->GetPackBodyPointer(),      \
-                      this->m_Message->GetPackBodySize());        \
-      int r = this->m_Message->Unpack(this->m_CheckCRC);          \
-      if (r)                                                      \
-        {                                                         \
-        Process(this->m_Message);                                 \
-        return 1;                                                 \
-        }                                                         \
-      else                                                        \
-        {                                                         \
-        return 0;                                                 \
-        }                                                         \
-    }                                                             \
+    int ReceiveMessage(::igtl::Socket* socket, ::igtl::MessageBase* header, int pos) \
+    {                                                                   \
+      if (pos == 0) /* New body */                                      \
+        {                                                               \
+        this->m_Message->SetMessageHeader(header);                      \
+        this->m_Message->AllocatePack();                                \
+        }                                                               \
+      int s = socket->Receive((void*)((char*)this->m_Message->GetPackBodyPointer()+pos), \
+                              this->m_Message->GetPackBodySize()-pos);  \
+      if (s < 0) /* Time out */                                         \
+        {                                                               \
+        return pos;                                                     \
+        }                                                               \
+      if (s+pos >= this->m_Message->GetPackBodySize())                  \
+        {                                                               \
+        int r = this->m_Message->Unpack(this->m_CheckCRC);              \
+        if (r)                                                          \
+          {                                                             \
+          Process(this->m_Message);                                     \
+          }                                                             \
+        else                                                            \
+          {                                                             \
+          return -1;                                                    \
+          }                                                             \
+        }                                                               \
+      return s + pos;  /* return current position in the body */        \
+    }                                                                   \
     virtual void CheckCRC(int i)                                  \
     {                                                             \
       if (i == 0)                                                 \

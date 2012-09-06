@@ -37,13 +37,20 @@ class IGTLCommon_EXPORT MessageHandler: public Object
 
  public:
   virtual const char* GetMessageType() { return ""; }
-  virtual int ReceiveMessage(Socket*, MessageBase*) { return 0; };
+  virtual int ReceiveMessage(Socket*, MessageBase*, int) { return 0; };
+
+  void SetMessageBuffer(MessageBase* buffer) { this->m_Buffer = buffer; }
+  MessageBase * GetMessageBuffer() { return this->m_Buffer; }
 
  protected:
   MessageHandler() {}
   ~MessageHandler() {}
 
+  
+
  protected:
+  MessageBase * m_Buffer;
+
 };
 
 } // namespace igtl

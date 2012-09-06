@@ -142,6 +142,7 @@ int main(int argc, char* argv[])
         {
         break;
         }
+      igtl::Sleep(400); // Wait for 400 ms
       }
     // Stop session
     sm->Disconnect();

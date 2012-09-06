@@ -52,11 +52,18 @@ class IGTLCommon_EXPORT SessionManager: public Object
   // Set the role of session manager. Either MODE_SERVER or MODE_CLIENT
   void           SetMode(int m) {this->m_Mode = m; this->m_ConfigurationUpdated = true; }
   int            GetMode(int m) {return this->m_Mode = m; }
-  int            Connect();
-  int            ProcessMessage();
-  int            Disconnect();
+
+  // Description:
+  // Register / Unregister a message handler
   int            AddMessageHandler(MessageHandler*);
   int            RemoveMessageHandler(MessageHandler*);
+
+  // Description:
+  // Functions to manage the session
+  int            Connect();
+  int            Disconnect();
+  int            ProcessMessage();
+  int            PushMessage(MessageBase*);
 
  protected:
   SessionManager();
@@ -67,6 +74,15 @@ class IGTLCommon_EXPORT SessionManager: public Object
   std::string    m_Hostname;
   int            m_Port;
   int            m_Mode;
+
+  // Description:
+  // m_CurrentReadIndex is used to save the current position of the message.
+  // The index becomes >0 when message transfer is interrupted and only a part
+  // of message has arrived. 
+  int            m_CurrentReadIndex;
+  int            m_HeaderDeserialized;
+
+  MessageHandler* m_CurrentMessageHandler;
 
   std::vector< MessageHandler* > m_MessageHandlerList;
   Socket::Pointer  m_Socket;
