@@ -11,6 +11,7 @@ SET(EXAMPLE_DIRS
   Status
   Receiver
   Thread
+  SessionManager
   )
 
 if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")

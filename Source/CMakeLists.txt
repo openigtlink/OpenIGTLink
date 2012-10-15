@@ -51,6 +51,7 @@ SET(OpenIGTLink_SOURCES
   igtlObjectFactoryBase.cxx
   igtlPositionMessage.cxx
   igtlServerSocket.cxx
+  igtlSessionManager.cxx
   igtlSimpleFastMutexLock.cxx
   igtlSocket.cxx
   igtlStatusMessage.cxx
@@ -66,6 +67,7 @@ SET(OpenIGTLink_INCLUDE_FILES
   igtlutil/igtl_types.h
   igtlutil/igtl_util.h
   igtlutil/igtl_capability.h
+  igtlMessageHandler.h
   igtlClientSocket.h
   igtlConditionVariable.h
   igtlCreateObjectFunction.h
@@ -85,6 +87,7 @@ SET(OpenIGTLink_INCLUDE_FILES
   igtlObjectFactoryBase.h
   igtlPositionMessage.h
   igtlServerSocket.h
+  igtlSessionManager.h
   igtlSimpleFastMutexLock.h
   igtlSmartPointer.h
   igtlSocket.h

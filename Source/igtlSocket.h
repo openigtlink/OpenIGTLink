@@ -116,6 +116,16 @@ public:
   int SetSendTimeout(int timeout);
 
   // Description:
+  // Set  (psuedo) non-blocking mode for recv(). When sw=1, the time out is set to
+  // minimum value (1 microsecond in UNIX, 1 millisecond in Windows) for receiving.
+  int SetReceiveBlocking(int sw);
+
+  // Description:
+  // Set (psuedo) non-blocking mode for recv(). When sw=1, the time out is set to
+  // minimum value (1 microsecond in UNIX, 1 millisecond in Windows) for sending.
+  int SetSendBlocking(int sw);
+
+  // Description:
   // Get socket address
   int GetSocketAddressAndPort(std::string& address, int & port);
 
