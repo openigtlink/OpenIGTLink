@@ -51,7 +51,7 @@ class IGTLCommon_EXPORT SessionManager: public Object
   // Description:
   // Set the role of session manager. Either MODE_SERVER or MODE_CLIENT
   void           SetMode(int m) {this->m_Mode = m; this->m_ConfigurationUpdated = true; }
-  int            GetMode(int m) {return this->m_Mode = m; }
+  int            GetMode() {return this->m_Mode; }
 
   // Description:
   // Register / Unregister a message handler
