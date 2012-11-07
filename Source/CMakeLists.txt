@@ -68,6 +68,7 @@ SET(OpenIGTLink_INCLUDE_FILES
   igtlutil/igtl_util.h
   igtlutil/igtl_capability.h
   igtlMessageHandler.h
+  igtlMessageHandlerMacro.h
   igtlClientSocket.h
   igtlConditionVariable.h
   igtlCreateObjectFunction.h
