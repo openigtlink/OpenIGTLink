@@ -53,7 +53,8 @@ typedef struct {
  */
 
 void igtl_export igtl_position_convert_byte_order(igtl_position* pos);
-
+void igtl_export igtl_position_convert_byte_order_position_only(igtl_position* pos);
+void igtl_export igtl_position_convert_byte_order_quaternion3(igtl_position* pos);
 
 /*
  * CRC calculation

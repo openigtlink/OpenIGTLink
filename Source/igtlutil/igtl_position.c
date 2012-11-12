@@ -45,6 +45,46 @@ void igtl_export igtl_position_convert_byte_order(igtl_position* pos)
     }
 }
 
+void igtl_export igtl_position_convert_byte_order_position_only(igtl_position* pos)
+{
+
+  igtl_uint32 tmp[4];
+
+  if (igtl_is_little_endian())
+    {
+    /* position */
+    memcpy((void*)tmp, (void*)(pos->position), sizeof(igtl_float32)*3);
+    tmp[0]  = BYTE_SWAP_INT32(tmp[0]);
+    tmp[1]  = BYTE_SWAP_INT32(tmp[1]);
+    tmp[2]  = BYTE_SWAP_INT32(tmp[2]);
+    memcpy((void*)(pos->position), (void*)tmp, sizeof(igtl_float32)*3);
+    }
+}
+
+void igtl_export igtl_position_convert_byte_order_quaternion3(igtl_position* pos)
+{
+
+  igtl_uint32 tmp[4];
+
+  if (igtl_is_little_endian())
+    {
+    /* position */
+    memcpy((void*)tmp, (void*)(pos->position), sizeof(igtl_float32)*3);
+    tmp[0]  = BYTE_SWAP_INT32(tmp[0]);
+    tmp[1]  = BYTE_SWAP_INT32(tmp[1]);
+    tmp[2]  = BYTE_SWAP_INT32(tmp[2]);
+    memcpy((void*)(pos->position), (void*)tmp, sizeof(igtl_float32)*3);
+
+    /* quaternion */
+    memcpy((void*)tmp, (void*)(pos->quaternion), sizeof(igtl_float32)*3);
+    tmp[0]  = BYTE_SWAP_INT32(tmp[0]);
+    tmp[1]  = BYTE_SWAP_INT32(tmp[1]);
+    tmp[2]  = BYTE_SWAP_INT32(tmp[2]);
+    memcpy((void*)(pos->quaternion), (void*)tmp, sizeof(igtl_float32)*3);
+    }
+
+}
+
 
 igtl_uint64 igtl_export igtl_position_get_crc(igtl_position* pos)
 {

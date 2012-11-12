@@ -19,7 +19,8 @@
 #include "igtl_header.h"
 #include "igtl_position.h"
 
-#include <string.h>
+#include <string>
+#include <cmath>
 
 namespace igtl {
 
@@ -179,6 +180,7 @@ int PositionMessage::GetBodyPackSize()
       break;
     default:
       ret = IGTL_POSITION_MESSAGE_DEFAULT_SIZE;
+      break;
     }
 
   return ret;
@@ -197,11 +199,21 @@ int PositionMessage::PackBody()
   p->position[1]   = this->m_Position[1];
   p->position[2]   = this->m_Position[2];
 
-  p->quaternion[0] = this->m_Quaternion[0];
-  p->quaternion[1] = this->m_Quaternion[1];
-  p->quaternion[2] = this->m_Quaternion[2];
-  p->quaternion[3] = this->m_Quaternion[3];
+  if (this->m_PackType == WITH_QUATERNION3)
+    {
+    p->quaternion[0] = this->m_Quaternion[0];
+    p->quaternion[1] = this->m_Quaternion[1];
+    p->quaternion[2] = this->m_Quaternion[2];
+    }
+  else if (this->m_PackType == ALL)
+    {
+    p->quaternion[0] = this->m_Quaternion[0];
+    p->quaternion[1] = this->m_Quaternion[1];
+    p->quaternion[2] = this->m_Quaternion[2];
+    p->quaternion[3] = this->m_Quaternion[3];
+    }
 
+    
   igtl_position_convert_byte_order(p);
 
   return 1;
@@ -212,16 +224,67 @@ int PositionMessage::UnpackBody()
   
   igtl_position* p = (igtl_position*)this->m_Body;
   
-  igtl_position_convert_byte_order(p);
+  int bodySize = this->m_PackSize - IGTL_HEADER_SIZE;
+  switch (bodySize)
+    {
+    case IGTL_POSITION_MESSAGE_POSITON_ONLY_SIZE:
+      this->m_PackType = POSITION_ONLY;
+      igtl_position_convert_byte_order_position_only(p);
+      break;
+    case IGTL_POSITION_MESSAGE_WITH_QUATERNION3_SIZE:
+      this->m_PackType = WITH_QUATERNION3;
+      igtl_position_convert_byte_order_quaternion3(p);
+      break;
+    default: //IGTL_POSITION_MESSAGE_DEFAULT_SIZE
+      this->m_PackType = ALL;
+      igtl_position_convert_byte_order(p);
+      break;
+    }
 
   this->m_Position[0]   = p->position[0];
   this->m_Position[1]   = p->position[1];
   this->m_Position[2]   = p->position[2];
-  this->m_Quaternion[0] = p->quaternion[0];
-  this->m_Quaternion[1] = p->quaternion[1];
-  this->m_Quaternion[2] = p->quaternion[2];
-  this->m_Quaternion[3] = p->quaternion[3];
 
+  if (this->m_PackType == POSITION_ONLY)
+    {
+    this->m_Quaternion[0] = 0.0;
+    this->m_Quaternion[1] = 0.0;
+    this->m_Quaternion[2] = 0.0;
+    this->m_Quaternion[3] = 1.0;
+    }
+
+  if (this->m_PackType == WITH_QUATERNION3)
+    {
+    float ox = p->quaternion[0];
+    float oy = p->quaternion[1];
+    float oz = p->quaternion[2];
+    float sq = 1.0 - (ox*ox + oy*oy + oz*oz);
+    if (sq < 0.0)
+      {
+      // TODO: what should we do with invalid quaternion?
+      // Tentatively we set (0, 0, 0, 1);
+      this->m_Quaternion[0] = 0.0;
+      this->m_Quaternion[1] = 0.0;
+      this->m_Quaternion[2] = 0.0;
+      this->m_Quaternion[3] = 1.0;
+      }
+    else
+      {
+      float w = sqrt(sq);
+      this->m_Quaternion[0] = ox;
+      this->m_Quaternion[1] = oy;
+      this->m_Quaternion[2] = oz;
+      this->m_Quaternion[3] = w;
+      }
+    }
+  else if (this->m_PackType == ALL)
+    {
+    this->m_Quaternion[0] = p->quaternion[0];
+    this->m_Quaternion[1] = p->quaternion[1];
+    this->m_Quaternion[2] = p->quaternion[2];
+    this->m_Quaternion[3] = p->quaternion[3];
+    }
+    
   return 1;
 
 }
