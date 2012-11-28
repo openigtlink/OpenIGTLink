@@ -360,6 +360,10 @@ int Socket::Receive(void* data, int length, int readFully/*=1*/)
     int trys = 0;
 #endif
     int n = recv(this->m_SocketDescriptor, buffer+total, length-total, 0);
+    if (n < 0 && this->m_ReceiveTimeoutFlag) // Timeout
+      {
+      return -1;
+      }
     if(n < 1)
       {
 #if defined(_WIN32) && !defined(__CYGWIN__)
