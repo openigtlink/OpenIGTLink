@@ -27,34 +27,59 @@
 #include "igtlImageMessage.h"
 
 
+
+//------------------------------------------------------------
+// Define a structure type to share data between message
+// handler classes and main() function. 
+// It can be any types e.g. C++ class, array, etc.
+// In this example, the shared structure is only used for
+// passing the message type and the device name from the
+// handler to main() function.
+
+typedef struct {
+  std::string messagetype;
+  std::string devicename;
+} MyData;
+
+
 //------------------------------------------------------------
 // Define message handler classes for TransformMessage,
-// PositionMessage and ImageMessage
+// PositionMessage and ImageMessage.
 // igtlMessageHandlerClassMacro() defines a child class of
 // igtl::MessageHandler to handle OpenIGTLink messages for
 // the message type specified as the first argument. The
 // second argument will be used for the name of this 
-// message handler class.
-igtlMessageHandlerClassMacro(igtl::TransformMessage, TransformHandler);
-igtlMessageHandlerClassMacro(igtl::PositionMessage,  PositionHandler);
-igtlMessageHandlerClassMacro(igtl::ImageMessage,     ImageHandler);
+// message handler class, while the third argument specifies
+// a type of data that will be shared with the message functions
+// of this handler class. 
+
+igtlMessageHandlerClassMacro(igtl::TransformMessage, TransformHandler, MyData);
+igtlMessageHandlerClassMacro(igtl::PositionMessage,  PositionHandler,  MyData);
+igtlMessageHandlerClassMacro(igtl::ImageMessage,     ImageHandler,     MyData);
+
 
 //------------------------------------------------------------
 // You need to describe how the received message is processed
 // in Process() function of the message handler class.
+// When Process() is called, pointers to the received message
+// and the shared data are passed as the arguments.
 
 // -- Transform message
-int TransformHandler::Process(igtl::TransformMessage * transMsg)
+int TransformHandler::Process(igtl::TransformMessage * transMsg, MyData* data)
 {
   // Retrive the transform data
   igtl::Matrix4x4 matrix;
   transMsg->GetMatrix(matrix);
   igtl::PrintMatrix(matrix);
+
+  data->messagetype = transMsg->GetDeviceType();
+  data->devicename  = transMsg->GetDeviceName();
+
   return 1;
 }
 
 // -- Position message
-int PositionHandler::Process(igtl::PositionMessage * positionMsg)
+int PositionHandler::Process(igtl::PositionMessage * positionMsg, MyData* data)
 {
   // Retrive the transform data
   float position[3];
@@ -66,11 +91,15 @@ int PositionHandler::Process(igtl::PositionMessage * positionMsg)
   std::cerr << "position   = (" << position[0] << ", " << position[1] << ", " << position[2] << ")" << std::endl;
   std::cerr << "quaternion = (" << quaternion[0] << ", " << quaternion[1] << ", "
             << quaternion[2] << ", " << quaternion[3] << ")" << std::endl << std::endl;
+
+  data->messagetype = positionMsg->GetDeviceType();
+  data->devicename  = positionMsg->GetDeviceName();
+
   return 1;
 }
 
 // -- Image message
-int ImageHandler::Process(igtl::ImageMessage * imgMsg)
+int ImageHandler::Process(igtl::ImageMessage * imgMsg, MyData *data)
 {
   // Retrive the image data
   int   size[3];          // image dimension
@@ -94,6 +123,10 @@ int ImageHandler::Process(igtl::ImageMessage * imgMsg)
             << svsize[0] << ", " << svsize[1] << ", " << svsize[2] << ")" << std::endl;
   std::cerr << "Sub-Volume offset     : ("
             << svoffset[0] << ", " << svoffset[1] << ", " << svoffset[2] << ")" << std::endl;
+
+  data->messagetype = imgMsg->GetDeviceType();
+  data->devicename  = imgMsg->GetDeviceName();
+
   return 1;
 }
 
@@ -125,6 +158,11 @@ int main(int argc, char* argv[])
   PositionHandler::Pointer pmh  = PositionHandler::New();
   ImageHandler::Pointer imh     = ImageHandler::New();
 
+  MyData mydata;
+  tmh->SetData(&mydata);
+  pmh->SetData(&mydata);
+  imh->SetData(&mydata);
+
   //------------------------------------------------------------
   // Register the message handlers to the session manager
   sm->AddMessageHandler(tmh);
@@ -142,6 +180,9 @@ int main(int argc, char* argv[])
         {
         break;
         }
+      std::cerr << "Message Type: " << tmh->GetData()->messagetype << std::endl;
+      std::cerr << "Device Name: " << tmh->GetData()->devicename << std::endl;
+
       igtl::Sleep(400); // Wait for 400 ms
       }
     // Stop session
