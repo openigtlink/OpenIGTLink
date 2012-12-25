@@ -506,7 +506,7 @@ EXCLUDE_PATTERNS       = "*/vxl_copyright.h" "*/vcl/*" "*/dll.h" \
 # directories that contain example code fragments that are included (see 
 # the \include command).
 
-EXAMPLE_PATH           = "@OpenIGTLink_SOURCE_DIR@/Testing/Code" "@OpenIGTLink_SOURCE_DIR@/Examples" "@OpenIGTLink_SOURCE_DIR@/Examples/DataRepresentation/Image"
+EXAMPLE_PATH           = "@OpenIGTLink_SOURCE_DIR@/Testing/Code" "@OpenIGTLink_SOURCE_DIR@/Examples" "@OpenIGTLink_SOURCE_DIR@/Examples"
 
 
 
@@ -538,7 +538,7 @@ IMAGE_PATH             = "@OpenIGTLink_SOURCE_DIR@/Documents/Art"
 # to standard output.  If FILTER_PATTERNS is specified, this tag will be 
 # ignored.
 
-INPUT_FILTER           = "perl @OpenIGTLink_BINARY_DIR@/igtldoxygen.pl"
+INPUT_FILTER           = "perl @OpenIGTLink_BINARY_DIR@/Utilities/Doxygen/igtldoxygen.pl"
 
 # The FILTER_PATTERNS tag can be used to specify filters on a per file pattern 
 # basis.  Doxygen will compare the file name with each pattern and apply the 
