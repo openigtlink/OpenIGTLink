@@ -29,6 +29,8 @@ namespace igtl {
 SensorMessage::SensorMessage():
   MessageBase()
 {
+  m_DefaultBodyType  = "SENSOR";
+
   this->m_Length = 0;
   this->m_Status = 0;
   this->m_Unit   = 0;
