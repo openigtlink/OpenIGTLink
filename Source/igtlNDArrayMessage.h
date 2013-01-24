@@ -115,8 +115,8 @@ public:
 public:
 
   int         SetArray(int type, ArrayBase * a);
-  ArrayBase * GetArray();
-  int         GetType();
+  ArrayBase * GetArray() { this->m_Array; };
+  int         GetType()  { return this->m_Type; } ;
 
 protected:
   NDArrayMessage();
