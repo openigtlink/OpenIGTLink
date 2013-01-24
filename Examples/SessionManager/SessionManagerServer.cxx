@@ -182,8 +182,6 @@ int main(int argc, char* argv[])
         }
       std::cerr << "Message Type: " << tmh->GetData()->messagetype << std::endl;
       std::cerr << "Device Name: " << tmh->GetData()->devicename << std::endl;
-
-      igtl::Sleep(400); // Wait for 400 ms
       }
     // Stop session
     sm->Disconnect();
