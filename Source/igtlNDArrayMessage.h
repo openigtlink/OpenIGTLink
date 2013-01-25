@@ -115,7 +115,7 @@ public:
 public:
 
   int         SetArray(int type, ArrayBase * a);
-  ArrayBase * GetArray() { this->m_Array; };
+  ArrayBase * GetArray() { return this->m_Array; };
   int         GetType()  { return this->m_Type; } ;
 
 protected:
