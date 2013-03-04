@@ -45,30 +45,57 @@ CapabilityMessage::~CapabilityMessage()
 }
 
 
-void CapabilityMessage::SetTypes(int ntypes, const char typenames[][IGTL_HEADER_TYPE_SIZE])
-{
-  this->m_TypeNames.clear();
-
-  for(int i = 0; i < ntypes; i++)
-    {
-    std::string buf;
-    if (strnlen(typenames[i], IGTL_HEADER_TYPE_SIZE) < IGTL_HEADER_TYPE_SIZE)
-      {
-      buf.append(typenames[i]);
-      }
-    else
-      {
-      buf.append(typenames[i], IGTL_HEADER_TYPE_SIZE);
-      }
-    this->m_TypeNames.push_back(buf);
-    }
-}
+//void CapabilityMessage::SetTypes(int ntypes, const char names[][IGTL_HEADER_TYPE_SIZE])
+//{
+//  this->m_TypeNames.clear();
+//
+//  for(int i = 0; i < ntypes; i++)
+//    {
+//    std::string buf;
+//    if (strnlen(names[i], IGTL_HEADER_TYPE_SIZE) < IGTL_HEADER_TYPE_SIZE)
+//      {
+//      buf.append(names[i]);
+//      }
+//    else
+//      {
+//      buf.append(names[i], IGTL_HEADER_TYPE_SIZE);
+//      }
+//    this->m_TypeNames.push_back(buf);
+//    }
+//}
 
 
 void CapabilityMessage::SetTypes(std::vector<std::string> types)
 {
   this->m_TypeNames.clear();
   this->m_TypeNames = types;
+}
+
+
+int CapabilityMessage::SetType(int id, const char* type)
+{
+  if (id < this->m_TypeNames.size() && strlen(type) < IGTL_HEADER_TYPE_SIZE)
+    {
+    this->m_TypeNames[id] = type;
+    return 1;
+    }
+  else
+    {
+    return 0;
+    }
+}
+
+
+const char* CapabilityMessage::GetType(int id)
+{
+  if (id < this->m_TypeNames.size())
+    {
+    return this->m_TypeNames[id].c_str();
+    }
+  else
+    {
+    return "";
+    }
 }
 
 

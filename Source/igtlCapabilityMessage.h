@@ -19,8 +19,6 @@
 #include <igtlMessageBase.h>
 #include <igtlTypes.h>
 
-#include <igtl_header.h>
-
 #include <vector>
 #include <string>
 
@@ -63,10 +61,13 @@ public:
 
 public:
 
-  void    SetTypes(int ntypes, const char typenames[][IGTL_HEADER_TYPE_SIZE]);
+  //void    SetTypes(int ntypes, const char names[][IGTL_HEADER_TYPE_SIZE]);
   void    SetTypes(std::vector<std::string> types);
-  int     GetTypeLength(){ return IGTL_HEADER_TYPE_SIZE; }
-  int     GetSize() { return m_TypeNames.size(); }
+  int     SetType(int id, const char* name);
+  const char* GetType(int id);
+  
+  int     SetNumberOfTypes(int n) { m_TypeNames.resize(n); }
+  int     GetNumberOfTypes() { return m_TypeNames.size(); }
   //char**  GetTypeNames() { return m_TypeNames; }
   std::vector<std::string> GetTypes() { return m_TypeNames; }
 
