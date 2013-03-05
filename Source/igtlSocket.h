@@ -93,11 +93,11 @@ public:
 
   // Description:
   // Receive data from the socket.
-  // This call blocks until some data is read from the socket.
-  // When readFully is set, this call will block until all the
-  // requested data is read from the socket.
-  // 0 on error, else number of bytes read is returned. On error,
-  // vtkCommand::ErrorEvent is raised.
+  // This call blocks until some data is read from the socket, unless timeout is set
+  // by SetTimeout() or SetReceiveTimeout().
+  // When the readFully flag is set, this call will block until all the requested data is
+  // read from the socket. The readFully flag will be ignored if the timeout is active.
+  // 0 on error, -1 on timeout, else number of bytes read is returned.
   int Receive(void* data, int length, int readFully=1);
 
   // Description:
