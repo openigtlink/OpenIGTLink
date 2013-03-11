@@ -160,6 +160,10 @@ public:
   void SetEndian(int e)        { endian = e; };
   int  GetEndian()             { return endian; };
 
+  // Coordinate System: RAS=1/LPS=2
+  int GetCoordinateSystem() { return coordinate;};
+  void SetCoordinateSystem(int c) {coordinate = c;};
+
   // TBD: Should returned value be 64-bit integer?
   int  GetImageSize()
   {
