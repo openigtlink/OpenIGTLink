@@ -66,7 +66,7 @@ public:
   int     SetType(int id, const char* name);
   const char* GetType(int id);
   
-  int     SetNumberOfTypes(int n) { m_TypeNames.resize(n); }
+  void     SetNumberOfTypes(int n) { m_TypeNames.resize(n); }
   int     GetNumberOfTypes() { return m_TypeNames.size(); }
   //char**  GetTypeNames() { return m_TypeNames; }
   std::vector<std::string> GetTypes() { return m_TypeNames; }
