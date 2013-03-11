@@ -74,8 +74,8 @@ public:
 public:
 
   enum {
-    COORDINATE_LPS,
-    COORDINATE_RAS
+    COORDINATE_RAS=1,
+    COORDINATE_LPS=2
   };
 
   enum {
