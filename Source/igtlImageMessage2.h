@@ -74,8 +74,8 @@ public:
 public:
 
   enum {
-    COORDINATE_LPS,
-    COORDINATE_RAS
+    COORDINATE_RAS=1,
+    COORDINATE_LPS=2
   };
 
   enum {
@@ -159,6 +159,10 @@ public:
   // Endian of image scalar (default is ENDIAN_BIG)
   void SetEndian(int e)        { endian = e; };
   int  GetEndian()             { return endian; };
+
+  // Coordinate System: RAS=1/LPS=2
+  int GetCoordinateSystem() { return coordinate;};
+  void SetCoordinateSystem(int c) {coordinate = c;};
 
   // TBD: Should returned value be 64-bit integer?
   int  GetImageSize()
