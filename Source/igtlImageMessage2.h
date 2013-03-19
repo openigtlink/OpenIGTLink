@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   Open IGT Link Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlImageMessage2.h $
+  Program:   The OpenIGTLink Library
   Language:  C++
-  Date:      $Date: 2011-05-06 16:55:54 -0400 (Fri, 06 May 2011) $
-  Version:   $Revision: 7472 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
