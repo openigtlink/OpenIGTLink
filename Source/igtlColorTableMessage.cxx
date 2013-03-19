@@ -30,7 +30,7 @@ ColorTableMessage::ColorTableMessage():
   mapType   = MAP_UINT8;
   m_ColorTableHeader = NULL;
   m_ColorTable       = NULL;
-  m_DefaultBodyType  = "COLORTABLE";
+  m_DefaultBodyType  = "COLORT";
 
 }
 

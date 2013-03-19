@@ -38,22 +38,36 @@ public:
   igtlTypeMacro(igtl::TransformMessage, igtl::MessageBase);
   igtlNewMacro(igtl::TransformMessage);
 
-
 public:
 
+  /// Sets a position (or a translation vector) in the RAS coordinate system.
   void SetPosition(float p[3]);
+
+  /// Gets a position (or a translation vector) in the RAS coordinate system. 
   void GetPosition(float p[3]);
 
+  /// Sets a position (or a translation vector) in the RAS coordinate system. 
   void SetPosition(float px, float py, float pz);
+
+  /// Gets a position (or a translation vector) in the RAS coordinate system. 
   void GetPosition(float* px, float* py, float* pz);
 
+  /// Sets normal vectors (or a rotation matrix) in the RAS coordinate system.
   void SetNormals(float o[3][3]);
+
+  /// Gets normal vectors (or a rotation matrix) in the RAS coordinate system.
   void GetNormals(float o[3][3]);
 
+  /// Sets normal vectors (or a rotation matrix) in the RAS coordinate system.
   void SetNormals(float t[3], float s[3], float n[3]);
+
+  /// Gets normal vectors (or a rotation matrix) in the RAS coordinate system.
   void GetNormals(float t[3], float s[3], float n[3]);
 
+  /// Sets rotation matrix using igtl::Matrix4x4. 
   void SetMatrix(Matrix4x4& mat);
+
+  /// Sets rotation matrix using igtl::Matrix4x4. 
   void GetMatrix(Matrix4x4& mat);
 
 

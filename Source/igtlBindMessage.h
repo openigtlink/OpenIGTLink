@@ -1,10 +1,7 @@
 /*=========================================================================
 
   Program:   The OpenIGTLink Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink2_beta/Source/igtlBindMessage.h $
   Language:  C++
-  Date:      $Date: 2009-12-16 23:58:02 -0500 (Wed, 16 Dec 2009) $
-  Version:   $Revision: 5466 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -26,9 +23,9 @@
 
 namespace igtl
 {
-//
-// Base class for BindMessage, GetBindMessage and StartBindMessage
-//
+/// The BindMessageBase class is a base class for the BindMessage, GetBindMessage and
+/// StartBindMessage classes. The class is used to manage a list of child messages that
+/// will be bundled into a BIND message. 
 class IGTLCommon_EXPORT BindMessageBase: public MessageBase
 {
 public:
@@ -41,15 +38,27 @@ public:
   igtlNewMacro(igtl::BindMessageBase);
 
 public:
-  
+
+  /// Initializes the BindMessageBase class.
   void        Init();
 
+  /// Sets the number of child messages bundled in the message and returns the total number of
+  /// child messages. The returned value should be same as 'n', if the number is updated successfully.
   int         SetNumberOfChildMessages(unsigned int n);
+
+  /// Gets the number of child messages bundled in the message.
   int         GetNumberOfChildMessages();
 
+  /// Appends a new child message to the end of the list of child messages.
+  /// The AppendChildMessage() function will increment the number of child messages.
+  /// Returns the number of child messages after appending the specified child message.
   int         AppendChildMessage(igtl::MessageBase * child);
+
+  /// Sets or replaces a child message specified by the index 'i'. The SetChildMessage() does not
+  /// increment the number of child messages. Returns non-zero value, if success. 
   int         SetChildMessage(unsigned int i, igtl::MessageBase * child);
 
+  /// Gets the name of a child message specified by the index 'i'.
   const char* GetChildMessageType(unsigned int i);
 
 protected:
@@ -59,6 +68,9 @@ protected:
   
 protected:
 
+  /// A structure to manage properties of a child message, including message type, message name,
+  /// size and pointer to the class instance of the child message. A ChildMessageInfo structure is
+  /// allocated per child message and managed by a vector m_ChildMessages.
   typedef struct {
     std::string  type;
     std::string  name;
@@ -66,11 +78,13 @@ protected:
     void *       ptr;
   } ChildMessageInfo;
 
+  /// A vector to manage a list of ChildMessageInfo structures. 
   std::vector<ChildMessageInfo> m_ChildMessages;
   
 };
 
 
+/// A class for the BIND message type
 class IGTLCommon_EXPORT BindMessage: public BindMessageBase
 {
 public:
@@ -84,6 +98,9 @@ public:
 
 public:
   
+  /// Gets a child message specified by the index 'i'. A pointer to the instance of
+  /// the specified child message is substituted to the message base specified by 'child'.
+  /// Returns non-zero value if success. 
   int         GetChildMessage(unsigned int i, igtl::MessageBase * child);
 
 protected:
@@ -99,6 +116,9 @@ protected:
 };
 
 
+/// A class for the GET_BIND message type. The GET_BIND message contains a list of child messages
+/// to request for specific messages. If no child message is specified, the receiver must return
+/// the all available messages.
 class IGTLCommon_EXPORT GetBindMessage: public BindMessageBase
 {
 public:
@@ -112,6 +132,9 @@ public:
 
 public:
   
+  /// Appends the type and name of a new child message to the end of the list of child messages.
+  /// The AppendChildMessage() function will increment the number of child messages.
+  /// Returns the number of child messages.
   int          AppendChildMessage(const char * type, const char * name);
 
 protected:
@@ -127,6 +150,9 @@ protected:
 };
 
 
+/// A class for the STT_BIND message type. Like the GET_BIND message type, it contains a list of
+/// child messages to request for specific messages. If no child message is specified,
+/// the receiver must return the all available messages.
 class IGTLCommon_EXPORT StartBindMessage: public GetBindMessage
 {
 public:
@@ -140,9 +166,12 @@ public:
 
 public:
 
-  // Set/get time resolution. The time resolution is specified
-  // as a 64-bit fixed-point used in OpenIGTLink time stamp.
+  /// Sets time resolution. The time resolution is specified
+  /// as a 64-bit fixed-point used in OpenIGTLink time stamp.
   void        SetResolution(igtlUint64 res);
+
+  /// Gets time resolution. The time resolution is specified
+  /// as a 64-bit fixed-point used in OpenIGTLink time stamp.
   igtlUint64  GetResolution();
 
 protected:
@@ -160,6 +189,8 @@ protected:
 };
 
 
+/// A class for the STP_BIND message type. The STP_BIND message is sent to the sender
+/// of BIND message stream to stop it.
 class IGTLCommon_EXPORT StopBindMessage: public MessageBase
 {
 public:
@@ -183,6 +214,8 @@ protected:
 };
 
 
+/// A class for the RTS_BIND message type. The RTS_BIND message has to be returned 
+/// to acknowledge STT_BIND and STP_BIND.
 class IGTLCommon_EXPORT RTSBindMessage: public MessageBase
 {
 public:
@@ -197,17 +230,20 @@ public:
     STATUS_ERROR = 1
   };
 
-
   igtlTypeMacro(igtl::RTSBindMessage, igtl::MessageBase);
   igtlNewMacro(igtl::RTSBindMessage);
 
+  /// Sets the status for the start/stop request. 'status' must be either RTSBindMessage::STATUS_SUCCESS or RTSBindMessage::STATUS_ERROR.
   void          SetStatus(igtlUint8 status){ this->m_Status = status; }
+
+  /// Gets the status for the start/stop request. 'status' must be either RTSBindMessage::STATUS_SUCCESS or RTSBindMessage::STATUS_ERROR.
   igtlUint8     GetStatus()                { return this->m_Status; };
 
 protected:
   RTSBindMessage() : MessageBase(), m_Status(0) { this->m_DefaultBodyType  = "RTS_BIND"; };
   ~RTSBindMessage() {};
 
+  /// Stores the status for the start/stop request.
   igtlUint8 m_Status;
 
 protected:

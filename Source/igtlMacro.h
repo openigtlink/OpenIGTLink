@@ -62,8 +62,7 @@
 #endif
 
 /** \namespace igtl
- * \brief The "igtl" namespace contains all Insight Segmentation and
- * Registration Toolkit (IGTL) classes. There are several nested namespaces
+ * \brief The "igtl" namespace contains all OpenIGTLink classes. There are several nested namespaces
  * within the igtl:: namespace. */
 namespace igtl
 {
