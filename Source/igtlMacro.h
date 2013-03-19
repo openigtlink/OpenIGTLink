@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   Open IGT Link Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlMacro.h $
+  Program:   The OpenIGTLink Library
   Language:  C++
-  Date:      $Date: 2009-05-22 15:29:17 -0400 (Fri, 22 May 2009) $
-  Version:   $Revision: 4248 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
