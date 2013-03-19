@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   Open IGT Link Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink2_beta/Source/igtlColorTableMessage.h $
+  Program:   The OpenIGTLink Library
   Language:  C++
-  Date:      $Date: 2009-02-03 16:48:16 -0500 (Tue, 03 Feb 2009) $
-  Version:   $Revision: 3634 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -26,6 +23,7 @@
 namespace igtl
 {
 
+/// A class for the GET_COLORT message type.
 class IGTLCommon_EXPORT GetColorTableMessage: public MessageBase
 {
 public:
@@ -40,6 +38,7 @@ public:
 protected:
   GetColorTableMessage() : MessageBase() { this->m_DefaultBodyType  = "GET_COLORT"; };
   ~GetColorTableMessage() {};
+
 protected:
   virtual int  GetBodyPackSize() { return 0; };
   virtual int  PackBody()        { AllocatePack(); return 1; };
@@ -47,6 +46,7 @@ protected:
 };
 
 
+/// A class for the COLORT message type.
 class IGTLCommon_EXPORT ColorTableMessage: public MessageBase
 {
 public:
