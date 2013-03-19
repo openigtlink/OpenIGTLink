@@ -190,13 +190,13 @@ public:
   /// Gets the number of components for each voxel.
   int GetNumComponents();
 
-  /// Sets the origin/orientation matrix
+  /// Sets the origin/orientation matrix.
   void SetMatrix(Matrix4x4& mat);
 
-  /// Gets the origin/orientation matrix
+  /// Gets the origin/orientation matrix.
   void GetMatrix(Matrix4x4& mat);
 
-  /// Sets the image scalar type
+  /// Sets the image scalar type.
   void SetScalarType(int t)    { scalarType = t; };
 
   /// Sets the image scalar type to 8-bit integer.
@@ -220,8 +220,11 @@ public:
   /// Gets the image scalar type.
   int  GetScalarType()         { return scalarType; };
 
-  /// Gets the size of the scalar data. (e.g. 1 byte for 8-bit integer)
+  /// Gets the size of the scalar type used in the current image data.
+  /// (e.g. 1 byte for 8-bit integer)
   int  GetScalarSize()         { return ScalarSizeTable[scalarType]; };
+
+  /// Gets the size of the specified scalar type. (e.g. 1 byte for 8-bit integer)
   int  GetScalarSize(int type) { return ScalarSizeTable[type]; };
 
   /// Sets the Endianess of the image scalars. (default is ENDIAN_BIG)
