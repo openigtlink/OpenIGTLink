@@ -40,17 +40,35 @@ protected:
 
 public:
 
+  /// Sets the size of the array.
   int                     SetSize(IndexType size);
+
+  /// Gets the size of the array.
   IndexType               GetSize()         { return this->m_Size;      };
+
+  /// Gets the dimension of the array.
   int                     GetDimension()    { return this->m_Size.size(); };
 
+  /// Sets an array from a byte array.
   int                     SetArray(void * array);
+
+  /// Gets the size of the raw byte array stored in the class.
   igtlUint64              GetRawArraySize();
+
+  /// Gets the raw byte array stored in the class.
   void *                  GetRawArray()     { return this->m_ByteArray; };
 
 protected:
+
+  /// Gets the size of a element of the array.
   virtual int             GetElementSize() = 0;
+
+  /// Gets the number of elements in the array.
   igtlUint32              GetNumberOfElements();
+
+  /// Returns the 1-D index of the element specified by 'index'.
+  /// This function is used to calculate the index of the element in
+  /// the raw array. 
   igtlUint32              Get1DIndex(IndexType index);
 
 private:
@@ -64,6 +82,7 @@ template <typename T>
 class IGTLCommon_EXPORT Array : public ArrayBase
 {
 public:
+  /// Sets a value of the element specified by 'index'
   int                     SetValue(IndexType index, T value)
   {
     if (Get1DIndex(index) <= GetNumberOfElements()) {
@@ -73,6 +92,8 @@ public:
       return 0;
     }
   }
+
+  /// Gets a value of the element specified by 'index'
   int                     GetValue(IndexType index,  T & value)
   {
     if (Get1DIndex(index) <= GetNumberOfElements()) {
@@ -91,6 +112,8 @@ protected:
 class IGTLCommon_EXPORT NDArrayMessage: public MessageBase
 {
 public:
+
+  /// Types of elements
   enum {
     TYPE_INT8     = 2,
     TYPE_UINT8    = 3,
@@ -114,8 +137,13 @@ public:
 
 public:
 
+  /// Sets an array with an element type.
   int         SetArray(int type, ArrayBase * a);
+
+  /// Gets the array.
   ArrayBase * GetArray() { return this->m_Array; };
+
+  /// Gets the type of elements of the array.
   int         GetType()  { return this->m_Type; } ;
 
 protected:
