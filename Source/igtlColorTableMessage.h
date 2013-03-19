@@ -60,6 +60,7 @@ public:
 
 public:
 
+  /// Index value types (UINT8 or UINT16) and map types (UINT8, UINT16 and RGB(UINT8x3))
   enum {
     INDEX_UINT8    = 3,
     INDEX_UINT16   = 5,
@@ -70,21 +71,37 @@ public:
 
 public:
 
-  // ColorTable index type
+  /// Sets the index type for the color type
   void SetIndexType(int t)     { indexType = t; };
+
+  /// Sets the index type for the color type to 8-bit unsigned integer.
   void SetIndexTypeToUint8()   { indexType = INDEX_UINT8; };
+
+  /// Sets the index type for the color type to 16-bit unsigned integer.
   void SetIndexTypeToUint16()  { indexType = INDEX_UINT16; };
+
+  /// Gets the index type. Returns either INDEX_UINT8 or INDEX_UINT16.
   int  GetIndexType()          { return indexType; };
 
-  // Map scalar type
+  /// Sets the scalar type of the map.
   void SetMapType(int t)       { mapType = t; };
-  void SetMapTypeToUint8()     { mapType = MAP_UINT8; };
-  void SetMapTypeToUint16()    { mapType = MAP_UINT16; };
-  int  GetMapType()            { return mapType; };
 
-  // Should returned value be 64-bit integer?
+  /// Sets the scalar type of the map to 8-bit unsigned integer.
+  void SetMapTypeToUint8()     { mapType = MAP_UINT8; };
+
+  /// Sets the scalar type of the map to 16-bit unsigned integer.
+  void SetMapTypeToUint16()    { mapType = MAP_UINT16; };
+  
+  /// Gets the type of the map.
+  int  GetMapType()            { return mapType; };
+  
+  /// Gets the size of the color table.
   int   GetColorTableSize();
+
+  /// Allocates a memory area for the color table.
   void  AllocateTable();
+
+  /// Returns a pointer to the color table.
   void* GetTablePointer();
 
 protected:
@@ -97,10 +114,16 @@ protected:
   virtual int  PackBody();
   virtual int  UnpackBody();
   
-  int    indexType;
-  int    mapType;
+  /// A variable to store the index type. Either INDEX_UINT8 or INDEX_UINT16.
+  int indexType;
 
+  /// A variable to store the type of the map. Either MAP_UINT8, MAP_UINT16 or MAP_RGB.
+  int mapType;
+
+  /// A pointer to the header for the color table.
   unsigned char*  m_ColorTableHeader;
+
+  /// A pointer to the color table data.
   unsigned char*  m_ColorTable;
 
 };
