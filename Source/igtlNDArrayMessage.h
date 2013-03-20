@@ -1,10 +1,7 @@
 /*=========================================================================
 
   Program:   The OpenIGTLink Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink2_beta/Source/igtlNDArrayMessage.h $
   Language:  C++
-  Date:      $Date: 2009-12-16 23:58:02 -0500 (Wed, 16 Dec 2009) $
-  Version:   $Revision: 5466 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -32,6 +29,8 @@ namespace igtl
 class IGTLCommon_EXPORT ArrayBase
 {
 public:
+
+  /// Vector type for an index of N-D array
   typedef std::vector<igtlUint16> IndexType;
 
 protected:
@@ -40,16 +39,17 @@ protected:
 
 public:
 
-  /// Sets the size of the array.
+  /// Sets the size of the N-D array. Returns non-zero value, if success.
   int                     SetSize(IndexType size);
 
-  /// Gets the size of the array.
+  /// Gets the size of the N-D array.
   IndexType               GetSize()         { return this->m_Size;      };
 
-  /// Gets the dimension of the array.
+  /// Gets the dimension of the N-D array.
   int                     GetDimension()    { return this->m_Size.size(); };
 
-  /// Sets an array from a byte array.
+  /// Sets an array from a byte array. Size and dimension must be specified prior to 
+  /// calling the SetArray() function.
   int                     SetArray(void * array);
 
   /// Gets the size of the raw byte array stored in the class.
@@ -72,7 +72,11 @@ protected:
   igtlUint32              Get1DIndex(IndexType index);
 
 private:
+
+  /// A vector representing the size of the N-D array.
   IndexType               m_Size;
+
+  /// A pointer to the byte array data.
   void *                  m_ByteArray;
 
 };
@@ -105,6 +109,8 @@ public:
   }
 
 protected:
+
+  /// Gets the size of elements (e.g. 1 byte in case of 8-bit integer)
   virtual int             GetElementSize() { return sizeof(T); };
 };
 
@@ -140,10 +146,10 @@ public:
   /// Sets an array with an element type.
   int         SetArray(int type, ArrayBase * a);
 
-  /// Gets the array.
+  /// Gets a pointer to the array.
   ArrayBase * GetArray() { return this->m_Array; };
 
-  /// Gets the type of elements of the array.
+  /// Gets the type of elements of the array. (e.g. TYPE_INT8)
   int         GetType()  { return this->m_Type; } ;
 
 protected:
@@ -156,7 +162,10 @@ protected:
   virtual int  PackBody();
   virtual int  UnpackBody();
   
+  /// A pointer to the N-D array.
   ArrayBase *  m_Array;
+
+  /// A variable for the type of the N-D array.
   int          m_Type;
 
 };

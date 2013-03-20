@@ -1,10 +1,7 @@
 /*=========================================================================
 
   Program:   The OpenIGTLink Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink2_beta/Source/igtlPolyDataMessage.cxx $
   Language:  C++
-  Date:      $Date: 2010-01-17 13:04:20 -0500 (Sun, 17 Jan 2010) $
-  Version:   $Revision: 5575 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -63,16 +60,16 @@ int PolyDataPointArray::GetNumberOfPoints()
   return this->m_Data.size();
 }
   
-int PolyDataPointArray::SetPoint(unsigned int id, igtlFloat32 * points)
+int PolyDataPointArray::SetPoint(unsigned int id, igtlFloat32 * point)
 {
   if (id >= this->m_Data.size())
     {
     return 0;
     }
   Point & dst = this->m_Data[id];
-  dst[0] = points[0];
-  dst[1] = points[1];
-  dst[2] = points[2];
+  dst[0] = point[0];
+  dst[1] = point[1];
+  dst[2] = point[2];
   return 1;
 }
   
