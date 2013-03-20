@@ -97,22 +97,22 @@ protected:
 
 protected:
 
-  // Name / description (<= 64 bytes)
+  /// Name / description (<= 64 bytes)
   std::string   m_Name;
 
-  // Device name to query the IMAGE and COLORT
+  /// Device name to query the IMAGE and COLORT
   std::string   m_DeviceName;
 
-  // Label
+  /// Label
   igtlUint8     m_Label;
 
-  // Color in RGBA. default: (0, 0, 0, 0)
+  /// Color in RGBA. default: (0, 0, 0, 0)
   igtlUint8     m_RGBA[4];
 
-  // entire image volume size
+  /// entire image volume size
   igtlUint16    m_Size[3];
 
-  // device name of the owner image. (can be empty)
+  /// device name of the owner image. (can be empty)
   std::string   m_Owner;
 
 };

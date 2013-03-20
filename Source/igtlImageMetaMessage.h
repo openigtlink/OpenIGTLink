@@ -172,7 +172,8 @@ public:
 
 public:
 
-  /// Adds an image meta element to the list.
+  /// Adds an image meta element to the list. Returns the number of elements after
+  /// adding the image meta element.
   int  AddImageMetaElement(ImageMetaElement::Pointer& elem);
 
   /// Clears the all image meta elements in the list.
