@@ -1,8 +1,6 @@
 #-- Add an Option to toggle the generation of the API documentation
 if(BUILD_DOCUMENTATION)
 
-  INCLUDE (${CMAKE_ROOT}/Modules/Documentation.cmake)
-
   FIND_PACKAGE(Doxygen QUIET)
   if (NOT DOXYGEN_FOUND)
     message(FATAL_ERROR "Doxygen is needed to build the documentation. Please install it correctly")

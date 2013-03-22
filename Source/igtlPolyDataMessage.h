@@ -2,6 +2,7 @@
 
   Program:   The OpenIGTLink Library
   Language:  C++
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -245,10 +246,19 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
 
  private:
 
+  /// The attribute type.
   igtlUint8                m_Type;
+
+  /// The number of components.
   igtlUint8                m_NComponents;
+
+  /// The size of the attribute.
   igtlUint32               m_Size;
+
+  /// The name of the attribute.
   std::string              m_Name;
+
+  /// The list of attributes.
   std::vector<igtlFloat32> m_Data;
 
 };
@@ -271,21 +281,46 @@ public:
   /// Clears the poly data.
   void Clear();
 
-  /// Sets the array of points.
+  /// Sets an array of points.
   igtlSetObjectMacro(Points,   PolyDataPointArray);
+
+  /// Gets an array of points.
   igtlGetObjectMacro(Points,   PolyDataPointArray);
+
+  /// Sets an array of vertices.
   igtlSetObjectMacro(Vertices, PolyDataCellArray);
+
+  /// Gets an array of vertices.
   igtlGetObjectMacro(Vertices, PolyDataCellArray);
+
+  /// Sets an array of lines.
   igtlSetObjectMacro(Lines,    PolyDataCellArray);
+
+  /// Gets an array of lines.
   igtlGetObjectMacro(Lines,    PolyDataCellArray);
+
+  /// Sets an array of polygons.
   igtlSetObjectMacro(Polygons, PolyDataCellArray);
+
+  /// Gets an array of polygons.
   igtlGetObjectMacro(Polygons, PolyDataCellArray);
+
+  /// Sets an array of triangle strips.
   igtlSetObjectMacro(TriangleStrips, PolyDataCellArray);
+
+  /// Gets an array of triangle strips.
   igtlGetObjectMacro(TriangleStrips, PolyDataCellArray);
 
+  /// Clears the attributes.
   void ClearAttributes();
+
+  /// Adds an attribute.
   void AddAttribute(PolyDataAttribute * att);
+
+  /// Gets the number of attributes.
   int  GetNumberOfAttributes();
+
+  /// Gets an attribute specified by 'id'.
   PolyDataAttribute * GetAttribute(unsigned int id);
  
 protected:
@@ -298,13 +333,22 @@ protected:
   virtual int  PackBody();
   virtual int  UnpackBody();
 
-  // POLYDATA parameters
+  /// A pointer to the array of points.
   PolyDataPointArray::Pointer m_Points;
+
+  /// A pointer to the array of vertices.
   PolyDataCellArray::Pointer  m_Vertices;
+
+  /// A pointer to the array of lines.
   PolyDataCellArray::Pointer  m_Lines;
+
+  /// A pointer to the array of polygons.
   PolyDataCellArray::Pointer  m_Polygons;
+
+  /// A pointer to the array of triangle strips.
   PolyDataCellArray::Pointer  m_TriangleStrips;
-  
+
+  /// A list of pointers to the attributes.
   std::vector<PolyDataAttribute::Pointer> m_Attributes;
 
 };

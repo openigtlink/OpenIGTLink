@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlutil/igtl_status.h $
+  Program:   The OpenIGTLink Library
   Language:  C
-  Date:      $Date: 2009-12-16 23:58:02 -0500 (Wed, 16 Dec 2009) $
-  Version:   $Revision: 5466 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 

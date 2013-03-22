@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   Open IGT Link Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlStatusMessage.h $
+  Program:   The OpenIGTLinkLibrary
   Language:  C++
-  Date:      $Date: 2009-12-16 23:58:02 -0500 (Wed, 16 Dec 2009) $
-  Version:   $Revision: 5466 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -18,7 +16,6 @@
 #define __igtlStatusMessage_h
 
 #include "igtlObject.h"
-//#include "igtlMacros.h"
 #include "igtlMath.h"
 #include "igtlMessageBase.h"
 #include "igtlTypes.h"
@@ -26,6 +23,14 @@
 namespace igtl
 {
 
+/// The STATUS data type is used to notify the receiver about the current status of the sender.
+/// The data consist of status code in a 16-bit unsigned integer, sub code in a 64-bit integer,
+/// error name in a 20-byte-length character string, and a status message. The length of
+/// the status message is determined by the size information in the general header.
+/// The status code is defined as a part of the OpenIGTLink protocol specification listed
+/// bellow. The sub code is device specific and is defined by developers. In addition,
+/// developers can build their own error name/code into the status message and additional
+/// optional description in the following data field.
 class IGTLCommon_EXPORT StatusMessage: public MessageBase
 {
 public:
@@ -39,7 +44,7 @@ public:
 
 public:
 
-  /* Status codes -- see igtl_status.h */
+  /// Status codes -- see igtl_status.h
   enum {
     STATUS_INVALID             = 0,
     STATUS_OK                  = 1,
@@ -66,15 +71,28 @@ public:
 
 public:
 
+  /// Sets the status code.
   void        SetCode(int code);
+
+  /// Gets the status code.
   int         GetCode();
+
+  /// Sets the sub code. 
   void        SetSubCode(igtlInt64 subcode);
+
+  /// Gets the sub code.
   igtlInt64   GetSubCode();
-  
+
+  /// Sets the error name. The error name can be defined by a developer.
   void        SetErrorName(const char* name);
+
+  /// Gets the error name. 
   const char* GetErrorName();
 
+  /// Sets the status string.
   void        SetStatusString(const char* str);
+
+  /// Gets the status string.
   const char* GetStatusString();
 
 protected:
@@ -86,16 +104,23 @@ protected:
   virtual int  GetBodyPackSize();
   virtual int  PackBody();
   virtual int  UnpackBody();
-  
+
+  /// The error code.
   igtlUint16   m_Code;
+
+  /// The sub code.
   igtlInt64    m_SubCode;
+
+  /// The error name.
   char         m_ErrorName[20];
   
-  //BTX
+  /// The status message string.
   std::string  m_StatusMessageString;
-  //ETX
 
+  /// A pointer to the byte array of the status header.
   unsigned char*  m_StatusHeader;
+
+  /// A pointer to the byte array of the status message.
   char*           m_StatusMessage;
 
 };

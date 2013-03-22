@@ -1,10 +1,8 @@
 /*=========================================================================
 
   Program:   The OpenIGTLink Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink2_beta/Source/igtlStringMessage.h $
   Language:  C++
-  Date:      $Date: 2009-12-16 23:58:02 -0500 (Wed, 16 Dec 2009) $
-  Version:   $Revision: 5466 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -29,6 +27,7 @@
 namespace igtl
 {
 
+/// THe STRING message type is used for transferring a character string. It supports character strings up to 65535 bytes.
 class IGTLCommon_EXPORT StringMessage: public MessageBase
 {
 public:
@@ -42,11 +41,22 @@ public:
 
 public:
 
+  /// Sets the string by character array.
   int        SetString(const char* string);
+
+  /// Sets the string by std::string.
   int        SetString(std::string & string);
+
+  /// Sets the encoding of the string. For character encoding, please refer IANA Character Sets
+  /// (http://www.iana.org/assignments/character-sets).
+  /// US-ASCII (ANSI-X3.4-1968; MIBenum = 3) is strongly recommended.
   int        SetEncoding(igtlUint16 enc);
 
+  /// Gets the string.
   const char* GetString();
+
+  /// Gets the encoding of the string. The returned value is defined in
+  /// IANA Character Sets (http://www.iana.org/assignments/character-sets).
   igtlUint16  GetEncoding();
 
 protected:
@@ -59,11 +69,12 @@ protected:
   virtual int  PackBody();
   virtual int  UnpackBody();
   
+  /// The encoding of the string.
+  /// The value is defined in IANA Character Sets (http://www.iana.org/assignments/character-sets).
   igtlUint16   m_Encoding;
-  
-  //BTX
+
+  /// The string.
   std::string  m_String;
-  //ETX
 
 };
 

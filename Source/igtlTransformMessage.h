@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   Open IGT Link Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlTransformMessage.h $
+  Program:   The OpenIGTLink Library
   Language:  C++
-  Date:      $Date: 2008-12-22 19:05:42 -0500 (Mon, 22 Dec 2008) $
-  Version:   $Revision: 3460 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -18,13 +16,18 @@
 #define __igtlTransformMessage_h
 
 #include "igtlObject.h"
-//#include "igtlMacros.h"
 #include "igtlMath.h"
 #include "igtlMessageBase.h"
 
 namespace igtl
 {
 
+/// The TRANSFORM data type is used to transfer a homogeneous linear transformation
+/// in 4-by-4 matrix form. One such matrix was shown earlier in equation (1).
+/// Note that if a device is sending only translation and rotation, then TRANSFORM
+/// is equivalent to POSITION. But TRANSFORM can also be used to transfer affine
+/// transformations or simple scaling. Like IMAGE and POSITION, TRANSFORM carries
+/// information about the coordinate system used.
 class IGTLCommon_EXPORT TransformMessage: public MessageBase
 {
 
@@ -81,8 +84,10 @@ protected:
   virtual int  PackBody();
   virtual int  UnpackBody();
   
+  /// The transformation matrix.
   Matrix4x4 matrix;
 
+  /// The byte array for the serialized transform data.
   unsigned char*  m_Transform;
 
 };
