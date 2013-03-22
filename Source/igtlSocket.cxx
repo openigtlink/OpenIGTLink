@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   Open IGT Link Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlSocket.cxx $
+  Program:   The OpenIGTLink Library
   Language:  C++
-  Date:      $Date: 2010-06-09 16:16:36 -0400 (Wed, 09 Jun 2010) $
-  Version:   $Revision: 6525 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -25,21 +22,6 @@
      This software is distributed WITHOUT ANY WARRANTY; without even
      the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notice for more information.
-
-=========================================================================*/
-/*=========================================================================
-
-  Program:   Open ITK Link Library
-  Module:    $RCSfile: itkImage.h,v $
-  Language:  C++
-  Date:      $Date: 2010-06-09 16:16:36 -0400 (Wed, 09 Jun 2010) $
-  Version:   $Revision: 6525 $
-
-  Copyright (c) Insight Software Consortium. All rights reserved.
-
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 

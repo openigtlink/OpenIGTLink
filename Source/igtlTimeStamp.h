@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   Open IGT Link Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlTimeStamp.h $
+  Program:   The OpenIGTLink Library
   Language:  C++
-  Date:      $Date: 2011-03-24 00:08:23 -0400 (Thu, 24 Mar 2011) $
-  Version:   $Revision: 7354 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -40,19 +37,35 @@ public:
   igtlTypeMacro(TimeStamp, Object);
   igtlNewMacro(Self);
 
-  /** Returns the frequency of a clock */
+  /// Gets the frequency of a clock.
   igtlGetConstMacro(Frequency,  igtlUint32);
+
+  /// Gets the second part of the time stamp.
   igtlGetConstMacro(Second,     igtlUint32);
+
+  /// Gets the fraction of second part of the time stamp.
   igtlGetConstMacro(Nanosecond, igtlUint32);
 
+  /// Gets the current time from the system's clock and save it as a time stamp.
   void   GetTime();
-  void   SetTime(double tm);
-  void   SetTime(igtlUint32 second, igtlUint32 nanosecond);
-  void   SetTime(igtlUint64 tm);  /* 64-bit fixed-point expression used in OpenIGTLink */
 
+  /// Sets the time by double floating-point value.
+  void   SetTime(double tm);
+
+  /// Sets the time by second and nanosecond
+  void   SetTime(igtlUint32 second, igtlUint32 nanosecond);
+
+  /// Sets the time by using 64-bit fixed-point expression used in OpenIGTLink.
+  void   SetTime(igtlUint64 tm);
+
+  /// Gets the time stamp. Returns a double floating-point value.
   double GetTimeStamp();
+
+  /// Gets the time stamp. The second and nanosecond parts are stored in 'second' and 'nanosecond'
   void   GetTimeStamp(igtlUint32* second, igtlUint32* nanosecond);
-  igtlUint64 GetTimeStampUint64();     /* 64-bit fixed-point expression used in OpenIGTLink */
+
+  /// Gets the time stamp. Returns a 64-bit fixed-point expression used in OpenIGTLink.
+  igtlUint64 GetTimeStampUint64();
 
 
 protected:
@@ -68,9 +81,14 @@ protected:
 
 private:
 
-  igtlInt32       m_Frequency;   /* Clock frequency (Hz)*/
-  igtlInt32       m_Second;      /* Second part of the time relative to 00:00:00 January 1, 1970 UTC */
-  igtlInt32       m_Nanosecond;  /* Nano-second part of -- */
+  /// Clock frequency (Hz)
+  igtlInt32       m_Frequency;
+
+  /// Second part of the time relative to 00:00:00 January 1, 1970 UTC
+  igtlInt32       m_Second;
+
+  /// Nano-second part of the time stamp
+  igtlInt32       m_Nanosecond;
 
 
 #if defined(WIN32) || defined(_WIN32)

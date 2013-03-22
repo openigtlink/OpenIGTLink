@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink2_beta/Source/igtlMath.h $
+  Program:   The OpenIGTLink Library
   Language:  C++
-  Date:      $Date: 2008-12-22 19:05:42 -0500 (Mon, 22 Dec 2008) $
-  Version:   $Revision: 3460 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -29,11 +26,25 @@ namespace igtl
 
 typedef igtlUint64 igtlUnit;
 
+/// The Unit class provides a general way to describe unites defined in International System of Unites (SI)
+/// in its 8-byte (or 64-bit) field. The field is designed to specifiy a unit consisting of SI-prefix
+/// (e.g. milli, micro, kilo etc...) and combination of SI-base and/or SI-derived unites.
+/// The bites in the field are assigned as follows:
+/// 
+///  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-...
+///  |PREFIX |   UNIT0   |  EXP0 |   UNIT1   |  EXP1 |   UNIT2   | EXP2
+///  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-...
+///  0               1               2               3               4 
+/// 
+///  ...-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+///     EXP2 |   UNIT3   |  EXP3 |   UNIT4   |  EXP4 |   UNIT5   |  EXP5 |
+///  ...-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+///         4               5               6               7
 class IGTLCommon_EXPORT Unit : public Object
 {
 public:
 
-  // SI Prefix
+  /// SI Prefix
   enum {
     SI_PREFIX_NONE  = 0x0, /* None */
     SI_PREFIX_DEKA  = 0x1, /* deka (deca) (1e1) */
@@ -52,7 +63,7 @@ public:
     SI_PREFIX_FEMTO = 0xF, /* femto (1e-15) */
   };
 
-  // SI Units
+  /// SI Units
   enum {
     // SI Base Units
     SI_BASE_NONE    = 0x00,
@@ -100,29 +111,42 @@ public:
   igtlTypeMacro(Unit, Object);
   igtlNewMacro(Self);
 
+  /// Initializes the class.
   void     Init();
+
+  /// Sets the SI prefix.
   int      SetPrefix(int prefix);
+
+  /// Appends a unit with exponential
   int      Append(int unit, int exp);
 
+  /// Packs (or serializes) the unit into a 64-bit value.
   igtlUnit Pack();
+
+  /// Unpacks the unit from a 64-bit value.
   int      Unpack(igtlUnit unit);
   
 protected:
 
-  /** constructor */
+  /// constructor
   Unit();
 
-  /** destructor */
+  /// destructor
   virtual ~Unit();
 
-
 private:
+  
+  /// Prefix.
+  igtlUint8       m_Prefix;
 
-  igtlUint8       m_Prefix;            /* Prefix */
-  igtlUint8       m_Unit[6];           /* Either SI-Base or SI-Derived */
-  igtlInt8        m_Exp[6];            /* Must be within [-7, 7] */
+  /// Either SI-Base or SI-Derived.
+  igtlUint8       m_Unit[6];
 
-  igtlInt32       m_NUnits;            /* Number of units appended */
+  /// Must be within [-7, 7].
+  igtlInt8        m_Exp[6];
+
+  /// Number of units appended.
+  igtlInt32       m_NUnits;
 
 };
 

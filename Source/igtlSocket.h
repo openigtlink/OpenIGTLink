@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   Open IGT Link Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlSocket.h $
+  Program:   The OpenIGTLink Library
   Language:  C++
-  Date:      $Date: 2010-06-09 16:16:36 -0400 (Wed, 09 Jun 2010) $
-  Version:   $Revision: 6525 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -59,7 +56,7 @@ namespace igtl
 
 class SocketCollection;
 
-// class IGTL_EXPORT Socket
+/// class IGTL_EXPORT Socket
 class IGTLCommon_EXPORT Socket : public Object
 {
  public:
@@ -73,57 +70,46 @@ class IGTLCommon_EXPORT Socket : public Object
 
 public:
 
-  // ----- Status API ----
-  // Description:
-  // Check is the socket is alive.
+  /// Check is the socket is alive.
   int GetConnected() { return (this->m_SocketDescriptor >=0); }
-
-  // Description:
-  // Close the socket.
+  
+  /// Close the socket.
   void CloseSocket() {
     this->CloseSocket(this->m_SocketDescriptor);
     this->m_SocketDescriptor = -1;
   }
  
-  // ------ Communication API ---
-  // Description:
-  // These methods send data over the socket.
-  // Returns 1 on success, 0 on error and raises vtkCommand::ErrorEvent.
+  /// These methods send data over the socket.
+  /// Returns 1 on success, 0 on error and raises vtkCommand::ErrorEvent.
   int Send(const void* data, int length);
 
-  // Description:
-  // Receive data from the socket.
-  // This call blocks until some data is read from the socket, unless timeout is set
-  // by SetTimeout() or SetReceiveTimeout().
-  // When the readFully flag is set, this call will block until all the requested data is
-  // read from the socket. The readFully flag will be ignored if the timeout is active.
-  // 0 on error, -1 on timeout, else number of bytes read is returned.
+  /// Receive data from the socket.
+  /// This call blocks until some data is read from the socket, unless timeout is set
+  /// by SetTimeout() or SetReceiveTimeout().
+  /// When the readFully flag is set, this call will block until all the requested data is
+  /// read from the socket. The readFully flag will be ignored if the timeout is active.
+  /// 0 on error, -1 on timeout, else number of bytes read is returned.
   int Receive(void* data, int length, int readFully=1);
 
-  // Description:
-  // Set sending/receiving timeout for the existing socket in millisecond.
-  // This function should be called after opening the socket.
+  /// Set sending/receiving timeout for the existing socket in millisecond.
+  /// This function should be called after opening the socket.
   int SetTimeout(int timeout);
 
-  // Description:
-  // Set reciving timeout for the existing socket in millisecond.
-  // This function should be called after opening the socket.
+  /// Set reciving timeout for the existing socket in millisecond.
+  /// This function should be called after opening the socket.
   int SetReceiveTimeout(int timeout);
 
-  // Description:
-  // Set sending timeout for the existing socket in millisecond.
-  // This function should be called after opening the socket.
+  /// Set sending timeout for the existing socket in millisecond.
+  /// This function should be called after opening the socket.
   int SetSendTimeout(int timeout);
 
-  // Description:
-  // Get socket address
+  /// Get socket address
   int GetSocketAddressAndPort(std::string& address, int & port);
 
-  // Description:
-  // Skip reading data from the socket.
-  // The Skip() call has been newly introduced to the igtlSocket,
-  // after the class is imported from VTK, thus the call is
-  // not available in vtkSocket class.
+  /// Skip reading data from the socket.
+  /// The Skip() call has been newly introduced to the igtlSocket,
+  /// after the class is imported from VTK, thus the call is
+  /// not available in vtkSocket class.
   int Skip(int length, int skipFully=1);
 
 protected:
@@ -139,48 +125,39 @@ protected:
   friend class vtkSocketCollection;
   //ETX
  
-  // Description:
-  // Creates an endpoint for communication and returns the descriptor.
-  // -1 indicates error.
+  /// Creates an endpoint for communication and returns the descriptor.
+  /// -1 indicates error.
   int CreateSocket();
 
-  // Description:
-  // Close the socket.
+  /// Close the socket.
   void CloseSocket(int socketdescriptor);
 
-  // Description:
-  // Binds socket to a particular port.
-  // Returns 0 on success other -1 is returned.
+  /// Binds socket to a particular port.
+  /// Returns 0 on success other -1 is returned.
   int BindSocket(int socketdescriptor, int port);
 
-  // Description:
-  // Selects a socket ie. waits for it to change status.
-  // Returns 1 on success; 0 on timeout; -1 on error. msec=0 implies
-  // no timeout.
+  /// Selects a socket ie. waits for it to change status.
+  /// Returns 1 on success; 0 on timeout; -1 on error. msec=0 implies
+  /// no timeout.
   int SelectSocket(int socketdescriptor, unsigned long msec);
 
-  // Description:
-  // Accept a connection on a socket. Returns -1 on error. Otherwise
-  // the descriptor of the accepted socket.
+  /// Accept a connection on a socket. Returns -1 on error. Otherwise
+  /// the descriptor of the accepted socket.
   int Accept(int socketdescriptor);
 
-  // Description:
-  // Listen for connections on a socket. Returns 0 on success. -1 on error.
+  /// Listen for connections on a socket. Returns 0 on success. -1 on error.
   int Listen(int socketdescriptor);
 
-  // Description:
-  // Connect to a server socket. Returns 0 on success, -1 on error.
+  /// Connect to a server socket. Returns 0 on success, -1 on error.
   int Connect(int socketdescriptor, const char* hostname, int port);
 
-  // Description:
-  // Returns the port to which the socket is connected.
-  // 0 on error.
+  /// Returns the port to which the socket is connected.
+  /// 0 on error.
   int GetPort(int socketdescriptor);
 
-  // Description:
-  // Selects set of sockets. Returns 0 on timeout, -1 on error.
-  // 1 on success. Selected socket's index is returned thru 
-  // selected_index
+  /// Selects set of sockets. Returns 0 on timeout, -1 on error.
+  /// 1 on success. Selected socket's index is returned thru 
+  /// selected_index
   static int SelectSockets(const int* sockets_to_select, int size,
     unsigned long msec, int* selected_index);
 

@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink Library
-  Module:    $HeadURL:  $
+  Program:   The OpenIGTLink Library
   Language:  C
-  Date:      $Date: 2010-07-21 14:15:29 -0400 (Wed, 21 Jul 2010) $
-  Version:   $Revision: 6836 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 

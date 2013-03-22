@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink Library
-  Module:    $RCSfile$
+  Program:   The OpenIGTLink Library
   Language:  C
-  Date:      $Date: 2009-11-17 22:53:00 -0500 (Tue, 17 Nov 2009) $
-  Version:   $Revision: 5366 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
