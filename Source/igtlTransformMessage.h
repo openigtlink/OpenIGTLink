@@ -22,6 +22,28 @@
 namespace igtl
 {
 
+/// A class for the GET_TRANS message type.
+class IGTLCommon_EXPORT GetTransformMessage: public HeaderOnlyMessageBase
+{
+public:
+  typedef GetTransformMessage          Self;
+  typedef HeaderOnlyMessageBase        Superclass;
+  typedef SmartPointer<Self>           Pointer;
+  typedef SmartPointer<const Self>     ConstPointer;
+
+  igtlTypeMacro(igtl::GetTransformMessage, igtl::HeaderOnlyMessageBase);
+  igtlNewMacro(igtl::GetTransformMessage);
+
+protected:
+  GetTransformMessage();
+  ~GetTransformMessage();
+  
+protected:
+  virtual const char* DefaultBodyType() { return "GET_TRANS"; };
+};
+
+
+
 /// The TRANSFORM data type is used to transfer a homogeneous linear transformation
 /// in 4-by-4 matrix form. One such matrix was shown earlier in equation (1).
 /// Note that if a device is sending only translation and rotation, then TRANSFORM

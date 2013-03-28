@@ -26,31 +26,6 @@
 
 #include <string>
 
-/// A macro to help defining a class for query message types
-/// that do not have message bodies. 
-//  TODO: Need test.
-#define igtlCreateDefaultQueryMessageClass(name, msgtype) \
-class IGTLCommon_EXPORT name : public MessageBase \
-{ \
-public: \
-  typedef GetColorTableMessage           Self; \
-  typedef MessageBase                    Superclass; \
-  typedef SmartPointer<Self>             Pointer; \
-  typedef SmartPointer<const Self>       ConstPointer; \
-  \
-  igtlTypeMacro(igtl::name, igtl::MessageBase); \
-  igtlNewMacro(igtl::name); \
-  \
-protected: \
-  name() : MessageBase() { this->m_DefaultBodyType  = ##msgtype; }; \
-  ~##name() {}; \
-  \
-protected: \
-  virtual int  GetBodyPackSize() { return 0; }; \
-  virtual int  PackBody()        { AllocatePack(); return 1; }; \
-  virtual int  UnpackBody()      { return 1; }; \
-}; 
-
 namespace igtl
 {
 
@@ -241,6 +216,54 @@ protected:
 
 };
 
+
+/// A class for header-only message types, which are used for quearying.
+class IGTLCommon_EXPORT HeaderOnlyMessageBase: public MessageBase
+{
+public:
+  typedef HeaderOnlyMessageBase        Self;
+  typedef MessageBase                  Superclass;
+  typedef SmartPointer<Self>           Pointer;
+  typedef SmartPointer<const Self>     ConstPointer;
+
+  igtlTypeMacro(igtl::HeaderOnlyMessageBase, igtl::MessageBase);
+  igtlNewMacro(igtl::HeaderOnlyMessageBase);
+
+protected:
+  HeaderOnlyMessageBase() { this->m_DefaultBodyType  = this->DefaultBodyType(); };
+  ~HeaderOnlyMessageBase() {};
+  
+protected:
+
+  virtual const char * DefaultBodyType() { return ""; }; // Must be defined in a child class.
+  virtual int  GetBodyPackSize() { return 0; };
+  virtual int  PackBody()        { AllocatePack(); return 1; };
+  virtual int  UnpackBody()      { return 1; };
+
+};
+
+
+/// A macro to help defining a class for query message types
+/// that do not have message bodies. 
+//  TODO: Need test.
+#define igtlCreateDefaultQueryMessageClass(name, msgtype) \
+class IGTLCommon_EXPORT name : public  HeaderOnlyMessageBase\
+{ \
+public: \
+  typedef name                           Self; \
+  typedef HeaderOnlyMessageBase          Superclass; \
+  typedef SmartPointer<Self>             Pointer; \
+  typedef SmartPointer<const Self>       ConstPointer; \
+  \
+  igtlTypeMacro(igtl::name, igtl::HeaderOnlyMessageBase); \
+  igtlNewMacro(igtl::name); \
+  \
+protected: \
+  name() : HeaderOnlyMessageBase() {}; \
+  ~name() {}; \
+protedted: \
+  virtual const char* DefaultBodyType() { return msgtype; };    \
+}; 
 
 } // namespace igtl
 
