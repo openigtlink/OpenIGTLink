@@ -37,9 +37,7 @@ extern "C" {
 
 #pragma pack(1)     /* For 1-byte boundary in memroy */
 
-/*
- * POLYDATA Header
- */
+/** POLYDATA Header */
 typedef struct {
   igtl_uint32      npoints;                  /* Number of points */
 
@@ -77,10 +75,7 @@ typedef struct {
 
 #pragma pack()
 
-/*
- * Attribute info
- */
-
+/** Attribute info */
 typedef struct {
   igtl_uint8       type;
   igtl_uint8       ncomponents;
@@ -89,9 +84,7 @@ typedef struct {
   igtl_float32 *   data;
 } igtl_polydata_attribute;
 
-/*
- * POLYDATA info
- */
+/** POLYDATA info */
 typedef struct {
   igtl_polydata_header   header;             /* Header */
   igtl_float32*                 points;             /* Points */
@@ -103,72 +96,43 @@ typedef struct {
 } igtl_polydata_info;
 
 
-/*
- * Initialize igtl_polydata_info
- */
+/** Initializes igtl_polydata_info */
 void igtl_export igtl_polydata_init_info(igtl_polydata_info * info);
 
-/*
- * Allocate / free an array of igtl_polydata_info structure
- *
- * Allocate / free arrays in polydata_info.
- * Note that igtl_polydata_alloc_info() does not allocate memory for 'name' and 'data'
- * in each igtl_polydata_attribute. Those elements have to be allocated in the developers
- * responsibility. 
- * igtl_polydata_free_info() function assumes that igtl_polydata_info is allocated by
- * igtl_polydata_alloc_info() and all memory blocks pointed from igtl_polydata_attribute
- * have been allocated by malloc().
- * Return 1 if the array is successfully allocated/freed.
- */
-
+/** Allocates free arrays in polydata_info.
+ *  Note that igtl_polydata_alloc_info() does not allocate memory for 'name' and 'data'
+ *  in each igtl_polydata_attribute. Those elements have to be allocated in the developers
+ *  responsibility. 
+ *  igtl_polydata_free_info() function assumes that igtl_polydata_info is allocated by
+ *  igtl_polydata_alloc_info() and all memory blocks pointed from igtl_polydata_attribute
+ *  have been allocated by malloc().
+ *  Return 1 if the array is successfully allocated/freed. */
 int igtl_export igtl_polydata_alloc_info(igtl_polydata_info * info);
 int igtl_export igtl_polydata_free_info(igtl_polydata_info * info);
 
-/*
- * Unpack POLYDATA message
- *
- * Extract information about child messages in a byte array of POLYDATA messages and store
- * it in a igtl_polydata_info structure. 'type' argument specifies a message type prefix
- * (none, GET_, STT_, STP_ or RTS_) by IGTL_TYPE_PREFIX_* macro.
- * Returns 1 if success, otherwise 0.
- */
-
+/** Extracts information about child messages in a byte array of POLYDATA messages and store
+ *  it in a igtl_polydata_info structure. 'type' argument specifies a message type prefix
+ *  (none, GET_, STT_, STP_ or RTS_) by IGTL_TYPE_PREFIX_* macro.
+ *  Returns 1 if success, otherwise 0. */
 int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_info * info, igtl_uint64 size);
 
-/*
- * Pack POLYDATA message
- *
- * Convert an igtl_polydata_info structure to a byte array. 
- * 'byte_array' should be allocated prior to calling igtl_polydata_pack() with memory size
- * calculated by igtl_polydata_get_size(). 'type' argument specifies a message type prefix
- * (none, GET_, STT_, STP_ or RTS_) by IGTL_TYPE_PREFIX_* macro.
- * Returns 1 if success, otherwise 0.
- */
-
+/** Converts an igtl_polydata_info structure to a byte array. 
+ *  'byte_array' should be allocated prior to calling igtl_polydata_pack() with memory size
+ *  calculated by igtl_polydata_get_size(). 'type' argument specifies a message type prefix
+ *  (none, GET_, STT_, STP_ or RTS_) by IGTL_TYPE_PREFIX_* macro.
+ *  Returns 1 if success, otherwise 0. */
 int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array, int type);
 
-/*
- * Polydata data size
- *
- * igtl_polydata_get_size() calculates the size of polydata header, consisting of
- * POLYDATA hearder section (including number of child messages) and
- * name table section based on a igtl_polydata_header.
- * The size returned from this function does not include size of child message data.
- * 'type' argument specifies a message type prefix
- * (none, GET_, STT_, STP_ or RTS_) by IGTL_TYPE_PREFIX_* macro.
- */
-
+/** igtl_polydata_get_size() calculates the size of polydata header, consisting of
+ *  POLYDATA hearder section (including number of child messages) and
+ *  name table section based on a igtl_polydata_header.
+ *  The size returned from this function does not include size of child message data.
+ *  'type' argument specifies a message type prefix
+ *  (none, GET_, STT_, STP_ or RTS_) by IGTL_TYPE_PREFIX_* macro. */
 igtl_uint64 igtl_export igtl_polydata_get_size(igtl_polydata_info * info, int type);
 
-
-/*
- * CRC calculation
- *
- * This function calculates CRC of POLYDATA message. Note that 'info' is used only for
- * getting size of the message.
- *
- */
-
+/** Calculates CRC of POLYDATA message. Note that 'info' is used only for
+ * getting size of the message. */
 igtl_uint64 igtl_export igtl_polydata_get_crc(igtl_polydata_info * info, int type, void* polydata_message);
 
 #ifdef __cplusplus

@@ -41,11 +41,8 @@
 extern "C" {
 #endif
 
-/*
- * NDARRAY is a data type, which is designed to transfer N-dimensional numerical array.
- * The message body consists of N-D array header, size table, and N-D array body.
- */
-
+/** NDARRAY is a data type, which is designed to transfer N-dimensional numerical array.
+ *  The message body consists of N-D array header, size table, and N-D array body. */
 typedef struct {
   igtl_uint8     type;   /* Scalar type (2:int8 3:uint8 4:int16 5:uint16 6:int32
                             7:uint32 10:float32 11:float64 13:complex) */
@@ -55,65 +52,34 @@ typedef struct {
 } igtl_ndarray_info;
 
 
-/*
- * Initialize igtl_ndarray_info
- */
+/** Initializes igtl_ndarray_info */
 void igtl_export igtl_ndarray_init_info(igtl_ndarray_info * info);
 
-
-/*
- * Allocate / free ndarray
- *
- * Allocate size array and ND-array pointed from igtl_ndarray_info.
- * 'type' and 'dim' in igtl_ndarray_info must be specified before
- * calling igtl_ndarray_alloc_info().
- */
-
+/** Allocates size array and ND-array pointed from igtl_ndarray_info.
+ *  'type' and 'dim' in igtl_ndarray_info must be specified before
+ *  calling igtl_ndarray_alloc_info(). */
 int igtl_export igtl_ndarray_alloc_info(igtl_ndarray_info * info, const igtl_uint16 * size);
+
+/** Frees ndarray */
 int igtl_export igtl_ndarray_free_info(igtl_ndarray_info * info);
 
-
-/*
- * Unpack NDARRAY message
- *
- * Extract information in a byte array of NDARRAY messages and store
+/** Unpacks and extracts information in a byte array of NDARRAY messages and store
  * it in a igtl_ndarray_info structure. 'type' argument specifies
  * a message type prefix (none, GET_, STT_, STP_ or RTS_) by IGTL_TYPE_PREFIX_* macro.
- * Returns 1 if success, otherwise 0.
- */
-
+ * Returns 1 if success, otherwise 0. */
 int igtl_export igtl_ndarray_unpack(int type, void * byte_array, igtl_ndarray_info * info, igtl_uint64 pack_size);
 
-
-/*
- * Pack NDARRAY message
- *
- * Convert an igtl_ndarray_info structure to a byte array. 
- * 'byte_array' should be allocated prior to calling igtl_ndarray_pack() with memory size
- * calculated by igtl_ndarray_get_size(). 'type' argument specifies a message type prefix
- * (none, or GET_) by IGTL_TYPE_PREFIX_* macro. Returns 1 if success, otherwise 0.
- */
-
+/** Converts an igtl_ndarray_info structure to a byte array. 
+ *  'byte_array' should be allocated prior to calling igtl_ndarray_pack() with memory size
+ *  calculated by igtl_ndarray_get_size(). 'type' argument specifies a message type prefix
+ *  (none, or GET_) by IGTL_TYPE_PREFIX_* macro. Returns 1 if success, otherwise 0. */
 int igtl_export igtl_ndarray_pack(igtl_ndarray_info * info, void * byte_array, int type);
 
+/** Calculates size of N-D array body including
+ * size table (defined by UINT16[dim]) and array data. */
+igtl_uint64 igtl_export igtl_ndarray_get_size(igtl_ndarray_info * info, int type);
 
-/*
- * N-D array data size
- *
- * This function calculates size of N-D array body including
- * size table (defined by UINT16[dim]) and array data.
- */
-
-  igtl_uint64 igtl_export igtl_ndarray_get_size(igtl_ndarray_info * info, int type);
-
-/*
- * CRC calculation
- *
- * This function calculates CRC of image data body including header
- * and array of pixel data.
- *
- */
-
+/** Calculates CRC of image data body including header and array of pixel data. */
 igtl_uint64 igtl_export igtl_ndarray_get_crc(igtl_ndarray_info * info, int type, void* byte_array);
 
 

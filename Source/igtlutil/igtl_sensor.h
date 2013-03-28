@@ -37,33 +37,16 @@ typedef struct {
 
 #pragma pack()
 
-/*
- * Sensor data size
- *
- * This function calculates size of the pixel array, which will be
- * transferred with the specified header.
- */
-
+/** This function calculates size of the pixel array, which will be
+ *  transferred with the specified header. */
 igtl_uint32 igtl_export igtl_sensor_get_data_size(igtl_sensor_header * header);
 
-/*
- * Byte order conversion
- *
- * This function converts endianness from host byte order to network byte order,
- * or vice versa.
- */
-
+/** This function converts endianness from host byte order to network byte order,
+ *  or vice versa. */
 void igtl_export igtl_sensor_convert_byte_order(igtl_sensor_header * header, igtl_float64* data);
 
-
-/*
- * CRC calculation
- *
- * This function calculates CRC of image data body including header
- * and array of pixel data.
- *
- */
-
+/** Calculates CRC of image data body including header
+ *  and array of pixel data. */
 igtl_uint64 igtl_export igtl_sensor_get_crc(igtl_sensor_header * header, igtl_float64* data);
 
 #ifdef __cplusplus

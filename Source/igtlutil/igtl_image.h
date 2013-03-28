@@ -51,20 +51,15 @@ extern "C" {
 
 #pragma pack(1)     /* For 1-byte boundary in memroy */
 
-/*
- * Image data header for OpenIGTLinik protocol
- *
- * Image data consists of image data header, which is defined in this
- * structure, folowed by array of image pixel data.
- * igtl_image_header helps a receiver to load array of image pixel data.
- * The header supports "partial volume update", where a fraction of volume
- * image is transferred from a sender to receiver. This fraction called
- * "sub-volume" in this protocol, and its size and starting index is
- * specified in 'subvol_size' and 'subvol_offset'.
- * In case of transferring entire image in one message, 'size' and
- * 'subvol_size' should be same, and 'subvol_offset' equals (0, 0, 0).
- */
-
+/** Image data consists of image data header, which is defined in this
+ *  structure, folowed by array of image pixel data.
+ *  igtl_image_header helps a receiver to load array of image pixel data.
+ *  The header supports "partial volume update", where a fraction of volume
+ *  image is transferred from a sender to receiver. This fraction called
+ *  "sub-volume" in this protocol, and its size and starting index is
+ *  specified in 'subvol_size' and 'subvol_offset'.
+ *  In case of transferring entire image in one message, 'size' and
+ *  'subvol_size' should be same, and 'subvol_offset' equals (0, 0, 0). */
 typedef struct {
   igtl_uint16    version;          /* data format version number(1)   */
   igtl_uint8     num_components;   /* number of components per element*/
@@ -90,23 +85,11 @@ typedef struct {
 #pragma pack()
 
 
-/*
- * Image data size
- *
- * This function calculates size of the pixel array, which will be
- * transferred with the specified header.
- */
-
+/** Calculates size of the pixel array, which will be transferred with the specified header. */
 igtl_uint64 igtl_export igtl_image_get_data_size(igtl_image_header * header);
 
 
-/*
- * Generate matrix 
- *
- * This function generates image orientation/origin matrix from 
- * spacing, origin and normal vectors.
- */
-
+/** Generates image orientation/origin matrix from spacing, origin and normal vectors. */
 void igtl_export igtl_image_set_matrix(float spacing[3], float origin[3],
                             float norm_i[3], float norm_j[3], float norm_k[3],
                             igtl_image_header * header);
@@ -115,25 +98,11 @@ void igtl_export igtl_image_get_matrix(float spacing[3], float origin[3],
                             float norm_i[3], float norm_j[3], float norm_k[3],
                             igtl_image_header * header);
 
-/*
- * Byte order conversion for the header structure
- *
- * This function converts endianness of each member variable
- * in igtl_image_header from host byte order to network byte order,
- * or vice versa.
- */
-
+/** Converts endianness of each member variable in igtl_image_header from host
+ *  byte order to network byte order, or vice versa. */
 void igtl_export igtl_image_convert_byte_order(igtl_image_header * header);
 
-
-/*
- * CRC calculation
- *
- * This function calculates CRC of image data body including header
- * and array of pixel data.
- *
- */
-
+/** Calculates CRC of image data body including header and array of pixel data. */
 igtl_uint64 igtl_export igtl_image_get_crc(igtl_image_header * header, void* image);
 
 #ifdef __cplusplus

@@ -36,34 +36,17 @@ typedef struct {
 
 #pragma pack()
 
-/*
- * String data size
- *
- * This function calculates size of the pixel array, which will be
- * transferred with the specified header.
- */
-
+/** Calculates size of the pixel array, which will be
+ *  transferred with the specified header. */
 igtl_uint32 igtl_export igtl_string_get_string_length(igtl_string_header * header);
 
-/*
- * Byte order conversion
- *
- * This function converts endianness from host byte order to network byte order,
- * or vice versa.
- * NOTE: It is developer's responsibility to have the string body with BOM
- * (byte order mark) or in big endian ordrer.
- */
-
+/** Converts endianness from host byte order to network byte order,
+ *  or vice versa. NOTE: It is developer's responsibility to have the string body with BOM
+ *  (byte order mark) or in big endian ordrer. */
 void igtl_export igtl_string_convert_byte_order(igtl_string_header * header);
 
-/*
- * CRC calculation
- *
- * This function calculates CRC of image data body including header
- * and array of pixel data.
- *
- */
-
+/** Calculates CRC of image data body including header
+ *  and array of pixel data. */
 igtl_uint64 igtl_export igtl_string_get_crc(igtl_string_header * header, void* string);
 
 #ifdef __cplusplus

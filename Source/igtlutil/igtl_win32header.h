@@ -33,7 +33,7 @@
 #endif
 
 #if defined(_MSC_VER)
-  // Enable MSVC compiler warning messages that are useful but off by default.
+ /* Enable MSVC compiler warning messages that are useful but off by default.*/
 #  pragma warning ( disable : 4996 ) /* 'strncpy': This function or variable may be unsafe. */
 #endif
 

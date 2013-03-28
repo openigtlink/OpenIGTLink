@@ -52,11 +52,7 @@ extern "C" {
 
 #pragma pack(1)     /* For 1-byte boundary in memroy */
 
-/*
- * Status data header for OpenIGTLinik protocol
- *
- */
-
+/** Status data header for OpenIGTLinik protocol */
 typedef struct {
   igtl_uint16    code;             /* status code defined above */
   igtl_int64     subcode;          /* sub code for the error    */
@@ -67,24 +63,12 @@ typedef struct {
 
 #pragma pack()
 
-/*
- * Byte order conversion for the status data structure
- *
- * This function converts endianness of each member variable
- * in igtl_status_header from host byte order to network byte order,
- * or vice versa.
- */
-
+/** Converts endianness of each member variable
+ *  in igtl_status_header from host byte order to network byte order,
+ *  or vice versa. */
 void igtl_export igtl_status_convert_byte_order(igtl_status_header* status);
 
-
-/*
- * CRC calculation
- *
- * This function calculates CRC of status data body including status message part
- *
- */
-
+/** Calculates CRC of status data body including status message part */
 igtl_uint64 igtl_export igtl_status_get_crc(igtl_status_header* status, igtl_uint32 msglen, const char* msg);
 
 #ifdef __cplusplus

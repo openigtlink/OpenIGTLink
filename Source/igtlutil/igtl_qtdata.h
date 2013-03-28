@@ -38,11 +38,8 @@ extern "C" {
 #endif
 
 #pragma pack(1)     /* For 1-byte boundary in memroy */
-/*
- * Status data header for OpenIGTLinik protocol
- *
- */
 
+/** Status data header for OpenIGTLinik protocol */
 typedef struct {
   char         name[IGTL_QTDATA_LEN_NAME];  /* Name of instrument / tracker */
   igtl_uint8   type;           /* Tracking data type (1-4) */
@@ -64,39 +61,22 @@ typedef struct {
 
 #pragma pack()
 
-/*
- * Macros for qtdata data size
- *
- * igtl_qtdata_get_data_size(n) calculates the size of body based on the number
- * of qtdatas. The size of body is used in the message header.
- * igtl_qtdata_get_data_n(size) calculates the number of qtdatas in the body, based on
- * the body size. This function may be used when a client program parses a QTDATA message.
- *
- */
-
+/** igtl_qtdata_get_data_size(n) calculates the size of body based on the number
+ *  of qtdatas. The size of body is used in the message header.*/
 #define igtl_qtdata_get_data_size(n)  ((n) * IGTL_QTDATA_ELEMENT_SIZE)
+
+/** igtl_qtdata_get_data_n(size) calculates the number of qtdatas in the body, based on
+ *  the body size. This function may be used when a client program parses a QTDATA message. */
 #define igtl_qtdata_get_data_n(size)  ((size) / IGTL_QTDATA_ELEMENT_SIZE)
 
-/*
- * Byte order conversion for an array of QTDATA, STT_QTDATA and RTS_QTDATA data structure
- *
- * This function converts endianness of each element in an array of
- * igtl_qtdata_element from host byte order to network byte order,
- * or vice versa.
- */
-
+/** Byte order conversion for an array of QTDATA, STT_QTDATA and RTS_QTDATA data structure
+ *  Converts endianness of each element in an array of igtl_qtdata_element from host byte
+ *  order to network byte order, or vice versa. */
 void igtl_export igtl_qtdata_convert_byte_order(igtl_qtdata_element* qtdatalist, int nelem);
 void igtl_export igtl_stt_qtdata_convert_byte_order(igtl_stt_qtdata* stt_qtdata);
 void igtl_export igtl_rts_qtdata_convert_byte_order(igtl_rts_qtdata* rts_qtdata);
 
-
-/*
- * CRC calculation
- *
- * These functions calculate CRC of QTDATA, STT_QTDATA and RTS_QTDATA messages
- *
- */
-
+/** Calculates CRC of QTDATA, STT_QTDATA and RTS_QTDATA messages */
 igtl_uint64 igtl_export igtl_qtdata_get_crc(igtl_qtdata_element* qtdatalist, int nelem);
 igtl_uint64 igtl_export igtl_stt_qtdata_get_crc(igtl_stt_qtdata* stt_qtdata);
 igtl_uint64 igtl_export igtl_rts_qtdata_get_crc(igtl_rts_qtdata* rts_qtdata);

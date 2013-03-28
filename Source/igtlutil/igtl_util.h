@@ -37,11 +37,7 @@ extern "C" {
 #define IGTL_SCALAR_COMPLEX   13
 
 
-/*
- * Byte order conversion macros
- *
- */
-
+/** Byte order conversion macros */
 #define BYTE_SWAP_INT16(S) (((S) & 0xFF) << 8 \
                             | (((S) >> 8) & 0xFF))
 #define BYTE_SWAP_INT32(L) ((BYTE_SWAP_INT16 ((L) & 0xFFFF) << 16) \
@@ -49,26 +45,17 @@ extern "C" {
 #define BYTE_SWAP_INT64(LL) ((BYTE_SWAP_INT32 ((LL) & 0xFFFFFFFF) << 32) \
                              | BYTE_SWAP_INT32 (((LL) >> 32) & 0xFFFFFFFF))
 
-/*
- * Test endian of the host
- */
+/** Tests endian of the host */
 int igtl_export igtl_is_little_endian();
 igtl_uint64 igtl_export crc64(unsigned char *data, igtl_uint64 len, igtl_uint64 crc);
 
-
-/*
- * Convert nanosecond to fraction / fraction to nanosec
- */
-
+/** Converts nanosecond to fraction / fraction to nanosec. */
 igtl_uint32 igtl_export igtl_nanosec_to_frac(igtl_uint32 nanosec);
 igtl_uint32 igtl_export igtl_frac_to_nanosec(igtl_uint32 frac);
 void igtl_export igtl_message_dump_hex(FILE* stream, const void* message, int max_size);
 
-/*
- * Get size of scalar. Type should be IGTL_SCALAR_*
- */
+/** Gets size of scalar. Type should be IGTL_SCALAR_* */
 igtl_uint32 igtl_export igtl_get_scalar_size(int type);
-
 
 #ifdef __cplusplus
 }
