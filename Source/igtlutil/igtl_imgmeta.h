@@ -48,15 +48,10 @@ extern "C" {
 
 #pragma pack(1)     /* For 1-byte boundary in memroy */
 
-/*
- * Image meta data OpenIGTLinik protocol
- *
- * IMAGEMETA is a message type to transfer a list of images available in a server.
- * A IMGMETA message may contain information of multiple images.
- * The client determins the number of image meta by the size of the body included
- * in the message header (see igtl_imgmeta_getdata_n() macro).
- */
-
+/** IMAGEMETA is a message type to transfer a list of images available in a server.
+ *  A IMGMETA message may contain information of multiple images.
+ *  The client determins the number of image meta by the size of the body included
+ *  in the message header (see igtl_imgmeta_getdata_n() macro). */
 typedef struct {
   char           name[IGTL_IMGMETA_LEN_NAME];                 /* name / description */
   char           device_name[IGTL_IMGMETA_LEN_DEVICE_NAME];   /* device name to query the IMAGE and COLORT */
@@ -71,39 +66,18 @@ typedef struct {
 
 #pragma pack()
 
-
-/*
- * Macros for image meta data size
- *
- * igtl_imgmeta_get_data_size(n) calculates the size of body based on the number
- * of images.The size of body is used in the message header.
- * igtl_imgmeta_get_data_n(size) calculates the number of images in the body, based on
- * the body size. This function may be used when a client program parses IMGMETA message. 
- *
- */
-
+/** igtl_imgmeta_get_data_size(n) macro calculates the size of body based on the number
+ *  of images.The size of body is used in the message header.
+ *  igtl_imgmeta_get_data_n(size) calculates the number of images in the body, based on
+ *  the body size. This function may be used when a client program parses IMGMETA message. */
 #define igtl_imgmeta_get_data_size(n)  ((n) * IGTL_IMGMETA_ELEMENT_SIZE)
 #define igtl_imgmeta_get_data_n(size)  ((size) / IGTL_IMGMETA_ELEMENT_SIZE)
 
-
-/*
- * Byte order conversion for the image meta data
- *
- * This function converts endianness of each member variable
- * in igtl_imgmeta_element from host byte order to network byte order,
- * or vice versa.
- */
-
+/** Converts endianness of each member variable in igtl_imgmeta_element from host
+ *  byte order to network byte order, or vice versa. */
 void igtl_export igtl_imgmeta_convert_byte_order(igtl_imgmeta_element* metalist, int nitem);
 
-
-/*
- * CRC calculation
- *
- * This function calculates CRC of image meta data body.
- *
- */
-
+/** Clculates CRC of image meta data body. */
 igtl_uint64 igtl_export igtl_imgmeta_get_crc(igtl_imgmeta_element* metalist, int nitem);
 
 #ifdef __cplusplus

@@ -32,66 +32,35 @@ typedef struct {
 } igtl_capability_info;
 
 
-/*
- * Initialize igtl_ndarray_info
- */
+/** Initializes igtl_ndarray_info */
 void igtl_export igtl_capability_init_info(igtl_capability_info * info);
 
-
-/*
- * Allocate / free ndarray info
- *
- * Allocate size array and ND-array pointed from igtl_ndarray_info.
+/** Allocates ndarray info. Allocate size array and ND-array pointed from igtl_ndarray_info.
  * 'type' and 'dim' in igtl_ndarray_info must be specified before
- * calling igtl_ndarray_alloc_info().
- */
-
+ * calling igtl_ndarray_alloc_info(). */
 int igtl_export igtl_capability_alloc_info(igtl_capability_info * info, int ntypes);
+
+/** Frees ndarray info. */
 int igtl_export igtl_capability_free_info(igtl_capability_info * info);
 
-
-/*
- * Calculate capability data size
- *
- * This function calculates size of the pixel array, which will be
- * transferred with the specified header.
- */
-
+/** Calculates capability data size of the pixel array, which will be
+ *  transferred with the specified header. */
 igtl_uint32 igtl_export igtl_capability_get_length(igtl_capability_info * info);
 
-
-/*
- * Unpack CAPABILITY message
- *
- * Extract information in a byte array of CAPABILITY messages and store
- * it in a igtl_capability_info structure. 'type' argument specifies
- * a message type prefix (none, GET_, STT_, STP_ or RTS_) by IGTL_TYPE_PREFIX_* macro.
- * Returns 1 if success, otherwise 0.
- */
-
+/** Unpacks CAPABILITY message. Extracts information in a byte array of CAPABILITY
+ *  messages and store it in a igtl_capability_info structure. 'type' argument specifies
+ *  a message type prefix (none, GET_, STT_, STP_ or RTS_) by IGTL_TYPE_PREFIX_* macro.
+ *  Returns 1 if success, otherwise 0. */
 int igtl_export igtl_capability_unpack(void * byte_array, igtl_capability_info * info, igtl_uint64 pack_size);
 
-
-/*
- * Pack CAPABILITY message
- *
- * Convert an igtl_capability_info structure to a byte array. 
+/** Packs CAPABILITY message. Converts an igtl_capability_info structure to a byte array. 
  * 'byte_array' should be allocated prior to calling igtl_capability_pack() with memory size
  * calculated by igtl_capability_get_size(). 'type' argument specifies a message type prefix
- * (none, or GET_) by IGTL_TYPE_PREFIX_* macro. Returns 1 if success, otherwise 0.
- */
-
+ * (none, or GET_) by IGTL_TYPE_PREFIX_* macro. Returns 1 if success, otherwise 0. */
 int igtl_export igtl_capability_pack(igtl_capability_info * info, void * byte_array);
 
-
-/*
- * CRC calculation
- *
- * This function calculates CRC of image data body including header
- * and array of pixel data.
- *
- */
-
+/** Calculates CRC of image data body including header
+ *  and array of pixel data. */
 igtl_uint64 igtl_export igtl_capability_get_crc(igtl_capability_info* info, void* capability);
 
 #ifdef __cplusplus

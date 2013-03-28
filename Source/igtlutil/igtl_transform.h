@@ -28,24 +28,12 @@ extern "C" {
 typedef igtl_float32[12] transform;
 */
 
-/*
- * Byte order conversion for the header structure
- *
- * This function converts endianness of each member variable
- * in igtl_image_header from host byte order to network byte order,
- * or vice versa.
- */
-
+/** Converts endianness of each member variable
+ *  in igtl_image_header from host byte order to network byte order,
+ *  or vice versa. */
 void igtl_export igtl_transform_convert_byte_order(igtl_float32* transform);
 
-
-/*
- * CRC calculation
- *
- * This function calculates CRC of transform data.
- *
- */
-
+/** Calculates CRC of transform data. */
 igtl_uint64 igtl_export igtl_transform_get_crc(igtl_float32* transform);
 
 #ifdef __cplusplus

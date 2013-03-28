@@ -26,7 +26,7 @@
 #define IGTL_HEADER_NAMESIZE  IGTL_HEADER_NAME_SIZE
 #define IGTL_HEADER_DEVSIZE   IGTL_HEADER_NAME_SIZE
 
-// Device name prefix macro
+/* Device name prefix macro */
 #define IGTL_TYPE_PREFIX_NONE     0
 #define IGTL_TYPE_PREFIX_GET      1
 #define IGTL_TYPE_PREFIX_STT      2
@@ -43,15 +43,11 @@ extern "C" {
 
 #pragma pack(1)     /* For 1-byte boundary in memroy */
 
-/*
- * Message header of OpenIGTLink message.
- *
- * igtl_header is an overall data header for OpenIGTLink protocol.
- * It is transfered at beginning of every OpenIGTLink message to give
- * type and size of following data body to a receiver.
- * These parameters allow the receiver to parse or skip the data body.
- */
-
+/** Message header of OpenIGTLink message.
+ *  igtl_header is an overall data header for OpenIGTLink protocol.
+ *  It is transfered at beginning of every OpenIGTLink message to give
+ *  type and size of following data body to a receiver.
+ *  These parameters allow the receiver to parse or skip the data body. */
 typedef struct {
   igtl_uint16    version;          /* protocol version number */
   char           name[IGTL_HEADER_TYPE_SIZE];       /* data type name          */
@@ -63,14 +59,9 @@ typedef struct {
 
 #pragma pack()
 
-/*
- * Byte order converter for the header structre
- * 
- * igtl_header_convert_byte_order convers endianness of each
- * member variable in igtl_header structre from host byte order
- * to network byte order, or vice versa.
- *
- */
+/** igtl_header_convert_byte_order() convers endianness of each
+ *  member variable in igtl_header structre from host byte order
+ *  to network byte order, or vice versa. */
 void igtl_export igtl_header_convert_byte_order(igtl_header * header);
 
 #ifdef __cplusplus
