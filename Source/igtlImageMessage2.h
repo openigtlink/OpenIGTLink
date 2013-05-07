@@ -92,8 +92,8 @@ public:
 
   /// Coordinate sysmtem. Either left-posterior-superior (LPS) or right-anterior-superior (RAS).
   enum {
-    COORDINATE_LPS,
-    COORDINATE_RAS
+    COORDINATE_RAS=1,
+    COORDINATE_LPS=2
   };
 
   /// Endian used in the bite array for the image data.
@@ -257,6 +257,12 @@ public:
   {
     return dimensions[0]*dimensions[1]*dimensions[2]*GetScalarSize()*numComponents;
   };
+
+  /// Returns coordinate system (COORDINATE_RAS or COORDINATE_LPS)
+  int GetCoordinateSystem() { return coordinate;};
+
+  /// Sets coordinate system (COORDINATE_RAS or COORDINATE_LPS)
+  void SetCoordinateSystem(int c) {coordinate = c;};
 
   /// Gets the size (length) of the byte array for the subvolume image data.
   /// The size is defined by subDimensions[0]*subDimensions[1]*subDimensions[2]*
