@@ -74,7 +74,7 @@ void CapabilityMessage::SetTypes(std::vector<std::string> types)
 
 int CapabilityMessage::SetType(int id, const char* type)
 {
-  if (id < this->m_TypeNames.size() && strlen(type) < IGTL_HEADER_TYPE_SIZE)
+  if (id < (int)this->m_TypeNames.size() && strlen(type) < IGTL_HEADER_TYPE_SIZE)
     {
     this->m_TypeNames[id] = type;
     return 1;
@@ -88,7 +88,7 @@ int CapabilityMessage::SetType(int id, const char* type)
 
 const char* CapabilityMessage::GetType(int id)
 {
-  if (id < this->m_TypeNames.size())
+  if (id < (int)this->m_TypeNames.size())
     {
     return this->m_TypeNames[id].c_str();
     }
@@ -148,7 +148,7 @@ int CapabilityMessage::UnpackBody()
     }
 
   this->m_TypeNames.clear();
-  for(unsigned int i = 0; i < ntypes; i++)
+  for(int i = 0; i < ntypes; i++)
     {
     std::string buf;
     if (strnlen((const char*)info.typenames[i], IGTL_HEADER_TYPE_SIZE) < IGTL_HEADER_TYPE_SIZE)

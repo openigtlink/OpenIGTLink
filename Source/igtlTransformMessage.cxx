@@ -21,6 +21,7 @@
 
 namespace igtl {
 
+
 TransformMessage::TransformMessage():
   MessageBase()
 {
