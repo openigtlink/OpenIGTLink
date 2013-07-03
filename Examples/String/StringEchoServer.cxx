@@ -1,6 +1,6 @@
 /*=========================================================================
 
-  Program:   Open IGT Link -- Example for Tracker Server Program
+  Program:   Open IGT Link -- Example for String Echo Server Program
   Module:    $RCSfile: $
   Language:  C++
   Date:      $Date: $
@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
   igtl::Socket::Pointer socket;
   
   while (1)
-  {
+    {
     //------------------------------------------------------------
     // Waiting for Connection
     socket = serverSocket->WaitForConnection(1000);
