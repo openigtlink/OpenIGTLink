@@ -15,3 +15,6 @@ TARGET_LINK_LIBRARIES(PointClient OpenIGTLink)
 ADD_EXECUTABLE(PointServer   PointServer.cxx)
 TARGET_LINK_LIBRARIES(PointServer OpenIGTLink)
 
+ADD_EXECUTABLE(PointListServer   PointListServer.cxx)
+TARGET_LINK_LIBRARIES(PointListServer OpenIGTLink)
+
