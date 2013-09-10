@@ -24,6 +24,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     String
     Bind
     PolyData
+    Trajectory
     )
 endif (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
 
