@@ -1,6 +1,6 @@
 /*=========================================================================
 
-  Program:   Open IGT Link -- Example for Tracker Server Program
+  Program:   Open IGT Link -- Example for String Echo Server Program
   Module:    $RCSfile: $
   Language:  C++
   Date:      $Date: $
@@ -22,40 +22,23 @@
 #include "igtlStringMessage.h"
 #include "igtlServerSocket.h"
 
-#define N_STRINGS 5
-
-const char * testString[N_STRINGS] = {
-  "OpenIGTLink",
-  "Network",
-  "Communication",
-  "Protocol",
-  "Image Guided Therapy",
-};
 
 int main(int argc, char* argv[])
 {
   //------------------------------------------------------------
   // Parse Arguments
 
-  if (argc != 3) // check number of arguments
+  if (argc != 2) // check number of arguments
     {
     // If not correct, print usage
-    std::cerr << "Usage: " << argv[0] << " <port> <fps>"    << std::endl;
+    std::cerr << "Usage: " << argv[0] << " <port>"    << std::endl;
     std::cerr << "    <port>     : Port # (18944 in Slicer default)"   << std::endl;
-    std::cerr << "    <fps>      : Frequency (fps) to send string" << std::endl;
     exit(0);
     }
 
   int    port     = atoi(argv[1]);
-  double fps      = atof(argv[2]);
-  int    interval = (int) (1000.0 / fps);
 
-  igtl::StringMessage::Pointer stringMsg;
-  stringMsg = igtl::StringMessage::New();
-  stringMsg->SetDeviceName("StringMessage");
-
-  igtl::ServerSocket::Pointer serverSocket;
-  serverSocket = igtl::ServerSocket::New();
+  igtl::ServerSocket::Pointer serverSocket = igtl::ServerSocket::New();
   int r = serverSocket->CreateServer(port);
 
   if (r < 0)
@@ -71,19 +54,35 @@ int main(int argc, char* argv[])
     //------------------------------------------------------------
     // Waiting for Connection
     socket = serverSocket->WaitForConnection(1000);
-    
-    if (socket.IsNotNull()) // if client connected
-      {
-      //------------------------------------------------------------
-      // loop
-      for (int i = 0; i < 100; i ++)
+    igtl::MessageHeader::Pointer hdrMsg = igtl::MessageHeader::New();
+
+    while (socket.IsNotNull() && socket->GetConnected())
+      {      
+      hdrMsg->InitPack();
+      int r = socket->Receive(hdrMsg->GetPackPointer(), hdrMsg->GetPackSize());
+
+      // check message
+      if (r == 0) 
         {
-        std::cout << "Sending string: " << testString[i%N_STRINGS] << std::endl;
-        stringMsg->SetString(testString[i%N_STRINGS]);
-        stringMsg->Pack();
-        socket->Send(stringMsg->GetPackPointer(), stringMsg->GetPackSize());
-        igtl::Sleep(interval); // wait
+        socket->CloseSocket();
+        continue;
         }
+      if (r != hdrMsg->GetPackSize())
+        continue;
+
+      // get data
+      hdrMsg->Unpack();
+      igtl::StringMessage::Pointer strMsg(igtl::StringMessage::New());
+      strMsg->SetMessageHeader(hdrMsg);
+      strMsg->AllocatePack();
+      socket->Receive(strMsg->GetPackBodyPointer(), strMsg->GetPackBodySize());
+      int c = strMsg->Unpack();
+
+      // echo message back
+      std::cout << "Echoing: " << strMsg->GetString() << std::endl;
+      strMsg->SetDeviceName("StringEchoServer");
+      strMsg->Pack();
+      socket->Send(strMsg->GetPackPointer(), strMsg->GetPackSize());
       }
     }
     

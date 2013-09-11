@@ -11,7 +11,6 @@ SET(EXAMPLE_DIRS
   Status
   Receiver
   Thread
-  SessionManager
   )
 
 if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
@@ -26,6 +25,8 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     Bind
     PolyData
     Capability
+    Trajectory
+    SessionManager
     )
 endif (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
 

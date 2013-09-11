@@ -30,6 +30,7 @@
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 2
 #include "igtlPointMessage.h"
+#include "igtlTrajectoryMessage.h"
 #include "igtlStringMessage.h"
 #include "igtlTrackingDataMessage.h"
 #include "igtlQuaternionTrackingDataMessage.h"
@@ -43,6 +44,7 @@ int ReceiveStatus(igtl::Socket * socket, igtl::MessageHeader::Pointer& header);
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 2
   int ReceivePoint(igtl::Socket * socket, igtl::MessageHeader::Pointer& header);
+  int ReceiveTrajectory(igtl::Socket * socket, igtl::MessageHeader::Pointer& header);
   int ReceiveString(igtl::Socket * socket, igtl::MessageHeader::Pointer& header);
   int ReceiveTrackingData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Pointer& header);
   int ReceiveQuaternionTrackingData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Pointer& header);
@@ -146,6 +148,10 @@ int main(int argc, char* argv[])
       else if (strcmp(headerMsg->GetDeviceType(), "POINT") == 0)
         {
         ReceivePoint(socket, headerMsg);
+        }
+      else if (strcmp(headerMsg->GetDeviceType(), "TRAJ") == 0)
+        {
+        ReceiveTrajectory(socket, headerMsg);
         }
       else if (strcmp(headerMsg->GetDeviceType(), "STRING") == 0)
         {
@@ -367,6 +373,55 @@ int ReceivePoint(igtl::Socket * socket, igtl::MessageHeader::Pointer& header)
       std::cerr << " Position  : ( " << std::fixed << pos[0] << ", " << pos[1] << ", " << pos[2] << " )" << std::endl;
       std::cerr << " Radius    : " << std::fixed << pointElement->GetRadius() << std::endl;
       std::cerr << " Owner     : " << pointElement->GetOwner() << std::endl;
+      std::cerr << "================================" << std::endl << std::endl;
+      }
+    }
+
+  return 1;
+}
+
+int ReceiveTrajectory(igtl::Socket * socket, igtl::MessageHeader::Pointer& header)
+{
+
+  std::cerr << "Receiving TRAJECTORY data type." << std::endl;
+
+  // Create a message buffer to receive transform data
+  igtl::TrajectoryMessage::Pointer trajectoryMsg;
+  trajectoryMsg = igtl::TrajectoryMessage::New();
+  trajectoryMsg->SetMessageHeader(header);
+  trajectoryMsg->AllocatePack();
+
+  // Receive transform data from the socket
+  socket->Receive(trajectoryMsg->GetPackBodyPointer(), trajectoryMsg->GetPackBodySize());
+
+  // Deserialize the transform data
+  // If you want to skip CRC check, call Unpack() without argument.
+  int c = trajectoryMsg->Unpack(1);
+
+  if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
+    {
+    int nElements = trajectoryMsg->GetNumberOfTrajectoryElement();
+    for (int i = 0; i < nElements; i ++)
+      {
+      igtl::TrajectoryElement::Pointer trajectoryElement;
+      trajectoryMsg->GetTrajectoryElement(i, trajectoryElement);
+
+      igtlUint8 rgba[4];
+      trajectoryElement->GetRGBA(rgba);
+
+      igtlFloat32 entry[3];
+      igtlFloat32 target[3];
+      trajectoryElement->GetEntryPosition(entry);
+      trajectoryElement->GetTargetPosition(target);
+
+      std::cerr << "========== Element #" << i << " ==========" << std::endl;
+      std::cerr << " Name      : " << trajectoryElement->GetName() << std::endl;
+      std::cerr << " GroupName : " << trajectoryElement->GetGroupName() << std::endl;
+      std::cerr << " RGBA      : ( " << (int)rgba[0] << ", " << (int)rgba[1] << ", " << (int)rgba[2] << ", " << (int)rgba[3] << " )" << std::endl;
+      std::cerr << " Entry Pt  : ( " << std::fixed << entry[0] << ", " << entry[1] << ", " << entry[2] << " )" << std::endl;
+      std::cerr << " Target Pt : ( " << std::fixed << target[0] << ", " << target[1] << ", " << target[2] << " )" << std::endl;
+      std::cerr << " Radius    : " << std::fixed << trajectoryElement->GetRadius() << std::endl;
+      std::cerr << " Owner     : " << trajectoryElement->GetOwner() << std::endl;
       std::cerr << "================================" << std::endl << std::endl;
       }
     }

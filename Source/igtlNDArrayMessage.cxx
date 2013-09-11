@@ -215,7 +215,7 @@ int NDArrayMessage::PackBody()
     s[i] = size[i];
     }
   int r = igtl_ndarray_alloc_info(&info, s);
-  delete s;
+  delete [] s;
 
   if (r == 0)
     {
