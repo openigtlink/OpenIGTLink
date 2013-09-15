@@ -24,27 +24,24 @@ namespace igtl
 {
 
 // A class for the GEt_IMAGE message type.
-class IGTLCommon_EXPORT GetImageMessage: public MessageBase
+class IGTLCommon_EXPORT GetImageMessage: public HeaderOnlyMessageBase
 {
 public:
   typedef GetImageMessage                Self;
-  typedef MessageBase                    Superclass;
+  typedef HeaderOnlyMessageBase          Superclass;
   typedef SmartPointer<Self>             Pointer;
   typedef SmartPointer<const Self>       ConstPointer;
 
-  igtlTypeMacro(igtl::GetImageMessage, igtl::MessageBase);
+  igtlTypeMacro(igtl::GetImageMessage, igtl::HeaderOnlyMessageBase);
   igtlNewMacro(igtl::GetImageMessage);
 
 protected:
 
-  GetImageMessage() : MessageBase() { this->m_DefaultBodyType  = "GET_IMAGE"; };
+ GetImageMessage() : HeaderOnlyMessageBase() {};
   ~GetImageMessage() {};
 
 protected:
-
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
+  virtual const char* DefaultBodyType() { return "GET_IMAGE"; };
 };
 
 

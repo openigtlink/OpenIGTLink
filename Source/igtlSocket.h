@@ -104,6 +104,14 @@ public:
   /// This function should be called after opening the socket.
   int SetSendTimeout(int timeout);
 
+  /// Set  (psuedo) non-blocking mode for recv(). When sw=1, the time out is set to
+  /// minimum value (1 microsecond in UNIX, 1 millisecond in Windows) for receiving.
+  int SetReceiveBlocking(int sw);
+
+  /// Set (psuedo) non-blocking mode for recv(). When sw=1, the time out is set to
+  /// minimum value (1 microsecond in UNIX, 1 millisecond in Windows) for sending.
+  int SetSendBlocking(int sw);
+
   /// Get socket address
   int GetSocketAddressAndPort(std::string& address, int & port);
 

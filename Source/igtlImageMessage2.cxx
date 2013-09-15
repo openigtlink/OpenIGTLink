@@ -493,7 +493,7 @@ int ImageMessage2::GetPackFragmentSize(int id)
     return GetSubVolumeImageSize();
     }
 
-  return NULL;
+  return 0;
 }
 
 #endif // FRAGMENTED_PACK  

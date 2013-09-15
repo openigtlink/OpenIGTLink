@@ -23,6 +23,28 @@
 namespace igtl
 {
 
+
+/// A class for the GET_STATUS message type.
+class IGTLCommon_EXPORT GetStatusMessage: public HeaderOnlyMessageBase
+{
+public:
+  typedef GetStatusMessage          Self;
+  typedef HeaderOnlyMessageBase        Superclass;
+  typedef SmartPointer<Self>           Pointer;
+  typedef SmartPointer<const Self>     ConstPointer;
+
+  igtlTypeMacro(igtl::GetStatusMessage, igtl::HeaderOnlyMessageBase);
+  igtlNewMacro(igtl::GetStatusMessage);
+
+protected:
+  GetStatusMessage() : HeaderOnlyMessageBase() {};
+  ~GetStatusMessage() {};
+  
+protected:
+  virtual const char* DefaultBodyType() { return "GET_STATUS"; };
+};
+
+
 /// The STATUS data type is used to notify the receiver about the current status of the sender.
 /// The data consist of status code in a 16-bit unsigned integer, sub code in a 64-bit integer,
 /// error name in a 20-byte-length character string, and a status message. The length of

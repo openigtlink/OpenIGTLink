@@ -33,6 +33,7 @@
 #include "igtlTrajectoryMessage.h"
 #include "igtlStringMessage.h"
 #include "igtlBindMessage.h"
+#include "igtlCapabilityMessage.h"
 #endif //OpenIGTLink_PROTOCOL_VERSION >= 2
 
 
@@ -46,6 +47,7 @@ int ReceivePoint(igtl::Socket * socket, igtl::MessageHeader * header);
 int ReceiveTrajectory(igtl::Socket * socket, igtl::MessageHeader::Pointer& header);
 int ReceiveString(igtl::Socket * socket, igtl::MessageHeader * header);
 int ReceiveBind(igtl::Socket * socket, igtl::MessageHeader * header);
+int ReceiveCapability(igtl::Socket * socket, igtl::MessageHeader * header);
 #endif //OpenIGTLink_PROTOCOL_VERSION >= 2
 
 int main(int argc, char* argv[])
@@ -158,6 +160,10 @@ int main(int argc, char* argv[])
         else if (strcmp(headerMsg->GetDeviceType(), "BIND") == 0)
           {
           ReceiveBind(socket, headerMsg);
+          }
+        else if (strcmp(headerMsg->GetDeviceType(), "CAPABILITY") == 0)
+          {
+          ReceiveCapability(socket, headerMsg);
           }
 #endif //OpenIGTLink_PROTOCOL_VERSION >= 2
         else
@@ -507,5 +513,38 @@ int ReceiveBind(igtl::Socket * socket, igtl::MessageHeader * header)
 
   return 1;
 }
+
+
+int ReceiveCapability(igtl::Socket * socket, igtl::MessageHeader * header)
+{
+  
+  std::cerr << "Receiving CAPABILITY data type." << std::endl;
+
+  // Create a message buffer to receive transform data
+  igtl::CapabilityMessage::Pointer capabilMsg;
+  capabilMsg = igtl::CapabilityMessage::New();
+  capabilMsg->SetMessageHeader(header);
+  capabilMsg->AllocatePack();
+
+  // Receive transform data from the socket
+  socket->Receive(capabilMsg->GetPackBodyPointer(), capabilMsg->GetPackBodySize());
+
+  // Deserialize the transform data
+  // If you want to skip CRC check, call Unpack() without argument.
+  int c = capabilMsg->Unpack(1);
+  
+  if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
+    {
+    int nTypes = capabilMsg->GetNumberOfTypes();
+    for (int i = 0; i < nTypes; i ++)
+      {
+      std::cerr << "Typename #" << i << ": " << capabilMsg->GetType(i) << std::endl;
+      }
+    }
+
+  return 1;
+  
+}
+
 
 #endif //OpenIGTLink_PROTOCOL_VERSION >= 2
