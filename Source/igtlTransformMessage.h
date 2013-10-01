@@ -35,11 +35,8 @@ public:
   igtlNewMacro(igtl::GetTransformMessage);
 
 protected:
-  GetTransformMessage() : HeaderOnlyMessageBase() {};
+  GetTransformMessage() : HeaderOnlyMessageBase() { this->m_DefaultBodyType  = "GET_TRANS"; };
   ~GetTransformMessage() {};
-  
-protected:
-  virtual const char* DefaultBodyType() { return "GET_TRANS"; };
 };
 
 

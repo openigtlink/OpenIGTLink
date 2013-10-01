@@ -20,6 +20,7 @@
 
 #include "igtlOSUtil.h"
 #include "igtlStatusMessage.h"
+#include "igtlImageMessage.h"
 #include "igtlClientSocket.h"
 
 //
@@ -61,18 +62,18 @@ int main(int argc, char* argv[])
   //------------------------------------------------------------
   // Allocate Status Message Class
 
-  igtl::StatusMessage::Pointer statusMsg;
-  statusMsg = igtl::StatusMessage::New();
+  igtl::GetStatusMessage::Pointer statusMsg;
+  statusMsg = igtl::GetStatusMessage::New();
   statusMsg->SetDeviceName("Device");
 
   //------------------------------------------------------------
   // loop
   for (int i = 0; i < 100; i ++)
     {
-    statusMsg->SetCode(igtl::StatusMessage::STATUS_OK);
-    statusMsg->SetSubCode(128);
-    statusMsg->SetErrorName("OK!");
-    statusMsg->SetStatusString("This is a test to send status message.");
+    //statusMsg->SetCode(igtl::StatusMessage::STATUS_OK);
+    //statusMsg->SetSubCode(128);
+    //statusMsg->SetErrorName("OK!");
+    //statusMsg->SetStatusString("This is a test to send status message.");
     statusMsg->Pack();
     socket->Send(statusMsg->GetPackPointer(), statusMsg->GetPackSize());
     igtl::Sleep(interval); // wait
