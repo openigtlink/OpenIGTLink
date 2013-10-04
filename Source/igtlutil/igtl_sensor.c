@@ -37,7 +37,7 @@ void igtl_export igtl_sensor_convert_byte_order(igtl_sensor_header* header, igtl
 
   if (igtl_is_little_endian()) 
     {
-    larray = (int) header->larray; // NOTE: larray is 8-bit (doesn't depend on endianness)
+    larray = (int) header->larray; /* NOTE: larray is 8-bit (doesn't depend on endianness) */
     header->unit = BYTE_SWAP_INT64(header->unit);
     
     tmp = (igtl_uint64*) data;

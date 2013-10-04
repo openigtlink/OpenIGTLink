@@ -230,12 +230,11 @@ public:
   igtlNewMacro(igtl::HeaderOnlyMessageBase);
 
 protected:
-  HeaderOnlyMessageBase() { this->m_DefaultBodyType  = this->DefaultBodyType(); };
+  HeaderOnlyMessageBase()  { this->m_DefaultBodyType  = ""; };
   ~HeaderOnlyMessageBase() {};
   
 protected:
 
-  virtual const char * DefaultBodyType() { return ""; }; // Must be defined in a child class.
   virtual int  GetBodyPackSize() { return 0; };
   virtual int  PackBody()        { AllocatePack(); return 1; };
   virtual int  UnpackBody()      { return 1; };
@@ -259,10 +258,8 @@ public: \
   igtlNewMacro(igtl::name); \
   \
 protected: \
-  name() : HeaderOnlyMessageBase() {}; \
+  name() : HeaderOnlyMessageBase() { this->m_DefaultBodyType  = msgtype; }; \
   ~name() {}; \
-protedted: \
-  virtual const char* DefaultBodyType() { return msgtype; };    \
 }; 
 
 } // namespace igtl
