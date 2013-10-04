@@ -367,13 +367,13 @@ int igtl_bind_pack_normal(igtl_bind_info * info, void * byte_array)
   /* Number of child messages */
   if (igtl_is_little_endian())
     {
-    //*((igtl_uint16*) ptr) = BYTE_SWAP_INT16(info->ncmessages);
+    /* *((igtl_uint16*) ptr) = BYTE_SWAP_INT16(info->ncmessages); */
     tmp16 = BYTE_SWAP_INT16(info->ncmessages);
     memcpy(ptr, &tmp16, sizeof(igtl_uint16));
     }
   else
     {
-    //*((igtl_uint16*) ptr) = info->ncmessages;
+    /* *((igtl_uint16*) ptr) = info->ncmessages; */
     memcpy(ptr, &(info->ncmessages), sizeof(igtl_uint16));
     }
   ptr += sizeof(igtl_uint16);
@@ -476,13 +476,13 @@ int igtl_bind_pack_request(igtl_bind_info * info, void * byte_array)
   /* Number of child messages */
   if (igtl_is_little_endian())
     {
-    //*((igtl_uint16*) ptr) = BYTE_SWAP_INT16(info->ncmessages);
+    /* *((igtl_uint16*) ptr) = BYTE_SWAP_INT16(info->ncmessages); */
     tmp16 = BYTE_SWAP_INT16(info->ncmessages);
     memcpy(ptr, &tmp16, sizeof(igtl_uint16));
     }
   else
     {
-    //*((igtl_uint16*) ptr) = info->ncmessages;
+    /* *((igtl_uint16*) ptr) = info->ncmessages; */
     memcpy(ptr, &(info->ncmessages), sizeof(igtl_uint16));
     }
   ptr += sizeof(igtl_uint16);
