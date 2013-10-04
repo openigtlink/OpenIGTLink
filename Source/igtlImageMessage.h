@@ -37,11 +37,9 @@ public:
 
 protected:
 
- GetImageMessage() : HeaderOnlyMessageBase() {};
+ GetImageMessage() : HeaderOnlyMessageBase() { this->m_DefaultBodyType  = "GET_IMAGE"; };
   ~GetImageMessage() {};
 
-protected:
-  virtual const char* DefaultBodyType() { return "GET_IMAGE"; };
 };
 
 

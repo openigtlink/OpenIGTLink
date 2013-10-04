@@ -54,7 +54,7 @@ void igtl_export igtl_stt_tdata_convert_byte_order(igtl_stt_tdata* stt_tdata)
 
 void igtl_export igtl_rts_tdata_convert_byte_order(igtl_rts_tdata* rts_tdata)
 {
-  // do nothing
+  /* do nothing */
 }
 
 

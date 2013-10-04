@@ -37,11 +37,8 @@ public:
   igtlNewMacro(igtl::GetStatusMessage);
 
 protected:
-  GetStatusMessage() : HeaderOnlyMessageBase() {};
+  GetStatusMessage() : HeaderOnlyMessageBase() { this->m_DefaultBodyType  = "GET_STATUS"; };
   ~GetStatusMessage() {};
-  
-protected:
-  virtual const char* DefaultBodyType() { return "GET_STATUS"; };
 };
 
 

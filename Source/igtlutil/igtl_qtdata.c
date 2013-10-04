@@ -60,7 +60,7 @@ void igtl_export igtl_stt_qtdata_convert_byte_order(igtl_stt_qtdata* stt_qtdata)
 
 void igtl_export igtl_rts_qtdata_convert_byte_order(igtl_rts_qtdata* rts_qtdata)
 {
-  // do nothing
+  /* do nothing */
 }
 
 
