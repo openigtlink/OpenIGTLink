@@ -20,7 +20,7 @@
 /* 8-bit integer type */
 #if IGTL_SIZEOF_CHAR == 1
   typedef unsigned char igtl_uint8;
-  typedef char          igtl_int8;
+  typedef signed char   igtl_int8;
 #else
   # error "No native data type can represent an 8-bit integer."
 #endif
