@@ -25,10 +25,13 @@
 #include "igtlMessageHeader.h"
 #include "igtlImageMessage.h"
 #include "igtlImageMetaMessage.h"
+#include "igtlLabelMetaMessage.h"
 #include "igtlServerSocket.h"
 
 int SendImageMeta(igtl::Socket::Pointer& socket, const char* name);
+int SendLabelMeta(igtl::Socket::Pointer& socket, const char* name);
 int SendImage(igtl::Socket::Pointer& socket, const char* name, const char* filedir);
+int SendLabel(igtl::Socket::Pointer& socket, const char* name, const char* filedir);
 int GetTestImage(igtl::ImageMessage::Pointer& msg, const char* dir, int i);
 
 int main(int argc, char* argv[])
@@ -106,6 +109,10 @@ int main(int argc, char* argv[])
           {
           //socket->Skip(headerMsg->GetBodySizeToRead(), 0);
           SendImageMeta(socket, headerMsg->GetDeviceName());
+          }
+        else if (strcmp(headerMsg->GetDeviceType(), "GET_LBMETA") == 0)
+          {
+          SendLabelMeta(socket, headerMsg->GetDeviceName());
           }
         else if (strcmp(headerMsg->GetDeviceType(), "GET_IMAGE") == 0)
           {
@@ -209,6 +216,62 @@ int SendImageMeta(igtl::Socket::Pointer& socket, const char* name)
 }
 
 
+int SendLabelMeta(igtl::Socket::Pointer& socket, const char* name)
+{
+  //------------------------------------------------------------
+  // Allocate Status Message Class
+
+  igtl::LabelMetaMessage::Pointer lbMetaMsg;
+  lbMetaMsg = igtl::LabelMetaMessage::New();
+  // NOTE: the server should send a message with the same device name
+  // as the received query message.
+  lbMetaMsg->SetDeviceName(name);
+
+  //---------------------------
+  // Create 1st meta data
+  igtl::LabelMetaElement::Pointer lbMeta0;
+  lbMeta0 = igtl::LabelMetaElement::New();
+  lbMeta0->SetName("LABEL_DESCRIPTION_0");
+  lbMeta0->SetDeviceName("LABEL_0");
+  lbMeta0->SetOwner("IMAGE_0");
+  lbMeta0->SetSize(512, 512, 64);
+
+  //---------------------------
+  // Create 2nd meta data
+  igtl::LabelMetaElement::Pointer lbMeta1;
+  lbMeta1 = igtl::LabelMetaElement::New();
+  lbMeta1->SetName("LABEL_DESCRIPTION_1");
+  lbMeta1->SetDeviceName("LABEL_1");
+  lbMeta1->SetOwner("IMAGE_1");
+  
+  lbMeta1->SetSize(256, 128, 32);
+
+  //---------------------------
+  // Create 3rd meta data
+  igtl::LabelMetaElement::Pointer lbMeta2;
+  lbMeta2 = igtl::LabelMetaElement::New();
+  lbMeta2->SetName("LABEL_DESCRIPTION_2");
+  lbMeta2->SetDeviceName("LABEL_2");
+  lbMeta2->SetOwner("IMAGE_2");
+  lbMeta2->SetSize(256, 256, 32);
+
+  lbMetaMsg->AddLabelMetaElement(lbMeta0);
+  lbMetaMsg->AddLabelMetaElement(lbMeta1);
+  lbMetaMsg->AddLabelMetaElement(lbMeta2);
+
+  lbMetaMsg->Pack();
+  std::cerr << "Size of pack: " << lbMetaMsg->GetPackSize() << std::endl;
+  std::cerr << "Name of type: " << lbMetaMsg->GetDeviceType() << std::endl;
+  std::cerr << "Sending a LBMETA message..." << std::endl;
+
+  socket->Send(lbMetaMsg->GetPackPointer(), lbMetaMsg->GetPackSize());
+
+  return 1;
+
+}
+
+
+
 int SendImage(igtl::Socket::Pointer& socket, const char* name, const char* filedir)
 {
   int index = 0;
@@ -224,6 +287,18 @@ int SendImage(igtl::Socket::Pointer& socket, const char* name, const char* filed
   else if (strcmp(name, "IMAGE_2") == 0)
     {
     index = 3;
+    }
+  if (strcmp(name, "LABEL_0") == 0)
+    {
+    index = 4;
+    }
+  else if (strcmp(name, "LABEL_1") == 0)
+    {
+    index = 5;
+    }
+  else if (strcmp(name, "LABEL_2") == 0)
+    {
+    index = 6;
     }
 
   if (index > 0)
@@ -268,7 +343,6 @@ int SendImage(igtl::Socket::Pointer& socket, const char* name, const char* filed
 }
 
 
-
 //------------------------------------------------------------
 // Function to read test image data
 int GetTestImage(igtl::ImageMessage::Pointer& msg, const char* dir, int i)
@@ -276,7 +350,7 @@ int GetTestImage(igtl::ImageMessage::Pointer& msg, const char* dir, int i)
 
   //------------------------------------------------------------
   // Check if image index is in the range
-  if (i < 0 || i >= 5) 
+  if (i < 0 || i >= 7) 
     {
     std::cerr << "Image index is invalid." << std::endl;
     return 0;
