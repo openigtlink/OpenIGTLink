@@ -285,7 +285,7 @@ int LabelMetaMessage::UnpackBody()
     elemClass->SetSize(element->size);
 
     strbuf[IGTL_LBMETA_LEN_OWNER] = '\n';
-    strncpy(strbuf, (char*)element->device_name, IGTL_LBMETA_LEN_OWNER);
+    strncpy(strbuf, (char*)element->owner, IGTL_LBMETA_LEN_OWNER);
     elemClass->SetOwner(strbuf);
 
     this->m_LabelMetaList.push_back(elemClass);
