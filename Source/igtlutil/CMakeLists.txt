@@ -39,6 +39,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtl_lbmeta.h
     igtl_point.h
     igtl_tdata.h
+    igtl_fulltdata.h
     igtl_qtdata.h
     igtl_trajectory.h
     igtl_unit.h
@@ -56,6 +57,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtl_lbmeta.c
     igtl_point.c
     igtl_tdata.c
+    igtl_fulltdata.c
     igtl_qtdata.c
     igtl_trajectory.c
     igtl_unit.c
