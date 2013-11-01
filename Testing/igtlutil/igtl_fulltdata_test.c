@@ -57,15 +57,20 @@ int main( int argc, char * argv [] )
   message.tlist[0].transform[0] = -0.954892f;
   message.tlist[0].transform[1] = 0.196632f;
   message.tlist[0].transform[2] = -0.222525f;
-  message.tlist[0].transform[3] = -0.196632f;
-  message.tlist[0].transform[4] = 0.142857f;
-  message.tlist[0].transform[5] = 0.970014f;
-  message.tlist[0].transform[6] = 0.222525f;
-  message.tlist[0].transform[7] = 0.970014f;
-  message.tlist[0].transform[8] = -0.0977491f;
-  message.tlist[0].transform[9] = 46.0531f;
-  message.tlist[0].transform[10] = 19.4709f;
-  message.tlist[0].transform[11] = 46.0531f;
+  message.tlist[0].transform[3] = 0.0f;
+  message.tlist[0].transform[4] = -0.196632f;
+  message.tlist[0].transform[5] = 0.142857f;
+  message.tlist[0].transform[6] = 0.970014f;
+  message.tlist[0].transform[7] = 0.0f;
+  message.tlist[0].transform[8] = 0.222525f;
+  message.tlist[0].transform[9] = 0.970014f;
+  message.tlist[0].transform[10] = -0.0977491f;
+  message.tlist[0].transform[11] = 0.0f;
+  message.tlist[0].transform[12] = 46.0531f;
+  message.tlist[0].transform[13] = 19.4709f;
+  message.tlist[0].transform[14] = 46.0531f;
+  message.tlist[0].transform[15] = 1.0f;
+
   message.tlist[0].error = 46.0531f;
   
   /* Tracking data 1 */
@@ -75,15 +80,19 @@ int main( int argc, char * argv [] )
   message.tlist[1].transform[0] = -0.954892f;
   message.tlist[1].transform[1] = 0.196632f;
   message.tlist[1].transform[2] = -0.222525f;
-  message.tlist[1].transform[3] = -0.196632f;
-  message.tlist[1].transform[4] = 0.142857f;
-  message.tlist[1].transform[5] = 0.970014f;
-  message.tlist[1].transform[6] = 0.222525f;
-  message.tlist[1].transform[7] = 0.970014f;
-  message.tlist[1].transform[8] = -0.0977491f;
-  message.tlist[1].transform[9] = 46.0531f;
-  message.tlist[1].transform[10] = 19.4709f;
-  message.tlist[1].transform[11] = 46.0531f;
+  message.tlist[1].transform[3] = 0.0f;
+  message.tlist[1].transform[4] = -0.196632f;
+  message.tlist[1].transform[5] = 0.142857f;
+  message.tlist[1].transform[6] = 0.970014f;
+  message.tlist[1].transform[7] = 0.0f;
+  message.tlist[1].transform[8] = 0.222525f;
+  message.tlist[1].transform[9] = 0.970014f;
+  message.tlist[1].transform[10] = -0.0977491f;
+  message.tlist[1].transform[11] = 0.0f;
+  message.tlist[1].transform[12] = 46.0531f;
+  message.tlist[1].transform[13] = 19.4709f;
+  message.tlist[1].transform[14] = 46.0531f;
+  message.tlist[1].transform[15] = 1.0f;
   message.tlist[1].error = 46.0531f;
 
   /* Tracking data 2 */
@@ -93,15 +102,19 @@ int main( int argc, char * argv [] )
   message.tlist[2].transform[0] = -0.954892f;
   message.tlist[2].transform[1] = 0.196632f;
   message.tlist[2].transform[2] = -0.222525f;
-  message.tlist[2].transform[3] = -0.196632f;
-  message.tlist[2].transform[4] = 0.142857f;
-  message.tlist[2].transform[5] = 0.970014f;
-  message.tlist[2].transform[6] = 0.222525f;
-  message.tlist[2].transform[7] = 0.970014f;
-  message.tlist[2].transform[8] = -0.0977491f;
-  message.tlist[2].transform[9] = 46.0531f;
-  message.tlist[2].transform[10] = 19.4709f;
-  message.tlist[2].transform[11] = 46.0531f;
+  message.tlist[2].transform[3] = 0.0f;
+  message.tlist[2].transform[4] = -0.196632f;
+  message.tlist[2].transform[5] = 0.142857f;
+  message.tlist[2].transform[6] = 0.970014f;
+  message.tlist[2].transform[7] = 0.0f;
+  message.tlist[2].transform[8] = 0.222525f;
+  message.tlist[2].transform[9] = 0.970014f;
+  message.tlist[2].transform[10] = -0.0977491f;
+  message.tlist[2].transform[11] = 0.0f;
+  message.tlist[2].transform[12] = 46.0531f;
+  message.tlist[2].transform[13] = 19.4709f;
+  message.tlist[2].transform[14] = 46.0531f;
+  message.tlist[2].transform[15] = 1.0f;
   message.tlist[2].error = 46.0531f;
 
   /* Swap byte order if necessary */
@@ -145,6 +158,8 @@ int main( int argc, char * argv [] )
     fprintf(stdout, "\n===== First %d bytes of the test message =====\n", s);
     igtl_message_dump_hex(stdout, (const void*)&message, s);
 
+    fprintf(stdout, "\n===== First %d bytes of the gs message =====\n", s);
+    igtl_message_dump_hex(stdout, (const void*)&test_tdata_message, s);
     return EXIT_FAILURE;
     }
 }
