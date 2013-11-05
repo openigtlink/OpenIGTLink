@@ -15,6 +15,8 @@
 #ifndef __igltOSUtil_h
 #define __igltOSUtil_h
 
+#include <cstring>
+
 #include "igtlWin32Header.h"
 namespace igtl
 {
@@ -23,6 +25,14 @@ namespace igtl
    *  The maximum dulation is 
    * */
   void IGTLCommon_EXPORT Sleep(int millisecond);
+
+  /** Just in case strnlen() is not defined (e.g. Mac OS X Snow Leopard) */
+#ifndef OpenIGTLink_HAVE_STRNLEN
+  size_t IGTLCommon_EXPORT Strnlen(const char* s, size_t maxlen);
+#else
+  inline size_t IGTLCommon_EXPORT Strnlen(const char* s, size_t maxlen)
+  { return strnlen(s, maxlen); }
+#endif
 
 }
 

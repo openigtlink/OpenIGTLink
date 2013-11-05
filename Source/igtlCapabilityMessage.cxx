@@ -20,6 +20,7 @@
 
 #include <igtl_header.h>
 #include <igtl_capability.h>
+#include <igtlOSUtil.h>
 
 #include <vector>
 #include <string>
@@ -151,7 +152,7 @@ int CapabilityMessage::UnpackBody()
   for(int i = 0; i < ntypes; i++)
     {
     std::string buf;
-    if (strnlen((const char*)info.typenames[i], IGTL_HEADER_TYPE_SIZE) < IGTL_HEADER_TYPE_SIZE)
+    if (igtl::Strnlen((const char*)info.typenames[i], IGTL_HEADER_TYPE_SIZE) < IGTL_HEADER_TYPE_SIZE)
       {
       buf.append((const char*)info.typenames[i]);
       }

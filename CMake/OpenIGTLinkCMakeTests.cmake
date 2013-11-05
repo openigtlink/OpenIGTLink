@@ -1,6 +1,7 @@
 # See if we need to link the socket library 
 INCLUDE(CheckLibraryExists)
 INCLUDE(CheckSymbolExists)
+INCLUDE(CheckFunctionExists)
 
 CHECK_LIBRARY_EXISTS("socket" getsockname "" OpenIGTLink_HAVE_LIBSOCKET)
 
@@ -32,6 +33,10 @@ IF("OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T" MATCHES "^OpenIGTLink_HAVE_GETS
       "${OUTPUT}\n" APPEND)
   ENDIF(OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T)
 ENDIF("OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T" MATCHES "^OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T$")
+
+
+# e.g. Mac OS X Snow Leopard does not have strnlen().
+CHECK_FUNCTION_EXISTS(strnlen OpenIGTLink_HAVE_STRNLEN)
 
 # e.g. IBM BlueGene/L doesn't have SO_REUSEADDR, because "setsockopt is not needed for
 # BlueGene/L applications" according to the BlueGene/L Application Development handbook
