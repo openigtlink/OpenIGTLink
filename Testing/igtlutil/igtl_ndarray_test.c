@@ -21,6 +21,7 @@
 #include "igtl_util.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 
 #define EXIT_SUCCESS 0

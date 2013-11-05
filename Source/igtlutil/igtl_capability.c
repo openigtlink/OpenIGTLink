@@ -128,7 +128,7 @@ int igtl_export igtl_capability_unpack(void * byte_array, igtl_capability_info *
   ptr = byte_array;
   for (i = 0; i < ntypes; i ++)
     {
-    strncpy(info->typenames[i], ptr, IGTL_HEADER_TYPE_SIZE);
+    strncpy((char*)info->typenames[i], (char*)ptr, IGTL_HEADER_TYPE_SIZE);
     info->typenames[i][IGTL_HEADER_TYPE_SIZE] = '\0';
     ptr += IGTL_HEADER_TYPE_SIZE;
     }
@@ -157,7 +157,7 @@ int igtl_export igtl_capability_pack(igtl_capability_info * info, void * byte_ar
   
   for (i = 0; i < info->ntypes; i ++)
     {
-    strncpy(ptr, info->typenames[i], IGTL_HEADER_TYPE_SIZE);
+    strncpy((char*)ptr, (char*)info->typenames[i], IGTL_HEADER_TYPE_SIZE);
     ptr += IGTL_HEADER_TYPE_SIZE;
     }
   

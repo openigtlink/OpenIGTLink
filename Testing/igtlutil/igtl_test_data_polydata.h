@@ -76,7 +76,7 @@ char test_polydata_message_body[] = {
   0x3f, 0x80, 0x00, 0x00,                         /* Point #7 - y*/
   0x3f, 0x80, 0x00, 0x00,                         /* Point #7 - z*/
 
-                                                  /* No vertices *
+                                                  /* No vertices */
 
                                                   /* No lines */
 

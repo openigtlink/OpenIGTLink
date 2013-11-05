@@ -15,6 +15,8 @@
 =========================================================================*/
 
 #include <stdio.h>
+#include <string.h>
+
 #include "igtl_types.h"
 #include "igtl_header.h"
 #include "igtl_colortable.h"
