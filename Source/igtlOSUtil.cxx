@@ -20,6 +20,8 @@
   #include <time.h>
 #endif
 
+#include <string.h>
+
 namespace igtl
 {
 
@@ -39,7 +41,25 @@ void Sleep(int milliseconds)
   nanosleep(&req, NULL);
   
 #endif
-  
 }
 
+
+
+// strnlen(), if not defined
+#ifndef OpenIGTLink_HAVE_STRNLEN
+size_t Strnlen(const char* s, size_t maxlen)
+{
+
+  size_t i;
+ 
+  for(i = 0; i < maxlen; i++) {
+    if(s[i] == '\0') return i;
+  }
+  
+  return maxlen;
+
+}
+#endif
+
+  
 }
