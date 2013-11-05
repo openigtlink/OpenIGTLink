@@ -54,10 +54,10 @@ int main( int argc, char * argv [] )
     return EXIT_FAILURE;
     }
 
-  strcpy(info.typenames[0], "IMAGE");
-  strcpy(info.typenames[1], "GET_IMAGE");
-  strcpy(info.typenames[2], "TRANSFORM");
-  strcpy(info.typenames[3], "GET_TRANS");
+  strcpy((char*)info.typenames[0], "IMAGE");
+  strcpy((char*)info.typenames[1], "GET_IMAGE");
+  strcpy((char*)info.typenames[2], "TRANSFORM");
+  strcpy((char*)info.typenames[3], "GET_TRANS");
 
   igtl_capability_pack(&info, message.body);
 
