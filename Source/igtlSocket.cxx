@@ -312,9 +312,16 @@ int Socket::Send(const void* data, int length)
 #if defined(_WIN32) && !defined(__CYGWIN__)
     flags = 0;
 #else
-    // disabling, since not present on SUN.
-    // flags = MSG_NOSIGNAL; //disable signal on Unix boxes.
+    // On unix boxes if the client disconnects and the server attempts
+    // to send data through the socket then the application crashes
+    // due to SIGPIPE signal. Disable the signal to prevent crash.
+  #ifndef __sun
+    flags = MSG_NOSIGNAL;
+  #else
+    // Signal is not present on SUN systems, the signal has
+    // to be managed at application level.
     flags = 0;
+  #endif
 #endif
     int n = send(this->m_SocketDescriptor, buffer+total, length-total, flags);
     if(n < 0)
