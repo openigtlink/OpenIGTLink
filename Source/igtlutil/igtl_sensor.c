@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink Library
-  Module:    $HeadURL: $
+  Program:   The OpenIGTLink Library
   Language:  C
-  Date:      $Date: 2010-07-21 14:15:29 -0400 (Wed, 21 Jul 2010) $
-  Version:   $Revision: 6836 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -39,7 +37,7 @@ void igtl_export igtl_sensor_convert_byte_order(igtl_sensor_header* header, igtl
 
   if (igtl_is_little_endian()) 
     {
-    larray = (int) header->larray; // NOTE: larray is 8-bit (doesn't depend on endianness)
+    larray = (int) header->larray; /* NOTE: larray is 8-bit (doesn't depend on endianness) */
     header->unit = BYTE_SWAP_INT64(header->unit);
     
     tmp = (igtl_uint64*) data;

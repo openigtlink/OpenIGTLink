@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
     std::cerr << "Usage: " << argv[0] << " <hostname> <port> <string>"    << std::endl;
     std::cerr << "    <hostname> : IP or host name"                    << std::endl;
     std::cerr << "    <port>     : Port # (18944 in Slicer default)"   << std::endl;
-    std::cerr << "    <fps>      : Frequency (fps) to send coordinate" << std::endl;
+    std::cerr << "    <fps>      : Frequency (fps) to send string" << std::endl;
     exit(0);
     }
 

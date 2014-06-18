@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink2_beta/Source/igtlutil/igtl_image.c $
+  Program:   The OpenIGTLink Library
   Language:  C
-  Date:      $Date: 2010-04-15 15:51:48 -0400 (Thu, 15 Apr 2010) $
-  Version:   $Revision: 6269 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -62,7 +60,7 @@ void igtl_export igtl_stt_qtdata_convert_byte_order(igtl_stt_qtdata* stt_qtdata)
 
 void igtl_export igtl_rts_qtdata_convert_byte_order(igtl_rts_qtdata* rts_qtdata)
 {
-  // do nothing
+  /* do nothing */
 }
 
 

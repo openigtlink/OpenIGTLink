@@ -1,6 +1,6 @@
 /*=========================================================================
 
-  Program:   Open IGT Link Library
+  Program:   OpenIGTLink Library
   Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/igtlConfigure.h.in $
   Language:  C
   Date:      $Date: 2010-06-09 16:16:36 -0400 (Wed, 09 Jun 2010) $
@@ -35,6 +35,8 @@
 #cmakedefine OpenIGTLink_USE_WIN32_THREADS
 #cmakedefine OpenIGTLink_USE_SPROC
 #cmakedefine OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T
+#cmakedefine OpenIGTLink_HAVE_STRNLEN
+
 #define OpenIGTLink_PROTOCOL_VERSION @OpenIGTLink_PROTOCOL_VERSION@
 
 #endif /*__IGTL_CONFIGURE_H*/

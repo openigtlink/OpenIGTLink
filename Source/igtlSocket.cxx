@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   Open IGT Link Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlSocket.cxx $
+  Program:   The OpenIGTLink Library
   Language:  C++
-  Date:      $Date: 2010-06-09 16:16:36 -0400 (Wed, 09 Jun 2010) $
-  Version:   $Revision: 6525 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -25,21 +23,6 @@
      This software is distributed WITHOUT ANY WARRANTY; without even
      the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notice for more information.
-
-=========================================================================*/
-/*=========================================================================
-
-  Program:   Open ITK Link Library
-  Module:    $RCSfile: itkImage.h,v $
-  Language:  C++
-  Date:      $Date: 2010-06-09 16:16:36 -0400 (Wed, 09 Jun 2010) $
-  Version:   $Revision: 6525 $
-
-  Copyright (c) Insight Software Consortium. All rights reserved.
-
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 
@@ -65,7 +48,7 @@
 #define WSA_VERSION MAKEWORD(1,1)
 #define igtlCloseSocketMacro(sock) (closesocket(sock))
 #else
-#define igtlCloseSocketMacro(sock) (close(sock))
+#define igtlCloseSocketMacro(sock) (shutdown(sock, 2))
 #endif
 
 namespace igtl
@@ -359,10 +342,12 @@ int Socket::Receive(void* data, int length, int readFully/*=1*/)
 #if defined(_WIN32) && !defined(__CYGWIN__)
     int trys = 0;
 #endif
+
     int n = recv(this->m_SocketDescriptor, buffer+total, length-total, 0);
-    if(n < 1)
-      {
+
 #if defined(_WIN32) && !defined(__CYGWIN__)
+    if(n == 0)
+      {
       // On long messages, Windows recv sometimes fails with WSAENOBUFS, but
       // will work if you try again.
       int error = WSAGetLastError();
@@ -371,10 +356,27 @@ int Socket::Receive(void* data, int length, int readFully/*=1*/)
         Sleep(1);
         continue;
         }
-#endif
       // FIXME : Use exceptions ?  igtlErrorMacro("Socket Error: Receive failed.");
       return 0;
       }
+    else if (n < 0)
+      {
+      // TODO: Need to check if this means timeout.
+      return -1;
+      }
+#else
+    if(n == 0) // Disconnected
+      {
+      // FIXME : Use exceptions ?  igtlErrorMacro("Socket Error: Receive failed.");
+      return 0;
+      }
+    else if (n < 0) // Error (including time out)
+      {
+      // TODO: If it is time-out, errno == EAGAIN
+      return -1;
+      }
+#endif
+
     total += n;
     } while(readFully && total < length);
   return total;
@@ -462,6 +464,108 @@ int Socket::SetSendTimeout(int timeout)
     }
 
   return timeout;
+}
+
+
+//-----------------------------------------------------------------------------
+int Socket::SetReceiveBlocking(int sw)
+{
+  if (!this->GetConnected())
+    {
+    return 0;
+    }
+
+  // If sw == 1, timeout is set to 0 (wait until it receives message)  
+#if defined(_WIN32) && !defined(__CYGWIN__)
+  if (sw==0)
+    {
+    this->m_ReceiveTimeout = 1;
+    }
+  else
+    {
+    this->m_ReceiveTimeout = 0;
+    }
+  int len;
+#else
+  if (sw==0)
+    {
+    this->m_ReceiveTimeout.tv_sec  = 0;          /* second */
+    this->m_ReceiveTimeout.tv_usec = 1;          /* nanosecond */
+    }
+  else
+    {
+    this->m_ReceiveTimeout.tv_sec  = 0;          /* second */
+    this->m_ReceiveTimeout.tv_usec = 0;          /* nanosecond */
+    }
+  socklen_t len;
+#endif
+  if (sw==0)
+    {
+    getsockopt(this->m_SocketDescriptor, SOL_SOCKET, SO_RCVTIMEO,
+               (char*)&(this->m_OrigReceiveTimeout), &len);
+    setsockopt(this->m_SocketDescriptor, SOL_SOCKET, SO_RCVTIMEO,
+               (char*)&(this->m_ReceiveTimeout), sizeof(this->m_ReceiveTimeout));
+    this->m_ReceiveTimeoutFlag = 1;
+    }
+  else if (this->m_ReceiveTimeoutFlag)
+    {
+    setsockopt(this->m_SocketDescriptor, SOL_SOCKET, SO_RCVTIMEO,
+               (char*)&(this->m_OrigReceiveTimeout), sizeof(this->m_OrigReceiveTimeout));
+    this->m_ReceiveTimeoutFlag = 0;
+    }
+
+  return sw;
+}
+
+
+//-----------------------------------------------------------------------------
+int Socket::SetSendBlocking(int sw)
+{
+  if (!this->GetConnected())
+    {
+    return 0;
+    }
+
+  // If sw == 1, timeout is set to 0 (wait until it receives message)
+#if defined(_WIN32) && !defined(__CYGWIN__)
+  if (sw==0)
+    {
+    this->m_ReceiveTimeout = 1;
+    }
+  else
+    {
+    this->m_ReceiveTimeout = 0;
+    }
+  int len;
+#else
+  if (sw==0)
+    {
+    this->m_ReceiveTimeout.tv_sec  = 0;          /* second */
+    this->m_ReceiveTimeout.tv_usec = 1;          /* nanosecond */
+    }
+  else
+    {
+    this->m_ReceiveTimeout.tv_sec  = 0;          /* second */
+    this->m_ReceiveTimeout.tv_usec = 0;          /* nanosecond */
+    }
+  socklen_t len;
+#endif
+  if (sw==0)
+    {
+    getsockopt(this->m_SocketDescriptor, SOL_SOCKET, SO_SNDTIMEO,
+               (char*)&(this->m_OrigSendTimeout), &len);
+    setsockopt(this->m_SocketDescriptor, SOL_SOCKET, SO_SNDTIMEO,
+               (char*)&(this->m_SendTimeout), sizeof(this->m_SendTimeout));
+    this->m_SendTimeoutFlag = 1;
+    }
+  else if (this->m_SendTimeoutFlag)
+    {
+    setsockopt(this->m_SocketDescriptor, SOL_SOCKET, SO_SNDTIMEO,
+               (char*)&(this->m_OrigSendTimeout), sizeof(this->m_OrigSendTimeout));
+    this->m_SendTimeoutFlag = 0;
+    }
+
+  return sw;
 }
 
 

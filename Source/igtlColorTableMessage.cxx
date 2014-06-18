@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   Open IGT Link Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink2_beta/Source/igtlColorTableMessage.cxx $
+  Program:   The OpenIGTLink Library
   Language:  C++
-  Date:      $Date: 2009-07-04 15:04:53 -0400 (Sat, 04 Jul 2009) $
-  Version:   $Revision: 4632 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -30,7 +28,7 @@ ColorTableMessage::ColorTableMessage():
   mapType   = MAP_UINT8;
   m_ColorTableHeader = NULL;
   m_ColorTable       = NULL;
-  m_DefaultBodyType  = "COLORTABLE";
+  m_DefaultBodyType  = "COLORT";
 
 }
 

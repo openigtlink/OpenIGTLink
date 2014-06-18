@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlutil/igtl_transform.c $
+  Program:   The OpenIGTLink Library
   Language:  C
-  Date:      $Date: 2011-06-24 11:18:21 -0400 (Fri, 24 Jun 2011) $
-  Version:   $Revision: 7604 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 

@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   Open IGT Link Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlObject.cxx $
+  Program:   The OpenIGTLink Library
   Language:  C++
-  Date:      $Date: 2009-11-12 23:48:21 -0500 (Thu, 12 Nov 2009) $
-  Version:   $Revision: 5332 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 

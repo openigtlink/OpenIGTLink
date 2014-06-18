@@ -60,7 +60,7 @@ int main( int argc, char * argv [] )
   /* Set dummy string header and values */
   message.string_header.encoding = 3;
   message.string_header.length = IGTL_STRING_TEST_STRING_LEN;
-  strncpy(message.string, IGTL_STRING_TEST_STRING, IGTL_STRING_TEST_STRING_LEN);
+  strncpy((char*)message.string, IGTL_STRING_TEST_STRING, IGTL_STRING_TEST_STRING_LEN);
   igtl_string_convert_byte_order(&(message.string_header));
 
   /* Set header */

@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink Library
-  Module:    $RCSfile$
+  Program:   The OpenIGTLink Library
   Language:  C
-  Date:      $Date: 2009-11-17 22:53:00 -0500 (Tue, 17 Nov 2009) $
-  Version:   $Revision: 5366 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -31,7 +29,7 @@
 extern "C" {
 #endif
 
-/*
+/**
  * Label meta data in OpenIGTLinik protocol
  *
  * LBMETA is a data type to send a list of label image data available in a server.
@@ -91,38 +89,19 @@ typedef struct {
 #pragma pack()
 
 
-/*
- * Macros for label meta data size
- *
- * igtl_lbmeta_get_data_size(n) calculates the size of body based on the number
- * of images.The size of body is used in the message header.
- * igtl_lbmeta_get_data_n(size) calculates the number of images in the body, based on
- * the body size. This function may be used when a client program parses LBMETA message. 
- *
- */
-
+/** igtl_lbmeta_get_data_size(n) calculates the size of body based on the number
+ *  of images.The size of body is used in the message header.*/
 #define igtl_lbmeta_get_data_size(n)  ((n) * IGTL_LBMETA_ELEMENT_SIZE)
+
+/** igtl_lbmeta_get_data_n(size) calculates the number of images in the body, based on
+ *  the body size. This function may be used when a client program parses LBMETA message. */
 #define igtl_lbmeta_get_data_n(size)  ((size) / IGTL_LBMETA_ELEMENT_SIZE)
 
-
-/*
- * Byte order conversion for the image meta data
- *
- * This function converts endianness of each member variable
- * in igtl_lbmeta_element from host byte order to network byte order,
- * or vice versa.
- */
-
+/** Converts endianness of each member variable in igtl_lbmeta_element
+ *  from host byte order to network byte order, or vice versa. */
 void igtl_export igtl_lbmeta_convert_byte_order(igtl_lbmeta_element* metalist, int nitem);
 
-
-/*
- * CRC calculation
- *
- * This function calculates CRC of image meta data body.
- *
- */
-
+/** Calculates CRC of image meta data body. */
 igtl_uint64 igtl_export igtl_lbmeta_get_crc(igtl_lbmeta_element* metalist, int nitem);
 
 #ifdef __cplusplus

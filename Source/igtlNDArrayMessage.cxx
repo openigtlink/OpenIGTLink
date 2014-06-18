@@ -1,10 +1,8 @@
 /*=========================================================================
 
   Program:   The OpenIGTLink Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink2_beta/Source/igtlNDArrayMessage.cxx $
   Language:  C++
-  Date:      $Date: 2010-01-17 13:04:20 -0500 (Sun, 17 Jan 2010) $
-  Version:   $Revision: 5575 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -217,7 +215,7 @@ int NDArrayMessage::PackBody()
     s[i] = size[i];
     }
   int r = igtl_ndarray_alloc_info(&info, s);
-  delete s;
+  delete [] s;
 
   if (r == 0)
     {

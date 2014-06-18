@@ -24,6 +24,7 @@
 #include "igtl_transform.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 
 #define EXIT_SUCCESS 0

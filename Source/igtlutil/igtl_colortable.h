@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink2_beta/Source/igtlutil/igtl_position.h $
+  Program:   The OpenIGTLink Library
   Language:  C
-  Date:      $Date: 2009-11-13 11:37:44 -0500 (Fri, 13 Nov 2009) $
-  Version:   $Revision: 5335 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -34,11 +32,8 @@ extern "C" {
 #endif
 
 #pragma pack(1)     /* For 1-byte boundary in memroy */
-/*
- * Status data header for OpenIGTLinik protocol
- *
- */
 
+/** Status data header for OpenIGTLinik protocol */
 typedef struct {
   igtl_int8    indexType;      /* Index Type: 3:uint8 5:uint16 */
   igtl_int8    mapType;        /* 3: uint8 5:uint16 19:RGB color */
@@ -46,38 +41,18 @@ typedef struct {
 
 #pragma pack()
 
-
-/*
- * Colortable data size
- *
- * igtl_colortable_get_data_size(n) calculates the size of body based on the index 
- * and map types. The size of body is used in the message header.
- * igtl_colortable_get_data_n(size) calculates the number of images in the body, based on
- * the body size. This function may be used when a client program parses a COLORTABLE message.
- *
- */
-
+/** igtl_colortable_get_data_size(n) calculates the size of body based on the index 
+ *  and map types. The size of body is used in the message header.
+ *  igtl_colortable_get_data_n(size) calculates the number of images in the body, based on
+ *  the body size. This function may be used when a client program parses a COLORTABLE message. */
 igtl_uint64 igtl_export igtl_colortable_get_table_size(igtl_colortable_header* header);
 
-
-/*
- * Byte order conversion for an array of colortable data structure
- *
- * This function converts endianness of each element in an array of
- * igtl_igtl_colortable_header and color table from host byte order to network byte order,
- * or vice versa (if necessary). The function automatically determins the endian type of the host. 
- */
-
+/** Converts endianness of each element in an array of
+ *  igtl_igtl_colortable_header and color table from host byte order to network byte order,
+ *  or vice versa (if necessary). The function automatically determins the endian type of the host. */
 void igtl_export igtl_colortable_convert_byte_order(igtl_colortable_header* header, void* table);
 
-
-/*
- * CRC calculation
- *
- * This function calculates CRC of color table message
- *
- */
-
+/** Calculates CRC of color table message */
 igtl_uint64 igtl_export igtl_colortable_get_crc(igtl_colortable_header* header, void* table);
 
 #ifdef __cplusplus

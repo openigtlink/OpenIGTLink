@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink Library
-  Module:    $HeadURL: $
+  Program:   The OpenIGTLink Library
   Language:  C
-  Date:      $Date: 2010-07-21 14:15:29 -0400 (Wed, 21 Jul 2010) $
-  Version:   $Revision: 6836 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -354,6 +352,7 @@ int igtl_bind_pack_normal(igtl_bind_info * info, void * byte_array)
   igtl_uint16 * nts;
   size_t wb;
   size_t len;
+  igtl_uint16 tmp16;
   igtl_uint64 tmp64;
 
   ptr = (char *) byte_array;
@@ -368,11 +367,14 @@ int igtl_bind_pack_normal(igtl_bind_info * info, void * byte_array)
   /* Number of child messages */
   if (igtl_is_little_endian())
     {
-    *((igtl_uint16*) ptr) = BYTE_SWAP_INT16(info->ncmessages);
+    /* *((igtl_uint16*) ptr) = BYTE_SWAP_INT16(info->ncmessages); */
+    tmp16 = BYTE_SWAP_INT16(info->ncmessages);
+    memcpy(ptr, &tmp16, sizeof(igtl_uint16));
     }
   else
     {
-    *((igtl_uint16*) ptr) = info->ncmessages;
+    /* *((igtl_uint16*) ptr) = info->ncmessages; */
+    memcpy(ptr, &(info->ncmessages), sizeof(igtl_uint16));
     }
   ptr += sizeof(igtl_uint16);
 
@@ -454,6 +456,7 @@ int igtl_bind_pack_request(igtl_bind_info * info, void * byte_array)
   igtl_uint16 * nts;
   size_t wb;
   size_t len;
+  igtl_uint16 tmp16;
 
   ptr = (char *) byte_array;
   nc = info->ncmessages;
@@ -473,11 +476,14 @@ int igtl_bind_pack_request(igtl_bind_info * info, void * byte_array)
   /* Number of child messages */
   if (igtl_is_little_endian())
     {
-    *((igtl_uint16*) ptr) = BYTE_SWAP_INT16(info->ncmessages);
+    /* *((igtl_uint16*) ptr) = BYTE_SWAP_INT16(info->ncmessages); */
+    tmp16 = BYTE_SWAP_INT16(info->ncmessages);
+    memcpy(ptr, &tmp16, sizeof(igtl_uint16));
     }
   else
     {
-    *((igtl_uint16*) ptr) = info->ncmessages;
+    /* *((igtl_uint16*) ptr) = info->ncmessages; */
+    memcpy(ptr, &(info->ncmessages), sizeof(igtl_uint16));
     }
   ptr += sizeof(igtl_uint16);
 

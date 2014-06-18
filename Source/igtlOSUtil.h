@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   Open IGT Link Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlOSUtil.h $
+  Program:   The OpenIGTLink Library
   Language:  C++
-  Date:      $Date: 2008-12-22 19:05:42 -0500 (Mon, 22 Dec 2008) $
-  Version:   $Revision: 3460 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -17,6 +15,8 @@
 #ifndef __igltOSUtil_h
 #define __igltOSUtil_h
 
+#include <cstring>
+
 #include "igtlWin32Header.h"
 namespace igtl
 {
@@ -25,6 +25,14 @@ namespace igtl
    *  The maximum dulation is 
    * */
   void IGTLCommon_EXPORT Sleep(int millisecond);
+
+  /** Just in case strnlen() is not defined (e.g. Mac OS X Snow Leopard) */
+#ifndef OpenIGTLink_HAVE_STRNLEN
+  size_t IGTLCommon_EXPORT Strnlen(const char* s, size_t maxlen);
+#else
+  inline size_t IGTLCommon_EXPORT Strnlen(const char* s, size_t maxlen)
+  { return strnlen(s, maxlen); }
+#endif
 
 }
 

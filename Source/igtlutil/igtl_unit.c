@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink Library
-  Module:    $HeadURL:  $
+  Program:   The OpenIGTLink Library
   Language:  C
-  Date:      $Date: 2010-07-21 14:15:29 -0400 (Wed, 21 Jul 2010) $
-  Version:   $Revision: 6836 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -76,8 +74,8 @@ int igtl_export igtl_unit_unpack(igtl_unit pack, igtl_unit_data* data)
   /* Units */
   for (i = 0; i < 6; i ++)
     {
-    data->unit[i] = (igtl_uint8) (pack >> (10*(5-i) + 4)) && 0x3F;
-    data->exp[i] = (igtl_uint8) (pack >> (10*(5-i))) && 0x0F;
+    data->unit[i] = (igtl_uint8) (pack >> (10*(5-i) + 4)) & 0x3F;
+    data->exp[i] = (igtl_uint8) (pack >> (10*(5-i))) & 0x0F;
     /* Convert signed value in exponent field from 4-bit to 8-bit */
     if (data->exp[i] & 0x08)
       {

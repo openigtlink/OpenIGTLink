@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlutil/igtl_position.h $
+  Program:   The OpenIGTLink Library
   Language:  C
-  Date:      $Date: 2009-11-13 11:37:44 -0500 (Fri, 13 Nov 2009) $
-  Version:   $Revision: 5335 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -32,11 +30,8 @@ extern "C" {
 #endif
 
 #pragma pack(1)     /* For 1-byte boundary in memroy */
-/*
- * Status data header for OpenIGTLinik protocol
- *
- */
 
+/** Status data header for OpenIGTLinik protocol  */
 typedef struct {
   igtl_float32 position[3];    /* (x, y, z) */
   igtl_float32 quaternion[4];  /* (ox, oy, oz, w) */
@@ -44,25 +39,14 @@ typedef struct {
 
 #pragma pack()
 
-/*
- * Byte order conversion for the position data structure
- *
- * This function converts endianness of each member variable
- * in igtl_status_header from host byte order to network byte order,
- * or vice versa.
- */
-
+/** Converts endianness of each member variable
+ *  in igtl_status_header from host byte order to network byte order,
+ *  or vice versa. */
 void igtl_export igtl_position_convert_byte_order(igtl_position* pos);
 void igtl_export igtl_position_convert_byte_order_position_only(igtl_position* pos);
 void igtl_export igtl_position_convert_byte_order_quaternion3(igtl_position* pos);
 
-/*
- * CRC calculation
- *
- * This function calculates CRC of position message
- *
- */
-
+/** Calculates CRC of position message */
 igtl_uint64 igtl_export igtl_position_get_crc(igtl_position* pos);
 
 #ifdef __cplusplus

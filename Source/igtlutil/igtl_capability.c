@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink Library
-  Module:    $HeadURL: $
+  Program:   The OpenIGTLink Library
   Language:  C
-  Date:      $Date: 2010-07-21 14:15:29 -0400 (Wed, 21 Jul 2010) $
-  Version:   $Revision: 6836 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -130,7 +128,7 @@ int igtl_export igtl_capability_unpack(void * byte_array, igtl_capability_info *
   ptr = byte_array;
   for (i = 0; i < ntypes; i ++)
     {
-    strncpy(info->typenames[i], ptr, IGTL_HEADER_TYPE_SIZE);
+    strncpy((char*)info->typenames[i], (char*)ptr, IGTL_HEADER_TYPE_SIZE);
     info->typenames[i][IGTL_HEADER_TYPE_SIZE] = '\0';
     ptr += IGTL_HEADER_TYPE_SIZE;
     }
@@ -159,7 +157,7 @@ int igtl_export igtl_capability_pack(igtl_capability_info * info, void * byte_ar
   
   for (i = 0; i < info->ntypes; i ++)
     {
-    strncpy(ptr, info->typenames[i], IGTL_HEADER_TYPE_SIZE);
+    strncpy((char*)ptr, (char*)info->typenames[i], IGTL_HEADER_TYPE_SIZE);
     ptr += IGTL_HEADER_TYPE_SIZE;
     }
   

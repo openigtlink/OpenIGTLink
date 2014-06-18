@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   Open IGT Link Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlOSUtil.cxx $
+  Program:   The OpenIGTLink Library
   Language:  C++
-  Date:      $Date: 2008-12-22 19:05:42 -0500 (Mon, 22 Dec 2008) $
-  Version:   $Revision: 3460 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -21,6 +19,8 @@
 #else
   #include <time.h>
 #endif
+
+#include <string.h>
 
 namespace igtl
 {
@@ -41,7 +41,25 @@ void Sleep(int milliseconds)
   nanosleep(&req, NULL);
   
 #endif
-  
 }
 
+
+
+// strnlen(), if not defined
+#ifndef OpenIGTLink_HAVE_STRNLEN
+size_t Strnlen(const char* s, size_t maxlen)
+{
+
+  size_t i;
+ 
+  for(i = 0; i < maxlen; i++) {
+    if(s[i] == '\0') return i;
+  }
+  
+  return maxlen;
+
+}
+#endif
+
+  
 }

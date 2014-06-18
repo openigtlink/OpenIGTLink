@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   Open IGT Link Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlClientSocket.h $
+  Program:   The OpenIGTLink Library
   Language:  C++
-  Date:      $Date: 2010-06-09 16:16:36 -0400 (Wed, 09 Jun 2010) $
-  Version:   $Revision: 6525 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -51,8 +49,7 @@ public:
   igtlTypeMacro(igtl::ClientSocket, igtl::Socket)
   igtlNewMacro(igtl::ClientSocket);
 
-  // Description:
-  // Connects to host. Returns 0 on success, -1 on error.
+  /// Connects to host. Returns 0 on success, -1 on error.
   int ConnectToServer(const char* hostname, int port); 
   
 protected:
@@ -61,9 +58,8 @@ protected:
 
   void PrintSelf(std::ostream& os) const;
 
-//BTX
   friend class ServerSocket;
-//ETX
+
 private:
   ClientSocket(const ClientSocket&); // Not implemented.
   void operator=(const ClientSocket&); // Not implemented.

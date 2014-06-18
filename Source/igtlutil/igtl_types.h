@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlutil/igtl_types.h $
+  Program:   The OpenIGTLink Library
   Language:  C
-  Date:      $Date: 2011-03-24 00:08:23 -0400 (Thu, 24 Mar 2011) $
-  Version:   $Revision: 7354 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -22,7 +20,7 @@
 /* 8-bit integer type */
 #if IGTL_SIZEOF_CHAR == 1
   typedef unsigned char igtl_uint8;
-  typedef char          igtl_int8;
+  typedef signed char   igtl_int8;
 #else
   # error "No native data type can represent an 8-bit integer."
 #endif

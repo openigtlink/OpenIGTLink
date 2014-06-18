@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlutil/igtl_status.h $
+  Program:   The OpenIGTLink Library
   Language:  C
-  Date:      $Date: 2009-12-16 23:58:02 -0500 (Wed, 16 Dec 2009) $
-  Version:   $Revision: 5466 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -54,11 +52,7 @@ extern "C" {
 
 #pragma pack(1)     /* For 1-byte boundary in memroy */
 
-/*
- * Status data header for OpenIGTLinik protocol
- *
- */
-
+/** Status data header for OpenIGTLinik protocol */
 typedef struct {
   igtl_uint16    code;             /* status code defined above */
   igtl_int64     subcode;          /* sub code for the error    */
@@ -69,24 +63,12 @@ typedef struct {
 
 #pragma pack()
 
-/*
- * Byte order conversion for the status data structure
- *
- * This function converts endianness of each member variable
- * in igtl_status_header from host byte order to network byte order,
- * or vice versa.
- */
-
+/** Converts endianness of each member variable
+ *  in igtl_status_header from host byte order to network byte order,
+ *  or vice versa. */
 void igtl_export igtl_status_convert_byte_order(igtl_status_header* status);
 
-
-/*
- * CRC calculation
- *
- * This function calculates CRC of status data body including status message part
- *
- */
-
+/** Calculates CRC of status data body including status message part */
 igtl_uint64 igtl_export igtl_status_get_crc(igtl_status_header* status, igtl_uint32 msglen, const char* msg);
 
 #ifdef __cplusplus

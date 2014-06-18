@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink2_beta/Source/igtlutil/igtl_position.h $
+  Program:   The OpenIGTLink Library
   Language:  C
-  Date:      $Date: 2009-11-13 11:37:44 -0500 (Fri, 13 Nov 2009) $
-  Version:   $Revision: 5335 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -40,11 +38,8 @@ extern "C" {
 #endif
 
 #pragma pack(1)     /* For 1-byte boundary in memroy */
-/*
- * Status data header for OpenIGTLinik protocol
- *
- */
 
+/** Status data header for OpenIGTLinik protocol */
 typedef struct {
   char         name[IGTL_TDATA_LEN_NAME];  /* Name of instrument / tracker */
   igtl_uint8   type;           /* Tracking data type (1-4) */
@@ -65,39 +60,22 @@ typedef struct {
 
 #pragma pack()
 
-/*
- * Macros for tdata data size
- *
- * igtl_tdata_get_data_size(n) calculates the size of body based on the number
- * of tdatas. The size of body is used in the message header.
- * igtl_tdata_get_data_n(size) calculates the number of tdatas in the body, based on
- * the body size. This function may be used when a client program parses a TDATA message.
- *
- */
-
+/** igtl_tdata_get_data_size(n) calculates the size of body based on the number
+ *  of tdatas. The size of body is used in the message header.*/
 #define igtl_tdata_get_data_size(n)  ((n) * IGTL_TDATA_ELEMENT_SIZE)
+
+/** igtl_tdata_get_data_n(size) calculates the number of tdatas in the body, based on
+ * the body size. This function may be used when a client program parses a TDATA message. */
 #define igtl_tdata_get_data_n(size)  ((size) / IGTL_TDATA_ELEMENT_SIZE)
 
-/*
- * Byte order conversion for an array of TDATA, STT_TDATA and RTS_TDATA data structure
- *
- * This function converts endianness of each element in an array of
- * igtl_tdata_element from host byte order to network byte order,
- * or vice versa.
- */
-
+/** Converts endianness of each element in an array of
+ *  igtl_tdata_element from host byte order to network byte order,
+ *  or vice versa.*/
 void igtl_export igtl_tdata_convert_byte_order(igtl_tdata_element* tdatalist, int nelem);
 void igtl_export igtl_stt_tdata_convert_byte_order(igtl_stt_tdata* stt_tdata);
 void igtl_export igtl_rts_tdata_convert_byte_order(igtl_rts_tdata* rts_tdata);
 
-
-/*
- * CRC calculation
- *
- * These functions calculate CRC of TDATA, STT_TDATA and RTS_TDATA messages
- *
- */
-
+/** Calculates CRC of TDATA, STT_TDATA and RTS_TDATA messages.*/
 igtl_uint64 igtl_export igtl_tdata_get_crc(igtl_tdata_element* tdatalist, int nelem);
 igtl_uint64 igtl_export igtl_stt_tdata_get_crc(igtl_stt_tdata* stt_tdata);
 igtl_uint64 igtl_export igtl_rts_tdata_get_crc(igtl_rts_tdata* rts_tdata);

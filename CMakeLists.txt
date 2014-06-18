@@ -9,8 +9,8 @@ if(COMMAND cmake_policy)
 #-----------------------------------------------------------------------------
 # OpenIGTlink version number.
 SET(OpenIGTLink_VERSION_MAJOR "1")
-SET(OpenIGTLink_VERSION_MINOR "9")
-SET(OpenIGTLink_VERSION_PATCH "6")
+SET(OpenIGTLink_VERSION_MINOR "10")
+SET(OpenIGTLink_VERSION_PATCH "5")
 
 option(OpenIGTLink_PROTOCOL_VERSION_2 "Build Library for Protocol Version 2" ON)
 
@@ -269,7 +269,6 @@ SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${OpenIGTLink_REQUIR
 
 ADD_SUBDIRECTORY( Source    )
 ADD_SUBDIRECTORY( Tools     )
-#ADD_SUBDIRECTORY( Documents )
 
 IF(OpenIGTLink_BUILD_TESTING)
   ADD_SUBDIRECTORY( Testing )
@@ -287,13 +286,9 @@ ENDIF(OpenIGTLink_BUILD_EXAMPLES)
 OPTION(BUILD_DOCUMENTATION "Build OpenIGTLink Documentation" OFF)
 
 IF(BUILD_DOCUMENTATION)
-  #SUBDIRS(Utilities/Doxygen)
-  ADD_SUBDIRECTORY( Documents/Doxygen )
-  CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/Utilities/Doxygen/doxygen.config.in
-               ${OpenIGTLink_BINARY_DIR}/doxygen.config)
 
-  CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/Utilities/Doxygen/igtldoxygen.pl.in
-               ${OpenIGTLink_BINARY_DIR}/igtldoxygen.pl)
+  ADD_SUBDIRECTORY( Documents/Doxygen )
+               
 ENDIF(BUILD_DOCUMENTATION)
 
 

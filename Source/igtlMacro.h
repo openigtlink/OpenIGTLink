@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   Open IGT Link Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/Source/igtlMacro.h $
+  Program:   The OpenIGTLink Library
   Language:  C++
-  Date:      $Date: 2009-05-22 15:29:17 -0400 (Fri, 22 May 2009) $
-  Version:   $Revision: 4248 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -62,8 +60,7 @@
 #endif
 
 /** \namespace igtl
- * \brief The "igtl" namespace contains all Insight Segmentation and
- * Registration Toolkit (IGTL) classes. There are several nested namespaces
+ * \brief The "igtl" namespace contains all OpenIGTLink classes. There are several nested namespaces
  * within the igtl:: namespace. */
 namespace igtl
 {

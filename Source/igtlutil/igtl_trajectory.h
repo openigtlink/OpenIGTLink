@@ -1,10 +1,8 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink2_beta/Source/igtlutil/igtl_position.h $
+  Program:   The OpenIGTLink Library
   Language:  C
-  Date:      $Date: 2009-11-13 11:37:44 -0500 (Fri, 13 Nov 2009) $
-  Version:   $Revision: 5335 $
+  Web page:  http://openigtlink.org/
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -35,11 +33,8 @@ extern "C" {
 #endif
 
 #pragma pack(1)     /* For 1-byte boundary in memroy */
-/*
- * Status data header for OpenIGTLinik protocol
- *
- */
 
+/** Status data header for OpenIGTLinik protocol */
 typedef struct {
   char         name[IGTL_TRAJECTORY_LEN_NAME];          /* Name or description of the trajectory */
   char         group_name[IGTL_TRAJECTORY_LEN_GROUP_NAME];    /* Can be "Trajectory",  ... */
@@ -55,37 +50,20 @@ typedef struct {
 #pragma pack()
 
 
-/*
- * Macros for trajectory data size
- *
- * igtl_trajectory_get_data_size(n) calculates the size of body based on the number
- * of trajectorys. The size of body is used in the message header.
- * igtl_trajectory_get_data_n(size) calculates the number of images in the body, based on
- * the body size. This function may be used when a client program parses a TRAJECTORY message.
- *
- */
-
+/** igtl_trajectory_get_data_size(n) calculates the size of body based on the number
+ *  of trajectorys. The size of body is used in the message header. */
 #define igtl_trajectory_get_data_size(n)  ((n) * IGTL_TRAJECTORY_ELEMENT_SIZE)
+
+/** igtl_trajectory_get_data_n(size) calculates the number of images in the body, based on
+ *  the body size. This function may be used when a client program parses a TRAJECTORY message. */
 #define igtl_trajectory_get_data_n(size)  ((size) / IGTL_TRAJECTORY_ELEMENT_SIZE)
 
-/*
- * Byte order conversion for an array of trajectory data structure
- *
- * This function converts endianness of each element in an array of
- * igtl_igtl_trajectory_element from host byte order to network byte order,
- * or vice versa.
- */
-
+/** Converts endianness of each element in an array of
+ *  igtl_igtl_trajectory_element from host byte order to network byte order,
+ *  or vice versa. */
 void igtl_export igtl_trajectory_convert_byte_order(igtl_trajectory_element* trajectorylist, int nelem);
 
-
-/*
- * CRC calculation
- *
- * This function calculates CRC of trajectory message
- *
- */
-
+/** Calculates CRC of trajectory message */
 igtl_uint64 igtl_export igtl_trajectory_get_crc(igtl_trajectory_element* trajectorylist, int nelem);
 
 #ifdef __cplusplus

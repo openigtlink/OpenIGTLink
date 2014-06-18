@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
     // If not correct, print usage
     std::cerr << "Usage: " << argv[0] << " <port> <fps>"    << std::endl;
     std::cerr << "    <port>     : Port # (18944 in Slicer default)"   << std::endl;
-    std::cerr << "    <fps>      : Frequency (fps) to send coordinate" << std::endl;
+    std::cerr << "    <fps>      : Frequency (fps) to send string" << std::endl;
     exit(0);
     }
 
