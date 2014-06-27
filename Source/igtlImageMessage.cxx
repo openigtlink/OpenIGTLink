@@ -30,18 +30,13 @@ ImageMessage::ImageMessage():
       subDimensions[i] = 0;
       subOffset[i] = 0;
     }
-  for (int i = 0; i < 3; i ++)
+  for (int i = 0; i < 4; i ++)
     {
       for (int j = 0; j < 4; j ++)
         {
-          matrix[i][j] = 0.0;
+	   matrix[i][j] = (i == j ? 1.0 : 0.0);
         }
     }
-
-  matrix[3][0] = 0.0;
-  matrix[3][1] = 0.0;
-  matrix[3][2] = 0.0;
-  matrix[3][3] = 1.0;
 
   endian        = ENDIAN_BIG;
   coordinate    = COORDINATE_RAS;
