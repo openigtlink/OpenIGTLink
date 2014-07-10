@@ -17,7 +17,9 @@
 
 #include <cstring>
 
+#include "igtlTypes.h"
 #include "igtlWin32Header.h"
+
 namespace igtl
 {
 
@@ -34,6 +36,24 @@ namespace igtl
   { return strnlen(s, maxlen); }
 #endif
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+
+  /**
+   * \brief Gets the time since Windows epoch (January 1, 1601) in hectonanoseconds.
+   */
+  igtlUint64 IGTLCommon_EXPORT GetHectoNanotime();
+
+#endif
+
+  /**
+   * \brief Gets the system time in nanoseconds since the Unix Epoch.
+   */
+  igtlUint64 IGTLCommon_EXPORT GetTimeUTC();
+
+  /**
+   * \brief Gets the system time in seconds and nanoseconds since the Unix Epoch.
+   */
+  void IGTLCommon_EXPORT GetTimeUTC(igtlUint32 &second, igtlUint32 &nanosecond);
 }
 
 #endif // __igltOSUtil_h

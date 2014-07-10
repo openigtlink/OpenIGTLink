@@ -15,8 +15,10 @@
 #include "igtlOSUtil.h"
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
+  #include <ctime>
   #include <windows.h>
 #else
+  #include <sys/time.h>
   #include <time.h>
 #endif
 
@@ -25,6 +27,7 @@
 namespace igtl
 {
 
+//-----------------------------------------------------------------------------
 void Sleep(int milliseconds)
 {
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -44,7 +47,7 @@ void Sleep(int milliseconds)
 }
 
 
-
+//-----------------------------------------------------------------------------
 // strnlen(), if not defined
 #ifndef OpenIGTLink_HAVE_STRNLEN
 size_t Strnlen(const char* s, size_t maxlen)
@@ -61,5 +64,62 @@ size_t Strnlen(const char* s, size_t maxlen)
 }
 #endif
 
-  
+
+//-----------------------------------------------------------------------------
+#if defined(_WIN32) && !defined(__CYGWIN__)
+
+igtlUint64 GetHectoNanotime();
+{
+  FILETIME fileTime;
+  GetSystemTimeAsFileTime(&fileTime);
+
+  ULONGLONG hectoNanoSeconds = fileTime.dwHighDateTime;
+  hectoNanoSeconds <<= 32;
+  hectoNanoSeconds |= fileTime.dwLowDateTime;
+
+  return hectoNanoSeconds;
 }
+#endif
+
+
+//-----------------------------------------------------------------------------
+igtlUint64 GetTimeUTC()
+{
+#if defined(_WIN32) && !defined(__CYGWIN__)
+
+  // This call returns the time elapsed since the Windows epoch (January 1, 1601) in hectonanoseconds
+  igtlUint64 curTime = GetHectoNanotime();
+
+  // Need to convert this to Unix time (UTC, epoch January 1, 1970), so subtract 11644473600 seconds
+  // (369 years, 89 of which are leap years = 134774 days)
+  curTime -= 116444736000000000ui64; // Offset in hectonanosec.
+
+  // Convert to nanosecs.
+  curTime *= 100;
+
+#else
+
+  struct timeval tval;
+
+  // Gets the system time.
+  gettimeofday( &tval, 0 );
+
+  igtlUint64 nanoSeconds = tval.tv_usec * 1e3;
+  igtlUint64 seconds = tval.tv_sec *1e9;
+  igtlUint64 curTime = seconds + nanoSeconds;
+  return curTime;
+
+#endif // defined(_WIN32) && !defined(__CYGWIN__)
+}
+
+
+//-----------------------------------------------------------------------------
+void IGTLCommon_EXPORT GetTimeUTC(igtlUint32 &second, igtlUint32 &nanosecond)
+{
+  igtlUint64 curTime = GetTimeUTC();
+  second = curTime / 1e9;
+  nanosecond = curTime - second*1e9;
+}
+
+//-----------------------------------------------------------------------------
+} // end namespace
