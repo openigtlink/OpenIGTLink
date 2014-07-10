@@ -39,13 +39,13 @@ public:
   igtlNewMacro(Self);
 
   /// Gets the frequency of a clock.
-  igtlGetConstMacro(Frequency,  igtlUint32);
+  igtlGetConstMacro(Frequency,  igtlInt32);
 
   /// Gets the second part of the time stamp.
-  igtlGetConstMacro(Second,     igtlUint32);
+  igtlGetConstMacro(Second,     igtlInt32);
 
   /// Gets the fraction of second part of the time stamp.
-  igtlGetConstMacro(Nanosecond, igtlUint32);
+  igtlGetConstMacro(Nanosecond, igtlInt32);
 
   /// Gets the current time from the system's clock and save it as a time stamp.
   void   GetTime();
