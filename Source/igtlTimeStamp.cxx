@@ -52,6 +52,7 @@
 namespace igtl
 {
 
+//-----------------------------------------------------------------------------
 TimeStamp::TimeStamp(): Object()
 {
   this->m_Frequency = 1000000;
@@ -59,16 +60,20 @@ TimeStamp::TimeStamp(): Object()
 }
 
 
+//-----------------------------------------------------------------------------
 TimeStamp::~TimeStamp()
 {
 }
 
 
+//-----------------------------------------------------------------------------
 void TimeStamp::GetTime()
 {
   igtl::GetTimeUTC(this->m_Second, this->m_Nanosecond);
 }
 
+
+//-----------------------------------------------------------------------------
 void TimeStamp::SetTime(double tm)
 {
   double second = floor(tm);
@@ -76,6 +81,8 @@ void TimeStamp::SetTime(double tm)
   this->m_Nanosecond = static_cast<igtlInt32>((tm - second)*1e9);
 }
 
+
+//-----------------------------------------------------------------------------
 void TimeStamp::SetTime(igtlUint32 second, igtlUint32 nanosecond)
 {
   if (nanosecond < 1e9)
@@ -86,6 +93,7 @@ void TimeStamp::SetTime(igtlUint32 second, igtlUint32 nanosecond)
 }
 
 
+//-----------------------------------------------------------------------------
 void TimeStamp::SetTime(igtlUint64 tm)
 {
   // Export from 64-bit fixed-point expression used in OpenIGTLink
@@ -96,6 +104,7 @@ void TimeStamp::SetTime(igtlUint64 tm)
 }
 
 
+//-----------------------------------------------------------------------------
 double TimeStamp::GetTimeStamp()
 {
   double tm;
@@ -105,6 +114,8 @@ double TimeStamp::GetTimeStamp()
   return tm;
 }
 
+
+//-----------------------------------------------------------------------------
 void TimeStamp::GetTimeStamp(igtlUint32* second, igtlUint32* nanosecond)
 {
   *second     = this->m_Second;
@@ -112,6 +123,7 @@ void TimeStamp::GetTimeStamp(igtlUint32* second, igtlUint32* nanosecond)
 }
   
   
+//-----------------------------------------------------------------------------
 igtlUint64 TimeStamp::GetTimeStampUint64()
 {
   // Export as 64-bit fixed-point expression used in OpenIGTLink
@@ -125,6 +137,7 @@ igtlUint64 TimeStamp::GetTimeStampUint64()
 }
 
 
+//-----------------------------------------------------------------------------
 void TimeStamp::PrintSelf( std::ostream& os) const
 {
   Superclass::PrintSelf(os);
@@ -139,6 +152,7 @@ void TimeStamp::PrintSelf( std::ostream& os) const
     << this->m_Nanosecond << std::endl;
 }
 
-}
+//-----------------------------------------------------------------------------
+} // end namespace
 
 

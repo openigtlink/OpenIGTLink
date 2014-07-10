@@ -68,7 +68,6 @@ public:
   /// Gets the time stamp. Returns a 64-bit fixed-point expression used in OpenIGTLink.
   igtlUint64 GetTimeStampUint64();
 
-
 protected:
 
   /** constructor */
