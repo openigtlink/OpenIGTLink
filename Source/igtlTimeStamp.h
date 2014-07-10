@@ -91,20 +91,6 @@ private:
   /// Nano-second part of the time stamp
   igtlInt32       m_Nanosecond;
 
-
-#if defined(WIN32) || defined(_WIN32)
-  //typedef double        TimeStampType;
-  //typedef double        FrequencyType;
-  //
-  //FrequencyType   m_WinFrequency;
-  //TimeStampType   m_WinDifference;
-  //TimeStampType   m_WinOrigin;
-
-  time_t  m_WinTimeOrigin;
-  clock_t m_WinClockOrigin;
-
-#endif
-
 };
 
 } // end of namespace igtl
