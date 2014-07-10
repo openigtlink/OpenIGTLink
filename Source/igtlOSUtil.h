@@ -53,7 +53,7 @@ namespace igtl
   /**
    * \brief Gets the system time in seconds and nanoseconds since the Unix Epoch.
    */
-  void IGTLCommon_EXPORT GetTimeUTC(igtlUint32 &second, igtlUint32 &nanosecond);
+  void IGTLCommon_EXPORT GetTimeUTC(igtlInt32 &second, igtlInt32 &nanosecond);
 }
 
 #endif // __igltOSUtil_h

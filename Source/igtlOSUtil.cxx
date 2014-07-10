@@ -114,11 +114,12 @@ igtlUint64 GetTimeUTC()
 
 
 //-----------------------------------------------------------------------------
-void IGTLCommon_EXPORT GetTimeUTC(igtlUint32 &second, igtlUint32 &nanosecond)
+void IGTLCommon_EXPORT GetTimeUTC(igtlInt32 &second, igtlInt32 &nanosecond)
 {
   igtlUint64 curTime = GetTimeUTC();
-  second = curTime / 1e9;
-  nanosecond = curTime - second*1e9;
+  igtlUint64 sec = curTime / 1e9;
+  second = static_cast<igtlInt32>(sec);
+  nanosecond = static_cast<igtlInt32>(curTime - (sec * 1e9));
 }
 
 //-----------------------------------------------------------------------------
