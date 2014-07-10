@@ -47,12 +47,16 @@
 #include <string.h>
 
 #include "igtl_util.h"
+#include "igtlOSUtil.h"
 
 namespace igtl
 {
 
 TimeStamp::TimeStamp(): Object()
 {
+  this->m_Frequency = 1000000;
+  igtl::GetTimeUTC(m_Second, m_Nanosecond);
+
 #if defined(WIN32) || defined(_WIN32)
 
   //LARGE_INTEGER frequency;
@@ -130,35 +134,7 @@ TimeStamp::~TimeStamp()
 
 void TimeStamp::GetTime()
 {
-#if defined(WIN32) || defined(_WIN32)
-
-  //LARGE_INTEGER tick;
-  //
-  //::QueryPerformanceCounter( &tick );
-  //
-  //TimeStampType value = 
-  //    static_cast< TimeStampType >( (__int64)tick.QuadPart ) / 
-  //    this->m_WinFrequency;
-  //
-  //value += this->m_WinOrigin;
-  //
-  //double second = floor(value);
-
-  clock_t c1 = clock();
-  this->m_Second     = this->m_WinTimeOrigin + ( c1 - this->m_WinClockOrigin ) / CLOCKS_PER_SEC;
-  this->m_Nanosecond = (c1 - this->m_WinClockOrigin ) % CLOCKS_PER_SEC * ( 1e9 / CLOCKS_PER_SEC );
-
-#else
-
-  struct timeval tval;
-
-  ::gettimeofday( &tval, 0 );
-
-  this->m_Second     = tval.tv_sec;
-  this->m_Nanosecond = tval.tv_usec * 1000; /* convert from micro to nano */
-
-#endif  // defined(WIN32) || defined(_WIN32)
-  
+  igtl::GetTimeUTC(this->m_Second, this->m_Nanosecond);
 }
 
 void TimeStamp::SetTime(double tm)
