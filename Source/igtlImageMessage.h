@@ -283,6 +283,7 @@ protected:
   int    subOffset[3];
 
   /// A matrix representing the origin and the orientation of the image.
+  /// The matrix is set to identity by default
   Matrix4x4 matrix;
 
   /// A variable for the Endian of the scalar values in the image.
