@@ -73,9 +73,6 @@ protected:
   virtual int  PackBody();
   virtual int  UnpackBody();
 
-  /// The list of trakcing data elements.  
-  std::vector<TrackingDataElement::Pointer> m_TrackingDataList;
-  
 };
 
 } // namespace igtl
