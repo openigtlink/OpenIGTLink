@@ -33,6 +33,7 @@
 #include "igtlTrajectoryMessage.h"
 #include "igtlStringMessage.h"
 #include "igtlTrackingDataMessage.h"
+#include "igtlFullTrackingDataWithErrorMessage.h"
 #include "igtlQuaternionTrackingDataMessage.h"
 #include "igtlCapabilityMessage.h"
 #endif // OpenIGTLink_PROTOCOL_VERSION >= 2
@@ -47,6 +48,7 @@ int ReceiveStatus(igtl::Socket * socket, igtl::MessageHeader::Pointer& header);
   int ReceiveTrajectory(igtl::Socket * socket, igtl::MessageHeader::Pointer& header);
   int ReceiveString(igtl::Socket * socket, igtl::MessageHeader::Pointer& header);
   int ReceiveTrackingData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Pointer& header);
+  int ReceiveFullTrackingDataWithError(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Pointer& header);
   int ReceiveQuaternionTrackingData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Pointer& header);
   int ReceiveCapability(igtl::Socket * socket, igtl::MessageHeader * header);
 #endif //OpenIGTLink_PROTOCOL_VERSION >= 2
@@ -160,6 +162,10 @@ int main(int argc, char* argv[])
       else if (strcmp(headerMsg->GetDeviceType(), "TDATA") == 0)
         {
         ReceiveTrackingData(socket, headerMsg);
+        }
+      else if (strcmp(headerMsg->GetDeviceType(), "FULLTDATA") == 0)
+        {
+        ReceiveFullTrackingDataWithError(socket, headerMsg);
         }
       else if (strcmp(headerMsg->GetDeviceType(), "QTDATA") == 0)
         {
@@ -496,6 +502,52 @@ int ReceiveTrackingData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader
     }
   return 0;
 }
+
+
+int ReceiveFullTrackingDataWithError(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Pointer& header)
+{
+  std::cerr << "Receiving FULLTDATA data type." << std::endl;
+
+  // Create a message buffer to receive transform data
+  igtl::FullTrackingDataWithErrorMessage::Pointer trackingData;
+  trackingData = igtl::FullTrackingDataWithErrorMessage::New();
+  trackingData->SetMessageHeader(header);
+  trackingData->AllocatePack();
+
+  // Receive body from the socket
+  socket->Receive(trackingData->GetPackBodyPointer(), trackingData->GetPackBodySize());
+
+  // Deserialize the transform data
+  // If you want to skip CRC check, call Unpack() without argument.
+  int c = trackingData->Unpack(1);
+
+  if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
+    {
+    int nElements = trackingData->GetNumberOfTrackingDataElements();
+    for (int i = 0; i < nElements; i ++)
+      {
+      igtl::TrackingDataWithErrorElement::Pointer trackingElement;
+      trackingData->GetTrackingDataElement(i, trackingElement);
+
+      igtl::Matrix4x4 matrix;
+      trackingElement->GetMatrix(matrix);
+
+      float errorMeasure;
+      errorMeasure = trackingElement->GetError();
+
+      std::cerr << "========== Element #" << i << " ==========" << std::endl;
+      std::cerr << " Name       : " << trackingElement->GetName() << std::endl;
+      std::cerr << " Type       : " << (int) trackingElement->GetType() << std::endl;
+      std::cerr << " Matrix : " << std::endl;
+      igtl::PrintMatrix(matrix);
+      std::cerr << " Error      : " << trackingElement->GetError() << std::endl;
+      std::cerr << "================================" << std::endl << std::endl;
+      }
+    return 1;
+    }
+  return 0;
+}
+
 
 int ReceiveQuaternionTrackingData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Pointer& header)
 {

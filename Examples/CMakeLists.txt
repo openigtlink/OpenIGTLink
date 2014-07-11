@@ -27,6 +27,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     Capability
     Trajectory
     SessionManager
+    FullTrackingDataWithError
     )
 endif (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
 
