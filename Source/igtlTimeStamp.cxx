@@ -188,6 +188,7 @@ void TimeStamp::SetTime(igtlUint64 tm)
 }
 
 
+//-----------------------------------------------------------------------------
 void TimeStamp::SetTimeInNanoseconds(igtlUint64 tm)
 {
   igtlUint64 sec = tm / 1e9; // integer rounding
@@ -226,6 +227,7 @@ igtlUint64 TimeStamp::GetTimeStampUint64()
 }
 
 
+//-----------------------------------------------------------------------------
 igtlUint64 TimeStamp::GetTimeStampInNanoseconds() const
 {
   igtlUint64 tmp = this->m_Second * 1e9;
