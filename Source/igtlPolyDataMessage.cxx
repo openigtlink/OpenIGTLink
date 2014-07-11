@@ -805,9 +805,10 @@ int PolyDataMessage::UnpackBody()
   
   // Attributes
   this->m_Attributes.clear();
+  igtl_polydata_attribute * attr = info.attributes;
   for (unsigned int i = 0; i < info.header.nattributes; i ++)
     {
-    igtl_polydata_attribute * attr = info.attributes;
+    
 
     PolyDataAttribute::Pointer pda = PolyDataAttribute::New();
     if (pda.IsNotNull())
