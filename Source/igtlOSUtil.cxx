@@ -68,7 +68,7 @@ size_t Strnlen(const char* s, size_t maxlen)
 //-----------------------------------------------------------------------------
 #if defined(_WIN32) && !defined(__CYGWIN__)
 
-igtlUint64 GetHectoNanotime();
+igtlUint64 GetHectoNanotime()
 {
   FILETIME fileTime;
   GetSystemTimeAsFileTime(&fileTime);
@@ -107,9 +107,11 @@ igtlUint64 GetTimeUTC()
   igtlUint64 nanoSeconds = tval.tv_usec * 1e3;
   igtlUint64 seconds = tval.tv_sec *1e9;
   igtlUint64 curTime = seconds + nanoSeconds;
-  return curTime;
+  
 
 #endif // defined(_WIN32) && !defined(__CYGWIN__)
+
+  return curTime;
 }
 
 
