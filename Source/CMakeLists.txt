@@ -110,6 +110,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtlutil/igtl_lbmeta.c
     igtlutil/igtl_point.c
     igtlutil/igtl_tdata.c
+    igtlutil/igtl_fulltdata.c
     igtlutil/igtl_qtdata.c
     igtlutil/igtl_trajectory.c
     igtlutil/igtl_unit.c

@@ -15,9 +15,12 @@
 #ifndef __IGTL_FULLTDATA_H
 #define __IGTL_FULLTDATA_H
 
-#include "igtl_tdata.h"
+#include "igtl_win32header.h"
+#include "igtl_util.h"
+#include "igtl_types.h"
 
-#define  IGTL_FULLTDATA_ELEMENT_SIZE       74
+#define  IGTL_FULLTDATA_ELEMENT_SIZE       90
+#define  IGTL_FULLTDATA_LEN_NAME           20  /* Maximum length of tracking instrument name */
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,10 +30,10 @@ extern "C" {
 
 /** Status data header for OpenIGTLinik protocol */
 typedef struct {
-  char         name[IGTL_TDATA_LEN_NAME];  /* Name of instrument / tracker */
+  char         name[IGTL_FULLTDATA_LEN_NAME];  /* Name of instrument / tracker */
   igtl_uint8   type;           /* Tracking data type (1-4) */
   igtl_uint8   reserved;       /* Reserved byte */
-  igtl_float32 transform[12];  /* same as TRANSFORM */
+  igtl_float32 transform[16];  /* same as TRANSFORM */
   igtl_float32 error;          /* the tracking error */
 } igtl_fulltdata_element;
 

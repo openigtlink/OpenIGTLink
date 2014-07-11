@@ -14,13 +14,15 @@
 
 =========================================================================*/
 
+#include <string.h>
 #include <stdio.h>
 #include "igtl_types.h"
 #include "igtl_header.h"
+#include "igtl_tdata.h"
 #include "igtl_fulltdata.h"
 #include "igtl_util.h"
 
-/* include test tdata data and serialized tdata message */
+/* include test fulltdata data and serialized fulltdata message */
 #include "igtl_test_data_fulltdata.h"
 
 #define EXIT_SUCCESS 0
@@ -29,7 +31,7 @@
 #define TEST_TDATA_NUM 3
 
 #pragma pack(1)
-struct tdata_message {
+struct fulltdata_message {
   igtl_header           header;
   igtl_fulltdata_element    tlist[TEST_TDATA_NUM];
 };
@@ -39,14 +41,14 @@ struct tdata_message {
 int main( int argc, char * argv [] )
 {
 
-  struct tdata_message message;
+  struct fulltdata_message message;
   int r;
   int s;
 
   // Test structure size
   if (sizeof(message) != IGTL_HEADER_SIZE+IGTL_FULLTDATA_ELEMENT_SIZE*TEST_TDATA_NUM)
     {
-    fprintf(stdout, "Invalid size of full tdata message structure.\n");
+    fprintf(stdout, "Invalid size of fulltdata message structure.\n");
     return EXIT_FAILURE;
     }
 
@@ -139,7 +141,7 @@ int main( int argc, char * argv [] )
 
 
   /* Compare the serialized byte array with the gold standard */ 
-  r = memcmp((const void*)&message, (const void*)test_tdata_message,
+  r = memcmp((const void*)&message, (const void*)test_fulltdata_message,
              (size_t)(IGTL_HEADER_SIZE+IGTL_FULLTDATA_ELEMENT_SIZE*TEST_TDATA_NUM));
 
   if (r == 0)
@@ -159,7 +161,7 @@ int main( int argc, char * argv [] )
     igtl_message_dump_hex(stdout, (const void*)&message, s);
 
     fprintf(stdout, "\n===== First %d bytes of the gs message =====\n", s);
-    igtl_message_dump_hex(stdout, (const void*)&test_tdata_message, s);
+    igtl_message_dump_hex(stdout, (const void*)&test_fulltdata_message, s);
     return EXIT_FAILURE;
     }
 }

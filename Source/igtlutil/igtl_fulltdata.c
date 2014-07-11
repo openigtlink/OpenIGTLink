@@ -30,7 +30,7 @@ void igtl_export igtl_fulltdata_convert_byte_order(igtl_fulltdata_element* tdata
     elem = &(tdatalist[i]);
     if (igtl_is_little_endian()) 
       {
-      for (j = 0; j < 12; j ++)
+      for (j = 0; j < 16; j ++)
         {
         tmp = (igtl_int32*)&(elem->transform[j]);
         *tmp = BYTE_SWAP_INT32(*tmp);
