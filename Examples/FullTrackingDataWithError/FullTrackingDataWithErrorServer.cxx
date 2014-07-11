@@ -81,6 +81,13 @@ int main(int argc, char* argv[])
         igtl::Matrix4x4 matrix;
         GetRandomTestMatrix(matrix);
 
+        // Geometrically a bit meaningless,
+        // but the whole point of this class is to transmit
+        // the full matrix. So we want to see these numbers at the client end.
+        matrix[3][0] = i;
+        matrix[3][1] = i;
+        matrix[3][2] = i;
+
         msg->ClearTrackingDataElements();
 
         elem->SetMatrix(matrix);
