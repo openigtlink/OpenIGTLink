@@ -257,7 +257,14 @@ int ImageMetaMessage::PackBody()
 
     igtl::TimeStamp::Pointer ts;
     (*iter)->GetTimeStamp(ts);
-    element->timestamp = ts->GetTimeStampUint64();
+    if (ts.IsNotNull())
+      {
+      element->timestamp = ts->GetTimeStampUint64();
+      }
+    else
+      {
+      element->timestamp = 0;
+      }
     igtlUint16 size[3];
     (*iter)->GetSize(size);
     element->size[0] = size[0];
