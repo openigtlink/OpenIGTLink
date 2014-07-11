@@ -121,6 +121,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtlutil/igtl_polydata.c
     igtlColorTableMessage.cxx
     igtlCapabilityMessage.cxx
+    igtlFullTrackingDataWithErrorMessage.cxx
     igtlImageMetaMessage.cxx
     igtlLabelMetaMessage.cxx
     igtlPointMessage.cxx
@@ -152,6 +153,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtlutil/igtl_polydata.h
     igtlColorTableMessage.h
     igtlCapabilityMessage.h
+    igtlFullTrackingDataWithErrorMessage.h
     igtlImageMetaMessage.h
     igtlLabelMetaMessage.h
     igtlPointMessage.h
