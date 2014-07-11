@@ -315,11 +315,20 @@ int Socket::Send(const void* data, int length)
     // On unix boxes if the client disconnects and the server attempts
     // to send data through the socket then the application crashes
     // due to SIGPIPE signal. Disable the signal to prevent crash.
-  #ifndef __sun
+    //#ifndef __sun
+    //  flags = MSG_NOSIGNAL;
+    //#else
+    //  // Signal is not present on SUN systems, the signal has
+    //  // to be managed at application level.
+    //  flags = 0;
+    //#endif
+  #if defined(MSG_NOSIGNAL) // For Linux > 2.2
     flags = MSG_NOSIGNAL;
   #else
-    // Signal is not present on SUN systems, the signal has
-    // to be managed at application level.
+    #if defined(SO_NOSIGPIPE) // Mac OS X
+    int set = 1;
+    setsockopt(this->m_SocketDescriptor, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));    
+    #endif
     flags = 0;
   #endif
 #endif
