@@ -188,6 +188,15 @@ void TimeStamp::SetTime(igtlUint64 tm)
 }
 
 
+void TimeStamp::SetTimeInNanoseconds(igtlUint64 tm)
+{
+  igtlUint64 sec = tm / 1e9; // integer rounding
+  igtlUint64 nano = sec * 1e9; // round it back up to get whole number of seconds expressed in nanoseconds.
+  this->m_Second = static_cast<igtlInt32>(sec);
+  this->m_Nanosecond = static_cast<igtlInt32>(tm - nano);
+}
+
+
 double TimeStamp::GetTimeStamp()
 {
   double tm;
@@ -216,6 +225,13 @@ igtlUint64 TimeStamp::GetTimeStampUint64()
   return ts;
 }
 
+
+igtlUint64 TimeStamp::GetTimeStampInNanoseconds() const
+{
+  igtlUint64 tmp = this->m_Second * 1e9;
+  tmp += this->m_Nanosecond;
+  return tmp;
+}
 
 void TimeStamp::PrintSelf( std::ostream& os) const
 {

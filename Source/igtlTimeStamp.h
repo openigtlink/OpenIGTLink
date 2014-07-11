@@ -59,6 +59,10 @@ public:
   /// Sets the time by using 64-bit fixed-point expression used in OpenIGTLink.
   void   SetTime(igtlUint64 tm);
 
+  /// Sets the time using the total number of nano-seconds since the start of time (Unix Epoch = 1 Jan 1970).
+  /// Note: This is deliberately different to SetTime();
+  void SetTimeInNanoseconds(igtlUint64 tm);
+
   /// Gets the time stamp. Returns a double floating-point value.
   double GetTimeStamp();
 
@@ -68,6 +72,9 @@ public:
   /// Gets the time stamp. Returns a 64-bit fixed-point expression used in OpenIGTLink.
   igtlUint64 GetTimeStampUint64();
 
+  /// Gets the time in nano-seconds since the start of time (Unix Epoch = 1 Jan 1970).
+  /// Note: This is deliberately different to GetTimeStampUint64();
+  igtlUint64 GetTimeStampInNanoseconds() const;
 
 protected:
 
