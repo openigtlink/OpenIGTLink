@@ -71,6 +71,22 @@ void igtl_export igtl_image_set_matrix(float spacing[3], float origin[3],
   header->matrix[11] = (igtl_float32) (origin[2]);
 }
 
+void igtl_export igtl_image_set_matrix_4x4(float _matrix [4][4], igtl_image_header * header)
+{
+  header->matrix[0]  = _matrix[0][0];
+  header->matrix[1]  = _matrix[0][1];
+  header->matrix[2]  = _matrix[0][2];
+  header->matrix[3]  = _matrix[1][0];
+  header->matrix[4]  = _matrix[1][1];
+  header->matrix[5]  = _matrix[1][2];
+  header->matrix[6]  = _matrix[2][0];
+  header->matrix[7]  = _matrix[2][1];
+  header->matrix[8]  = _matrix[2][2];
+  header->matrix[9]  = _matrix[0][3];
+  header->matrix[10] = _matrix[1][3];
+  header->matrix[11] = _matrix[2][3];
+}
+
 void igtl_export igtl_image_get_matrix(float spacing[3], float origin[3],
                             float norm_i[3], float norm_j[3], float norm_k[3],
                             igtl_image_header * header)
@@ -117,6 +133,29 @@ void igtl_export igtl_image_get_matrix(float spacing[3], float origin[3],
   origin[1] = header->matrix[10];
   origin[2] = header->matrix[11];
 
+}
+
+
+void igtl_export igtl_image_get_matrix_4x4(float _matrix[4][4], igtl_image_header * header)
+{
+  _matrix[0][0] = header->matrix[0];
+  _matrix[0][1] = header->matrix[1];
+  _matrix[0][2] = header->matrix[2];
+  _matrix[1][0] = header->matrix[3];
+  _matrix[1][1] = header->matrix[4];
+  _matrix[1][2] = header->matrix[5];
+  _matrix[2][0] = header->matrix[6];
+  _matrix[2][1] = header->matrix[7];
+  _matrix[2][2] = header->matrix[8];
+
+  _matrix[0][3] = header->matrix[9];
+  _matrix[1][3] = header->matrix[10];
+  _matrix[2][3] = header->matrix[11];
+
+  _matrix[3][0] = 0;
+  _matrix[3][1] = 0;
+  _matrix[3][2] = 0;
+  _matrix[3][3] = 1;
 }
 
 

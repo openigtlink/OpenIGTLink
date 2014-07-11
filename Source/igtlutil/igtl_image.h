@@ -98,6 +98,12 @@ void igtl_export igtl_image_get_matrix(float spacing[3], float origin[3],
                             float norm_i[3], float norm_j[3], float norm_k[3],
                             igtl_image_header * header);
 
+/** Sets the image orientation/origin matrix in 4x4 format */
+void igtl_export igtl_image_set_matrix_4x4(float _matrix[4][4],igtl_image_header * header);
+
+/** Gets the image orientation/origin matrix in 4x4 format */
+void igtl_export igtl_image_get_matrix_4x4(float _matrix[4][4],igtl_image_header * header);
+
 /** Converts endianness of each member variable in igtl_image_header from host
  *  byte order to network byte order, or vice versa. */
 void igtl_export igtl_image_convert_byte_order(igtl_image_header * header);
