@@ -18,6 +18,7 @@
   #include <windows.h>
 #else
   #include <time.h>
+  #include <errno.h>
 #endif
 
 #include <string.h>
@@ -37,8 +38,11 @@ void Sleep(int milliseconds)
   struct timespec req;
   req.tv_sec  = (int) milliseconds / 1000;
   req.tv_nsec = (milliseconds % 1000) * 1000000;
-  
-  nanosleep(&req, NULL);
+
+  while ((nanosleep(&req, &req) == -1) && (errno == EINTR))
+  {
+    continue;
+  }
   
 #endif
 }
