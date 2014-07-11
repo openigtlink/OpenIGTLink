@@ -82,6 +82,8 @@ public:
  
   /// These methods send data over the socket.
   /// Returns 1 on success, 0 on error and raises vtkCommand::ErrorEvent.
+  /// SIGPIPE or other signal may be raised on systems (e.g., Sun Solaris) where
+  /// MSG_NOSIGNAL flag is not supported for the socket send method.
   int Send(const void* data, int length);
 
   /// Receive data from the socket.
