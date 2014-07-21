@@ -32,6 +32,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <cassert>
+#include <cstring>
 
 namespace igtl
 {
