@@ -56,7 +56,11 @@ namespace igtl
 TimeStamp::TimeStamp(): Object()
 {
   this->m_Frequency = 1000000;
-  igtl::GetTimeUTC(m_Second, m_Nanosecond);
+
+  // See issue #43. Timestamp should be initialised, but 
+  // the user should grab the time using GetTime() at the point they need it.
+  this->m_Second = 0;
+  this->m_Nanosecond = 0;
 }
 
 
