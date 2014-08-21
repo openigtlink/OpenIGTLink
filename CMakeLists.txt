@@ -9,8 +9,8 @@ if(COMMAND cmake_policy)
 #-----------------------------------------------------------------------------
 # OpenIGTlink version number.
 SET(OpenIGTLink_VERSION_MAJOR "1")
-SET(OpenIGTLink_VERSION_MINOR "10")
-SET(OpenIGTLink_VERSION_PATCH "10")
+SET(OpenIGTLink_VERSION_MINOR "11")
+SET(OpenIGTLink_VERSION_PATCH "0")
 
 option(OpenIGTLink_PROTOCOL_VERSION_2 "Build Library for Protocol Version 2" ON)
 
