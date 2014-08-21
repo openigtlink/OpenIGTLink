@@ -44,6 +44,7 @@ SET(OpenIGTLink_SOURCES
   igtlLightObject.cxx
   igtlMath.cxx
   igtlMessageBase.cxx
+  igtlMessageFactory.cxx
   igtlMultiThreader.cxx
   igtlMutexLock.cxx
   igtlOSUtil.cxx
@@ -80,6 +81,7 @@ SET(OpenIGTLink_INCLUDE_FILES
   igtlMacro.h
   igtlMath.h
   igtlMessageBase.h
+  igtlMessageFactory.h
   igtlMessageHeader.h
   igtlMultiThreader.h
   igtlMutexLock.h
