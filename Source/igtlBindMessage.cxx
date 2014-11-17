@@ -159,6 +159,8 @@ int BindMessage::GetChildMessage(unsigned int i, igtl::MessageBase * child)
 int BindMessage::GetBodyPackSize()
 {
   int size;
+  int nameTableSectionSize = 0; // Size of name table section
+  int dataSectionSize = 0; // Size of data section
 
   size = sizeof(igtlUint16)  // Number of child messages section
     + (IGTL_HEADER_TYPE_SIZE + sizeof(igtlUint64)) * this->m_ChildMessages.size() // BIND header
@@ -167,12 +169,19 @@ int BindMessage::GetBodyPackSize()
   std::vector<ChildMessageInfo>::iterator iter;
   for (iter = this->m_ChildMessages.begin(); iter != this->m_ChildMessages.end(); iter ++)
     {
-    //size += strlen((*iter)->GetDeviceName()); // Device name length
-    size += (*iter).name.length();
-    size += 1; // NULL separator
-    size += (*iter).size + ((*iter).size%2); // child message body + padding (if applicable)
+		//size += strlen((*iter)->GetDeviceName()); // Device name length
+		nameTableSectionSize += (*iter).name.length();
+		nameTableSectionSize += 1; // NULL separator
+		dataSectionSize += (*iter).size + ((*iter).size%2); // child message body + padding (if applicable)
     }
 
+  // Add padding for the whole name table section
+  if (nameTableSectionSize % 2 > 0)
+  {
+	  nameTableSectionSize++;
+  }
+  size += nameTableSectionSize;
+  size += dataSectionSize;
   return size;
 }
 
