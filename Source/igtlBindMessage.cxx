@@ -169,19 +169,19 @@ int BindMessage::GetBodyPackSize()
   std::vector<ChildMessageInfo>::iterator iter;
   for (iter = this->m_ChildMessages.begin(); iter != this->m_ChildMessages.end(); iter ++)
     {
-		//size += strlen((*iter)->GetDeviceName()); // Device name length
-		nameTableSectionSize += (*iter).name.length();
-		nameTableSectionSize += 1; // NULL separator
-		dataSectionSize += (*iter).size + ((*iter).size%2); // child message body + padding (if applicable)
+    nameTableSectionSize += (*iter).name.length();
+    nameTableSectionSize += 1; // NULL separator
+    dataSectionSize += (*iter).size + ((*iter).size%2); // child message body + padding (if applicable)
     }
 
   // Add padding for the whole name table section
   if (nameTableSectionSize % 2 > 0)
-  {
-	  nameTableSectionSize++;
-  }
+    {
+    nameTableSectionSize++;
+    }
   size += nameTableSectionSize;
   size += dataSectionSize;
+
   return size;
 }
 
