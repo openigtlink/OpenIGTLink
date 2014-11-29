@@ -131,7 +131,7 @@ int SendPolyData(igtl::Socket::Pointer& socket, const char* name)
   // Geometry data
   static igtlFloat32 pointsData[8][3]={{0,0,0}, {1,0,0}, {1,1,0}, {0,1,0},
                                     {0,0,1}, {1,0,1}, {1,1,1}, {0,1,1}};
-  static igtlUint32 polyData[6][4]={{0,1,2,3}, {4,5,6,7}, {0,1,5,4},
+  static igtlUint32 polyData[6][4]={{0,3,2,1}, {4,5,6,7}, {0,1,5,4},
                                  {1,2,6,5}, {2,3,7,6}, {3,0,4,7}};
   static igtlFloat32 attributeData[8]={0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0};
 
