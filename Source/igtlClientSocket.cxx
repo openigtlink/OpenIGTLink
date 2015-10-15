@@ -41,7 +41,7 @@ ClientSocket::~ClientSocket()
 }
 
 //-----------------------------------------------------------------------------
-int ClientSocket::ConnectToServer(const char* hostName, int port, bool logErrorIfServerConnectionFailed /*= false*/)
+int ClientSocket::ConnectToServer(const char* hostName, int port, bool logErrorIfServerConnectionFailed /*= true*/)
 {
   if (this->m_SocketDescriptor != -1)
     {
