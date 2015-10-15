@@ -41,7 +41,7 @@ ClientSocket::~ClientSocket()
 }
 
 //-----------------------------------------------------------------------------
-int ClientSocket::ConnectToServer(const char* hostName, int port)
+int ClientSocket::ConnectToServer(const char* hostName, int port, bool logErrorIfServerConnectionFailed /*= true*/)
 {
   if (this->m_SocketDescriptor != -1)
     {
@@ -62,7 +62,10 @@ int ClientSocket::ConnectToServer(const char* hostName, int port)
     this->CloseSocket(this->m_SocketDescriptor);
     this->m_SocketDescriptor = -1;
 
-    igtlErrorMacro("Failed to connect to server " << hostName << ":" << port);
+    if( logErrorIfServerConnectionFailed )
+      {
+      igtlErrorMacro("Failed to connect to server " << hostName << ":" << port);
+      }
     return -1;
     }
   return 0;

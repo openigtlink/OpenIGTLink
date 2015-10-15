@@ -50,7 +50,7 @@ public:
   igtlNewMacro(igtl::ClientSocket);
 
   /// Connects to host. Returns 0 on success, -1 on error.
-  int ConnectToServer(const char* hostname, int port); 
+  int ConnectToServer(const char* hostname, int port, bool logErrorIfServerConnectionFailed = true); 
   
 protected:
   ClientSocket();
