@@ -490,17 +490,6 @@ void IGTLCommon_EXPORT SetPolyDataInfo(igtl_polydata_info * info, PolyDataMessag
     info->header.ntriangle_strips = 0;
     info->header.size_triangle_strips = 0;
     }
-    
-  if (pdm->GetPolygons())
-    {
-    info->header.npolygons = pdm->GetPolygons()->GetNumberOfCells();
-    info->header.size_polygons = pdm->GetPolygons()->GetTotalSize();
-    }
-  else
-    {
-    info->header.npolygons = 0;
-    info->header.size_polygons = 0;
-    }
 
   info->header.nattributes = pdm->GetNumberOfAttributes();
 
