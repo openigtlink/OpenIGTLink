@@ -638,10 +638,6 @@ int PolyDataMessage::PackBody()
       *(ptr_f++) = points[2];
       }
     }
-  else
-    {
-    return 0;
-    }
 
   //Vertices
   if (info.vertices)
