@@ -5,7 +5,6 @@ The OpenIGTLink Library
 
 This project provides a C/C++ implementation of the OpenIGTLink protocol defined in [OpenIGTLink Web Page](http://openigtlink.org/). 
 
- 
 Build Instruction
 -----------------
 
@@ -27,18 +26,9 @@ You may install the library into your disk (optional). The default target direct
 
 You might need super user access.
 
-## Sun OS
-
-For Sun OS (Solaris), you may follow the instruction for Linux/Mac OS X described above. If you want to explicitly specify Sun CC instead of GNU CC, options for cmake look like:
-
-    cmake -DCMAKE_C_COMPILER:STRING=/opt/SUNWspro/bin/cc -DCMAKE_CXX_COMPILER:STRING=/opt/SUNWspro/bin/CC -DBUILD_EXAMPLES:BOOL=ON ../OpenIGTLink
-
 ## Windows
-* Download Git Windows client, if you don't have one already
-* You will also need [CMake](http://www.cmake.org/HTML/Download.html) and a C/C++ compiler as [Microsoft Visual C++](http://www.microsoft.com/express/vc/)
 * Download the source code from Git repository.
   * URL of repository: git://github.com/openigtlink/OpenIGTLink.git
-  * Click OK
 * Run CMake
   * Where is the source code: C:\Devel\OpenIGT\OpenIGTLink
   * Where to build the binaries: C:\Devel\OpenIGT\OpenIGTLink-build
@@ -51,8 +41,9 @@ If all went OK you will have the executable and the library:
 * C:\Devel\OpenIGT\OpenIGTLink-build\bin\debug\igtlSocketTest.exe
 * C:\Devel\OpenIGT\OpenIGTLink-build\bin\debug\OpenIGTLink.lib
 
-## Note on Windows
-If you are planning to link the OpenIGTLink Library with IGSTK, or the 3D Slicer OpenIGTLinkIF module, please make sure that you use the Windows version of CMake (not the one contained in the Cygwin environment) and Visual Studio 2008. Since IGSTK and 3D Slicer are compiled with Visual Studio, the OpenIGTLink library built in cygwin environment using GCC cannot be linked with those software.
+## Other Platforms
+ 
+Please refer [the build instruction page](http://openigtlink.org/library/build.html).
 
 License
 -------
