@@ -24,6 +24,7 @@ namespace igtl {
 MessageBase::MessageBase():
   Object()
 {
+  m_Version        = IGTL_HEADER_VERSION_1;
   m_PackSize       = 0;
   m_Header         = NULL;
   m_Body           = NULL;
@@ -36,7 +37,6 @@ MessageBase::MessageBase():
 
   m_BodyType         = "";
   m_DefaultBodyType  = "";
-
 }
 
 MessageBase::~MessageBase()
@@ -50,9 +50,34 @@ MessageBase::~MessageBase()
     }
 }
 
+void MessageBase::SetVersion(unsigned short version)
+{
+  m_Version = version;
+}
+
+unsigned short MessageBase::GetVersion() const
+{
+  return m_Version;
+}
+
 void MessageBase::SetDeviceName(const char* name)
 {
   m_DeviceName = std::string(name);
+}
+
+void MessageBase::SetDeviceName(const std::string& name)
+{
+  m_DeviceName = name;
+}
+
+void MessageBase::SetDeviceType(const std::string& type)
+{
+  this->m_BodyType = type;
+}
+
+std::string MessageBase::GetDeviceName() const
+{
+  return m_DeviceName;
 }
 
 const char* MessageBase::GetDeviceName()
@@ -72,6 +97,19 @@ const char* MessageBase::GetDeviceType()
     }
 }
 
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+std::string MessageBase::GetMessageType() const
+{
+  if (m_DefaultBodyType.length() > 0)
+  {
+    return m_DefaultBodyType;
+  }
+  else
+  {
+    return m_BodyType;
+  }
+}
+#endif
 
 int MessageBase::SetTimeStamp(unsigned int sec, unsigned int frac)
 {
@@ -110,7 +148,7 @@ int MessageBase::Pack()
 
   igtl_uint64 crc = crc64(0, 0, 0LL); // initial crc
 
-  h->version   = IGTL_HEADER_VERSION;
+  h->version   = IGTL_HEADER_VERSION_1;
 
   igtl_uint64 ts  =  m_TimeStampSec & 0xFFFFFFFF;
   ts = (ts << 32) | (m_TimeStampSecFraction & 0xFFFFFFFF);
@@ -145,9 +183,10 @@ int MessageBase::Unpack(int crccheck)
       igtl_header_convert_byte_order(h);
       m_TimeStampSecFraction = h->timestamp & 0xFFFFFFFF;
       m_TimeStampSec = (h->timestamp >> 32 ) & 0xFFFFFFFF;
+      m_Version = h->version;
       
 
-      if (h->version == IGTL_HEADER_VERSION)
+      if (h->version == IGTL_HEADER_VERSION_1)
         {
         m_BodySizeToRead = h->body_size;
         
@@ -225,7 +264,7 @@ void MessageBase::AllocatePack()
   if (m_BodySizeToRead > 0)
     {
       // called after receiving general header
-    AllocatePack(m_BodySizeToRead);
+      AllocatePack(m_BodySizeToRead);
     }
   else
     {

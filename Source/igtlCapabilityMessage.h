@@ -60,7 +60,6 @@ public:
   igtlNewMacro(igtl::CapabilityMessage);
 
 public:
-
   //void    SetTypes(int ntypes, const char names[][IGTL_HEADER_TYPE_SIZE]);
   void    SetTypes(std::vector<std::string> types);
   int     SetType(int id, const char* name);
