@@ -278,7 +278,7 @@ public:
 
 public:
 
-  /// Clears the poly data.
+  /// Clears the polydata.
   void Clear();
 
   /// Sets an array of points.

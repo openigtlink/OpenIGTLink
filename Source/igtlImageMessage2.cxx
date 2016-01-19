@@ -514,7 +514,7 @@ int ImageMessage2::Pack()
 
   igtl_uint64 crc = crc64(0, 0, 0LL); // initial crc
 
-  h->version   = IGTL_HEADER_VERSION;
+  h->version   = IGTL_HEADER_VERSION_1;
 
   igtl_uint64 ts  =  m_TimeStampSec & 0xFFFFFFFF;
   ts = (ts << 32) | (m_TimeStampSecFraction & 0xFFFFFFFF);

@@ -19,7 +19,7 @@
 #include "igtlMessageBase.h"
 #include "igtlMessageHeader.h"
 
-#include <set>
+#include <map>
 
 namespace igtl
 {
@@ -37,22 +37,54 @@ public:
   igtlTypeMacro(MessageFactory, Object)
   igtlNewMacro(MessageFactory);
 
+  /*! Function pointer for storing New() static methods of igtl::MessageBase classes */ 
+  typedef igtl::MessageBase::Pointer (*PointerToMessageBaseNew)(); 
+
+  /// Add message type name and pointer to IGTL message new function 
+  /// Usage: AddMessageType( "IMAGE", (PointerToMessageBaseNew)&igtl::ImageMessage::New );  
+  /// \param messageTypeName The name of the message type
+  /// \param messageTypeNewPointer Function pointer to the message type new function (e.g. (PointerToMessageBaseNew)&igtl::ImageMessage::New )
+  virtual void AddMessageType(const std::string& messageTypeName, MessageFactory::PointerToMessageBaseNew messageTypeNewPointer);
+
+  /// Get pointer to message type new function, or NULL if the message type not registered 
+  /// Usage: igtl::MessageBase::Pointer message = GetMessageTypeNewPointer("IMAGE")(); 
+  /// Throws invalid_argument if message type is not found
+  virtual MessageFactory::PointerToMessageBaseNew GetMessageTypeNewPointer(const std::string& messageTypeName); 
+
   /// Checks that headerMsg is not null and the headerMsg->GetDeviceType() refers to a valid type, returning true if valid, and false otherwise.
   bool IsValid(igtl::MessageHeader::Pointer headerMsg);
 
+  /// Checks that headerMsg is not null and the headerMsg->GetDeviceType() refers to a valid type, returning true if valid, and false otherwise.
+  bool IsValid(igtl::MessageHeader::Pointer headerMsg) const;
+
+  /// LEGACY method, use CreateReceiveMessage instead
   /// Constructs a message from the given header.
   /// Throws invalid_argument if headerMsg is NULL.
   /// Throws invalid_argument if this->IsValid(headerMsg) returns false.
   /// Creates message, sets header onto message and calls AllocatePack() on the message.
   igtl::MessageBase::Pointer GetMessage(igtl::MessageHeader::Pointer headerMsg);
 
+  /// Constructs a message from the given populated header.
+  /// Throws invalid_argument if headerMsg is NULL.
+  /// Throws invalid_argument if this->IsValid(headerMsg) returns false.
+  /// Creates message, sets header onto message and calls AllocatePack() on the message.
+  igtl::MessageBase::Pointer CreateReceiveMessage(igtl::MessageHeader::Pointer headerMsg) const;
+
+  /// Constructs an empty message from the given message type.
+  /// Throws invalid_argument if messageType is empty.
+  /// Creates message, sets header onto message and calls AllocatePack() on the message.
+  igtl::MessageBase::Pointer CreateSendMessage(const std::string& messageType) const;
+
+  /// Return the list of known message types
+  void GetAvailableMessageTypes(std::vector<std::string>& types) const;
+
 protected:
   MessageFactory();
   ~MessageFactory();
 
 private:
-
-  std::set<std::string> m_DeviceTypes;
+  /*! Map igt message types and the New() static methods of igtl::MessageBase classes */ 
+  std::map<std::string, PointerToMessageBaseNew> IgtlMessageTypes; 
 
 }; // end class
 
