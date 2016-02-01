@@ -17,7 +17,7 @@
 #ifndef __IGTL_TEST_DATA_TDATA_H
 #define __IGTL_TEST_DATA_TDATA_H
 
-char test_tdata_message[] = {
+unsigned char test_tdata_message[] = {
   /*------- OpenIGTLink message header --------*/
   0x00, 0x01,                                     /* Version number */
   0x54, 0x44, 0x41, 0x54, 0x41, 0x00, 0x00, 0x00,

@@ -17,7 +17,7 @@
 #ifndef __IGTL_TEST_DATA_BIND_H
 #define __IGTL_TEST_DATA_BIND_H
 
-char test_bind_message_header[] = {
+unsigned char test_bind_message_header[] = {
   0x00, 0x01,                                     /* Version number */
   0x42, 0x49, 0x4e, 0x44, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00,                         /* BIND */ 

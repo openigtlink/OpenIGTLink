@@ -17,7 +17,7 @@
 #ifndef __IGTL_TEST_DATA_IMGMETA_H
 #define __IGTL_TEST_DATA_IMGMETA_H
 
-char test_imgmeta_message[] = {
+unsigned char test_imgmeta_message[] = {
   /*------- OpenIGTLink message header -------*/
   0x00, 0x01,                                     /* Version number */
   0x49, 0x4d, 0x47, 0x4d, 0x45, 0x54, 0x41, 0x00,

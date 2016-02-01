@@ -17,7 +17,7 @@
 #ifndef __IGTL_TEST_DATA_POINT_H
 #define __IGTL_TEST_DATA_POINT_H
 
-char test_point_message[] = {
+unsigned char test_point_message[] = {
   /*------- OpenIGTLink message header --------*/
   0x00, 0x01,                                     /* Version number */
   0x50, 0x4f, 0x49, 0x4e, 0x54, 0x00, 0x00, 0x00,

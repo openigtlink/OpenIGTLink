@@ -17,7 +17,7 @@
 #ifndef __IGTL_TEST_DATA_POLYDATA_H
 #define __IGTL_TEST_DATA_POLYDATA_H
 
-char test_polydata_message_header[] = {
+unsigned char test_polydata_message_header[] = {
   /*------- OpenIGTLink message header --------*/
   0x00, 0x01,                                     /* Version number */
   0x50, 0x4f, 0x4c, 0x59, 0x44, 0x41, 0x54, 0x41,

@@ -17,7 +17,7 @@
 #ifndef __IGTL_TEST_DATA_TRAJECTORY_H
 #define __IGTL_TEST_DATA_TRAJECTORY_H
 
-char test_trajectory_message[] = {
+unsigned char test_trajectory_message[] = {
   /*------- OpenIGTLink message header --------*/
   0x00, 0x01,                                     /* Version number */
   0x54, 0x52, 0x41, 0x4a, 0x00, 0x00, 0x00, 0x00,

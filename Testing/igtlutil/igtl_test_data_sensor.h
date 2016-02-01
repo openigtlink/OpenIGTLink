@@ -17,7 +17,7 @@
 #ifndef __IGTL_TEST_DATA_SENSOR_H
 #define __IGTL_TEST_DATA_SENSOR_H
 
-char test_sensor_message[] = {
+unsigned char test_sensor_message[] = {
   0x00, 0x01,                                     /* Version number */
   0x53, 0x45, 0x4e, 0x53, 0x4f, 0x52, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00,                         /* SENSOR */ 

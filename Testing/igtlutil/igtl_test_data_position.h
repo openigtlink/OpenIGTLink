@@ -17,7 +17,7 @@
 #ifndef __IGTL_TEST_DATA_POSITION_H
 #define __IGTL_TEST_DATA_POSITION_H
 
-char test_position_message[] = {
+unsigned char test_position_message[] = {
 
   /*-------- OpenIGTLink message header -------*/
   0x00, 0x01,                                     /* Version number */

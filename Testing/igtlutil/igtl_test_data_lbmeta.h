@@ -17,7 +17,7 @@
 #ifndef __IGTL_TEST_DATA_LBMETA_H
 #define __IGTL_TEST_DATA_LBMETA_H
 
-char test_lbmeta_message[] = {
+unsigned char test_lbmeta_message[] = {
   /*------- OpenIGTLink message header --------*/
   0x00, 0x01,                                     /* Version number */
   0x4c, 0x42, 0x4d, 0x45, 0x54, 0x41, 0x00, 0x00,

@@ -17,7 +17,7 @@
 #ifndef __IGTL_TEST_DATA_COLORTABLE_H
 #define __IGTL_TEST_DATA_COLORTABLE_H
 
-char test_colortable_message[] = {
+unsigned char test_colortable_message[] = {
   /*------- OpenIGTLink message header -------*/
   0x00, 0x01,                                     /* Version number */
   0x43, 0x4f, 0x4c, 0x4f, 0x52, 0x54, 0x41, 0x42,

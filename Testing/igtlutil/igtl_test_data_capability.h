@@ -17,7 +17,7 @@
 #ifndef __IGTL_TEST_DATA_CAPABILITY_H
 #define __IGTL_TEST_DATA_CAPABILITY_H
 
-char test_capability_message[] = {
+unsigned char test_capability_message[] = {
 
   0x00, 0x01,                                     /* Version number */
   0x43, 0x41, 0x50, 0x41, 0x42, 0x49, 0x4c, 0x49,

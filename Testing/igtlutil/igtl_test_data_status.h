@@ -17,7 +17,7 @@
 #ifndef __IGTL_TEST_DATA_STATUS_H
 #define __IGTL_TEST_DATA_STATUS_H
 
-char test_status_message[] = {
+unsigned char test_status_message[] = {
   0x00, 0x01,                                     /* Version number */
   0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00,                         /* STATUS */ 

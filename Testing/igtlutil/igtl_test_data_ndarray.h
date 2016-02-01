@@ -17,7 +17,7 @@
 #ifndef __IGTL_TEST_DATA_NDARRAY_H
 #define __IGTL_TEST_DATA_NDARRAY_H
 
-char test_ndarray_message_header[] = {
+unsigned char test_ndarray_message_header[] = {
   0x00, 0x01,                                     /* Version number */
   0x4e, 0x44, 0x41, 0x52, 0x52, 0x41, 0x59, 0x00,
   0x00, 0x00, 0x00, 0x00,                         /* NDARRAY */ 
