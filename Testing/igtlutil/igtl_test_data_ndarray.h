@@ -29,7 +29,7 @@ unsigned char test_ndarray_message_header[] = {
   0x1b, 0xe0, 0xce, 0x29, 0x55, 0x4f, 0x9a, 0x92, /* CRC */
 };
 
-char test_ndarray_message_body[] = {
+unsigned char test_ndarray_message_body[] = {
   0x0b,                                           /* 11: 64-bit float */
   0x03,                                           /* 3-dimensional array */
   0x00, 0x05, 0x00, 0x04, 0x00, 0x03,             /* size[] = {5, 4, 3} */
