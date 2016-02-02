@@ -29,7 +29,7 @@ unsigned char test_bind_message_header[] = {
   0xd3, 0x4d, 0x56, 0xba, 0x63, 0xaf, 0x8a, 0x6a, /* CRC */
 };
 
-char test_bind_message_bind_header[] = {          /* 98 bytes */
+unsigned char test_bind_message_bind_header[] = {          /* 98 bytes */
 
   0x00, 0x03,                                     /* Number of child messages */
 
@@ -56,7 +56,7 @@ char test_bind_message_bind_header[] = {          /* 98 bytes */
 };
 
 
-char test_bind_message_bind_body[] = {            /* 48+2572+58 = 2678 bytes */
+unsigned char test_bind_message_bind_body[] = {            /* 48+2572+58 = 2678 bytes */
   
   /* TRANSFORM */
   0xBF, 0x74, 0x73, 0xCD, 0x3E, 0x49, 0x59, 0xE6, /* tx, ty */

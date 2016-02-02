@@ -12,80 +12,103 @@
 
 =========================================================================*/
 
-
-#include <igtlMessageFactory.h>
+#include <igtlMessageBase.h>
 #include <igtlMessageHeader.h>
-#include <igtlTransformMessage.h>
-
+#include <gtest/gtest.h>
 #include <stdexcept>
+#include "igtlutil/igtl_test_data_lbmeta.h"
 
 
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
 
-
-namespace igtl
+void IntialTheMessageBase(igtl::MessageBase::Pointer &messageBase, igtl::MessageHeader::Pointer &header)
 {
-  // Create a nonsense message type that won't exist in main library.
-  igtlCreateDefaultQueryMessageClass(BananaMessage, "BANANA")
+  //char test_lbmeta_message[] = {0x00, 0x01, 0xd2};
 }
 
+int InitializationTest(igtl::MessageBase::Pointer &messageBaseTest, igtl::MessageHeader::Pointer &headerTest)
+{
+  messageBaseTest->SetDeviceName("DeviceTest");
+  std::cout<< "Output device name: "<<messageBaseTest->GetDeviceName()<< std::endl;
+  if (!strcmp(messageBaseTest->GetDeviceName(), "DeviceTest") )
+  {
+    messageBaseTest->InitPack();
+    if (!strcmp(messageBaseTest->GetDeviceName(),"") )
+    {
+      return EXIT_SUCCESS;
+    }
+    else
+    {
+      std::cerr << "Initialization failed" << std::endl;
+      return EXIT_FAILURE;
+    }
+  }
+  else
+  {
+    std::cerr << "The device name is not set" << std::endl;
+    return EXIT_FAILURE;
+  }
+}
 
+int SetDeviceNameTest(igtl::MessageBase::Pointer &messageBaseTest, igtl::MessageHeader::Pointer &headerTest)
+{
+  messageBaseTest->InitPack();
+  std::cout<< "Output device name: "<<messageBaseTest->GetDeviceName()<< std::endl;
+  if (!strcmp(messageBaseTest->GetDeviceName(), "") )
+  {
+    messageBaseTest->SetDeviceName("DeviceTest");
+    if (!strcmp(messageBaseTest->GetDeviceName(), "DeviceTest") )
+    {
+      return EXIT_SUCCESS;
+    }
+    else
+    {
+      std::cerr << "Initialization failed" << std::endl;
+      return EXIT_FAILURE;
+    }
+  }
+  else
+  {
+    std::cerr << "The device name is not initialized" << std::endl;
+    return EXIT_FAILURE;
+  }
+}
+
+int GetDeviceNameTest(igtl::MessageBase::Pointer &messageBaseTest, igtl::MessageHeader::Pointer &headerTest)
+{
+  messageBaseTest->SetDeviceName("DeviceTest");
+  std::cout<< "Output device name: "<<messageBaseTest->GetDeviceName()<< std::endl;
+  if (!strcmp(messageBaseTest->GetDeviceName(), "DeviceTest") )
+  {
+    return EXIT_SUCCESS;
+  }
+  else
+  {
+    std::cerr << "The device name is returned correctly" << std::endl;
+    return EXIT_FAILURE;
+  }
+}
 
 int main(int , char * [] )
 {
   
-  igtl::MessageFactory::Pointer factory = igtl::MessageFactory::New();
+  igtl::MessageBase::Pointer messageBaseTest = igtl::MessageBase::New();
+  igtl::MessageHeader::Pointer headerTest = NULL;
   
-  igtl::MessageHeader::Pointer header = NULL;
-  
-  if (factory->IsValid(header))
+  int error = InitializationTest(messageBaseTest, headerTest);
+  error += SetDeviceNameTest(messageBaseTest, headerTest);
+  error += GetDeviceNameTest(messageBaseTest, headerTest);
+  if (error)
   {
-    std::cerr << "A null header is not valid." << std::endl;
+    std::cerr << "Test failed" << std::endl;
     return EXIT_FAILURE;
   }
-  
-  header = igtl::MessageHeader::New();
-  
-  if (factory->IsValid(header))
+  else
   {
-    std::cerr << "A header without a DeviceType e.g. STRING, TRANSFORM is invalid." << std::endl;
-    return EXIT_FAILURE;
+    std::cout << "Test is successful" << std::endl;
+    return EXIT_SUCCESS;
   }
-  
-  igtl::TransformMessage::Pointer transformMessage = igtl::TransformMessage::New();
-  
-  if (!factory->IsValid(transformMessage.GetPointer()))
-  {
-    std::cerr << "The IsValid method should check for not null, and a valid DeviceType. TRANSFORM should be valid." << std::endl;
-    return EXIT_FAILURE;
-  }
-  
-  // Test with an invalid message.
-  try
-  {
-    igtl::BananaMessage::Pointer bananaMessage = igtl::BananaMessage::New();
-    
-    // Check firstly its not valid.
-    if (factory->IsValid(bananaMessage.GetPointer()))
-    {
-      std::cerr << "The IsValid method should fail for BANANA messages." << std::endl;
-      return EXIT_FAILURE;
-    }
-    
-    factory->GetMessage(bananaMessage.GetPointer());
-    throw std::logic_error("Should not reach this line, as the previous line should throw invalid_argument, as BANANA messages are not valid.");
-  }
-  catch (const std::invalid_argument& e)
-  {
-    std::cerr << "Caught exception e=" << e.what() << std::endl;
-  }
-  catch (const std::exception& e)
-  {
-    std::cerr << "Caught std::exception, which should not happen. e=" << e.what() << std::endl;
-    throw e;
-  }
-  
   
   return EXIT_SUCCESS;
 }

@@ -30,7 +30,7 @@ unsigned char test_polydata_message_header[] = {
   0x73, 0xdd, 0xdf, 0xc8, 0x0c, 0x48, 0xc6, 0x2b, /* CRC */
 };
 
-char test_polydata_message_body[] = {
+unsigned char test_polydata_message_body[] = {
   /*---------- POLYDATA message header ------------*/
   0x00, 0x00, 0x00, 0x08,                         /* Number of points */
   0x00, 0x00, 0x00, 0x00,                         /* Number of vertices */

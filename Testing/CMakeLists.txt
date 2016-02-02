@@ -9,8 +9,6 @@ ADD_EXECUTABLE(igtlMultiThreaderTest2   igtlMultiThreaderTest2.cxx)
 ADD_EXECUTABLE(igtlMultiThreaderTest3   igtlMultiThreaderTest3.cxx)
 ADD_EXECUTABLE(igtlMessageFactoryTest   igtlMessageFactoryTest.cxx)
 ADD_EXECUTABLE(igtlTimeStampTest1   igtlTimeStampTest1.cxx)
-ADD_EXECUTABLE(igtlMessageBaseTest   igtlMessageBaseTest.cxx)
-
 
 TARGET_LINK_LIBRARIES(igtlSocketTest OpenIGTLink)
 TARGET_LINK_LIBRARIES(igtlMultiThreaderTest1 OpenIGTLink)
@@ -18,7 +16,6 @@ TARGET_LINK_LIBRARIES(igtlMultiThreaderTest2 OpenIGTLink)
 TARGET_LINK_LIBRARIES(igtlMultiThreaderTest3 OpenIGTLink)
 TARGET_LINK_LIBRARIES(igtlMessageFactoryTest OpenIGTLink)
 TARGET_LINK_LIBRARIES(igtlTimeStampTest1 OpenIGTLink)
-TARGET_LINK_LIBRARIES(igtlMessageBaseTest OpenIGTLink)
 
 ADD_TEST(igtlSocketTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlSocketTest)
 ADD_TEST(igtlMultiThreaderTest1 ${OpenIGTLink_EXECUTABLE_PATH}/igtlMultiThreaderTest1)
@@ -26,6 +23,5 @@ ADD_TEST(igtlMultiThreaderTest2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlMultiThreader
 ADD_TEST(igtlMultiThreaderTest3 ${OpenIGTLink_EXECUTABLE_PATH}/igtlMultiThreaderTest3)
 ADD_TEST(igtlMessageFactoryTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlMessageFactoryTest)
 ADD_TEST(igtlTimeStampTest1 ${OpenIGTLink_EXECUTABLE_PATH}/igtlTimeStampTest1)
-ADD_TEST(igtlMessageBaseTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlMessageBaseTest)
 
 
