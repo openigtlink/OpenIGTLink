@@ -14,7 +14,7 @@
 
 #include <igtlMessageBase.h>
 #include <igtlMessageHeader.h>
-#include <gtest/gtest.h>
+#include "googleTest/include/gtest.h"
 #include <stdexcept>
 #include "igtlutil/igtl_test_data_lbmeta.h"
 
