@@ -37,8 +37,3 @@ ADD_TEST(igtlMessageBaseTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlMessageBaseTest)
 
 
 
-add_custom_command(TARGET OpenIGTLink POST_BUILD        # Adds a post-build event to MyTest
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-     "${GOOGLETEST_LIBRARY}"      # <--this is in-file
-        ${PROJECT_BINARY_DIR}/lib/libgtest.a)  
-
