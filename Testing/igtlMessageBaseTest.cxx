@@ -22,6 +22,11 @@
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
 
+TEST(testMath, myCubeTest)
+{
+  EXPECT_EQ(1000, 1000);
+}
+
 void IntialTheMessageBase(igtl::MessageBase::Pointer &messageBase, igtl::MessageHeader::Pointer &header)
 {
   //char test_lbmeta_message[] = {0x00, 0x01, 0xd2};
@@ -90,27 +95,27 @@ int GetDeviceNameTest(igtl::MessageBase::Pointer &messageBaseTest, igtl::Message
   }
 }
 
-int main(int , char * [] )
+int main(int argc, char **argv)
 {
   
   igtl::MessageBase::Pointer messageBaseTest = igtl::MessageBase::New();
   igtl::MessageHeader::Pointer headerTest = NULL;
-  
+  testing::InitGoogleTest(&argc, argv);
   int error = InitializationTest(messageBaseTest, headerTest);
   error += SetDeviceNameTest(messageBaseTest, headerTest);
   error += GetDeviceNameTest(messageBaseTest, headerTest);
   if (error)
   {
     std::cerr << "Test failed" << std::endl;
-    return EXIT_FAILURE;
+    //return EXIT_FAILURE;
   }
   else
   {
     std::cout << "Test is successful" << std::endl;
-    return EXIT_SUCCESS;
+    //return EXIT_SUCCESS;
   }
   
-  return EXIT_SUCCESS;
+  return RUN_ALL_TESTS();
 }
 
 
