@@ -4,6 +4,7 @@ find_package(OpenIGTLink REQUIRED)
 include(${OpenIGTLink_USE_FILE})
 
 LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/Testing/googleTest/lib)
+set(CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/Testing/googleTest)
 IF( ${CMAKE_SYSTEM_NAME} MATCHES Darwin)
   find_package(googleTest REQUIRED)
   set(CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/Testing/googleTest/lib/MacOS)
