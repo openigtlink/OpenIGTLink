@@ -15,106 +15,63 @@
 #include <igtlMessageBase.h>
 #include <igtlMessageHeader.h>
 #include "googleTest/include/gtest.h"
-#include <stdexcept>
-#include "igtlutil/igtl_test_data_lbmeta.h"
+#include "igtlutil/igtl_test_data_image.h"
+#include "igtl_util.h"
 
-
-#define EXIT_SUCCESS 0
-#define EXIT_FAILURE 1
-
-TEST(testMath, myCubeTest)
+TEST(MessageBaseTest, InitializationTest)
 {
-  EXPECT_EQ(1000, 1000);
-}
-
-void IntialTheMessageBase(igtl::MessageBase::Pointer &messageBase, igtl::MessageHeader::Pointer &header)
-{
-  //char test_lbmeta_message[] = {0x00, 0x01, 0xd2};
-}
-
-int InitializationTest(igtl::MessageBase::Pointer &messageBaseTest, igtl::MessageHeader::Pointer &headerTest)
-{
+  igtl::MessageBase::Pointer messageBaseTest = igtl::MessageBase::New();
   messageBaseTest->SetDeviceName("DeviceTest");
-  std::cout<< "Output device name: "<<messageBaseTest->GetDeviceName()<< std::endl;
-  if (!strcmp(messageBaseTest->GetDeviceName(), "DeviceTest") )
-  {
-    messageBaseTest->InitPack();
-    if (!strcmp(messageBaseTest->GetDeviceName(),"") )
-    {
-      return EXIT_SUCCESS;
-    }
-    else
-    {
-      std::cerr << "Initialization failed" << std::endl;
-      return EXIT_FAILURE;
-    }
-  }
-  else
-  {
-    std::cerr << "The device name is not set" << std::endl;
-    return EXIT_FAILURE;
-  }
-}
-
-int SetDeviceNameTest(igtl::MessageBase::Pointer &messageBaseTest, igtl::MessageHeader::Pointer &headerTest)
-{
+  EXPECT_STREQ(messageBaseTest->GetDeviceName(), "DeviceTest");
   messageBaseTest->InitPack();
-  std::cout<< "Output device name: "<<messageBaseTest->GetDeviceName()<< std::endl;
-  if (!strcmp(messageBaseTest->GetDeviceName(), "") )
-  {
-    messageBaseTest->SetDeviceName("DeviceTest");
-    if (!strcmp(messageBaseTest->GetDeviceName(), "DeviceTest") )
-    {
-      return EXIT_SUCCESS;
-    }
-    else
-    {
-      std::cerr << "Initialization failed" << std::endl;
-      return EXIT_FAILURE;
-    }
-  }
-  else
-  {
-    std::cerr << "The device name is not initialized" << std::endl;
-    return EXIT_FAILURE;
-  }
+  EXPECT_STREQ(messageBaseTest->GetDeviceName(),"");
 }
 
-int GetDeviceNameTest(igtl::MessageBase::Pointer &messageBaseTest, igtl::MessageHeader::Pointer &headerTest)
+TEST(MessageBaseTest, SetDeviceNameTest)
 {
+  igtl::MessageBase::Pointer messageBaseTest = igtl::MessageBase::New();
+  messageBaseTest->InitPack();
+  EXPECT_STREQ(messageBaseTest->GetDeviceName(), "");
   messageBaseTest->SetDeviceName("DeviceTest");
-  std::cout<< "Output device name: "<<messageBaseTest->GetDeviceName()<< std::endl;
-  if (!strcmp(messageBaseTest->GetDeviceName(), "DeviceTest") )
-  {
-    return EXIT_SUCCESS;
-  }
-  else
-  {
-    std::cerr << "The device name is returned correctly" << std::endl;
-    return EXIT_FAILURE;
-  }
+  EXPECT_STREQ(messageBaseTest->GetDeviceName(), "DeviceTest");
 }
+
+TEST(MessageBaseTest, GetDeviceNameTest)
+{
+  igtl::MessageBase::Pointer messageBaseTest = igtl::MessageBase::New();
+  messageBaseTest->SetDeviceName("DeviceTest");
+  EXPECT_STREQ(messageBaseTest->GetDeviceName(), "DeviceTest");
+}
+
+
+TEST(MessageBaseTest, TimeStampTest)
+{
+  igtl::MessageBase::Pointer messageBaseTest = igtl::MessageBase::New();
+  messageBaseTest->SetTimeStamp(1,2);
+  unsigned int sec=0, nanosec=0;
+  messageBaseTest->GetTimeStamp(&sec,&nanosec);
+  EXPECT_EQ(sec, 1);
+  EXPECT_EQ(nanosec, 2);
+  igtl::TimeStamp::Pointer ts_input = igtl::TimeStamp::New();
+  ts_input->SetTime(123,500000000); //nanosecond can not be larger or equal to 1e9.
+  //5e8 nanosecond equals 2147483647 frac second.
+  messageBaseTest->SetTimeStamp(ts_input);
+  messageBaseTest->GetTimeStamp(&sec,&nanosec);
+  EXPECT_EQ(sec, 123);
+  EXPECT_EQ(nanosec, 2147483647);
+}
+
+TEST(MessageBaseTest, UNPACKTEST)
+{
+  igtl::MessageBase::Pointer messageBaseTest = igtl::MessageBase::New();
+  int status = messageBaseTest->Unpack(); // The m_packSize cannot be set, so the unpack cannot be tested
+  EXPECT_EQ(status, messageBaseTest->UNPACK_UNDEF);
+}
+
 
 int main(int argc, char **argv)
 {
-  
-  igtl::MessageBase::Pointer messageBaseTest = igtl::MessageBase::New();
-  igtl::MessageHeader::Pointer headerTest = NULL;
   testing::InitGoogleTest(&argc, argv);
-  int error = InitializationTest(messageBaseTest, headerTest);
-  error += SetDeviceNameTest(messageBaseTest, headerTest);
-  error += GetDeviceNameTest(messageBaseTest, headerTest);
-  if (error)
-  {
-    std::cerr << "Test failed" << std::endl;
-    //return EXIT_FAILURE;
-  }
-  else
-  {
-    std::cout << "Test is successful" << std::endl;
-    //return EXIT_SUCCESS;
-  }
-  
   return RUN_ALL_TESTS();
 }
 

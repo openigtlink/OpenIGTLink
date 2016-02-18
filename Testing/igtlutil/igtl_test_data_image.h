@@ -179,7 +179,7 @@ unsigned const char test_image[] = {
   0xfd, 0xfd, 0xfd, 0xfd,
 };
 
-const char test_image_message[] = {
+unsigned const char test_image_message[] = {
   /* OpenIGTLink header */
   0x00, 0x01,                                     /* Version number */
   0x49, 0x4d, 0x41, 0x47, 0x45, 0x00, 0x00, 0x00,
