@@ -3,18 +3,31 @@ ADD_SUBDIRECTORY( igtlutil )
 find_package(OpenIGTLink REQUIRED)
 include(${OpenIGTLink_USE_FILE})
 
-LINK_DIRECTORIES(${PROJECT_SOURCE_DIR}/Testing/googleTest/lib)
-set(CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/Testing/googleTest)
-IF( ${CMAKE_SYSTEM_NAME} MATCHES Darwin)
-  find_package(googleTest REQUIRED)
-  set(CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/Testing/googleTest/lib/MacOS)
-  find_library(GOOGLETEST_LIBRARY NAMES gtest PATH ${PROJECT_SOURCE_DIR}/Testing/googleTest/lib/MacOS)
-ELSEIF(${CMAKE_SYSTEM_NAME} MATCHES Linux)
-  find_package(googleTest REQUIRED)
-  set(CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/Testing/googleTest/lib/Linux)
-  find_library(GOOGLETEST_LIBRARY NAMES gtest PATH ${PROJECT_SOURCE_DIR}/Testing/googleTest/lib/Linux)
-ENDIF(${CMAKE_SYSTEM_NAME} MATCHES Darwin)
-message(${CMAKE_SYSTEM_NAME})
+# Enable ExternalProject CMake module
+include(ExternalProject)
+# Download and install GoogleTest
+ExternalProject_Add(
+    gtest
+    URL https://googletest.googlecode.com/files/gtest-1.7.0.zip
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gtest
+    # Disable install step
+    INSTALL_COMMAND ""
+)
+
+# Create a libgtest target to be used as a dependency by test programs
+add_library(libgtest IMPORTED STATIC GLOBAL)
+add_dependencies(libgtest gtest)
+
+# Set gtest properties
+ExternalProject_Get_Property(gtest source_dir binary_dir)
+set_target_properties(libgtest PROPERTIES
+    "IMPORTED_LOCATION" "${binary_dir}/libgtest.a"
+    "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
+#    "INTERFACE_INCLUDE_DIRECTORIES" "${source_dir}/include"
+)
+include_directories("${source_dir}/include")
+message(${binary_dir})
+
 
 ADD_EXECUTABLE(igtlSocketTest   igtlSocketTest.cxx)
 ADD_EXECUTABLE(igtlMultiThreaderTest1   igtlMultiThreaderTest1.cxx)
@@ -30,7 +43,7 @@ TARGET_LINK_LIBRARIES(igtlMultiThreaderTest2 OpenIGTLink)
 TARGET_LINK_LIBRARIES(igtlMultiThreaderTest3 OpenIGTLink)
 TARGET_LINK_LIBRARIES(igtlMessageFactoryTest OpenIGTLink)
 TARGET_LINK_LIBRARIES(igtlTimeStampTest1 OpenIGTLink)
-TARGET_LINK_LIBRARIES(igtlMessageBaseTest OpenIGTLink ${GOOGLETEST_LIBRARY})
+TARGET_LINK_LIBRARIES(igtlMessageBaseTest OpenIGTLink libgtest)
 
 ADD_TEST(igtlSocketTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlSocketTest)
 ADD_TEST(igtlMultiThreaderTest1 ${OpenIGTLink_EXECUTABLE_PATH}/igtlMultiThreaderTest1)
