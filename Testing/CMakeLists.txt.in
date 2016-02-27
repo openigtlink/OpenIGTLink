@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.8.2)
  
 project(googletest-download NONE)
-message(${CMAKE_CXX_FLAGS})
 include(ExternalProject)
 ExternalProject_Add(googletest
   URL https://googletest.googlecode.com/files/gtest-1.7.0.zip
@@ -9,8 +8,6 @@ ExternalProject_Add(googletest
   #GIT_TAG           master
   SOURCE_DIR        "${CMAKE_BINARY_DIR}/Testing/googletest-src"
   BINARY_DIR        "${CMAKE_BINARY_DIR}/Testing/googletest-build"
-  #CMAKE_ARGS -DCMAKE_C_FLAGS:STRING ="${CMAKE_C_FLAGS}" -DCMAKE_CXX_FLAGS:STRING="${CMAKE_CXX_FLAGS}"
-  #CMAKE_COMMAND "${CMAKE_COMMAND} --build .  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/Testing/googletest-download"
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND   ""
