@@ -2,32 +2,35 @@ ADD_SUBDIRECTORY( igtlutil )
 
 find_package(OpenIGTLink REQUIRED)
 include(${OpenIGTLink_USE_FILE})
+message(${CMAKE_SYSTEM_NAME})
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows" AND (NOT(CMAKE_CXX_FLAGS MATCHES "/MD")))
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}/MD" CACHE STRING "compile flags" FORCE)
+endif(CMAKE_SYSTEM_NAME STREQUAL "Windows" AND (NOT(CMAKE_CXX_FLAGS MATCHES "/MD")))
+  # Download and unpack googletest at configure time
+message(${CMAKE_CXX_FLAGS})
+configure_file(CMakeLists.txt.in
+               googletest-download/CMakeLists.txt)
 
-# Enable ExternalProject CMake module
-include(ExternalProject)
-# Download and install GoogleTest
-ExternalProject_Add(
-    gtest
-    URL https://googletest.googlecode.com/files/gtest-1.7.0.zip
-    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gtest
-    # Disable install step
-    INSTALL_COMMAND ""
-)
+set(BUILD_GTEST ON CACHE BOOL "enable gtest")
+set(BUILD_GMOCK OFF CACHE BOOL "disable gmock")
+execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}".
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/Testing/googletest-download )
+execute_process(COMMAND ${CMAKE_COMMAND} --build .
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/Testing/googletest-download )
+# Prevent GoogleTest from overriding our compiler/linker options
+# when building with Visual Studio
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+ 
+# Add googletest directly to our build. This adds
+# the following targets: gtest, gtest_main, gmock
+# and gmock_main
+add_subdirectory(${CMAKE_BINARY_DIR}/Testing/googletest-src
+                 ${CMAKE_BINARY_DIR}/Testing/googletest-build)
 
-# Create a libgtest target to be used as a dependency by test programs
-add_library(libgtest IMPORTED STATIC GLOBAL)
-add_dependencies(libgtest gtest)
-
-# Set gtest properties
-ExternalProject_Get_Property(gtest source_dir binary_dir)
-set_target_properties(libgtest PROPERTIES
-    "IMPORTED_LOCATION" "${binary_dir}/libgtest.a"
-    "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
-#    "INTERFACE_INCLUDE_DIRECTORIES" "${source_dir}/include"
-)
-include_directories("${source_dir}/include")
-message(${binary_dir})
-
+# The gtest/gmock targets carry header search path
+# dependencies automatically when using CMake 2.8.11 or
+# later. Otherwise we have to add them here ourselves.
+include_directories("${gtest_SOURCE_DIR}/include")
 
 ADD_EXECUTABLE(igtlSocketTest   igtlSocketTest.cxx)
 ADD_EXECUTABLE(igtlMultiThreaderTest1   igtlMultiThreaderTest1.cxx)
@@ -43,7 +46,7 @@ TARGET_LINK_LIBRARIES(igtlMultiThreaderTest2 OpenIGTLink)
 TARGET_LINK_LIBRARIES(igtlMultiThreaderTest3 OpenIGTLink)
 TARGET_LINK_LIBRARIES(igtlMessageFactoryTest OpenIGTLink)
 TARGET_LINK_LIBRARIES(igtlTimeStampTest1 OpenIGTLink)
-TARGET_LINK_LIBRARIES(igtlMessageBaseTest OpenIGTLink libgtest)
+TARGET_LINK_LIBRARIES(igtlMessageBaseTest OpenIGTLink gtest_main gtest)
 
 ADD_TEST(igtlSocketTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlSocketTest)
 ADD_TEST(igtlMultiThreaderTest1 ${OpenIGTLink_EXECUTABLE_PATH}/igtlMultiThreaderTest1)
