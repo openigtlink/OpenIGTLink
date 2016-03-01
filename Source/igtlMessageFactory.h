@@ -49,7 +49,7 @@ public:
   /// Get pointer to message type new function, or NULL if the message type not registered 
   /// Usage: igtl::MessageBase::Pointer message = GetMessageTypeNewPointer("IMAGE")(); 
   /// Throws invalid_argument if message type is not found
-  virtual MessageFactory::PointerToMessageBaseNew GetMessageTypeNewPointer(const std::string& messageTypeName); 
+  virtual MessageFactory::PointerToMessageBaseNew GetMessageTypeNewPointer(const std::string& messageTypeName) const; 
 
   /// Checks that headerMsg is not null and the headerMsg->GetDeviceType() refers to a valid type, returning true if valid, and false otherwise.
   bool IsValid(igtl::MessageHeader::Pointer headerMsg);

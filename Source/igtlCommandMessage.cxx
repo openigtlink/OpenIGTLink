@@ -83,7 +83,7 @@ int CommandMessage::SetCommandName(const std::string& aCommandName)
 
 int CommandMessage::SetCommandContent(const char* string)
 {
-  if (strlen(string) > sizeof(unsigned short)) /* If the length is beyond the range of unsigned short */
+  if (strlen(string) > 0xFFFF) /* If the length is beyond the range of unsigned short */
     {
     return 0;
     }
@@ -94,7 +94,7 @@ int CommandMessage::SetCommandContent(const char* string)
 
 int CommandMessage::SetCommandContent(const std::string & string)
 {
-  if (string.length() > sizeof(unsigned short)) /* If the length is beyond the range of unsigned short */
+  if (string.length() > 0xFFFF) /* If the length is beyond the range of unsigned short */
     {
     return 0;
     }
