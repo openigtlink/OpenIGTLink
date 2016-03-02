@@ -29,24 +29,27 @@ using ::testing::Invoke;
 using igtl::ServerSocket;
 class ServerSocketMock :public ServerSocket {
 public:
-  ServerSocketMock() {
+  ServerSocketMock(ServerSocket::Pointer pointer) {
+    real_ = pointer;
     // By default, all calls are delegated to the real object.
     ON_CALL(*this, CreateServer(_))
-        .WillByDefault(Invoke(&real_, &ServerSocket::CreateServer));
+        .WillByDefault(Invoke(real_.GetPointer(), &ServerSocket::CreateServer));
     ON_CALL(*this, GetServerPort())
-        .WillByDefault(Invoke(&real_, &ServerSocket::GetServerPort));
+        .WillByDefault(Invoke(real_.GetPointer(), &ServerSocket::GetServerPort));
   }
-  ~ServerSocketMock(){} 
+  ~ServerSocketMock(){}; 
   MOCK_METHOD1(CreateServer, int(int port));
   MOCK_METHOD0(GetServerPort, int());
+ protected:
+   ServerSocketMock();
  private:
-  ServerSocket real_;
+   ServerSocket::Pointer real_;
   
 };
 
 TEST(ServerSocketTest, connection)
 {
-  ServerSocketMock mockServerSocket;
+  ServerSocketMock mockServerSocket(ServerSocket::New());
   const char*  hostname = "test";
   int port = 5;
   EXPECT_CALL(mockServerSocket, CreateServer(port)).Times(2);
