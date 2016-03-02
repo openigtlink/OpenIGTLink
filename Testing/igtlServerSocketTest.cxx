@@ -27,8 +27,9 @@ using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Invoke;
 using igtl::ServerSocket;
-class ServerSocketMock :public ServerSocket {
+class ServerSocketMock {
 public:
+  //typedef SmartPointer<ServerSocketMock>  Pointer;
   ServerSocketMock(ServerSocket::Pointer pointer) {
     real_ = pointer;
     // By default, all calls are delegated to the real object.
@@ -37,11 +38,9 @@ public:
     ON_CALL(*this, GetServerPort())
         .WillByDefault(Invoke(real_.GetPointer(), &ServerSocket::GetServerPort));
   }
-  ~ServerSocketMock(){}; 
+  ~ServerSocketMock(){real_.~SmartPointer();}; 
   MOCK_METHOD1(CreateServer, int(int port));
   MOCK_METHOD0(GetServerPort, int());
- protected:
-   ServerSocketMock();
  private:
    ServerSocket::Pointer real_;
   
@@ -52,11 +51,11 @@ TEST(ServerSocketTest, connection)
   ServerSocketMock mockServerSocket(ServerSocket::New());
   const char*  hostname = "test";
   int port = 5;
-  EXPECT_CALL(mockServerSocket, CreateServer(port)).Times(2);
+  EXPECT_CALL(mockServerSocket, CreateServer(port)).Times(1);
   EXPECT_CALL(mockServerSocket, GetServerPort()).Times(1);
-  mockServerSocket.GetServerPort();
+  int socketDescriptor = mockServerSocket.GetServerPort();
   EXPECT_EQ(mockServerSocket.CreateServer(port),0);
-  EXPECT_EQ(mockServerSocket.CreateServer(port),0);
+
 }
 
 int main(int argc, char **argv)
