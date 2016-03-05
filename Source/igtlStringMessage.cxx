@@ -17,10 +17,10 @@
 #include "igtl_header.h"
 #include "igtl_string.h"
 
+#include <cstring>
+
 // Disable warning C4996 (strncpy() may be unsafe) in Windows. 
 #define _CRT_SECURE_NO_WARNINGS
-
-#include <string.h>
 
 namespace igtl {
 
@@ -48,7 +48,7 @@ int StringMessage::SetString(const char* string)
 }
 
 
-int StringMessage::SetString(std::string & string)
+int StringMessage::SetString(const std::string & string)
 {
   if (string.length() > 0xFFFF) /* If the length is beyond the range of unsigned short */
     {
