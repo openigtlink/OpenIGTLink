@@ -26,23 +26,22 @@ igtl::ImageMessage::Pointer imageMessageTest = igtl::ImageMessage::New();
 
 void setupTest()
 {
-  igtl::MessageHeader::Pointer messageHeader = igtl::MessageHeader::New();
-  messageHeader->AllocatePack();
-  memcpy(messageHeader->GetPackPointer(), test_image_message, IGTL_HEADER_SIZE);
-  messageHeader->Unpack(0);
+  //------------------------------------------------------------
+  // size parameters
+  int   size[]     = {50, 50, 1};       // image dimension
+  float spacing[]  = {1.0, 1.0, 5.0};     // spacing (mm/pixel)
+  int   svsize[]   = {50, 50, 1};       // sub-volume size
+  int   svoffset[] = {0, 0, 0};           // sub-volume offset
+  int   scalarType = igtl::ImageMessage::TYPE_UINT8;// scalar type
   
+  //Initialization of a image message
+  imageMessageTest->SetDimensions(size);
+  imageMessageTest->SetSpacing(spacing);
+  imageMessageTest->SetScalarType(scalarType);
+  imageMessageTest->SetSubVolume(svsize, svoffset);
   imageMessageTest->AllocateScalars();
-  imageMessageTest->Copy(messageHeader);
-  imageMessageTest->AllocatePack();
   memcpy((void*)imageMessageTest->GetPackBodyPointer(), test_image_message+IGTL_HEADER_SIZE, IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);//here m_Body is set.
-  igtl_image_header imageHeader;
-  memcpy((void*)&imageHeader, test_image_message+IGTL_HEADER_SIZE, IGTL_IMAGE_HEADER_SIZE);
-  igtl_image_convert_byte_order(&imageHeader);
-  imageHeader.version = IGTL_HEADER_VERSION;
-  imageMessageTest->SetSubVolume((int*)imageHeader.subvol_size, (int*)imageHeader.subvol_offset);
-  imageMessageTest->SetDimensions((int*)imageHeader.size);
-  imageMessageTest->SetScalarType(igtl::ImageMessage::TYPE_UINT8);
-  imageMessageTest->Unpack(0); // use the crc from the m_header
+  imageMessageTest->Pack();
 }
 
 
@@ -111,13 +110,13 @@ TEST(ImageMessageTest, Normals)
   float inT[3] = {1.0, 0.0, 0.0};
   float inS[3] = {0.0, 0.707, -0.707};
   float inN[3] = {0.0, 0.707, 0.707};
-  float inNormals[3][3] = {inT[0],inS[0],inN[0],
-                           inT[1],inS[1],inN[1],
-                           inT[2],inS[2],inN[2]}; 
+  float inNormals[3][3] = {{inT[0],inS[0],inN[0]},
+                           {inT[1],inS[1],inN[1]},
+                           {inT[2],inS[2],inN[2]}}; 
   imageMessageTest->SetNormals(inNormals); 
-  float outNormals[3][3] = {0.0,0.0,0.0,
-                            0.0,0.0,0.0,
-                            0.0,0.0,0.0}; 
+  float outNormals[3][3] = {{0.0,0.0,0.0},
+                            {0.0,0.0,0.0},
+                            {0.0,0.0,0.0}}; 
   imageMessageTest->GetNormals(outNormals); 
   EXPECT_THAT(outNormals, testing::ElementsAre(testing::ElementsAreArray(inNormals[0]),
                                                testing::ElementsAreArray(inNormals[1]),
@@ -141,15 +140,15 @@ TEST(ImageMessageTest, Matrix)
   float inS[4] = {0.0, 0.707, -0.707, 0.0};
   float inN[4] = {0.0, 0.707, 0.707, 0.0};
   float inOrigin[4] = {10.0,10.0,10.0, 1.0}; 
-  igtl::Matrix4x4 inMatrix = {inT[0],inS[0],inN[0],inOrigin[0],
-                              inT[1],inS[1],inN[1],inOrigin[1],
-                              inT[2],inS[2],inN[2],inOrigin[2],
-                              inT[3],inS[3],inN[3],inOrigin[3]}; 
+  igtl::Matrix4x4 inMatrix = {{inT[0],inS[0],inN[0],inOrigin[0]},
+                              {inT[1],inS[1],inN[1],inOrigin[1]},
+                              {inT[2],inS[2],inN[2],inOrigin[2]},
+                              {inT[3],inS[3],inN[3],inOrigin[3]}};
   imageMessageTest->SetMatrix(inMatrix); 
-  igtl::Matrix4x4 outMatrix = {0.0,0.0,0.0,0.0,
-                               0.0,0.0,0.0,0.0,
-                               0.0,0.0,0.0,0.0,
-                               0.0,0.0,0.0,0.0}; 
+  igtl::Matrix4x4 outMatrix = {{0.0,0.0,0.0,0.0},
+                               {0.0,0.0,0.0,0.0},
+                               {0.0,0.0,0.0,0.0},
+                               {0.0,0.0,0.0,0.0}};
   imageMessageTest->GetMatrix(outMatrix); 
   EXPECT_THAT(outMatrix, testing::ElementsAre(testing::ElementsAreArray(inMatrix[0]),
                                               testing::ElementsAreArray(inMatrix[1]),
