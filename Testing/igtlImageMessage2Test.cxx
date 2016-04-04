@@ -171,13 +171,12 @@ TEST(imageMessage2Test, SetScalarPointer)
 
 TEST(imageMessage2Test, Pack)
 {
-  imageMessage2Test->Pack();
   igtl_header *messageHead = (igtl_header *)imageMessage2Test->GetPackFragmentPointer(0);
   EXPECT_STREQ(messageHead->device_name, "");
   EXPECT_STREQ(messageHead->name, "IMAGE");
   EXPECT_EQ(messageHead->version, 256);
-  //EXPECT_EQ(messageHead->body_size, 972);
-  //EXPECT_EQ(messageHead->timestamp, 1407374883553280); the commended test cannot be checked
+  EXPECT_EQ(messageHead->timestamp, 0);
+  //EXPECT_EQ(messageHead->body_size, 2572);//the commended test cannot be checked, because of BYTE_SWAP_INT64() has problem with unsigned int
 }
 
 int main(int argc, char **argv)

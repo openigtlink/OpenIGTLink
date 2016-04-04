@@ -24,6 +24,8 @@
 #include "igtlutil/igtl_test_data_image.h"
 
 igtl::ImageMessage2::Pointer imageMessage2Test = igtl::ImageMessage2::New();
+igtl::GetBindMessage::Pointer getBindMessage = igtl::GetBindMessage::New();
+igtl::StartBindMessage::Pointer startBindMessage = igtl::StartBindMessage::New();
 
 void setupTest()
 {
@@ -45,9 +47,16 @@ void setupTest()
   memcpy((void*)imageMessage2Test->GetPackBodyPointer(), test_image_message+IGTL_HEADER_SIZE, IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);//here m_Body is set.
   imageMessage2Test->SetScalarPointer((void*)test_image);
   imageMessage2Test->Pack();
+  
+  getBindMessage->Init();
+  getBindMessage->AppendChildMessage("Image", "UltrasoundImage");
+  getBindMessage->Pack();
+  startBindMessage->Init();
+  startBindMessage->AppendChildMessage("Image", "UltrasoundImage");
+  startBindMessage->Pack();
 }
 
-TEST(BindMessageBaseTest, basicFunctions)
+TEST(BindMessageBaseTest, BaseFunctions)
 {
   igtl::BindMessageBase::Pointer bindMsgBase;
   bindMsgBase = igtl::BindMessageBase::New();
@@ -84,7 +93,6 @@ TEST(BindMessageTest, GetChildMessage)
   igtl::ImageMessage2::Pointer childMessage = igtl::ImageMessage2::New();
   childMessage->AllocatePack(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
   childMessage->AllocateScalars();
-  memcpy((void*)childMessage->GetPackBodyPointer(), test_image_message+IGTL_HEADER_SIZE, IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);//here m_Body is set.
   //------
   bindMessage->GetChildMessage(0, childMessage);
   EXPECT_STREQ(childMessage->GetDeviceType(), "IMAGE");
@@ -93,17 +101,37 @@ TEST(BindMessageTest, GetChildMessage)
 
 TEST(GetBindMessage, AppendChildMessage)
 {
-  igtl::GetBindMessage::Pointer getBindMessage = igtl::GetBindMessage::New();
-  getBindMessage->Init();
-  getBindMessage->Unpack();
-  getBindMessage->AppendChildMessage("someType", "someName");
-  igtl::MessageBase::Pointer childMessage = igtl::MessageBase::New();
-  //from a GetBindMessage object, we could only get a child messageType,not the message itself, what is the use of this class?.
-  EXPECT_EQ(strcmp((const char *)getBindMessage->GetChildMessageType(0), (const char *)("someType")),0);
+  getBindMessage->AppendChildMessage("Transform", "Tracker");
   getBindMessage->Pack();
+  EXPECT_EQ(getBindMessage->GetPackSize(),110);
+  getBindMessage->AppendChildMessage("Point", "Sensor");
+  getBindMessage->Pack();
+  EXPECT_EQ(getBindMessage->GetPackSize(),129);
+  EXPECT_EQ(strcmp((const char *)getBindMessage->GetChildMessageType(0), (const char *)("Image")),0);
+  EXPECT_EQ(strcmp((const char *)getBindMessage->GetChildMessageType(1), (const char *)("Transform")),0);
+  EXPECT_EQ(strcmp((const char *)getBindMessage->GetChildMessageType(2), (const char *)("Point")),0);
 }
 
 
+TEST(StartBindMessage, Resolution)
+{
+  igtlUint64 timeRes = 4999;
+  startBindMessage->AppendChildMessage("Transform", "Tracker");
+  startBindMessage->Pack();
+  EXPECT_EQ(startBindMessage->GetPackSize(),118);
+  startBindMessage->AppendChildMessage("Point", "Sensor");
+  startBindMessage->Pack();
+  EXPECT_EQ(startBindMessage->GetPackSize(),137);
+  startBindMessage->SetResolution(timeRes);
+  EXPECT_EQ(startBindMessage->GetResolution(), timeRes);
+}
+
+TEST(RTSBindMessage, Status)
+{
+  igtl::RTSBindMessage::Pointer rtsBindMessage = igtl::RTSBindMessage::New();
+  rtsBindMessage->SetStatus(1);
+  EXPECT_EQ(rtsBindMessage->GetStatus(), 1);
+}
 
 
 int main(int argc, char **argv)
