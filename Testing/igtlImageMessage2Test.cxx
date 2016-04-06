@@ -169,14 +169,37 @@ TEST(imageMessage2Test, SetScalarPointer)
   EXPECT_EQ(strcmp((const char *)fragmentImagePointer, (const char *)(test_image_message+IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE+TEST_FRAGMENTIMAGE_MESSAGE_SIZE)),0);
 }
 
-TEST(imageMessage2Test, Pack)
+TEST(imageMessage2Test, Unpack)
 {
-  igtl_header *messageHead = (igtl_header *)imageMessage2Test->GetPackFragmentPointer(0);
-  EXPECT_STREQ(messageHead->device_name, "");
-  EXPECT_STREQ(messageHead->name, "IMAGE");
-  EXPECT_EQ(messageHead->version, 256);
-  EXPECT_EQ(messageHead->timestamp, 0);
-  //EXPECT_EQ(messageHead->body_size, 2572);//the commended test cannot be checked, because of BYTE_SWAP_INT64() has problem with unsigned int
+  imageMessage2Test->Unpack();
+  igtl_header *messageHeader = (igtl_header *)imageMessage2Test->GetPackFragmentPointer(0);
+  EXPECT_STREQ(messageHeader->device_name, "");
+  EXPECT_STREQ(messageHeader->name, "IMAGE");
+  EXPECT_EQ(messageHeader->version, 1);
+  EXPECT_EQ(messageHeader->timestamp, 0);
+  EXPECT_EQ(messageHeader->body_size, 2572);
+  igtl_image_header *imageHeader = (igtl_image_header *)imageMessage2Test->GetPackFragmentPointer(1);
+  EXPECT_EQ(imageHeader->version, 1);
+  int   size[]     = {50, 50, 1};
+  EXPECT_THAT(imageHeader->size, testing::ElementsAreArray(size));
+  int   subvol_size[]     = {50, 50, 1};
+  EXPECT_THAT(imageHeader->subvol_size, testing::ElementsAreArray(subvol_size));
+  //testMatrix is the groud truth matrix, that has been assiged to the message in the packing process
+  igtl_float32 testMatrix[12];
+  std::cout<<"size of Matrix "<<sizeof(testMatrix)<<std::endl;
+  memcpy(testMatrix, test_image_message+IGTL_HEADER_SIZE+12, sizeof(testMatrix));
+  if (igtl_is_little_endian())
+  {
+    igtl_uint32 tmp[12];
+    memcpy(tmp, testMatrix, sizeof(igtl_uint32)*12);
+    for (int i = 0; i < 12; i ++)
+    {
+      tmp[i] =  BYTE_SWAP_INT32(tmp[i]);
+    }
+    memcpy(testMatrix, tmp, sizeof(igtl_uint32)*12);
+  }
+  //-----------------------
+  EXPECT_THAT(imageHeader->matrix, testing::Pointwise(testing::Eq(),testMatrix));
 }
 
 int main(int argc, char **argv)
