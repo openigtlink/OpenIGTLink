@@ -44,6 +44,9 @@ ADD_EXECUTABLE(igtlServerSocketTest   igtlServerSocketTest.cxx)
 ADD_EXECUTABLE(igtlBindMessageTest   igtlBindMessageTest.cxx)
 ADD_EXECUTABLE(igtlSocketTest   igtlSocketTest.cxx)
 ADD_EXECUTABLE(igtlClientSocketTest   igtlClientSocketTest.cxx)
+ADD_EXECUTABLE(igtlCapabilityMessageTest   igtlCapabilityMessageTest.cxx)
+ADD_EXECUTABLE(igtlColorTableMessageTest   igtlColorTableMessageTest.cxx)
+ADD_EXECUTABLE(igtlConditionVariableTest   igtlConditionVariableTest.cxx)
 
 TARGET_LINK_LIBRARIES(igtlSocketTest OpenIGTLink)
 TARGET_LINK_LIBRARIES(igtlMultiThreaderTest1 OpenIGTLink)
@@ -58,6 +61,10 @@ TARGET_LINK_LIBRARIES(igtlServerSocketTest OpenIGTLink gtest_main gtest gmock_ma
 TARGET_LINK_LIBRARIES(igtlBindMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
 TARGET_LINK_LIBRARIES(igtlSocketTest OpenIGTLink gtest_main gtest gmock_main gmock)
 TARGET_LINK_LIBRARIES(igtlClientSocketTest OpenIGTLink gtest_main gtest gmock_main gmock)
+TARGET_LINK_LIBRARIES(igtlCapabilityMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
+TARGET_LINK_LIBRARIES(igtlColorTableMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
+TARGET_LINK_LIBRARIES(igtlConditionVariableTest OpenIGTLink gtest_main gtest gmock_main gmock)
+
 
 ADD_TEST(igtlSocketTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlSocketTest)
 ADD_TEST(igtlMultiThreaderTest1 ${OpenIGTLink_EXECUTABLE_PATH}/igtlMultiThreaderTest1)
@@ -72,5 +79,7 @@ ADD_TEST(igtlServerSocketTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlServerSocketTes
 ADD_TEST(igtlBindMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlBindMessageTest)
 ADD_TEST(igtlSocketTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlSocketTest)
 ADD_TEST(igtlClientSocketTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlSocketTest)
-
+ADD_TEST(igtlCapabilityMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlCapabilityMessageTest)
+ADD_TEST(igtlColorTableMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlColorTableMessageTest)
+ADD_TEST(igtlConditionVariableTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlConditionVariableTest)
 

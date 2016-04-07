@@ -88,7 +88,7 @@ long interval = 200;
 int threadID;
 int port = 18944;
 bool threadrunning = false;
-
+bool msgReceived = true;
 TEST(SocketTest, GeneralTest)
 {
   igtl::MultiThreader::Pointer threader = igtl::MultiThreader::New();
@@ -109,13 +109,12 @@ void* TestThreadFunction(void* ptr)
   serverSocket->CreateServer(port);
   SocketMock socketMock(static_cast<Socket::Pointer>(serverSocket->WaitForConnection(10*waitingTime)));
   EXPECT_CALL(socketMock, GetConnected()).Times(1);
-  //The send command is called at least 10 times, it keep on sending at an interval(200ms) until a stop command is received. However, it seems like the sending command is not
-  EXPECT_CALL(socketMock, Send(_,_)).Times(::testing::AtLeast(10));
+  //The send command is called 10 times, it keep on sending at an interval(200ms) until a stop command is received.
+  EXPECT_CALL(socketMock, Send(_,_)).Times(10);
   // Receive function should be called three times, the start command header, the start command body, and the stop command
   EXPECT_CALL(socketMock, Receive(_,_,_)).Times(3);
   EXPECT_CALL(socketMock, SetTimeout(_)).Times(0);
-  EXPECT_CALL(socketMock, SetSendTimeout(_)).Times(1);
-  socketMock.SetSendTimeout(interval*2);
+  EXPECT_CALL(socketMock, SetSendTimeout(_)).Times(0);
   if (socketMock.getPointer().IsNotNull())
   {
     EXPECT_GT(socketMock.GetConnected(),0);
@@ -155,10 +154,14 @@ void* TestThreadFunction(void* ptr)
           quaternionTrackingMsg->AddQuaternionTrackingDataElement(quaternionTrackElement0);
           while(!(threadID==-1))
           {
-            glock->Lock();
-            quaternionTrackingMsg->Pack();
-            socketMock.Send(quaternionTrackingMsg->GetPackPointer(), quaternionTrackingMsg->GetPackSize());
-            glock->Unlock();
+            if(msgReceived)
+            {
+              glock->Lock();
+              quaternionTrackingMsg->Pack();
+              socketMock.Send(quaternionTrackingMsg->GetPackPointer(), quaternionTrackingMsg->GetPackSize());
+              glock->Unlock();
+              msgReceived = false;
+            }
             igtl::Sleep(interval);
           }
         }
@@ -224,6 +227,7 @@ void clientServerProcess()
     if (strcmp(headerMsg->GetDeviceType(), "QTDATA") == 0)
     {
       ReceiveQuaternionTrackingData(clientSocket, headerMsg);
+      msgReceived = true;
     }
     else
     {
