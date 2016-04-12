@@ -546,23 +546,23 @@ int Socket::SetSendBlocking(int sw)
 #if defined(_WIN32) && !defined(__CYGWIN__)
   if (sw==0)
     {
-    this->m_ReceiveTimeout = 1;
+    this->m_SendTimeout = 1;
     }
   else
     {
-    this->m_ReceiveTimeout = 0;
+    this->m_SendTimeout = 0;
     }
   int len;
 #else
   if (sw==0)
     {
-    this->m_ReceiveTimeout.tv_sec  = 0;          /* second */
-    this->m_ReceiveTimeout.tv_usec = 1;          /* nanosecond */
+    this->m_SendTimeout.tv_sec  = 0;          /* second */
+    this->m_SendTimeout.tv_usec = 1;          /* nanosecond */
     }
   else
     {
-    this->m_ReceiveTimeout.tv_sec  = 0;          /* second */
-    this->m_ReceiveTimeout.tv_usec = 0;          /* nanosecond */
+    this->m_SendTimeout.tv_sec  = 0;          /* second */
+    this->m_SendTimeout.tv_usec = 0;          /* nanosecond */
     }
   socklen_t len;
 #endif
