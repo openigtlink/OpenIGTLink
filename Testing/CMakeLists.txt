@@ -48,6 +48,8 @@ ADD_EXECUTABLE(igtlCapabilityMessageTest   igtlCapabilityMessageTest.cxx)
 ADD_EXECUTABLE(igtlColorTableMessageTest   igtlColorTableMessageTest.cxx)
 ADD_EXECUTABLE(igtlConditionVariableTest   igtlConditionVariableTest.cxx)
 ADD_EXECUTABLE(igtlLabelMetaMessageTest   igtlLabelMetaMessageTest.cxx)
+ADD_EXECUTABLE(igtlNDArrayMessageTest   igtlNDArrayMessageTest.cxx)
+ADD_EXECUTABLE(igtlImageMetaMessageTest   igtlImageMetaMessageTest.cxx)
 
 TARGET_LINK_LIBRARIES(igtlSocketTest OpenIGTLink)
 TARGET_LINK_LIBRARIES(igtlMultiThreaderTest1 OpenIGTLink)
@@ -66,6 +68,8 @@ TARGET_LINK_LIBRARIES(igtlCapabilityMessageTest OpenIGTLink gtest_main gtest gmo
 TARGET_LINK_LIBRARIES(igtlColorTableMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
 TARGET_LINK_LIBRARIES(igtlConditionVariableTest OpenIGTLink gtest_main gtest gmock_main gmock)
 TARGET_LINK_LIBRARIES(igtlLabelMetaMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
+TARGET_LINK_LIBRARIES(igtlNDArrayMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
+TARGET_LINK_LIBRARIES(igtlImageMetaMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
 
 
 ADD_TEST(igtlSocketTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlSocketTest)
@@ -85,4 +89,6 @@ ADD_TEST(igtlCapabilityMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlCapability
 ADD_TEST(igtlColorTableMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlColorTableMessageTest)
 ADD_TEST(igtlConditionVariableTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlConditionVariableTest)
 ADD_TEST(igtlLabelMetaMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlLabelMetaMessageTest)
+ADD_TEST(igtlNDArrayMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlNDArrayMessage)
+ADD_TEST(igtlImageMetaMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlLabelMetaMessageTest)
 
