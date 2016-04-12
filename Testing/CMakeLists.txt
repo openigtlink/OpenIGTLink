@@ -50,6 +50,8 @@ ADD_EXECUTABLE(igtlConditionVariableTest   igtlConditionVariableTest.cxx)
 ADD_EXECUTABLE(igtlLabelMetaMessageTest   igtlLabelMetaMessageTest.cxx)
 ADD_EXECUTABLE(igtlNDArrayMessageTest   igtlNDArrayMessageTest.cxx)
 ADD_EXECUTABLE(igtlImageMetaMessageTest   igtlImageMetaMessageTest.cxx)
+ADD_EXECUTABLE(igtlPointMessageTest   igtlPointMessageTest.cxx)
+ADD_EXECUTABLE(igtlPolyDataMessageTest   igtlPolyDataMessageTest.cxx)
 
 TARGET_LINK_LIBRARIES(igtlSocketTest OpenIGTLink)
 TARGET_LINK_LIBRARIES(igtlMultiThreaderTest1 OpenIGTLink)
@@ -70,7 +72,8 @@ TARGET_LINK_LIBRARIES(igtlConditionVariableTest OpenIGTLink gtest_main gtest gmo
 TARGET_LINK_LIBRARIES(igtlLabelMetaMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
 TARGET_LINK_LIBRARIES(igtlNDArrayMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
 TARGET_LINK_LIBRARIES(igtlImageMetaMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
-
+TARGET_LINK_LIBRARIES(igtlPointMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
+TARGET_LINK_LIBRARIES(igtlPolyDataMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
 
 ADD_TEST(igtlSocketTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlSocketTest)
 ADD_TEST(igtlMultiThreaderTest1 ${OpenIGTLink_EXECUTABLE_PATH}/igtlMultiThreaderTest1)
@@ -91,4 +94,6 @@ ADD_TEST(igtlConditionVariableTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlConditionV
 ADD_TEST(igtlLabelMetaMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlLabelMetaMessageTest)
 ADD_TEST(igtlNDArrayMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlNDArrayMessage)
 ADD_TEST(igtlImageMetaMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlLabelMetaMessageTest)
+ADD_TEST(igtlPointMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlPointMessageTest)
+ADD_TEST(igtlPolyDataMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlPolyDataMessageTest)
 
