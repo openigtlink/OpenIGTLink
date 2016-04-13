@@ -16,7 +16,7 @@
 #include "igtl_header.h"
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include "igtl_Status.h"
+#include "igtl_status.h"
 #include "igtlOSUtil.h"
 #include "../Testing/igtlutil/igtl_test_data_status.h"
 
