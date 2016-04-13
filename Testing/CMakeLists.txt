@@ -52,6 +52,13 @@ ADD_EXECUTABLE(igtlNDArrayMessageTest   igtlNDArrayMessageTest.cxx)
 ADD_EXECUTABLE(igtlImageMetaMessageTest   igtlImageMetaMessageTest.cxx)
 ADD_EXECUTABLE(igtlPointMessageTest   igtlPointMessageTest.cxx)
 ADD_EXECUTABLE(igtlPolyDataMessageTest   igtlPolyDataMessageTest.cxx)
+ADD_EXECUTABLE(igtlSensorMessageTest   igtlSensorMessageTest.cxx)
+ADD_EXECUTABLE(igtlStatusMessageTest   igtlStatusMessageTest.cxx)
+ADD_EXECUTABLE(igtlStringMessageTest   igtlStringMessageTest.cxx)
+ADD_EXECUTABLE(igtlTrackingDataMessageTest   igtlTrackingDataMessageTest.cxx)
+ADD_EXECUTABLE(igtlTrajectoryMessageTest   igtlTrajectoryMessageTest.cxx)
+ADD_EXECUTABLE(igtlTransformMessageTest   igtlTransformMessageTest.cxx)
+
 
 TARGET_LINK_LIBRARIES(igtlSocketTest OpenIGTLink)
 TARGET_LINK_LIBRARIES(igtlMultiThreaderTest1 OpenIGTLink)
@@ -74,6 +81,13 @@ TARGET_LINK_LIBRARIES(igtlNDArrayMessageTest OpenIGTLink gtest_main gtest gmock_
 TARGET_LINK_LIBRARIES(igtlImageMetaMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
 TARGET_LINK_LIBRARIES(igtlPointMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
 TARGET_LINK_LIBRARIES(igtlPolyDataMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
+TARGET_LINK_LIBRARIES(igtlSensorMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
+TARGET_LINK_LIBRARIES(igtlStatusMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
+TARGET_LINK_LIBRARIES(igtlStringMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
+TARGET_LINK_LIBRARIES(igtlTrackingDataMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
+TARGET_LINK_LIBRARIES(igtlTrajectoryMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
+TARGET_LINK_LIBRARIES(igtlTransformMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
+
 
 ADD_TEST(igtlSocketTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlSocketTest)
 ADD_TEST(igtlMultiThreaderTest1 ${OpenIGTLink_EXECUTABLE_PATH}/igtlMultiThreaderTest1)
@@ -96,4 +110,10 @@ ADD_TEST(igtlNDArrayMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlNDArrayMessag
 ADD_TEST(igtlImageMetaMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlLabelMetaMessageTest)
 ADD_TEST(igtlPointMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlPointMessageTest)
 ADD_TEST(igtlPolyDataMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlPolyDataMessageTest)
+ADD_TEST(igtlSensorMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlSensorMessageTest)
+ADD_TEST(igtlStatusMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlStatusMessageTest)
+ADD_TEST(igtlStringMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlStringMessageTest)
+ADD_TEST(igtlTrackingDataMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlTrackingDataMessageTest)
+ADD_TEST(igtlTrajectoryMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlTrajectoryMessageTest)
+ADD_TEST(igtlTransformMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlTransformMessageTest)
 
