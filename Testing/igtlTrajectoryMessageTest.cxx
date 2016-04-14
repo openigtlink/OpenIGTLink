@@ -12,16 +12,16 @@
  
  =========================================================================*/
 
-#include "../Source/igtlTrajectoryMessage.h"
+#include "igtlTrajectoryMessage.h"
+#include "igtlutil/igtl_test_data_trajectory.h"
+#include "igtl_trajectory.h"
 #include "igtl_header.h"
+
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include "igtl_trajectory.h"
-#include "igtlOSUtil.h"
-#include "../Testing/igtlutil/igtl_test_data_trajectory.h"
 
-igtl::TrajectoryMessage::Pointer trajectoryMsg = igtl::TrajectoryMessage::New();
-igtl::TrajectoryMessage::Pointer trajectoryMsg2 = igtl::TrajectoryMessage::New();
+igtl::TrajectoryMessage::Pointer trajectorySendMsg = igtl::TrajectoryMessage::New();
+igtl::TrajectoryMessage::Pointer trajectoryReceiveMsg = igtl::TrajectoryMessage::New();
 
 igtl::TrajectoryElement::Pointer trajectoryElement0 = igtl::TrajectoryElement::New();
 igtl::TrajectoryElement::Pointer trajectoryElement1 = igtl::TrajectoryElement::New();
@@ -53,42 +53,38 @@ void BuildUpElements()
   trajectoryElement2->SetTargetPosition(85.0,90.0,95.0);
   trajectoryElement2->SetRadius(0.0);
   trajectoryElement2->SetOwner("IMAGE_0");
-  trajectoryMsg = igtl::TrajectoryMessage::New();
-  trajectoryMsg->SetDeviceName("DeviceName");
-  trajectoryMsg->SetTimeStamp(0, 1234567890);
-  trajectoryMsg->AddTrajectoryElement(trajectoryElement0);
-  trajectoryMsg->AddTrajectoryElement(trajectoryElement1);
-  trajectoryMsg->AddTrajectoryElement(trajectoryElement2);
-  trajectoryMsg->Pack();
+  trajectorySendMsg = igtl::TrajectoryMessage::New();
+  trajectorySendMsg->SetDeviceName("DeviceName");
+  trajectorySendMsg->SetTimeStamp(0, 1234567890);
+  trajectorySendMsg->AddTrajectoryElement(trajectoryElement0);
+  trajectorySendMsg->AddTrajectoryElement(trajectoryElement1);
+  trajectorySendMsg->AddTrajectoryElement(trajectoryElement2);
+  trajectorySendMsg->Pack();
 }
 
-TEST(TrackingMessageTest, Pack)
+TEST(TrajectoryMessageTest, Pack)
 {
   BuildUpElements();
-  for (int i = 0 ; i< 508;++i)
-  {
-    std::cerr<<+((igtlUint8*)trajectoryMsg->GetPackPointer())[i]<<"  "<<+test_trajectory_message[i]<<std::endl;
-  }
-  int r = memcmp((const void*)trajectoryMsg->GetPackPointer(), (const void*)test_trajectory_message,
+  int r = memcmp((const void*)trajectorySendMsg->GetPackPointer(), (const void*)test_trajectory_message,
                  (size_t)(IGTL_HEADER_SIZE));
   EXPECT_EQ(r, 0);
-  r = memcmp((const void*)trajectoryMsg->GetPackBodyPointer(), (const void*)(test_trajectory_message+(size_t)(IGTL_HEADER_SIZE)), IGTL_TRAJECTORY_ELEMENT_SIZE*3 );
+  r = memcmp((const void*)trajectorySendMsg->GetPackBodyPointer(), (const void*)(test_trajectory_message+(size_t)(IGTL_HEADER_SIZE)), IGTL_TRAJECTORY_ELEMENT_SIZE*3 );
   EXPECT_EQ(r, 0);
 }
 
 
-TEST(TrackingMessageTest, Unpack)
+TEST(TrajectoryMessageTest, Unpack)
 {
   BuildUpElements();
   igtl::TrajectoryElement::Pointer temp= igtl::TrajectoryElement::New();
-  trajectoryMsg2 = igtl::TrajectoryMessage::New();
-  trajectoryMsg2->AddTrajectoryElement(temp);
-  trajectoryMsg2->AddTrajectoryElement(temp);
-  trajectoryMsg2->AddTrajectoryElement(temp);
-  trajectoryMsg2->AllocatePack();
-  memcpy(trajectoryMsg2->GetPackPointer(), trajectoryMsg->GetPackPointer(), IGTL_TRAJECTORY_ELEMENT_SIZE*3 + IGTL_HEADER_SIZE);
-  trajectoryMsg2->Unpack();
-  igtl_header *messageHeader = (igtl_header *)trajectoryMsg2->GetPackPointer();
+  trajectoryReceiveMsg = igtl::TrajectoryMessage::New();
+  trajectoryReceiveMsg->AddTrajectoryElement(temp);
+  trajectoryReceiveMsg->AddTrajectoryElement(temp);
+  trajectoryReceiveMsg->AddTrajectoryElement(temp);
+  trajectoryReceiveMsg->AllocatePack();
+  memcpy(trajectoryReceiveMsg->GetPackPointer(), trajectorySendMsg->GetPackPointer(), IGTL_TRAJECTORY_ELEMENT_SIZE*3 + IGTL_HEADER_SIZE);
+  trajectoryReceiveMsg->Unpack();
+  igtl_header *messageHeader = (igtl_header *)trajectoryReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "TRAJ");
   EXPECT_EQ(messageHeader->version, 1);
@@ -130,7 +126,7 @@ TEST(TrackingMessageTest, Unpack)
   for (int i = 0; i<3;++i)
   {
     igtl::TrajectoryElement::Pointer elem = igtl::TrajectoryElement::New();
-    trajectoryMsg2->GetTrajectoryElement(i, elem);
+    trajectoryReceiveMsg->GetTrajectoryElement(i, elem);
     EXPECT_EQ(strncmp((char*)(elem->GetName()), trajectoryDescription[i], 24),0);
     igtlUint8 returnedRGBA[4] ={0,0,0,0};
     elem->GetRGBA(returnedRGBA);

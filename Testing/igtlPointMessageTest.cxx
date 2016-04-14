@@ -12,16 +12,17 @@
  
  =========================================================================*/
 
-#include "../Source/igtlPointMessage.h"
+#include "igtlPointMessage.h"
+#include "igtlutil/igtl_test_data_point.h"
+#include "igtl_point.h"
 #include "igtl_header.h"
+
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include "igtl_point.h"
-#include "igtlOSUtil.h"
-#include "../Testing/igtlutil/igtl_test_data_point.h"
 
-igtl::PointMessage::Pointer pointMsg = igtl::PointMessage::New();
-igtl::PointMessage::Pointer pointMsg2 = igtl::PointMessage::New();
+
+igtl::PointMessage::Pointer pointSendMsg = igtl::PointMessage::New();
+igtl::PointMessage::Pointer pointReceiveMsg = igtl::PointMessage::New();
 
 igtl::PointElement::Pointer pointElement0 = igtl::PointElement::New();
 igtl::PointElement::Pointer pointElement1 = igtl::PointElement::New();
@@ -47,26 +48,22 @@ void BuildUpElements()
   pointElement2->SetPosition(40.0, 45.0, 50.0);
   pointElement2->SetRadius(1.0);
   pointElement2->SetOwner("IMAGE_0");
-  pointMsg = igtl::PointMessage::New();
-  pointMsg->SetDeviceName("DeviceName");
-  pointMsg->SetTimeStamp(0, 1234567890);
-  pointMsg->AddPointElement(pointElement0);
-  pointMsg->AddPointElement(pointElement1);
-  pointMsg->AddPointElement(pointElement2);
-  pointMsg->Pack();
+  pointSendMsg = igtl::PointMessage::New();
+  pointSendMsg->SetDeviceName("DeviceName");
+  pointSendMsg->SetTimeStamp(0, 1234567890);
+  pointSendMsg->AddPointElement(pointElement0);
+  pointSendMsg->AddPointElement(pointElement1);
+  pointSendMsg->AddPointElement(pointElement2);
+  pointSendMsg->Pack();
 }
 
 TEST(PointMessageTest, Pack)
 {
   BuildUpElements();
-  for (int i = 0 ; i< 58;++i)
-  {
-    std::cerr<<+((igtlUint8*)pointMsg->GetPackPointer())[i]<<"  "<<+test_point_message[i]<<std::endl;
-  }
-  int r = memcmp((const void*)pointMsg->GetPackPointer(), (const void*)test_point_message,
+  int r = memcmp((const void*)pointSendMsg->GetPackPointer(), (const void*)test_point_message,
                  (size_t)(IGTL_HEADER_SIZE));
   EXPECT_EQ(r, 0);
-  r = memcmp((const void*)pointMsg->GetPackBodyPointer(), (const void*)(test_point_message+(size_t)(IGTL_HEADER_SIZE)), IGTL_POINT_ELEMENT_SIZE*3 );
+  r = memcmp((const void*)pointSendMsg->GetPackBodyPointer(), (const void*)(test_point_message+(size_t)(IGTL_HEADER_SIZE)), IGTL_POINT_ELEMENT_SIZE*3 );
   EXPECT_EQ(r, 0);
 }
 
@@ -75,14 +72,14 @@ TEST(PointMessageTest, Unpack)
 {
   BuildUpElements();
   igtl::PointElement::Pointer temp= igtl::PointElement::New();
-  pointMsg2 = igtl::PointMessage::New();
-  pointMsg2->AddPointElement(temp);
-  pointMsg2->AddPointElement(temp);
-  pointMsg2->AddPointElement(temp);
-  pointMsg2->AllocatePack();
-  memcpy(pointMsg2->GetPackPointer(), pointMsg->GetPackPointer(), IGTL_POINT_ELEMENT_SIZE*3 + IGTL_HEADER_SIZE);
-  pointMsg2->Unpack();
-  igtl_header *messageHeader = (igtl_header *)pointMsg2->GetPackPointer();
+  pointReceiveMsg = igtl::PointMessage::New();
+  pointReceiveMsg->AddPointElement(temp);
+  pointReceiveMsg->AddPointElement(temp);
+  pointReceiveMsg->AddPointElement(temp);
+  pointReceiveMsg->AllocatePack();
+  memcpy(pointReceiveMsg->GetPackPointer(), pointSendMsg->GetPackPointer(), IGTL_POINT_ELEMENT_SIZE*3 + IGTL_HEADER_SIZE);
+  pointReceiveMsg->Unpack();
+  igtl_header *messageHeader = (igtl_header *)pointReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "POINT");
   EXPECT_EQ(messageHeader->version, 1);
@@ -115,7 +112,7 @@ TEST(PointMessageTest, Unpack)
   for (int i = 0; i<3;++i)
   {
     igtl::PointElement::Pointer elem = igtl::PointElement::New();
-    pointMsg2->GetPointElement(i, elem);
+    pointReceiveMsg->GetPointElement(i, elem);
     EXPECT_EQ(strncmp((char*)(elem->GetName()), pointDescription[i], 19),0);
     igtlUint8 returnedRGBA[4] ={0,0,0,0};
     elem->GetRGBA(returnedRGBA);

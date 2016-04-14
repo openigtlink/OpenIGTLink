@@ -12,19 +12,20 @@
  
  =========================================================================*/
 
-#include "../Source/igtlPolyDataMessage.h"
-#include <list>
+#include "igtlPolyDataMessage.h"
+#include "igtlutil/igtl_test_data_polydata.h"
+#include "igtl_polydata.h"
 #include "igtl_header.h"
+
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include "igtl_polydata.h"
-#include "igtlOSUtil.h"
-#include "../Testing/igtlutil/igtl_test_data_polydata.h"
+
+#include <list>
 
 #define POLY_BODY_SIZE 300
 
-igtl::PolyDataMessage::Pointer polyDataMsg = igtl::PolyDataMessage::New();
-igtl::PolyDataMessage::Pointer polyDataMsg2 = igtl::PolyDataMessage::New();
+igtl::PolyDataMessage::Pointer polyDataSendMsg = igtl::PolyDataMessage::New();
+igtl::PolyDataMessage::Pointer polyDataReceiveMsg = igtl::PolyDataMessage::New();
 
 igtl::PolyDataPointArray::Pointer polyPoint = igtl::PolyDataPointArray::New();
 igtl::PolyDataCellArray::Pointer polyGon = igtl::PolyDataCellArray::New();
@@ -57,26 +58,22 @@ void BuildUpElements()
   polyAttr->SetSize(8);
   polyAttr->SetName("attr");
   polyAttr->SetData(attribute);
-  polyDataMsg = igtl::PolyDataMessage::New();
-  polyDataMsg->SetPoints(polyPoint.GetPointer());
-  polyDataMsg->SetPolygons(polyGon.GetPointer());
-  polyDataMsg->AddAttribute(polyAttr.GetPointer());
-  polyDataMsg->SetDeviceName("DeviceName");
-  polyDataMsg->SetTimeStamp(0, 1234567890);
-  polyDataMsg->Pack();
+  polyDataSendMsg = igtl::PolyDataMessage::New();
+  polyDataSendMsg->SetPoints(polyPoint.GetPointer());
+  polyDataSendMsg->SetPolygons(polyGon.GetPointer());
+  polyDataSendMsg->AddAttribute(polyAttr.GetPointer());
+  polyDataSendMsg->SetDeviceName("DeviceName");
+  polyDataSendMsg->SetTimeStamp(0, 1234567890);
+  polyDataSendMsg->Pack();
 }
 
 TEST(PolyDataMessageTest, Pack)
 {
   BuildUpElements();
-  for (int i = 0 ; i< 58;++i)
-  {
-    std::cerr<<+((igtlUint8*)polyDataMsg->GetPackPointer())[i]<<"  "<<+test_polydata_message_header[i]<<std::endl;
-  }
-  int r = memcmp((const void*)polyDataMsg->GetPackPointer(), (const void*)test_polydata_message_header,
+  int r = memcmp((const void*)polyDataSendMsg->GetPackPointer(), (const void*)test_polydata_message_header,
                  (size_t)(IGTL_HEADER_SIZE));
   EXPECT_EQ(r, 0);
-  r = memcmp((const void*)polyDataMsg->GetPackBodyPointer(), (const void*)test_polydata_message_body, POLY_BODY_SIZE);
+  r = memcmp((const void*)polyDataSendMsg->GetPackBodyPointer(), (const void*)test_polydata_message_body, POLY_BODY_SIZE);
   EXPECT_EQ(r, 0);
 }
 
@@ -88,22 +85,22 @@ TEST(PolyDataMessageTest, Unpack)
   headerMsg->AllocatePack();
   memcpy(headerMsg->GetPackPointer(), (const void*)test_polydata_message_header, IGTL_HEADER_SIZE);
   headerMsg->Unpack();
-  polyDataMsg2 = igtl::PolyDataMessage::New();
-  polyDataMsg2->SetMessageHeader(headerMsg);
-  polyDataMsg2->AllocatePack();
-  igtl_header *messageHeader = (igtl_header *)polyDataMsg2->GetPackPointer();
+  polyDataReceiveMsg = igtl::PolyDataMessage::New();
+  polyDataReceiveMsg->SetMessageHeader(headerMsg);
+  polyDataReceiveMsg->AllocatePack();
+  igtl_header *messageHeader = (igtl_header *)polyDataReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "POLYDATA");
   EXPECT_EQ(messageHeader->version, 1);
   EXPECT_EQ(messageHeader->timestamp, 1234567890);
   EXPECT_EQ(messageHeader->body_size, POLY_BODY_SIZE);
   
-  memcpy(polyDataMsg2->GetPackBodyPointer(), polyDataMsg->GetPackBodyPointer(), POLY_BODY_SIZE);
-  polyDataMsg2->Unpack();
+  memcpy(polyDataReceiveMsg->GetPackBodyPointer(), polyDataSendMsg->GetPackBodyPointer(), POLY_BODY_SIZE);
+  polyDataReceiveMsg->Unpack();
   
-  igtl::PolyDataPointArray::Pointer pointUnpacked = polyDataMsg2->GetPoints();;
-  igtl::PolyDataCellArray::Pointer polygonUnpacked = polyDataMsg2->GetPolygons();
-  igtl::PolyDataAttribute::Pointer attrUnpacked = polyDataMsg2->GetAttribute(0);
+  igtl::PolyDataPointArray::Pointer pointUnpacked = polyDataReceiveMsg->GetPoints();;
+  igtl::PolyDataCellArray::Pointer polygonUnpacked = polyDataReceiveMsg->GetPolygons();
+  igtl::PolyDataAttribute::Pointer attrUnpacked = polyDataReceiveMsg->GetAttribute(0);
   
   for (int i = 0; i<8; i++)
   {

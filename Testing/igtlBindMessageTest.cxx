@@ -13,17 +13,18 @@
  =========================================================================*/
 
 #include "igtlBindMessage.h"
-#include "../Source/igtlTransformMessage.h"
-#include "../Source/igtlStringMessage.h"
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
-#include "../Source/igtlImageMessage2.h"
-#include "../Source/igtlMessageBase.h"
+#include "igtlutil/igtl_test_data_image.h"
+#include "igtlTransformMessage.h"
+#include "igtlStringMessage.h"
+#include "igtlImageMessage2.h"
+#include "igtlMessageBase.h"
 #include "igtl_header.h"
 #include "igtl_image.h"
-#include "igtlutil/igtl_test_data_image.h"
 
-igtl::ImageMessage2::Pointer imageMessage2Test = igtl::ImageMessage2::New();
+#include "gtest/gtest.h"
+#include "gmock/gmock.h"
+
+igtl::ImageMessage2::Pointer imageMsg2 = igtl::ImageMessage2::New();
 igtl::GetBindMessage::Pointer getBindMessage = igtl::GetBindMessage::New();
 igtl::StartBindMessage::Pointer startBindMessage = igtl::StartBindMessage::New();
 
@@ -38,15 +39,15 @@ void setupTest()
   int   scalarType = igtl::ImageMessage2::TYPE_UINT8;// scalar type
   
   //Initialization of a image message
-  imageMessage2Test->SetDimensions(size);
-  imageMessage2Test->SetSpacing(spacing);
-  imageMessage2Test->SetScalarType(scalarType);
-  imageMessage2Test->SetSubVolume(svsize, svoffset);
-  imageMessage2Test->AllocatePack(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
-  imageMessage2Test->AllocateScalars();
-  memcpy((void*)imageMessage2Test->GetPackBodyPointer(), test_image_message+IGTL_HEADER_SIZE, IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);//here m_Body is set.
-  imageMessage2Test->SetScalarPointer((void*)test_image);
-  imageMessage2Test->Pack();
+  imageMsg2->SetDimensions(size);
+  imageMsg2->SetSpacing(spacing);
+  imageMsg2->SetScalarType(scalarType);
+  imageMsg2->SetSubVolume(svsize, svoffset);
+  imageMsg2->AllocatePack(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
+  imageMsg2->AllocateScalars();
+  memcpy((void*)imageMsg2->GetPackBodyPointer(), test_image_message+IGTL_HEADER_SIZE, IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);//here m_Body is set.
+  imageMsg2->SetScalarPointer((void*)test_image);
+  imageMsg2->Pack();
   
   getBindMessage->Init();
   getBindMessage->AppendChildMessage("Image", "UltrasoundImage");
@@ -88,7 +89,7 @@ TEST(BindMessageTest, GetChildMessage)
 {
   igtl::BindMessage::Pointer bindMessage = igtl::BindMessage::New();
   bindMessage->Init();
-  bindMessage->AppendChildMessage(imageMessage2Test);
+  bindMessage->AppendChildMessage(imageMsg2);
   //Set up a new image message for receiving the data.
   igtl::ImageMessage2::Pointer childMessage = igtl::ImageMessage2::New();
   childMessage->AllocatePack(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);

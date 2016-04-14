@@ -16,16 +16,18 @@
 
 #include "igtlServerSocket.h"
 #include "igtlImageMessage2.h"
+#include "igtlutil/igtl_test_data_image.h"
+#include "igtlClientSocket.h"
+#include "igtlMultiThreader.h"
 #include "igtl_types.h"
 #include "igtl_header.h"
 #include "igtl_image.h"
 #include "igtl_util.h"
 #include "igtlOSUtil.h"
+
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include "igtlClientSocket.h"
-#include "igtlutil/igtl_test_data_image.h"
-#include "igtlMultiThreader.h"
+
 
 using ::testing::_;
 using ::testing::AtLeast;

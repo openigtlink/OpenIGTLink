@@ -12,14 +12,16 @@
  
  =========================================================================*/
 
-#include "../Source/igtlImageMessage2.h"
+#include "igtlImageMessage2.h"
+#include "igtlutil/igtl_test_data_image.h"
+#include "igtl_image.h"
 #include "igtl_types.h"
 #include "igtl_header.h"
-#include "igtl_image.h"
 #include "igtl_util.h"
+
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include "igtlutil/igtl_test_data_image.h"
+
 
 igtl::ImageMessage2::Pointer imageMessage2Test = igtl::ImageMessage2::New();
 
@@ -37,6 +39,7 @@ void setupTest()
   imageMessage2Test->SetDimensions(size);
   imageMessage2Test->SetSpacing(spacing);
   imageMessage2Test->SetScalarType(scalarType);
+  imageMessage2Test->SetTimeStamp(0, 1234567890);
   imageMessage2Test->SetSubVolume(svsize, svoffset);
   imageMessage2Test->AllocatePack(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
   imageMessage2Test->AllocateScalars();
@@ -176,7 +179,7 @@ TEST(imageMessage2Test, Unpack)
   EXPECT_STREQ(messageHeader->device_name, "");
   EXPECT_STREQ(messageHeader->name, "IMAGE");
   EXPECT_EQ(messageHeader->version, 1);
-  EXPECT_EQ(messageHeader->timestamp, 0);
+  EXPECT_EQ(messageHeader->timestamp, 1234567890);
   EXPECT_EQ(messageHeader->body_size, 2572);
   igtl_image_header *imageHeader = (igtl_image_header *)imageMessage2Test->GetPackFragmentPointer(1);
   EXPECT_EQ(imageHeader->version, 1);
@@ -186,7 +189,6 @@ TEST(imageMessage2Test, Unpack)
   EXPECT_THAT(imageHeader->subvol_size, testing::ElementsAreArray(subvol_size));
   //testMatrix is the groud truth matrix, that has been assiged to the message in the packing process
   igtl_float32 testMatrix[12];
-  std::cout<<"size of Matrix "<<sizeof(testMatrix)<<std::endl;
   memcpy(testMatrix, test_image_message+IGTL_HEADER_SIZE+12, sizeof(testMatrix));
   if (igtl_is_little_endian())
   {

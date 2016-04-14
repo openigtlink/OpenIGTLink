@@ -12,12 +12,13 @@
  
  =========================================================================*/
 
-#include "../Source/igtlColorTableMessage.h"
+#include "igtlColorTableMessage.h"
+#include "igtl_colortable.h"
 #include "igtl_header.h"
+
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include "igtl_types.h"
-#include "igtl_colortable.h"
+
 
 igtl_uint8 RGBColorTabel[256*256*3];
 

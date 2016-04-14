@@ -12,17 +12,18 @@
  
  =========================================================================*/
 
-#include "../Source/igtlStatusMessage.h"
+#include "igtlStatusMessage.h"
+#include "igtlutil/igtl_test_data_status.h"
+#include "igtl_status.h"
 #include "igtl_header.h"
+
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include "igtl_status.h"
-#include "igtlOSUtil.h"
-#include "../Testing/igtlutil/igtl_test_data_status.h"
 
 
-igtl::StatusMessage::Pointer statusMsg = igtl::StatusMessage::New();
-igtl::StatusMessage::Pointer statusMsg2 = igtl::StatusMessage::New();
+
+igtl::StatusMessage::Pointer statusSendMsg = igtl::StatusMessage::New();
+igtl::StatusMessage::Pointer statusReceiveMsg = igtl::StatusMessage::New();
 
 #define STR_ERROR_NAME     "ACTUATOR_DISABLED" /* within 20 characters */
 #define STR_ERROR_MESSAGE  "Actuator A is disabled."
@@ -30,19 +31,19 @@ igtl::StatusMessage::Pointer statusMsg2 = igtl::StatusMessage::New();
 TEST(StatusMessageTest, Pack)
 {
   std::string statusString = "randomstringrandomstring";
-  statusMsg->SetStatusString(statusString.c_str());// pass an empty string with size 54,just to initialize the memory
-  statusMsg->AllocatePack();
-  statusMsg->SetTimeStamp(0, 1234567890);
-  statusMsg->SetDeviceName("DeviceName");
-  statusMsg->SetCode(IGTL_STATUS_DISABLED);
-  statusMsg->SetSubCode(0x0A);
-  statusMsg->SetErrorName(STR_ERROR_NAME);
-  statusMsg->SetStatusString(STR_ERROR_MESSAGE);
-  statusMsg->Pack();
-  int r = memcmp((const void*)statusMsg->GetPackPointer(), (const void*)test_status_message,
+  statusSendMsg->SetStatusString(statusString.c_str());// pass an empty string with size 54,just to initialize the memory
+  statusSendMsg->AllocatePack();
+  statusSendMsg->SetTimeStamp(0, 1234567890);
+  statusSendMsg->SetDeviceName("DeviceName");
+  statusSendMsg->SetCode(IGTL_STATUS_DISABLED);
+  statusSendMsg->SetSubCode(0x0A);
+  statusSendMsg->SetErrorName(STR_ERROR_NAME);
+  statusSendMsg->SetStatusString(STR_ERROR_MESSAGE);
+  statusSendMsg->Pack();
+  int r = memcmp((const void*)statusSendMsg->GetPackPointer(), (const void*)test_status_message,
                  (size_t)(IGTL_HEADER_SIZE));
   EXPECT_EQ(r, 0);
-  r = memcmp((const void*)statusMsg->GetPackBodyPointer(), (const void*)(test_status_message+IGTL_HEADER_SIZE),statusMsg->GetPackBodySize());
+  r = memcmp((const void*)statusSendMsg->GetPackBodyPointer(), (const void*)(test_status_message+IGTL_HEADER_SIZE),statusSendMsg->GetPackBodySize());
   EXPECT_EQ(r, 0);
 }
 
@@ -53,16 +54,16 @@ TEST(StatusMessageTest, Unpack)
   headerMsg->AllocatePack();
   memcpy(headerMsg->GetPackPointer(), (const void*)test_status_message, IGTL_HEADER_SIZE);
   headerMsg->Unpack();
-  statusMsg2->SetMessageHeader(headerMsg);
-  statusMsg2->AllocatePack();
+  statusReceiveMsg->SetMessageHeader(headerMsg);
+  statusReceiveMsg->AllocatePack();
   
-  memcpy(statusMsg2->GetPackBodyPointer(), statusMsg->GetPackBodyPointer(), statusMsg->GetPackBodySize());
-  statusMsg2->Unpack();
+  memcpy(statusReceiveMsg->GetPackBodyPointer(), statusSendMsg->GetPackBodyPointer(), statusSendMsg->GetPackBodySize());
+  statusReceiveMsg->Unpack();
   
-  EXPECT_EQ(statusMsg2->GetCode(),IGTL_STATUS_DISABLED);
-  EXPECT_EQ(statusMsg2->GetSubCode(),(igtlInt64)0x0A);
-  EXPECT_STREQ(statusMsg2->GetErrorName(),STR_ERROR_NAME);
-  EXPECT_STREQ(statusMsg2->GetStatusString(),STR_ERROR_MESSAGE);
+  EXPECT_EQ(statusReceiveMsg->GetCode(),IGTL_STATUS_DISABLED);
+  EXPECT_EQ(statusReceiveMsg->GetSubCode(),(igtlInt64)0x0A);
+  EXPECT_STREQ(statusReceiveMsg->GetErrorName(),STR_ERROR_NAME);
+  EXPECT_STREQ(statusReceiveMsg->GetStatusString(),STR_ERROR_MESSAGE);
 }
 
 

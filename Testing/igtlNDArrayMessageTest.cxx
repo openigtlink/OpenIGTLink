@@ -12,18 +12,19 @@
  
  =========================================================================*/
 
-#include "../Source/igtlNDArrayMessage.h"
+#include "igtlNDArrayMessage.h"
+#include "igtlutil/igtl_test_data_ndarray.h"
+#include "igtl_ndarray.h"
 #include "igtl_header.h"
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include "igtl_ndarray.h"
-#include "igtlOSUtil.h"
-#include "../Testing/igtlutil/igtl_test_data_ndarray.h"
 
-igtl::NDArrayMessage::Pointer NDArrayMsg = igtl::NDArrayMessage::New();
-igtl::NDArrayMessage::Pointer NDArrayMsg2 = igtl::NDArrayMessage::New();
+
+igtl::NDArrayMessage::Pointer NDArraySendMsg = igtl::NDArrayMessage::New();
+igtl::NDArrayMessage::Pointer NDArrayReceiveMsg = igtl::NDArrayMessage::New();
 igtl::Array<igtl_float64> array;
 std::vector<igtlUint16> size(3);
+
 void BuildUpArrayElements()
 {
   size[0] = 5;
@@ -43,20 +44,20 @@ void BuildUpArrayElements()
     }
   }
   array.SetArray((void*) arrayFloat);
-  NDArrayMsg = igtl::NDArrayMessage::New();
-  NDArrayMsg->SetDeviceName("DeviceName");
-  NDArrayMsg->SetArray(igtl::NDArrayMessage::TYPE_FLOAT64, &array);
-  NDArrayMsg->SetTimeStamp(0, 1234567890);
-  NDArrayMsg->Pack();
+  NDArraySendMsg = igtl::NDArrayMessage::New();
+  NDArraySendMsg->SetDeviceName("DeviceName");
+  NDArraySendMsg->SetArray(igtl::NDArrayMessage::TYPE_FLOAT64, &array);
+  NDArraySendMsg->SetTimeStamp(0, 1234567890);
+  NDArraySendMsg->Pack();
 }
 
 TEST(NDArrayMessageTest, Pack)
 {
   BuildUpArrayElements();
   
-  int r = memcmp((const void*)NDArrayMsg->GetPackPointer(), (const void*)(test_ndarray_message_header), IGTL_HEADER_SIZE);
+  int r = memcmp((const void*)NDArraySendMsg->GetPackPointer(), (const void*)(test_ndarray_message_header), IGTL_HEADER_SIZE);
   EXPECT_EQ(r, 0);
-  r = memcmp((const void*)NDArrayMsg->GetPackBodyPointer(), (const void*)(test_ndarray_message_body), NDArrayMsg->GetPackSize()-IGTL_HEADER_SIZE);
+  r = memcmp((const void*)NDArraySendMsg->GetPackBodyPointer(), (const void*)(test_ndarray_message_body), NDArraySendMsg->GetPackSize()-IGTL_HEADER_SIZE);
   EXPECT_EQ(r, 0);
 }
 
@@ -65,13 +66,13 @@ TEST(NDArrayMessageTest, Unpack)
   BuildUpArrayElements();
   igtl::Array<igtl_float64> temp;
   temp.SetSize(size);
-  NDArrayMsg2 = igtl::NDArrayMessage::New();
-  NDArrayMsg2->SetArray(igtl::NDArrayMessage::TYPE_FLOAT64, &temp);
-  NDArrayMsg2->AllocatePack();
+  NDArrayReceiveMsg = igtl::NDArrayMessage::New();
+  NDArrayReceiveMsg->SetArray(igtl::NDArrayMessage::TYPE_FLOAT64, &temp);
+  NDArrayReceiveMsg->AllocatePack();
   
-  memcpy(NDArrayMsg2->GetPackBodyPointer(), test_ndarray_message_body, NDArrayMsg->GetPackSize()-IGTL_HEADER_SIZE);
-  NDArrayMsg2->Unpack();
-  igtl::ArrayBase *tempArrayBase = NDArrayMsg2->GetArray();
+  memcpy(NDArrayReceiveMsg->GetPackBodyPointer(), test_ndarray_message_body, NDArraySendMsg->GetPackSize()-IGTL_HEADER_SIZE);
+  NDArrayReceiveMsg->Unpack();
+  igtl::ArrayBase *tempArrayBase = NDArrayReceiveMsg->GetArray();
   igtl_float64* arraytemp = (igtl_float64 *)tempArrayBase->GetRawArray();
   int i,j,k;
   for (i = 0; i < size[0]; i ++)

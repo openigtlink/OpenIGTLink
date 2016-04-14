@@ -12,11 +12,10 @@
 
 =========================================================================*/
 
-#include <igtlMessageBase.h>
-#include <igtlMessageHeader.h>
+#include "igtlMessageBase.h"
+#include "igtlMessageHeader.h"
+
 #include "gtest/gtest.h"
-#include "igtlutil/igtl_test_data_image.h"
-#include "igtl_util.h"
 
 TEST(MessageBaseTest, InitializationTest)
 {
