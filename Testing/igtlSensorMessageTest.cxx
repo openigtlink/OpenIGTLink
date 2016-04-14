@@ -14,7 +14,9 @@
 
 #include "igtlSensorMessage.h"
 #include "igtlutil/igtl_test_data_sensor.h"
+#include "igtlUnit.h"
 #include "igtl_sensor.h"
+#include "igtl_unit.h"
 #include "igtl_header.h"
 
 #include "gtest/gtest.h"
