@@ -19,6 +19,7 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
+#define NDARRAY_MESSAGE_BODY_SIZE 488
 
 igtl::NDArrayMessage::Pointer NDArraySendMsg = igtl::NDArrayMessage::New();
 igtl::NDArrayMessage::Pointer NDArrayReceiveMsg = igtl::NDArrayMessage::New();
@@ -64,11 +65,15 @@ TEST(NDArrayMessageTest, Pack)
 TEST(NDArrayMessageTest, Unpack)
 {
   BuildUpArrayElements();
-  igtl::Array<igtl_float64> temp;
-  temp.SetSize(size);
-  NDArrayReceiveMsg = igtl::NDArrayMessage::New();
-  NDArrayReceiveMsg->SetArray(igtl::NDArrayMessage::TYPE_FLOAT64, &temp);
+  igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
+  headerMsg->AllocatePack();
+  memcpy(headerMsg->GetPackPointer(), (const void*)NDArraySendMsg->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
+  NDArrayReceiveMsg->InitPack();
+  NDArrayReceiveMsg->SetMessageHeader(headerMsg);
   NDArrayReceiveMsg->AllocatePack();
+  memcpy(NDArrayReceiveMsg->GetPackBodyPointer(), NDArraySendMsg->GetPackBodyPointer(), NDARRAY_MESSAGE_BODY_SIZE);
+  NDArrayReceiveMsg->Unpack();
   
   memcpy(NDArrayReceiveMsg->GetPackBodyPointer(), test_ndarray_message_body, NDArraySendMsg->GetPackSize()-IGTL_HEADER_SIZE);
   NDArrayReceiveMsg->Unpack();

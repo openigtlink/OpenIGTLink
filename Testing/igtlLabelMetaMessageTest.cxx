@@ -70,13 +70,13 @@ TEST(LabelMetaMessageTest, Pack)
 TEST(LabelMetaMessageTest, Unpack)
 {
   BuildUpLabelElements();
-  igtl::LabelMetaElement::Pointer temp= igtl::LabelMetaElement::New();
-  labelMetaReceiveMsg = igtl::LabelMetaMessage::New();
-  labelMetaReceiveMsg->AddLabelMetaElement(temp);
-  labelMetaReceiveMsg->AddLabelMetaElement(temp);
-  labelMetaReceiveMsg->AddLabelMetaElement(temp);
+  igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
+  headerMsg->AllocatePack();
+  memcpy(headerMsg->GetPackPointer(), (const void*)labelMetaSendMsg->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
+  labelMetaReceiveMsg->SetMessageHeader(headerMsg);
   labelMetaReceiveMsg->AllocatePack();
-  memcpy(labelMetaReceiveMsg->GetPackPointer(), labelMetaSendMsg->GetPackPointer(), IGTL_LBMETA_ELEMENT_SIZE*3 + IGTL_HEADER_SIZE);
+  memcpy(labelMetaReceiveMsg->GetPackBodyPointer(), labelMetaSendMsg->GetPackBodyPointer(), IGTL_LBMETA_ELEMENT_SIZE*3);
   labelMetaReceiveMsg->Unpack();
   igtl_header *messageHeader = (igtl_header *)labelMetaReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");

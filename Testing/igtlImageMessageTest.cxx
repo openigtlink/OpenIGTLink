@@ -55,7 +55,7 @@ void BuildUp()
   imageSendMsg->SetCoordinateSystem(IGTL_IMAGE_COORD_RAS);
   imageSendMsg->SetMatrix(inMatrix);
   imageSendMsg->AllocateScalars();
-  memcpy((void*)imageSendMsg->GetPackBodyPointer(), test_image_message+IGTL_HEADER_SIZE, IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);//here m_Body is set.
+  memcpy((void*)imageSendMsg->GetScalarPointer(), test_image_message+IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE, TEST_IMAGE_MESSAGE_SIZE);//here m_Image is set.
   imageSendMsg->Pack();
 }
 
@@ -63,33 +63,29 @@ TEST(ImageMessageTest, Pack)
 {
   BuildUp();
   int r = memcmp((const void*)imageSendMsg->GetPackPointer(), (const void*)test_image_message,
-                 (size_t)(IGTL_HEADER_SIZE));
+                 (size_t)(IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE));
   EXPECT_EQ(r, 0);
 }
 
 TEST(ImageMessageTest, Unpack)
 {
   BuildUp();
-  imageReceiveMsg->SetDimensions(size);
-  imageReceiveMsg->SetSpacing(spacing);
-  imageReceiveMsg->SetScalarType(scalarType);
-  imageReceiveMsg->SetSubVolume(svsize, svoffset);
-  imageReceiveMsg->SetDeviceName("DeviceName");
-  imageReceiveMsg->AllocateScalars();
-  memcpy(imageReceiveMsg->GetPackPointer(), imageSendMsg->GetPackPointer(), IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
+  igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
+  headerMsg->AllocatePack();
+  memcpy(headerMsg->GetPackPointer(), (const void*)imageSendMsg->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
+  imageReceiveMsg->SetMessageHeader(headerMsg);
+  imageReceiveMsg->AllocatePack();
+  memcpy(imageReceiveMsg->GetPackBodyPointer(), imageSendMsg->GetPackBodyPointer(), IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
   imageReceiveMsg->Unpack();
+  
   igtl_header *messageHeader = (igtl_header *)imageReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "IMAGE");
   EXPECT_EQ(messageHeader->version, 1);
   EXPECT_EQ(messageHeader->timestamp, 1234567890);
   EXPECT_EQ(messageHeader->body_size, IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
-  
-  for (int i = 120 ; i< 500;++i)
-  {
-    std::cerr<<i<<" "<<+((igtlUint8*)imageReceiveMsg->GetPackPointer())[i]<<"  "<<+test_image_message[i]<<std::endl;
-  }
-  
+
   int returnSize[3] = {0,0,0};
   imageReceiveMsg->GetDimensions(returnSize);
   EXPECT_THAT(returnSize,testing::ElementsAreArray(size));

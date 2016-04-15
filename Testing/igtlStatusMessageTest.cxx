@@ -52,11 +52,10 @@ TEST(StatusMessageTest, Unpack)
 {
   igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
   headerMsg->AllocatePack();
-  memcpy(headerMsg->GetPackPointer(), (const void*)test_status_message, IGTL_HEADER_SIZE);
+  memcpy(headerMsg->GetPackPointer(), statusSendMsg->GetPackPointer(), IGTL_HEADER_SIZE);
   headerMsg->Unpack();
   statusReceiveMsg->SetMessageHeader(headerMsg);
   statusReceiveMsg->AllocatePack();
-  
   memcpy(statusReceiveMsg->GetPackBodyPointer(), statusSendMsg->GetPackBodyPointer(), statusSendMsg->GetPackBodySize());
   statusReceiveMsg->Unpack();
   

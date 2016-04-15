@@ -77,13 +77,13 @@ TEST(TrajectoryMessageTest, Pack)
 TEST(TrajectoryMessageTest, Unpack)
 {
   BuildUpElements();
-  igtl::TrajectoryElement::Pointer temp= igtl::TrajectoryElement::New();
-  trajectoryReceiveMsg = igtl::TrajectoryMessage::New();
-  trajectoryReceiveMsg->AddTrajectoryElement(temp);
-  trajectoryReceiveMsg->AddTrajectoryElement(temp);
-  trajectoryReceiveMsg->AddTrajectoryElement(temp);
+  igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
+  headerMsg->AllocatePack();
+  memcpy(headerMsg->GetPackPointer(), trajectorySendMsg->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
+  trajectoryReceiveMsg->SetMessageHeader(headerMsg);
   trajectoryReceiveMsg->AllocatePack();
-  memcpy(trajectoryReceiveMsg->GetPackPointer(), trajectorySendMsg->GetPackPointer(), IGTL_TRAJECTORY_ELEMENT_SIZE*3 + IGTL_HEADER_SIZE);
+  memcpy(trajectoryReceiveMsg->GetPackBodyPointer(), trajectorySendMsg->GetPackBodyPointer(), IGTL_TRAJECTORY_ELEMENT_SIZE*3);
   trajectoryReceiveMsg->Unpack();
   igtl_header *messageHeader = (igtl_header *)trajectoryReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");

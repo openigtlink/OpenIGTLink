@@ -71,14 +71,16 @@ TEST(PointMessageTest, Pack)
 TEST(PointMessageTest, Unpack)
 {
   BuildUpElements();
-  igtl::PointElement::Pointer temp= igtl::PointElement::New();
+  igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
+  headerMsg->AllocatePack();
+  memcpy(headerMsg->GetPackPointer(), pointSendMsg->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
   pointReceiveMsg = igtl::PointMessage::New();
-  pointReceiveMsg->AddPointElement(temp);
-  pointReceiveMsg->AddPointElement(temp);
-  pointReceiveMsg->AddPointElement(temp);
+  pointReceiveMsg->SetMessageHeader(headerMsg);
   pointReceiveMsg->AllocatePack();
-  memcpy(pointReceiveMsg->GetPackPointer(), pointSendMsg->GetPackPointer(), IGTL_POINT_ELEMENT_SIZE*3 + IGTL_HEADER_SIZE);
+  memcpy(pointReceiveMsg->GetPackBodyPointer(), pointSendMsg->GetPackBodyPointer(), IGTL_POINT_ELEMENT_SIZE*3);
   pointReceiveMsg->Unpack();
+  
   igtl_header *messageHeader = (igtl_header *)pointReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "POINT");

@@ -74,13 +74,13 @@ TEST(TrackingMessageTest, Pack)
 TEST(TrackingMessageTest, Unpack)
 {
   BuildUpElements();
-  igtl::TrackingDataElement::Pointer temp= igtl::TrackingDataElement::New();
-  trackingReceiveMsg = igtl::TrackingDataMessage::New();
-  trackingReceiveMsg->AddTrackingDataElement(temp);
-  trackingReceiveMsg->AddTrackingDataElement(temp);
-  trackingReceiveMsg->AddTrackingDataElement(temp);
+  igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
+  headerMsg->AllocatePack();
+  memcpy(headerMsg->GetPackPointer(), (const void*)trackingSendMsg->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
+  trackingReceiveMsg->SetMessageHeader(headerMsg);
   trackingReceiveMsg->AllocatePack();
-  memcpy(trackingReceiveMsg->GetPackPointer(), trackingSendMsg->GetPackPointer(), IGTL_TDATA_ELEMENT_SIZE*3 + IGTL_HEADER_SIZE);
+  memcpy(trackingReceiveMsg->GetPackBodyPointer(), trackingSendMsg->GetPackBodyPointer(), IGTL_TDATA_ELEMENT_SIZE*3);
   trackingReceiveMsg->Unpack();
   igtl_header *messageHeader = (igtl_header *)trackingReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");

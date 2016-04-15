@@ -42,9 +42,11 @@ igtl::TransformMessage::Pointer transformSendMsg = igtl::TransformMessage::New()
 igtl::TransformMessage::Pointer transformReceiveMsg = igtl::TransformMessage::New();
 igtl::BindMessage::Pointer bindSendMsg = igtl::BindMessage::New();
 igtl::BindMessage::Pointer bindReceiveMsg = igtl::BindMessage::New();
-
-igtl::GetBindMessage::Pointer getBindMessage = igtl::GetBindMessage::New();
-igtl::StartBindMessage::Pointer startBindMessage = igtl::StartBindMessage::New();
+igtl::Unit::Pointer unit = igtl::Unit::New();
+igtl::GetBindMessage::Pointer getBindSendMessage = igtl::GetBindMessage::New();
+igtl::GetBindMessage::Pointer getBindReceiveMessage = igtl::GetBindMessage::New();
+igtl::StartBindMessage::Pointer startBindSendMessage = igtl::StartBindMessage::New();
+igtl::StartBindMessage::Pointer startBindReceiveMessage = igtl::StartBindMessage::New();
 
 
 float inT[4] = {-0.954892f, 0.196632f, -0.222525f, 0.0};
@@ -61,6 +63,7 @@ int   svsize[3]   = {50, 50, 1};       // sub-volume size
 int   svoffset[3] = {0, 0, 0};           // sub-volume offset
 int   scalarType = igtl::ImageMessage2::TYPE_UINT8;// scalar type
 igtlFloat64 sensorValues[6] = {123456.78,12345.678,1234.5678,123.45678,12.345678,1.2345678};
+
 
 void BuildUpElements()
 {
@@ -90,7 +93,6 @@ void BuildUpElements()
   sensorDataSendMsg->SetLength(6);
   sensorDataSendMsg->SetDeviceName("ChildSensor");
   sensorDataSendMsg->SetTimeStamp(0, 1234567890);
-  igtl::Unit::Pointer unit = igtl::Unit::New();
   unit->Init();
   unit->SetPrefix(IGTL_UNIT_PREFIX_NONE);
   unit->Append(IGTL_UNIT_SI_BASE_METER, (igtl_int8) 1);
@@ -134,26 +136,25 @@ TEST(BindMessageTest, Pack)
   r = memcmp((const void*)bindSendMsg->GetPackBodyPointer(), (const void*)test_bind_message_bind_header,  MESSAGE_BIND_HEADER_SIZE);  
   EXPECT_EQ(r, 0);
   char * messageBody = (char*)bindSendMsg->GetPackBodyPointer() + MESSAGE_BIND_HEADER_SIZE;
-  TestDebugCharArrayCmp((void*)messageBody,test_bind_message_bind_body,MESSAGE_BIND_BODY_SIZE);
+  //TestDebugCharArrayCmp((void*)messageBody,test_bind_message_bind_body,MESSAGE_BIND_BODY_SIZE);
   r = memcmp((const void*)(messageBody), (const void*)test_bind_message_bind_body,  MESSAGE_BIND_BODY_SIZE);
   EXPECT_EQ(r, 0);
 }
 
 TEST(BindMessageTest, Unpack)
 {
-  BuildUpElements();
-  igtl::ImageMessage2::Pointer temp= igtl::ImageMessage2::New();
-  bindReceiveMsg = igtl::BindMessage::New();
-  bindReceiveMsg->AppendChildMessage(transformReceiveMsg);
-  bindReceiveMsg->AppendChildMessage(imageReceiveMsg2);
-  bindReceiveMsg->AppendChildMessage(sensorDataReceiveMsg);
+  igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
+  headerMsg->AllocatePack();
+  memcpy(headerMsg->GetPackPointer(), bindSendMsg->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
+  bindReceiveMsg->SetMessageHeader(headerMsg);
   bindReceiveMsg->AllocatePack();
-  memcpy(bindReceiveMsg->GetPackPointer(), bindSendMsg->GetPackPointer(), IGTL_HEADER_SIZE + MESSAGE_BIND_HEADER_SIZE + MESSAGE_BIND_BODY_SIZE);
+  memcpy(bindReceiveMsg->GetPackBodyPointer(), bindSendMsg->GetPackBodyPointer(),MESSAGE_BIND_HEADER_SIZE + MESSAGE_BIND_BODY_SIZE);
   bindReceiveMsg->Unpack();
+  
   bindReceiveMsg->GetChildMessage(0, transformReceiveMsg);
   bindReceiveMsg->GetChildMessage(1, imageReceiveMsg2);
   bindReceiveMsg->GetChildMessage(2, sensorDataReceiveMsg);
-  
   igtl_header *messageHeader = (igtl_header *)bindReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "BIND");
@@ -176,12 +177,7 @@ TEST(BindMessageTest, Unpack)
   EXPECT_THAT(returnSize,testing::ElementsAreArray(size));
   float returnSpacing[3] = {0.0f,0.0f,0.0f};
   imageReceiveMsg2->GetSpacing(returnSpacing);
-  for(int i=0;i < 3; i++)
-  {
-    EXPECT_NEAR(returnSpacing[i], spacing[i], ABS_ERROR);
-  }
-  //testing::internal::FloatingEqMatcher<float> a(1e-8,false);
-  //EXPECT_THAT(returnSpacing,testing::Pointwise(a, spacing));
+  EXPECT_TRUE(ArrayFloatComparison(returnSpacing, spacing, 3, ABS_ERROR));
   int returnSvsize[3] = {0,0,0}, returnSvoffset[3] = {0,0,0};
   imageReceiveMsg2->GetSubVolume(returnSvsize, returnSvoffset);
   EXPECT_THAT(returnSvsize,testing::ElementsAreArray(svsize));

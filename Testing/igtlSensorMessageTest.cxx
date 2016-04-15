@@ -71,9 +71,9 @@ TEST(SensorMessageTest, Unpack)
   sensorDataReceiveMsg = igtl::SensorMessage::New();
   sensorDataReceiveMsg->SetMessageHeader(headerMsg);
   sensorDataReceiveMsg->AllocatePack();
-  
   memcpy(sensorDataReceiveMsg->GetPackBodyPointer(), sensorDataSendMsg->GetPackBodyPointer(), 58);
   sensorDataReceiveMsg->Unpack();
+  
   igtl::igtlUnit unitTruth = 0x443E0000000000;
   EXPECT_EQ(sensorDataReceiveMsg->GetUnit(), unitTruth);
   EXPECT_EQ(sensorDataReceiveMsg->GetLength(),6);
