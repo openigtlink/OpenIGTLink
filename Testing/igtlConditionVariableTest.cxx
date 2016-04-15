@@ -20,12 +20,9 @@
 #include "gmock/gmock.h"
 
 
-void* TestThreadFunction1(void* ptr);
-void* TestThreadFunction2(void* ptr);
+void* TestThreadCounter(void* ptr);
 void* TestThreadWaiting1(void* ptr);
 void* TestThreadWaiting2(void* ptr);
-
-int icount1 = 0, icount2 = 0, icountBroadcast = 0;
 
 typedef struct {
   igtl::SimpleMutexLock* glock;
@@ -51,8 +48,9 @@ TEST(ConditionVariableTest, SingleChildThreadTest)
   td.iFinalCount = 0;
   td.condition = false;
   igtl::MultiThreader::Pointer threader = igtl::MultiThreader::New();
-  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadFunction1, &td);
   threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadWaiting1, &td);
+  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadCounter, &td);
+  
   while (td.threads[0] == false)
     igtl::Sleep(20);
   std::cerr<<"The child thread is released";
@@ -61,47 +59,47 @@ TEST(ConditionVariableTest, SingleChildThreadTest)
 
 TEST(ConditionVariableTest, MultiChildThreadTest)
 {
-  igtl::ConditionVariable::Pointer conditionVar1 = igtl::ConditionVariable::New();
-  igtl::SimpleMutexLock *localMutex1 = new igtl::SimpleMutexLock();
-  ThreadData td1;
-  td1.conditionVar = conditionVar1;
-  td1.glock = localMutex1;
-  td1.isBroadCast = false;
-  td1.threads = std::vector<bool>(2,false);
-  td1.iFinalCount = 0;
-  td1.condition = false;
+  igtl::ConditionVariable::Pointer conditionVar = igtl::ConditionVariable::New();
+  igtl::SimpleMutexLock *localMutex = new igtl::SimpleMutexLock();
+  ThreadData td;
+  td.conditionVar = conditionVar;
+  td.glock = localMutex;
+  td.isBroadCast = false;
+  td.threads = std::vector<bool>(2,false);
+  td.iFinalCount = 0;
+  td.condition = false;
   igtl::MultiThreader::Pointer threader = igtl::MultiThreader::New();
-  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadWaiting1, &td1);
-  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadFunction1, &td1);
+  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadWaiting1, &td);
+  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadCounter, &td);
   igtl::Sleep(1000);
-  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadWaiting2, &td1);
-  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadFunction2, &td1);
-  while (td1.threads[0] == false || td1.threads[1] == false)
+  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadWaiting2, &td);
+  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadCounter, &td);
+  while (td.threads[0] == false || td.threads[1] == false)
     igtl::Sleep(20);
-  EXPECT_EQ(td1.iFinalCount, 20);
+  EXPECT_EQ(td.iFinalCount, 20);
   std::cerr<<"The child threads are released";
 }
 
 TEST(ConditionVariableTest, Broadcast)
 {
-  igtl::ConditionVariable::Pointer conditionVar1 = igtl::ConditionVariable::New();
-  igtl::SimpleMutexLock *localMutex1 = new igtl::SimpleMutexLock();
-  ThreadData td1;
-  td1.conditionVar = conditionVar1;
-  td1.glock = localMutex1;
-  td1.isBroadCast = true;
-  td1.threads = std::vector<bool>(2);
-  td1.iFinalCount = 0;
-  td1.condition = false;
+  igtl::ConditionVariable::Pointer conditionVar = igtl::ConditionVariable::New();
+  igtl::SimpleMutexLock *localMutex = new igtl::SimpleMutexLock();
+  ThreadData td;
+  td.conditionVar = conditionVar;
+  td.glock = localMutex;
+  td.isBroadCast = true;
+  td.threads = std::vector<bool>(2);
+  td.iFinalCount = 0;
+  td.condition = false;
   igtl::MultiThreader::Pointer threader = igtl::MultiThreader::New();
-  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadWaiting1, &td1);
-  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadFunction1, &td1);
+  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadWaiting1, &td);
+  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadCounter, &td);
   igtl::Sleep(1000);
-  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadWaiting2, &td1);
-  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadFunction2, &td1);
-  while (td1.threads[0] == false || td1.threads[1] == false)
+  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadWaiting2, &td);
+  threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadCounter, &td);
+  while (td.threads[0] == false || td.threads[1] == false)
     igtl::Sleep(20);
-  EXPECT_LT(td1.iFinalCount, 20);
+  EXPECT_LT(td.iFinalCount, 20);
   std::cerr<<"The child threads are released";
 }
 
@@ -132,8 +130,7 @@ void* TestThreadWaiting2(void* ptr)
   return NULL;
 }
 
-  
-void* TestThreadFunction1(void* ptr)
+void* TestThreadCounter(void* ptr)
 {
   //------------------------------------------------------------
   // Get thread information
@@ -141,32 +138,6 @@ void* TestThreadFunction1(void* ptr)
   static_cast<igtl::MultiThreader::ThreadInfo*>(ptr);
   ThreadData* td = static_cast<ThreadData*>(info->UserData);
   //igtl::SimpleMutexLock *glock = td->glocks[0];
-  int i = 0;
-  while(++i <=10)
-  {
-    std::cerr<<i<<" in the first child thread"<<std::endl;
-    igtl::Sleep(200);
-    td->iFinalCount++;
-  };
-  td->condition = true;
-  if (td->isBroadCast)
-  {
-    td->conditionVar->Broadcast();
-  }
-  else
-  {
-    td->conditionVar->Signal();
-  }
-  return NULL;
-}
-
-void* TestThreadFunction2(void* ptr)
-{
-  //------------------------------------------------------------
-  // Get thread information
-  igtl::MultiThreader::ThreadInfo* info =
-  static_cast<igtl::MultiThreader::ThreadInfo*>(ptr);
-  ThreadData* td = static_cast<ThreadData*>(info->UserData);
   int i = 0;
   while(++i <=10)
   {

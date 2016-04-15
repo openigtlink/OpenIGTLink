@@ -13,57 +13,58 @@
  =========================================================================*/
 
 #include "igtlColorTableMessage.h"
+#include "igtlutil/igtl_test_data_colortable2.h"
+#include "igtlMessageDebugFunction.h"
 #include "igtl_colortable.h"
 #include "igtl_header.h"
 
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
+#define COLOR_TABLE_SIZE 256
 
-igtl_uint8 RGBColorTabel[256*256*3];
+igtl::ColorTableMessage::Pointer colorTableSendMsg = igtl::ColorTableMessage::New();
+igtl::ColorTableMessage::Pointer colorTableReceiveMsg = igtl::ColorTableMessage::New();
 
-TEST(ColorTableMessageTest, IndexAndMapType)
+TEST(ColorTableMessageTest, Pack)
 {
-  igtl::ColorTableMessage::Pointer colorTabelMsg = igtl::ColorTableMessage::New();
-  colorTabelMsg->SetMapType(igtl::ColorTableMessage::MAP_RGB);
-  EXPECT_EQ(colorTabelMsg->GetMapType(), 19);
-  colorTabelMsg->SetMapTypeToUint8();
-  EXPECT_EQ(colorTabelMsg->GetMapType(), (int)igtl::ColorTableMessage::MAP_UINT8);
-  colorTabelMsg->SetMapTypeToUint16();
-  EXPECT_EQ(colorTabelMsg->GetMapType(), (int)igtl::ColorTableMessage::MAP_UINT16);
-  colorTabelMsg->SetIndexType(igtl::ColorTableMessage::INDEX_UINT8);
-  EXPECT_EQ(colorTabelMsg->GetIndexType(), 3);
-  colorTabelMsg->SetIndexTypeToUint8();
-  EXPECT_EQ(colorTabelMsg->GetIndexType(), (int)igtl::ColorTableMessage::INDEX_UINT8);
-  colorTabelMsg->SetIndexTypeToUint16();
-  EXPECT_EQ(colorTabelMsg->GetIndexType(), (int)igtl::ColorTableMessage::INDEX_UINT16);
+  colorTableSendMsg->SetTimeStamp(0, 1234567890);
+  colorTableSendMsg->SetDeviceName("DeviceName");
+  colorTableSendMsg->SetIndexType(IGTL_COLORTABLE_INDEX_UINT8);
+  colorTableSendMsg->SetMapType(IGTL_COLORTABLE_MAP_UINT8);
+  colorTableSendMsg->AllocateTable();
+  memcpy(colorTableSendMsg->GetTablePointer(), test_colortable_message+IGTL_HEADER_SIZE+IGTL_COLORTABLE_HEADER_SIZE, (size_t)(COLOR_TABLE_SIZE));
+  colorTableSendMsg->Pack();
+  
+  TestDebugCharArrayCmp(colorTableSendMsg->GetPackPointer(), test_colortable_message, IGTL_HEADER_SIZE);
+  int r = memcmp((const void*)colorTableSendMsg->GetPackPointer(), (const void*)test_colortable_message, IGTL_HEADER_SIZE);
+  EXPECT_EQ(r, 0);
+  r = memcmp((const void*)colorTableSendMsg->GetPackBodyPointer(), (const void*)(test_colortable_message+IGTL_HEADER_SIZE), IGTL_COLORTABLE_HEADER_SIZE+COLOR_TABLE_SIZE);
+  EXPECT_EQ(r, 0);
 }
 
-TEST(ColorTableMessageTest, PackAndUnpackTable)
+
+TEST(ColorTableMessageTest, Unpack)
 {
-  for (int i=0; i<256*256; i++)
+  igtl::MessageHeader::Pointer headerMsg;
+  headerMsg = igtl::MessageHeader::New();
+  headerMsg->InitPack();
+  memcpy(headerMsg->GetPackPointer(), colorTableSendMsg->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
+  colorTableReceiveMsg->SetMessageHeader(headerMsg);
+  colorTableReceiveMsg->AllocatePack();
+  memcpy(colorTableReceiveMsg->GetPackBodyPointer(), colorTableSendMsg->GetPackBodyPointer(), colorTableSendMsg->GetPackBodySize());
+  colorTableReceiveMsg->Unpack();
+  
+  EXPECT_EQ(colorTableReceiveMsg->GetMapType(),IGTL_COLORTABLE_MAP_UINT8);
+  EXPECT_EQ(colorTableReceiveMsg->GetIndexType(),IGTL_COLORTABLE_INDEX_UINT8);
+  for (int i = 0; i < 256; i ++)
   {
-    RGBColorTabel[i] = i;
-    RGBColorTabel[i+256*256] = i;
-    RGBColorTabel[i+256*256*2] = i;
+    EXPECT_EQ(((unsigned char*)colorTableReceiveMsg->GetTablePointer())[i], i);
   }
-  igtl::ColorTableMessage::Pointer colorTabelMsg = igtl::ColorTableMessage::New();
-  colorTabelMsg->SetIndexTypeToUint16();
-  colorTabelMsg->SetMapType(igtl::ColorTableMessage::MAP_RGB);
-  colorTabelMsg->AllocateTable();
-  colorTabelMsg->Pack();
-  memcpy(colorTabelMsg->GetTablePointer(),RGBColorTabel,256*256*3);
-  EXPECT_EQ(colorTabelMsg->GetPackSize(), 256*256*3+IGTL_COLORTABLE_HEADER_SIZE+IGTL_HEADER_SIZE);
-  //--------------------
-  igtl::ColorTableMessage::Pointer colorTabelMsg2 = igtl::ColorTableMessage::New();
-  colorTabelMsg2->InitPack();
-  colorTabelMsg2->SetIndexTypeToUint16();
-  colorTabelMsg2->SetMapType(igtl::ColorTableMessage::MAP_RGB);
-  colorTabelMsg2->AllocatePack();
-  memcpy(colorTabelMsg2->GetPackBodyPointer(),colorTabelMsg2->GetPackBodyPointer(),colorTabelMsg2->GetPackSize()-IGTL_HEADER_SIZE);
-  colorTabelMsg2->Unpack();
-  EXPECT_EQ(strcmp((char*)colorTabelMsg->GetTablePointer(), (char*)RGBColorTabel), 0);
+  
 }
+
 
 int main(int argc, char **argv)
 {

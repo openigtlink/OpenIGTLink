@@ -12,39 +12,61 @@
  
  =========================================================================*/
 
-#include "../Source/igtlCapabilityMessage.h"
+#include "igtlCapabilityMessage.h"
+#include "igtlutil/igtl_test_data_capability.h"
+#include "igtlMessageDebugFunction.h"
 #include "igtl_header.h"
+
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
+#define CAPABILITY_MESSAGE_BODY_SIZE 48
 
-TEST(CapabilityMessageTest, NumberOfTypes)
+igtl::CapabilityMessage::Pointer capabilitySendMsg = igtl::CapabilityMessage::New();
+igtl::CapabilityMessage::Pointer capabilityReceiveMsg = igtl::CapabilityMessage::New();
+
+TEST(ColorTableMessageTest, Pack)
 {
-  igtl::CapabilityMessage::Pointer capabilityMsg = igtl::CapabilityMessage::New();
-  capabilityMsg->SetNumberOfTypes(2);
-  EXPECT_EQ(capabilityMsg->GetNumberOfTypes(), 2);
+  capabilitySendMsg->SetTimeStamp(0, 1234567890);
+  capabilitySendMsg->SetDeviceName("DeviceName");
+  capabilitySendMsg->SetNumberOfTypes(4);
+  capabilitySendMsg->SetType(0, "IMAGE");
+  capabilitySendMsg->SetType(1, "GET_IMAGE");
+  capabilitySendMsg->SetType(2, "TRANSFORM");
+  capabilitySendMsg->SetType(3, "GET_TRANS");
+  capabilitySendMsg->Pack();
+  
+  TestDebugCharArrayCmp(capabilitySendMsg->GetPackPointer(), test_capability_message, IGTL_HEADER_SIZE);
+  int r = memcmp((const void*)capabilitySendMsg->GetPackPointer(), (const void*)test_capability_message, IGTL_HEADER_SIZE);
+  EXPECT_EQ(r, 0);
+  r = memcmp((const void*)capabilitySendMsg->GetPackBodyPointer(), (const void*)(test_capability_message+IGTL_HEADER_SIZE), CAPABILITY_MESSAGE_BODY_SIZE);
+  EXPECT_EQ(r, 0);
 }
 
-TEST(CapabilityMessageTest, SetAndGetTypes)
+
+TEST(ColorTableMessageTest, Unpack)
 {
-  // Set types and pack the message,then
-  igtl::CapabilityMessage::Pointer capabilityMsg = igtl::CapabilityMessage::New();
-  capabilityMsg->SetNumberOfTypes(2);
-  capabilityMsg->SetType(0, "Image");
-  capabilityMsg->SetType(1, "Transform");
-  capabilityMsg->Pack();
-  EXPECT_EQ(capabilityMsg->GetPackSize(), 82);
-  const char* strGrounTruth = "Image\0\0\0\0\0\0\0Transform\0\0\0";
-  EXPECT_EQ(strcmp((char *)capabilityMsg->GetPackBodyPointer(), strGrounTruth), 0);
-  //--------------------
-  igtl::CapabilityMessage::Pointer capabilityMsg2 = igtl::CapabilityMessage::New();
-  capabilityMsg2->InitPack();
-  capabilityMsg2->SetNumberOfTypes(2);
-  capabilityMsg2->AllocatePack();
-  memcpy(capabilityMsg2->GetPackBodyPointer(),capabilityMsg->GetPackBodyPointer(),capabilityMsg->GetPackSize()-IGTL_HEADER_SIZE);
-  capabilityMsg2->Unpack();
-  EXPECT_EQ(strcmp(capabilityMsg2->GetType(0), "Image\0\0\0\0\0\0\0"),0);
-  EXPECT_EQ(strcmp(capabilityMsg2->GetType(1), "Transform\0\0\0"),0);
+  igtl::MessageHeader::Pointer headerMsg;
+  headerMsg = igtl::MessageHeader::New();
+  headerMsg->InitPack();
+  memcpy(headerMsg->GetPackPointer(), capabilitySendMsg->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
+  capabilityReceiveMsg->SetMessageHeader(headerMsg);
+  capabilityReceiveMsg->AllocatePack();
+  memcpy(capabilityReceiveMsg->GetPackBodyPointer(), capabilitySendMsg->GetPackBodyPointer(), capabilitySendMsg->GetPackBodySize());
+  capabilityReceiveMsg->Unpack();
+  
+  EXPECT_EQ(capabilityReceiveMsg->GetNumberOfTypes(),4);
+  EXPECT_STREQ(capabilityReceiveMsg->GetType(0),"IMAGE");
+  EXPECT_STREQ(capabilityReceiveMsg->GetType(1),"GET_IMAGE");
+  EXPECT_STREQ(capabilityReceiveMsg->GetType(2),"TRANSFORM");
+  EXPECT_STREQ(capabilityReceiveMsg->GetType(3),"GET_TRANS");
+  std::vector<std::string> typeStrings = capabilityReceiveMsg->GetTypes();
+  EXPECT_EQ(typeStrings.size(),4);
+  EXPECT_STREQ(typeStrings[0].c_str(),"IMAGE");
+  EXPECT_STREQ(typeStrings[1].c_str(),"GET_IMAGE");
+  EXPECT_STREQ(typeStrings[2].c_str(),"TRANSFORM");
+  EXPECT_STREQ(typeStrings[3].c_str(),"GET_TRANS");
 }
 
 int main(int argc, char **argv)

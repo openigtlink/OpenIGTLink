@@ -217,12 +217,12 @@ TEST(BindMessageTest, Unpack)
   igtl::igtlUnit unitTruth = 0x443E0000000000;
   EXPECT_EQ(sensorDataReceiveMsg->GetUnit(), unitTruth);
   EXPECT_EQ(sensorDataReceiveMsg->GetLength(),6);
-  EXPECT_EQ(sensorDataReceiveMsg->GetValue(0),123456.78);
-  EXPECT_EQ(sensorDataReceiveMsg->GetValue(1),12345.678);
-  EXPECT_EQ(sensorDataReceiveMsg->GetValue(2),1234.5678);
-  EXPECT_EQ(sensorDataReceiveMsg->GetValue(3),123.45678);
-  EXPECT_EQ(sensorDataReceiveMsg->GetValue(4),12.345678);
-  EXPECT_EQ(sensorDataReceiveMsg->GetValue(5),1.2345678);
+  EXPECT_FLOAT_EQ(sensorDataReceiveMsg->GetValue(0),123456.78);
+  EXPECT_FLOAT_EQ(sensorDataReceiveMsg->GetValue(1),12345.678);
+  EXPECT_FLOAT_EQ(sensorDataReceiveMsg->GetValue(2),1234.5678);
+  EXPECT_FLOAT_EQ(sensorDataReceiveMsg->GetValue(3),123.45678);
+  EXPECT_FLOAT_EQ(sensorDataReceiveMsg->GetValue(4),12.345678);
+  EXPECT_FLOAT_EQ(sensorDataReceiveMsg->GetValue(5),1.2345678);
 }
 
 int main(int argc, char **argv)
