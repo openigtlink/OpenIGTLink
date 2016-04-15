@@ -14,6 +14,7 @@
 
 #include "igtlTrajectoryMessage.h"
 #include "igtlutil/igtl_test_data_trajectory.h"
+#include "igtlMessageDebugFunction.h"
 #include "igtl_trajectory.h"
 #include "igtl_header.h"
 
@@ -99,22 +100,14 @@ TEST(TrajectoryMessageTest, Unpack)
   groundTruthRGBA[1].assign(tempIni2,tempIni2+4);
   igtlUint8 tempIni3[4] = {0,0,255,255};
   groundTruthRGBA[2].assign(tempIni3,tempIni3+4);
+
+  igtlFloat32 groundTruthEntryPoints[3][3] ={{10.0,15.0,20.0},
+                                             {40.0,45.0,50.0},
+                                             {70.0,75.0,80.0}};
   
-  std::vector<std::vector<igtlFloat32> > groundTruthEntryPoints(3,std::vector<igtlFloat32>(3));
-  igtlFloat32 tempFloat1[3] = {10.0,15.0,20.0};
-  groundTruthEntryPoints[0].assign(tempFloat1,tempFloat1+3);
-  igtlFloat32 tempFloat2[3] = {40.0,45.0,50.0};
-  groundTruthEntryPoints[1].assign(tempFloat2,tempFloat2+3);
-  igtlFloat32 tempFloat3[3] = {70.0,75.0,80.0};
-  groundTruthEntryPoints[2].assign(tempFloat3,tempFloat3+3);
-  
-  std::vector<std::vector<igtlFloat32> > groundTruthTargetPoints(3,std::vector<igtlFloat32>(3));
-  igtlFloat32 tempFloat4[3] = {25.0,30.0,35.0};
-  groundTruthTargetPoints[0].assign(tempFloat4,tempFloat4+3);
-  igtlFloat32 tempFloat5[3] = {55.0,60.0,65.0};
-  groundTruthTargetPoints[1].assign(tempFloat5,tempFloat5+3);
-  igtlFloat32 tempFloat6[3] = {85.0,90.0,95.0};
-  groundTruthTargetPoints[2].assign(tempFloat6,tempFloat6+3);
+  igtlFloat32 groundTruthTargetPoints[3][3] = {{25.0,30.0,35.0},
+                                               {55.0,60.0,65.0},
+                                               {85.0,90.0,95.0}};
   
   igtlFloat32 groundTruthRadius[3] = {5.0,2.5,0.0};
   
@@ -133,10 +126,10 @@ TEST(TrajectoryMessageTest, Unpack)
     EXPECT_THAT(returnedRGBA, testing::ElementsAreArray(groundTruthRGBA[i]));
     igtlFloat32 returnedEntryPoint[3] ={0,0,0};
     elem->GetEntryPosition(returnedEntryPoint);
-    EXPECT_THAT(returnedEntryPoint, testing::ElementsAreArray(groundTruthEntryPoints[i]));
+    EXPECT_TRUE(ArrayFloatComparison(returnedEntryPoint, groundTruthEntryPoints[i], 3, ABS_ERROR));
     igtlFloat32 returnedTargetPoint[3] ={0,0,0};
     elem->GetTargetPosition(returnedTargetPoint);
-    EXPECT_THAT(returnedTargetPoint, testing::ElementsAreArray(groundTruthTargetPoints[i]));
+    EXPECT_TRUE(ArrayFloatComparison(returnedTargetPoint, groundTruthTargetPoints[i], 3, ABS_ERROR));
     EXPECT_EQ(elem->GetRadius(), groundTruthRadius[i]);
     EXPECT_EQ(strncmp((char*)elem->GetOwner(), "IMAGE_0", 7),0);
   }

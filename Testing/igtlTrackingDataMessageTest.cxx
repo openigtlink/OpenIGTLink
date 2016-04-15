@@ -14,6 +14,7 @@
 
 #include "igtlTrackingDataMessage.h"
 #include "igtlutil/igtl_test_data_tdata.h"
+#include "igtlMessageDebugFunction.h"
 #include "igtl_tdata.h"
 #include "igtl_header.h"
 #include "gtest/gtest.h"
@@ -103,10 +104,7 @@ TEST(TrackingMessageTest, Unpack)
       {0.0,0.0,0.0,0.0},
       {0.0,0.0,0.0,0.0}};
     elem->GetMatrix(outMatrix);
-    EXPECT_THAT(outMatrix, testing::ElementsAre(testing::ElementsAreArray(inMatrix[0]),
-                                                testing::ElementsAreArray(inMatrix[1]),
-                                                testing::ElementsAreArray(inMatrix[2]),
-                                                testing::ElementsAreArray(inMatrix[3])));
+    EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
   }
 }
 

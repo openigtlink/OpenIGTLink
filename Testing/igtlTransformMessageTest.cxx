@@ -14,6 +14,7 @@
 
 #include "igtlTransformMessage.h"
 #include "igtlutil/igtl_test_data_transform.h"
+#include "igtlMessageDebugFunction.h"
 #include "igtl_transform.h"
 #include "igtl_header.h"
 
@@ -71,10 +72,7 @@ TEST(TransformMessageTest, Unpack)
     {0.0,0.0,0.0,0.0},
     {0.0,0.0,0.0,0.0}};
   transformReceiveMsg->GetMatrix(outMatrix);
-  EXPECT_THAT(outMatrix, testing::ElementsAre(testing::ElementsAreArray(inMatrix[0]),
-                                              testing::ElementsAreArray(inMatrix[1]),
-                                              testing::ElementsAreArray(inMatrix[2]),
-                                              testing::ElementsAreArray(inMatrix[3])));
+  EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
   
 }
 

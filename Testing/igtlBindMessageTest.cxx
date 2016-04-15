@@ -178,7 +178,7 @@ TEST(BindMessageTest, Unpack)
   imageReceiveMsg2->GetSpacing(returnSpacing);
   for(int i=0;i < 3; i++)
   {
-    EXPECT_FLOAT_EQ(returnSpacing[i], spacing[i]);
+    EXPECT_NEAR(returnSpacing[i], spacing[i], ABS_ERROR);
   }
   //testing::internal::FloatingEqMatcher<float> a(1e-8,false);
   //EXPECT_THAT(returnSpacing,testing::Pointwise(a, spacing));
@@ -205,10 +205,7 @@ TEST(BindMessageTest, Unpack)
     {0.0,0.0,0.0,0.0},
     {0.0,0.0,0.0,0.0}};
   transformReceiveMsg->GetMatrix(outMatrix);
-  EXPECT_THAT(outMatrix, testing::ElementsAre(testing::ElementsAreArray(inMatrix[0]),
-                                              testing::ElementsAreArray(inMatrix[1]),
-                                              testing::ElementsAreArray(inMatrix[2]),
-                                              testing::ElementsAreArray(inMatrix[3])));
+  EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
   
   igtl_header *sensorHeader = (igtl_header *)sensorDataReceiveMsg->GetPackPointer();
   EXPECT_STREQ(sensorHeader->device_name, "ChildSensor");

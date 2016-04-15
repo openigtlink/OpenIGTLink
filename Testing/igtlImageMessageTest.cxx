@@ -14,6 +14,7 @@
 
 #include "igtlImageMessage.h"
 #include "igtlutil/igtl_test_data_image.h"
+#include "igtlMessageDebugFunction.h"
 #include "igtl_types.h"
 #include "igtl_header.h"
 #include "igtl_image.h"
@@ -94,7 +95,7 @@ TEST(ImageMessageTest, Unpack)
   EXPECT_THAT(returnSize,testing::ElementsAreArray(size));
   float returnSpacing[3] = {0.0f,0.0f,0.0f};
   imageReceiveMsg->GetSpacing(returnSpacing);
-  //EXPECT_THAT(returnSpacing, testing::ElementsAreArray(spacing));
+  EXPECT_TRUE(ArrayFloatComparison(returnSpacing, spacing, 3, ABS_ERROR));
   int returnSvsize[3] = {0,0,0}, returnSvoffset[3] = {0,0,0};
   imageReceiveMsg->GetSubVolume(returnSvsize, returnSvoffset);
   EXPECT_THAT(returnSvsize,testing::ElementsAreArray(svsize));
@@ -108,7 +109,7 @@ TEST(ImageMessageTest, Unpack)
     {0.0,0.0,0.0,0.0},
     {0.0,0.0,0.0,0.0}};
   imageReceiveMsg->GetMatrix(outMatrix);
-  //EXPECT_THAT(outMatrix, testing::Pointwise(testing::Eq(),inMatrix));
+  EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
   //The imageHeader is byte-wized converted, so we skip the comparison of the image header.
   int r = memcmp((const char*)imageReceiveMsg->GetPackBodyPointer()+IGTL_IMAGE_HEADER_SIZE, (const void*)(test_image_message+IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE), (size_t)(TEST_IMAGE_MESSAGE_SIZE));
   EXPECT_EQ(r, 0);

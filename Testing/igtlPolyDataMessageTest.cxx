@@ -14,6 +14,7 @@
 
 #include "igtlPolyDataMessage.h"
 #include "igtlutil/igtl_test_data_polydata.h"
+#include "igtlMessageDebugFunction.h"
 #include "igtl_polydata.h"
 #include "igtl_header.h"
 
@@ -106,7 +107,7 @@ TEST(PolyDataMessageTest, Unpack)
   {
     igtlFloat32 point[3] = {0,0,0};
     pointUnpacked->GetPoint(i, point);
-    EXPECT_THAT(point, ::testing::ElementsAreArray(points[i]));
+    EXPECT_TRUE(ArrayFloatComparison(point, points[i], 3, ABS_ERROR));
   }
   for (int i = 0; i<6; i++)
   {
