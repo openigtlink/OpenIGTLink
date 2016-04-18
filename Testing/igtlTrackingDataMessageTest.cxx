@@ -53,7 +53,7 @@ void BuildUpElements()
 
   trackingSendMsg = igtl::TrackingDataMessage::New();
   trackingSendMsg->SetDeviceName("DeviceName");
-  trackingSendMsg->SetTimeStamp(0, 1234567890);
+  trackingSendMsg->SetTimeStamp(0, 1234567892);
   trackingSendMsg->AddTrackingDataElement(trackingElement0);
   trackingSendMsg->AddTrackingDataElement(trackingElement1);
   trackingSendMsg->AddTrackingDataElement(trackingElement2);
@@ -86,7 +86,7 @@ TEST(TrackingMessageTest, Unpack)
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "TDATA");
   EXPECT_EQ(messageHeader->version, 1);
-  EXPECT_EQ(messageHeader->timestamp, 1234567890);
+  EXPECT_EQ(messageHeader->timestamp, 1234567892);
   EXPECT_EQ(messageHeader->body_size, IGTL_TDATA_ELEMENT_SIZE*3);
   
   std::vector<char*> trackerDescription;

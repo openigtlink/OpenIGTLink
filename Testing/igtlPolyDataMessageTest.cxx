@@ -64,7 +64,7 @@ void BuildUpElements()
   polyDataSendMsg->SetPolygons(polyGon.GetPointer());
   polyDataSendMsg->AddAttribute(polyAttr.GetPointer());
   polyDataSendMsg->SetDeviceName("DeviceName");
-  polyDataSendMsg->SetTimeStamp(0, 1234567890);
+  polyDataSendMsg->SetTimeStamp(0, 1234567892);
   polyDataSendMsg->Pack();
 }
 
@@ -93,7 +93,7 @@ TEST(PolyDataMessageTest, Unpack)
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "POLYDATA");
   EXPECT_EQ(messageHeader->version, 1);
-  EXPECT_EQ(messageHeader->timestamp, 1234567890);
+  EXPECT_EQ(messageHeader->timestamp, 1234567892);
   EXPECT_EQ(messageHeader->body_size, POLY_BODY_SIZE);
   
   memcpy(polyDataReceiveMsg->GetPackBodyPointer(), polyDataSendMsg->GetPackBodyPointer(), POLY_BODY_SIZE);

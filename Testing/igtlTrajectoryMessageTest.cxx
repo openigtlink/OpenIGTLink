@@ -56,7 +56,7 @@ void BuildUpElements()
   trajectoryElement2->SetOwner("IMAGE_0");
   trajectorySendMsg = igtl::TrajectoryMessage::New();
   trajectorySendMsg->SetDeviceName("DeviceName");
-  trajectorySendMsg->SetTimeStamp(0, 1234567890);
+  trajectorySendMsg->SetTimeStamp(0, 1234567892);
   trajectorySendMsg->AddTrajectoryElement(trajectoryElement0);
   trajectorySendMsg->AddTrajectoryElement(trajectoryElement1);
   trajectorySendMsg->AddTrajectoryElement(trajectoryElement2);
@@ -89,7 +89,7 @@ TEST(TrajectoryMessageTest, Unpack)
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "TRAJ");
   EXPECT_EQ(messageHeader->version, 1);
-  EXPECT_EQ(messageHeader->timestamp, 1234567890);
+  EXPECT_EQ(messageHeader->timestamp, 1234567892);
   EXPECT_EQ(messageHeader->body_size, IGTL_TRAJECTORY_ELEMENT_SIZE*3);
   
   

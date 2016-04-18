@@ -50,7 +50,7 @@ void BuildUpElements()
   pointElement2->SetOwner("IMAGE_0");
   pointSendMsg = igtl::PointMessage::New();
   pointSendMsg->SetDeviceName("DeviceName");
-  pointSendMsg->SetTimeStamp(0, 1234567890);
+  pointSendMsg->SetTimeStamp(0, 1234567892);
   pointSendMsg->AddPointElement(pointElement0);
   pointSendMsg->AddPointElement(pointElement1);
   pointSendMsg->AddPointElement(pointElement2);
@@ -85,7 +85,7 @@ TEST(PointMessageTest, Unpack)
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "POINT");
   EXPECT_EQ(messageHeader->version, 1);
-  EXPECT_EQ(messageHeader->timestamp, 1234567890);
+  EXPECT_EQ(messageHeader->timestamp, 1234567892);
   EXPECT_EQ(messageHeader->body_size, IGTL_POINT_ELEMENT_SIZE*3);
   
   std::vector<std::vector<igtlUint8> > groundTruthRGBA(3,std::vector<igtlUint8>(4));

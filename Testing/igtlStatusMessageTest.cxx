@@ -33,7 +33,7 @@ TEST(StatusMessageTest, Pack)
   std::string statusString = "randomstringrandomstring";
   statusSendMsg->SetStatusString(statusString.c_str());// pass an empty string with size 54,just to initialize the memory
   statusSendMsg->AllocatePack();
-  statusSendMsg->SetTimeStamp(0, 1234567890);
+  statusSendMsg->SetTimeStamp(0, 1234567892);
   statusSendMsg->SetDeviceName("DeviceName");
   statusSendMsg->SetCode(IGTL_STATUS_DISABLED);
   statusSendMsg->SetSubCode(0x0A);

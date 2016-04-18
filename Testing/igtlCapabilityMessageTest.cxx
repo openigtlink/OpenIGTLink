@@ -27,7 +27,7 @@ igtl::CapabilityMessage::Pointer capabilityReceiveMsg = igtl::CapabilityMessage:
 
 TEST(ColorTableMessageTest, Pack)
 {
-  capabilitySendMsg->SetTimeStamp(0, 1234567890);
+  capabilitySendMsg->SetTimeStamp(0, 1234567892);
   capabilitySendMsg->SetDeviceName("DeviceName");
   capabilitySendMsg->SetNumberOfTypes(4);
   capabilitySendMsg->SetType(0, "IMAGE");

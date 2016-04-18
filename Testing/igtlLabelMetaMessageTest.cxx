@@ -48,7 +48,7 @@ void BuildUpLabelElements()
   labelMetaElement2->SetOwner("IMAGE_0");
   labelMetaSendMsg = igtl::LabelMetaMessage::New();
   labelMetaSendMsg->SetDeviceName("DeviceName");
-  labelMetaSendMsg->SetTimeStamp(0, 1234567890);
+  labelMetaSendMsg->SetTimeStamp(0, 1234567892);
   labelMetaSendMsg->AddLabelMetaElement(labelMetaElement0);
   labelMetaSendMsg->AddLabelMetaElement(labelMetaElement1);
   labelMetaSendMsg->AddLabelMetaElement(labelMetaElement2);
@@ -82,7 +82,7 @@ TEST(LabelMetaMessageTest, Unpack)
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "LBMETA");
   EXPECT_EQ(messageHeader->version, 1);
-  EXPECT_EQ(messageHeader->timestamp, 1234567890);
+  EXPECT_EQ(messageHeader->timestamp, 1234567892);
   EXPECT_EQ(messageHeader->body_size, 348);
   
   std::vector<std::vector<igtlUint8> > groundTruthRGBA(3,std::vector<igtlUint8>(4));

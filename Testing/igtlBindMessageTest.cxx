@@ -68,7 +68,7 @@ igtlFloat64 sensorValues[6] = {123456.78,12345.678,1234.5678,123.45678,12.345678
 void BuildUpElements()
 {
   imageSendMsg2 = igtl::ImageMessage2::New();
-  imageSendMsg2->SetTimeStamp(0, 1234567890);
+  imageSendMsg2->SetTimeStamp(0, 1234567892);
   imageSendMsg2->SetDeviceName("ChildImage");
   //Initialization of a image message
   imageSendMsg2->SetDimensions(size);
@@ -92,7 +92,7 @@ void BuildUpElements()
   sensorDataSendMsg->AllocatePack();
   sensorDataSendMsg->SetLength(6);
   sensorDataSendMsg->SetDeviceName("ChildSensor");
-  sensorDataSendMsg->SetTimeStamp(0, 1234567890);
+  sensorDataSendMsg->SetTimeStamp(0, 1234567892);
   unit->Init();
   unit->SetPrefix(IGTL_UNIT_PREFIX_NONE);
   unit->Append(IGTL_UNIT_SI_BASE_METER, (igtl_int8) 1);
@@ -109,7 +109,7 @@ void BuildUpElements()
   sensorDataReceiveMsg->SetLength(6);
   
   transformSendMsg->AllocatePack();
-  transformSendMsg->SetTimeStamp(0, 1234567890);
+  transformSendMsg->SetTimeStamp(0, 1234567892);
   transformSendMsg->SetDeviceName("ChildTrans");
   transformSendMsg->SetMatrix(inMatrix);
   transformSendMsg->Pack();
@@ -117,7 +117,7 @@ void BuildUpElements()
   transformReceiveMsg->AllocatePack();
   
   bindSendMsg->Init();
-  bindSendMsg->SetTimeStamp(0, 1234567890);
+  bindSendMsg->SetTimeStamp(0, 1234567892);
   bindSendMsg->SetDeviceName("DeviceName");
   bindSendMsg->AppendChildMessage(transformSendMsg);
   bindSendMsg->AppendChildMessage(imageSendMsg2);
@@ -159,7 +159,7 @@ TEST(BindMessageTest, Unpack)
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "BIND");
   EXPECT_EQ(messageHeader->version, 1);
-  EXPECT_EQ(messageHeader->timestamp, 1234567890);
+  EXPECT_EQ(messageHeader->timestamp, 1234567892);
   EXPECT_EQ(messageHeader->body_size, MESSAGE_BIND_HEADER_SIZE + MESSAGE_BIND_BODY_SIZE);
   int r = memcmp(bindReceiveMsg->GetPackBodyPointer(), test_bind_message_bind_header, MESSAGE_BIND_HEADER_SIZE);
   EXPECT_EQ(r, 0);
@@ -168,7 +168,7 @@ TEST(BindMessageTest, Unpack)
   EXPECT_STREQ(imageHeader->device_name, "ChildImage");
   EXPECT_STREQ(imageHeader->name, "IMAGE");
   EXPECT_EQ(imageHeader->version, 1);
-  EXPECT_EQ(imageHeader->timestamp, 1234567890);
+  EXPECT_EQ(imageHeader->timestamp, 1234567892);
   EXPECT_EQ(imageHeader->body_size, IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
   
   
@@ -193,7 +193,7 @@ TEST(BindMessageTest, Unpack)
   EXPECT_STREQ(transformHeader->device_name, "ChildTrans");
   EXPECT_STREQ(transformHeader->name, "TRANSFORM");
   EXPECT_EQ(transformHeader->version, 1);
-  EXPECT_EQ(transformHeader->timestamp, 1234567890);
+  EXPECT_EQ(transformHeader->timestamp, 1234567892);
   EXPECT_EQ(transformHeader->body_size, IGTL_TRANSFORM_SIZE);
  
   igtl::Matrix4x4 outMatrix = {{0.0,0.0,0.0,0.0},
@@ -207,7 +207,7 @@ TEST(BindMessageTest, Unpack)
   EXPECT_STREQ(sensorHeader->device_name, "ChildSensor");
   EXPECT_STREQ(sensorHeader->name, "SENSOR");
   EXPECT_EQ(sensorHeader->version, 1);
-  EXPECT_EQ(sensorHeader->timestamp, 1234567890);
+  EXPECT_EQ(sensorHeader->timestamp, 1234567892);
   EXPECT_EQ(sensorHeader->body_size, MESSAGE_SENSOR_BODY_SIZE);
   
   igtl::igtlUnit unitTruth = 0x443E0000000000;

@@ -30,7 +30,7 @@ TEST(StringMessageTest, Pack)
 {
   stringSendMsg->SetString(IGTL_STRING_TEST_STRING);
   stringSendMsg->AllocatePack();
-  stringSendMsg->SetTimeStamp(0, 1234567890);
+  stringSendMsg->SetTimeStamp(0, 1234567892);
   stringSendMsg->SetDeviceName("DeviceName");
   stringSendMsg->SetEncoding(3);
   stringSendMsg->Pack();

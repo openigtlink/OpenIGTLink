@@ -44,7 +44,7 @@ int   scalarType = igtl::ImageMessage2::TYPE_UINT8;// scalar type
 void BuildUp()
 {
   imageSendMsg2 = igtl::ImageMessage2::New();
-  imageSendMsg2->SetTimeStamp(0, 1234567890);
+  imageSendMsg2->SetTimeStamp(0, 1234567892);
   imageSendMsg2->SetDeviceName("DeviceName");
   //Initialization of a image message
   imageSendMsg2->SetDimensions(size);
@@ -59,9 +59,8 @@ void BuildUp()
   imageSendMsg2->AllocatePack(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
   imageSendMsg2->AllocateScalars();
   memcpy(imageSendMsg2->GetPackFragmentPointer(1), (void*)(test_image_message+IGTL_HEADER_SIZE), IGTL_IMAGE_HEADER_SIZE);//here m_ImageHeader is set.
-  imageSendMsg2->SetScalarPointer((void*)test_image);
+  imageSendMsg2->SetScalarPointer((void*)test_image); //m_Image and m_Body are set
   imageSendMsg2->Pack();
-
 }
 
 TEST(ImageMessage2Test, Pack)
@@ -70,19 +69,23 @@ TEST(ImageMessage2Test, Pack)
   int r = memcmp((const void*)imageSendMsg2->GetPackPointer(), (const void*)test_image_message,
                  (size_t)(IGTL_HEADER_SIZE));
   EXPECT_EQ(r, 0);
+  r = memcmp((const void*)imageSendMsg2->GetPackFragmentPointer(1), (const void*)(test_image_message+IGTL_HEADER_SIZE), (size_t)(IGTL_IMAGE_HEADER_SIZE));
+  EXPECT_EQ(r, 0);
 }
 
 TEST(ImageMessage2Test, Unpack)
 {
   imageReceiveMsg2->AllocatePack(imageSendMsg2->GetPackBodySize());
+  imageReceiveMsg2->AllocateScalars();
   memcpy(imageReceiveMsg2->GetPackFragmentPointer(0), imageSendMsg2->GetPackFragmentPointer(0), IGTL_HEADER_SIZE);
+  
   memcpy(imageReceiveMsg2->GetPackBodyPointer(), imageSendMsg2->GetPackBodyPointer(), IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
   imageReceiveMsg2->Unpack();
   igtl_header *messageHeader = (igtl_header *)imageReceiveMsg2->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "IMAGE");
   EXPECT_EQ(messageHeader->version, 1);
-  EXPECT_EQ(messageHeader->timestamp, 1234567890);
+  EXPECT_EQ(messageHeader->timestamp, 1234567892);
   EXPECT_EQ(messageHeader->body_size, IGTL_IMAGE_HEADER_SIZE + TEST_IMAGE_MESSAGE_SIZE);
   
   int returnSize[3] = {0,0,0};

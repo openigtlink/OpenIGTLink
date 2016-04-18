@@ -42,7 +42,7 @@ int   scalarType = igtl::ImageMessage::TYPE_UINT8;// scalar type
 void BuildUp()
 {
   imageSendMsg = igtl::ImageMessage::New();
-  imageSendMsg->SetTimeStamp(0, 1234567890);
+  imageSendMsg->SetTimeStamp(0, 1234567892);
   imageSendMsg->SetDeviceName("DeviceName");
   //Initialization of a image message
   imageSendMsg->SetDimensions(size);
@@ -83,7 +83,7 @@ TEST(ImageMessageTest, Unpack)
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "IMAGE");
   EXPECT_EQ(messageHeader->version, 1);
-  EXPECT_EQ(messageHeader->timestamp, 1234567890);
+  EXPECT_EQ(messageHeader->timestamp, 1234567892);
   EXPECT_EQ(messageHeader->body_size, IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
 
   int returnSize[3] = {0,0,0};

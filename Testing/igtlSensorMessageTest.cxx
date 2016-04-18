@@ -45,7 +45,7 @@ TEST(SensorMessageTest, Pack)
   sensorDataSendMsg->AllocatePack();
   sensorDataSendMsg->SetLength(6);
   sensorDataSendMsg->SetDeviceName("DeviceName");
-  sensorDataSendMsg->SetTimeStamp(0, 1234567890);
+  sensorDataSendMsg->SetTimeStamp(0, 1234567892);
   
   sensorDataSendMsg->SetUnit(unit);
   for (int i =0; i < 6; i++)

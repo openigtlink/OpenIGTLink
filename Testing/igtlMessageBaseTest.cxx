@@ -57,7 +57,7 @@ TEST(MessageBaseTest, TimeStampTest)
   messageBaseTest->SetTimeStamp(ts_input);
   messageBaseTest->GetTimeStamp(&sec,&nanosec);
   EXPECT_EQ(sec, 123);
-  EXPECT_EQ(nanosec, 2147483647);
+  EXPECT_EQ(nanosec, 2147483648);
 }
 
 TEST(MessageBaseTest, UNPACKTEST)

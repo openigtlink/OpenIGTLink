@@ -83,7 +83,7 @@ int main( int argc, char * argv [] )
   message.header.version = 1;
   strncpy( (char*)&(message.header.name), "SENSOR", 12 );
   strncpy( (char*)&(message.header.device_name), "DeviceName", 20 );
-  message.header.timestamp = 1234567890;
+  message.header.timestamp = 1234567892;
   message.header.body_size = IGTL_SENSOR_HEADER_SIZE + value_size;
   message.header.crc = igtl_sensor_get_crc(&(message.sensor), message.value);
   igtl_header_convert_byte_order( &(message.header) );

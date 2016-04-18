@@ -28,7 +28,7 @@ igtl::ColorTableMessage::Pointer colorTableReceiveMsg = igtl::ColorTableMessage:
 
 TEST(ColorTableMessageTest, Pack)
 {
-  colorTableSendMsg->SetTimeStamp(0, 1234567890);
+  colorTableSendMsg->SetTimeStamp(0, 1234567892);
   colorTableSendMsg->SetDeviceName("DeviceName");
   colorTableSendMsg->SetIndexType(IGTL_COLORTABLE_INDEX_UINT8);
   colorTableSendMsg->SetMapType(IGTL_COLORTABLE_MAP_UINT8);
