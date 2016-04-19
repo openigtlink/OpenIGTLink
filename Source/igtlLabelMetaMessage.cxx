@@ -230,7 +230,7 @@ int LabelMetaMessage::PackBody()
     strncpy((char*)element->device_name, (*iter)->GetDeviceName(), IGTL_LBMETA_LEN_DEVICE_NAME);
 
     element->label = (*iter)->GetLabel();
-
+    element->reserved = 0;
     igtlUint8 rgba[4];
     (*iter)->GetRGBA(rgba);
     element->rgba[0] = rgba[0];

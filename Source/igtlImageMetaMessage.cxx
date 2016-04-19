@@ -271,6 +271,7 @@ int ImageMetaMessage::PackBody()
     element->size[1] = size[1];
     element->size[2] = size[2];
     element->scalar_type = (*iter)->GetScalarType();
+    element->reserved = 0;
     element ++;
     }
 

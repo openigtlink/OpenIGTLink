@@ -33,7 +33,7 @@ void BuildUpArrayElements()
   size[2] = 3;
   array.SetSize(size);
   int i,j,k;
-  igtl_float64 arrayFloat[size[0]*size[1]*size[2]];
+  igtl_float64 arrayFloat[120];
   for (i = 0; i < size[0]; i ++)
   {
     for (j = 0; j < size[1]; j ++)

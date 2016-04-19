@@ -21,7 +21,12 @@ void TestDebugCharArrayCmp(void* inputPointer, unsigned char* inputArray, int si
 {
   for (int i = 0 ; i< size;++i)
   {
-    std::cerr<<i<<"  "<<+((igtlUint8*)inputPointer)[i]<<"  "<<+inputArray[i]<<" "<<((igtlUint8*)inputPointer)[i]<<"  "<<inputArray[i]<<std::endl;
+    std::cerr<<i<<"  "<<+((igtlUint8*)inputPointer)[i]<<"  "<<+inputArray[i]<<" "<<((igtlUint8*)inputPointer)[i]<<"  "<<inputArray[i];
+    if (((igtlUint8*)inputPointer)[i] != inputArray[i])
+    {
+      std::cerr<<"    "<<+((igtlUint8*)inputPointer)[i]<<"  "<<+inputArray[i];
+    }
+    std::cerr<<std::endl;
   }
 }
 

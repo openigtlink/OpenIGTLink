@@ -321,7 +321,7 @@ int QuaternionTrackingDataMessage::PackBody()
     {
     strncpy((char*)element->name, (*iter)->GetName(), IGTL_QTDATA_LEN_NAME);
     element->type = (*iter)->GetType();
-
+    element->reserved = 0;
     float p[3];
     (*iter)->GetPosition(p);
     float q[4];
