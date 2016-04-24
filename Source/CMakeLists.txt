@@ -37,6 +37,7 @@ SET(OpenIGTLink_SOURCES
   igtlutil/igtl_position.c
   igtlutil/igtl_capability.c
   igtlClientSocket.cxx
+  igtlCapabilityMessage.cxx
   igtlConditionVariable.cxx
   igtlFastMutexLock.cxx
   igtlImageMessage.cxx
@@ -71,6 +72,7 @@ SET(OpenIGTLink_INCLUDE_FILES
   igtlutil/igtl_win32header.h
   igtlMessageHandler.h
   igtlMessageHandlerMacro.h
+  igtlCapabilityMessage.h
   igtlClientSocket.h
   igtlConditionVariable.h
   igtlCreateObjectFunction.h
@@ -122,7 +124,6 @@ IF (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1" )
     igtlutil/igtl_qtrans.c
     igtlutil/igtl_polydata.c
     igtlColorTableMessage.cxx
-    igtlCapabilityMessage.cxx
     igtlImageMetaMessage.cxx
     igtlLabelMetaMessage.cxx
     igtlPointMessage.cxx
@@ -153,7 +154,6 @@ IF (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1" )
     igtlutil/igtl_qtrans.h
     igtlutil/igtl_polydata.h
     igtlColorTableMessage.h
-    igtlCapabilityMessage.h
     igtlImageMetaMessage.h
     igtlLabelMetaMessage.h
     igtlPointMessage.h

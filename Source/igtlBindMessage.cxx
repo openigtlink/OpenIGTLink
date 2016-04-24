@@ -36,6 +36,7 @@ BindMessageBase::~BindMessageBase()
 
 void BindMessageBase::Init()
 {
+  this->m_Version = 2;
   this->m_ChildMessages.clear();
 }
 
