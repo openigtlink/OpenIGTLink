@@ -80,7 +80,7 @@ int Unit::Append(int unit, int exp)
   // Append
   this->m_Unit[this->m_NUnits] = (igtlUint8)unit;
   this->m_Exp[this->m_NUnits] =  (igtlInt8)exp;
-
+  this->m_NUnits++;
   return 1;
 }
 
