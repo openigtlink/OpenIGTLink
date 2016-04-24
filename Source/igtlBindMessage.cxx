@@ -36,6 +36,7 @@ BindMessageBase::~BindMessageBase()
 
 void BindMessageBase::Init()
 {
+  this->m_Version = 2;
   this->m_ChildMessages.clear();
 }
 
@@ -58,7 +59,11 @@ int BindMessageBase::AppendChildMessage(igtl::MessageBase * child)
   if (this->m_ChildMessages.size() < 0xFFFF)
     {
     ChildMessageInfo info;
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+    info.type = child->GetMessageType();
+#else
     info.type = child->GetDeviceType();
+#endif
     info.name = child->GetDeviceName();
 
     // If the class instance is BindMessage.
@@ -77,7 +82,11 @@ int BindMessageBase::SetChildMessage(unsigned int i, igtl::MessageBase * child)
 {
   if (i < this->m_ChildMessages.size())
     {
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+    this->m_ChildMessages[i].type = child->GetMessageType();
+#else
     this->m_ChildMessages[i].type = child->GetDeviceType();
+#endif
     this->m_ChildMessages[i].name = child->GetDeviceName();
     // If the class instance is BindMessage.
     if (strncmp(this->m_DefaultBodyType.c_str(), "BIND", 4) == 0)

@@ -15,7 +15,9 @@
 #ifndef __IGTL_HEADER_H
 #define __IGTL_HEADER_H
 
-#define IGTL_HEADER_VERSION   1
+#define IGTL_HEADER_VERSION_1   1
+#define IGTL_HEADER_VERSION_2   2
+#define IGTL_HEADER_VERSION_3   3
 #define IGTL_HEADER_SIZE      58
 
 #define IGTL_HEADER_TYPE_SIZE  12

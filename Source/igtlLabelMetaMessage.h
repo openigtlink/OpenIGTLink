@@ -28,6 +28,23 @@
 namespace igtl
 {
 
+/// A base class for the LBMETA message types.
+class IGTLCommon_EXPORT LabelMetaMessageBase : public MessageBase
+{
+public:
+  typedef LabelMetaMessageBase            Self;
+  typedef MessageBase                    Superclass;
+  typedef SmartPointer<Self>             Pointer;
+  typedef SmartPointer<const Self>       ConstPointer;
+
+  igtlTypeMacro(igtl::LabelMetaMessageBase, igtl::MessageBase);
+  igtlNewMacro(igtl::LabelMetaMessageBase);
+
+protected:
+  LabelMetaMessageBase() : MessageBase() { this->m_Version = 2; };
+  ~LabelMetaMessageBase(){};
+};
+
 class IGTLCommon_EXPORT LabelMetaElement: public Object
 {
 public:
@@ -120,19 +137,19 @@ protected:
 
 
 /// A class for the GET_LBMETA message type.
-class IGTLCommon_EXPORT GetLabelMetaMessage: public MessageBase
+class IGTLCommon_EXPORT GetLabelMetaMessage: public LabelMetaMessageBase
 {
 public:
   typedef GetLabelMetaMessage            Self;
-  typedef MessageBase                    Superclass;
+  typedef LabelMetaMessageBase           Superclass;
   typedef SmartPointer<Self>             Pointer;
   typedef SmartPointer<const Self>       ConstPointer;
 
-  igtlTypeMacro(igtl::GetLabelMetaMessage, igtl::MessageBase);
+  igtlTypeMacro(igtl::GetLabelMetaMessage, igtl::LabelMetaMessageBase);
   igtlNewMacro(igtl::GetLabelMetaMessage);
 
 protected:
-  GetLabelMetaMessage() : MessageBase() { this->m_DefaultBodyType  = "GET_LBMETA"; };
+  GetLabelMetaMessage() : LabelMetaMessageBase() { this->m_DefaultBodyType  = "GET_LBMETA"; };
   ~GetLabelMetaMessage() {};
 protected:
   virtual int  GetBodyPackSize() { return 0; };
@@ -141,23 +158,23 @@ protected:
 };
 
 
-/// The LBMETA is used to transfer meta information for lable maps, which are not available
-/// in the IMAGE message type. To retreive voxel objects or a label map, GET_IMAGE / IMAGE
+/// The LBMETA is used to transfer meta information for label maps, which are not available
+/// in the IMAGE message type. To retrieve voxel objects or a label map, GET_IMAGE / IMAGE
 /// can be used. But the client should be able to get a list of available structures.
-class IGTLCommon_EXPORT LabelMetaMessage: public MessageBase
+class IGTLCommon_EXPORT LabelMetaMessage: public LabelMetaMessageBase
 {
 public:
   typedef LabelMetaMessage               Self;
-  typedef MessageBase                    Superclass;
+  typedef LabelMetaMessageBase           Superclass;
   typedef SmartPointer<Self>             Pointer;
   typedef SmartPointer<const Self>       ConstPointer;
 
-  igtlTypeMacro(igtl::LabelMetaMessage, igtl::MessageBase);
+  igtlTypeMacro(igtl::LabelMetaMessage, igtl::LabelMetaMessageBase);
   igtlNewMacro(igtl::LabelMetaMessage);
 
 public:
 
-  /// Adds an lable meta element to the list.
+  /// Adds an label meta element to the list.
   int  AddLabelMetaElement(LabelMetaElement::Pointer& elem);
 
   /// Clears the all label meta elements in the list.
@@ -189,6 +206,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlLabelMetaMessage_h
-
-
-

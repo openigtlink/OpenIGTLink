@@ -142,6 +142,7 @@ NDArrayMessage::NDArrayMessage():
   MessageBase()
 {
   this->m_DefaultBodyType = "NDARRAY";
+  this->m_Version = 2;
   this->m_Array = NULL;
   this->m_Type = 0;
 }

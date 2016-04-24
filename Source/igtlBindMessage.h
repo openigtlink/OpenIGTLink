@@ -98,7 +98,6 @@ public:
   igtlNewMacro(igtl::BindMessage);
 
 public:
-  
   /// Gets a child message specified by the index 'i'. A pointer to the instance of
   /// the specified child message is substituted to the message base specified by 'child'.
   /// Returns non-zero value if success. 
@@ -132,7 +131,6 @@ public:
   igtlNewMacro(igtl::GetBindMessage);
 
 public:
-  
   /// Appends the type and name of a new child message to the end of the list of child messages.
   /// The AppendChildMessage() function will increment the number of child messages.
   /// Returns the number of child messages.

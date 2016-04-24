@@ -45,7 +45,7 @@ public:
   int        SetString(const char* string);
 
   /// Sets the string by std::string.
-  int        SetString(std::string & string);
+  int        SetString(const std::string & string);
 
   /// Sets the encoding of the string. For character encoding, please refer IANA Character Sets
   /// (http://www.iana.org/assignments/character-sets).
