@@ -168,7 +168,7 @@ int LabelMetaElement::SetOwner(const char* owner)
 // igtl::LabelMetaMessage class
 
 LabelMetaMessage::LabelMetaMessage():
-  MessageBase()
+  LabelMetaMessageBase()
 {
   this->m_DefaultBodyType = "LBMETA";
   this->m_LabelMetaList.clear();

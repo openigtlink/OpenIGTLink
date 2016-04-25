@@ -158,7 +158,7 @@ void TrackingDataElement::GetMatrix(Matrix4x4& mat)
 // igtl::StartTrackingDataMessage class
 
 StartTrackingDataMessage::StartTrackingDataMessage():
-  MessageBase()
+  TrackingDataMessageBase()
 {
   this->m_DefaultBodyType = "STT_TDATA";
   this->m_Resolution      = 0;
@@ -265,7 +265,7 @@ int  RTSTrackingDataMessage::UnpackBody()
 // igtl::TrackingDataMessage class
 
 TrackingDataMessage::TrackingDataMessage():
-  MessageBase()
+  TrackingDataMessageBase()
 {
   this->m_DefaultBodyType = "TDATA";
   this->m_TrackingDataList.clear();
@@ -383,6 +383,11 @@ int TrackingDataMessage::UnpackBody()
     }
 
   return 1;
+}
+
+TrackingDataMessageBase::TrackingDataMessageBase()
+{
+  this->m_Version = 2;
 }
 
 } // namespace igtl

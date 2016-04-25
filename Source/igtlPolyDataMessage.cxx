@@ -421,7 +421,7 @@ int PolyDataAttribute::GetNthData(unsigned int n, igtlFloat32 * data)
 // Description:
 // PolyDataMessage class implementation
 PolyDataMessage::PolyDataMessage():
-  MessageBase()
+  PolyDataMessageBase()
 {
   this->m_DefaultBodyType = "POLYDATA";
   Clear();
@@ -873,6 +873,16 @@ PolyDataAttribute * PolyDataMessage::GetAttribute(unsigned int id)
     }
 
   return this->m_Attributes[id];
+}
+
+GetPolyDataMessage::GetPolyDataMessage()
+{
+  this->m_DefaultBodyType  = "GET_POLYDATA";
+}
+
+PolyDataMessageBase::PolyDataMessageBase()
+{
+  this->m_Version = 2;
 }
 
 } // namespace igtl

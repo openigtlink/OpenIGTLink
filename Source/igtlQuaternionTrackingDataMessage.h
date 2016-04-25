@@ -109,18 +109,35 @@ protected:
   igtlFloat32   m_quaternion[4];
 };
 
-
-/// A class for the STT_QTDATA message type.
-class IGTLCommon_EXPORT StartQuaternionTrackingDataMessage: public MessageBase
+/// A base class for the QTDATA message type.
+class IGTLCommon_EXPORT QuaternionTrackingDataMessageBase: public MessageBase
 {
 
 public:
-  typedef StartQuaternionTrackingDataMessage  Self;
+  typedef QuaternionTrackingDataMessageBase   Self;
   typedef MessageBase                         Superclass;
   typedef SmartPointer<Self>                  Pointer;
   typedef SmartPointer<const Self>            ConstPointer;
 
-  igtlTypeMacro(igtl::StartQuaternionTrackingDataMessage, igtl::MessageBase);
+  igtlTypeMacro(igtl::QuaternionTrackingDataMessageBase, igtl::MessageBase);
+  igtlNewMacro(igtl::QuaternionTrackingDataMessageBase);
+
+protected:
+  QuaternionTrackingDataMessageBase();
+  ~QuaternionTrackingDataMessageBase(){};
+};
+
+/// A class for the STT_QTDATA message type.
+class IGTLCommon_EXPORT StartQuaternionTrackingDataMessage: public QuaternionTrackingDataMessageBase
+{
+
+public:
+  typedef StartQuaternionTrackingDataMessage  Self;
+  typedef QuaternionTrackingDataMessageBase   Superclass;
+  typedef SmartPointer<Self>                  Pointer;
+  typedef SmartPointer<const Self>            ConstPointer;
+
+  igtlTypeMacro(igtl::StartQuaternionTrackingDataMessage, igtl::QuaternionTrackingDataMessageBase);
   igtlNewMacro(igtl::StartQuaternionTrackingDataMessage);
 
 public:
@@ -157,19 +174,19 @@ protected:
 };
 
 
-class IGTLCommon_EXPORT StopQuaternionTrackingDataMessage: public MessageBase
+class IGTLCommon_EXPORT StopQuaternionTrackingDataMessage: public QuaternionTrackingDataMessageBase
 {
 public:
   typedef StopQuaternionTrackingDataMessage  Self;
-  typedef MessageBase                        Superclass;
+  typedef QuaternionTrackingDataMessageBase  Superclass;
   typedef SmartPointer<Self>                 Pointer;
   typedef SmartPointer<const Self>           ConstPointer;
 
-  igtlTypeMacro(igtl::StopQuaternionTrackingDataMessage, igtl::MessageBase);
+  igtlTypeMacro(igtl::StopQuaternionTrackingDataMessage, igtl::QuaternionTrackingDataMessageBase);
   igtlNewMacro(igtl::StopQuaternionTrackingDataMessage);
 
 protected:
-  StopQuaternionTrackingDataMessage() : MessageBase() { this->m_DefaultBodyType  = "STP_QTDATA"; };
+  StopQuaternionTrackingDataMessage();
   ~StopQuaternionTrackingDataMessage() {};
 
 protected:
@@ -181,11 +198,11 @@ protected:
 
 
 /// A class for the RTS_QTDATA message type.
-class IGTLCommon_EXPORT RTSQuaternionTrackingDataMessage: public MessageBase
+class IGTLCommon_EXPORT RTSQuaternionTrackingDataMessage: public QuaternionTrackingDataMessageBase
 {
 public:
   typedef RTSQuaternionTrackingDataMessage  Self;
-  typedef MessageBase                       Superclass;
+  typedef QuaternionTrackingDataMessageBase Superclass;
   typedef SmartPointer<Self>                Pointer;
   typedef SmartPointer<const Self>          ConstPointer;
 
@@ -195,7 +212,7 @@ public:
     STATUS_ERROR = 1
   };
 
-  igtlTypeMacro(igtl::RTSQuaternionTrackingDataMessage, igtl::MessageBase);
+  igtlTypeMacro(igtl::RTSQuaternionTrackingDataMessage, igtl::QuaternionTrackingDataMessageBase);
   igtlNewMacro(igtl::RTSQuaternionTrackingDataMessage);
 
   /// Sets the status. 'status' must be either STATUS_SUCCESS or STATUS_ERROR.
@@ -205,7 +222,7 @@ public:
   igtlUint8     GetStatus()                { return this->m_Status; };
 
 protected:
-  RTSQuaternionTrackingDataMessage() : MessageBase(), m_Status(0) { this->m_DefaultBodyType  = "RTS_QTDATA"; };
+  RTSQuaternionTrackingDataMessage();
   ~RTSQuaternionTrackingDataMessage() {};
 
   /// A variable to store the status.
@@ -222,15 +239,15 @@ protected:
 /// The QTDATA message type is intended for transferring 3D positions of surgical tools,
 /// markers etc. Its role is almost identical to TDATA, except that QTDATA describes
 /// orientation by using quaternion.
-class IGTLCommon_EXPORT QuaternionTrackingDataMessage: public MessageBase
+class IGTLCommon_EXPORT QuaternionTrackingDataMessage: public QuaternionTrackingDataMessageBase
 {
 public:
-  typedef QuaternionTrackingDataMessage  Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef QuaternionTrackingDataMessage       Self;
+  typedef QuaternionTrackingDataMessageBase   Superclass;
+  typedef SmartPointer<Self>                  Pointer;
+  typedef SmartPointer<const Self>            ConstPointer;
 
-  igtlTypeMacro(igtl::QuaternionTrackingDataMessage, igtl::MessageBase);
+  igtlTypeMacro(igtl::QuaternionTrackingDataMessage, igtl::QuaternionTrackingDataMessageBase);
   igtlNewMacro(igtl::QuaternionTrackingDataMessage);
 
 public:
@@ -258,7 +275,7 @@ protected:
   virtual int  PackBody();
   virtual int  UnpackBody();
   
-  /// The list of trakcing data elements.
+  /// The list of tracking data elements.
   std::vector<QuaternionTrackingDataElement::Pointer> m_QuaternionTrackingDataList;
   
 };
@@ -267,6 +284,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlQuaternionTrackingDataMessage_h
-
-
-
