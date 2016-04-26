@@ -237,7 +237,7 @@ int main( int argc, char * argv [] )
   header.version = 1;
   strncpy( (char*)&(header.name), "BIND", 12 );
   strncpy( (char*)&(header.device_name), "DeviceName", 20 );
-  header.timestamp = 1234567890;
+  header.timestamp = 1234567892;
   header.body_size = bind_size + sizeof(child_message_body);
   header.crc = igtl_bind_get_crc(&bind_info, IGTL_TYPE_PREFIX_NONE, bind_header);
   igtl_header_convert_byte_order( &(header) );

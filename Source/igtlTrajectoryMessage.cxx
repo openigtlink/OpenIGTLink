@@ -278,7 +278,7 @@ int TrajectoryMessage::PackBody()
     strncpy((char*)element->group_name, (*iter)->GetGroupName(), IGTL_TRAJECTORY_LEN_GROUP_NAME);
     
     element->type = (*iter)->GetType();
-
+    element->reserved = 0;
     igtlUint8 rgba[4];
     (*iter)->GetRGBA(rgba);
     element->rgba[0] = rgba[0];

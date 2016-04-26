@@ -92,7 +92,7 @@ int main( int argc, char * argv [] )
   header.version = 1;
   strncpy( (char*)&(header.name), "NDARRAY", 12 );
   strncpy( (char*)&(header.device_name), "DeviceName", 20 );
-  header.timestamp = 1234567890;
+  header.timestamp = 1234567892;
   header.body_size = body_size;
   header.crc = igtl_ndarray_get_crc(&info, IGTL_TYPE_PREFIX_NONE, body);
   igtl_header_convert_byte_order( &(header) );
