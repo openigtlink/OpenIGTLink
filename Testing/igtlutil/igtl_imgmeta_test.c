@@ -57,7 +57,7 @@ int main( int argc, char * argv [] )
   strncpy((char*)&(message.metalist[0].modality), "CT", 32);
   strncpy((char*)&(message.metalist[0].patient_name), "PATIENT_0", 64);
   strncpy((char*)&(message.metalist[0].patient_id),   "PATIENT_ID_0", 64);
-  message.metalist[0].timestamp = 1234567890;
+  message.metalist[0].timestamp = 1234567892;
   message.metalist[0].size[0]   = 512;
   message.metalist[0].size[1]   = 512;
   message.metalist[0].size[2]   = 64;
@@ -70,7 +70,7 @@ int main( int argc, char * argv [] )
   strncpy((char*)&(message.metalist[1].modality), "MRI", 32);
   strncpy((char*)&(message.metalist[1].patient_name), "PATIENT_1", 64);
   strncpy((char*)&(message.metalist[1].patient_id),   "PATIENT_ID_1", 64);
-  message.metalist[1].timestamp = 1234567891;
+  message.metalist[1].timestamp = 1234567896;
   message.metalist[1].size[0]   = 256;
   message.metalist[1].size[1]   = 128;
   message.metalist[1].size[2]   = 32;
@@ -83,7 +83,7 @@ int main( int argc, char * argv [] )
   strncpy((char*)&(message.metalist[2].modality), "PET", 32);
   strncpy((char*)&(message.metalist[2].patient_name), "PATIENT_2", 64);
   strncpy((char*)&(message.metalist[2].patient_id),   "PATIENT_ID_2", 64);
-  message.metalist[2].timestamp = 1234567892;
+  message.metalist[2].timestamp = 1234567900;
   message.metalist[2].size[0]   = 256;
   message.metalist[2].size[1]   = 256;
   message.metalist[2].size[2]   = 32;
@@ -97,7 +97,7 @@ int main( int argc, char * argv [] )
   message.header.version = 1;
   strncpy( (char*)&(message.header.name), "IMGMETA", 12 );
   strncpy( (char*)&(message.header.device_name), "DeviceName", 20 );
-  message.header.timestamp = 1234567890;
+  message.header.timestamp = 1234567892;
   message.header.body_size = IGTL_IMGMETA_ELEMENT_SIZE*TEST_IMGMETA_NUM;
   message.header.crc = igtl_imgmeta_get_crc(message.metalist, TEST_IMGMETA_NUM);
   igtl_header_convert_byte_order( &(message.header) );

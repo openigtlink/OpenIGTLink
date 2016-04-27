@@ -325,7 +325,7 @@ int TrackingDataMessage::PackBody()
     {
     strncpy((char*)element->name, (*iter)->GetName(), IGTL_TDATA_LEN_NAME);
     element->type = (*iter)->GetType();
-
+    element->reserved = 0;
     Matrix4x4 matrix;
     (*iter)->GetMatrix(matrix);
     for (int i = 0; i < 3; i ++)

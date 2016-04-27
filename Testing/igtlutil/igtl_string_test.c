@@ -67,7 +67,7 @@ int main( int argc, char * argv [] )
   message.header.version = 1;
   strncpy( (char*)&(message.header.name), "STRING", 12 );
   strncpy( (char*)&(message.header.device_name), "DeviceName", 20 );
-  message.header.timestamp = 1234567890;
+  message.header.timestamp = 1234567892;
   message.header.body_size = IGTL_STRING_HEADER_SIZE + IGTL_STRING_TEST_STRING_LEN;
   message.header.crc = igtl_string_get_crc(&(message.string_header), (void*) message.string);
   igtl_header_convert_byte_order( &(message.header) );

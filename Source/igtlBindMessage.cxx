@@ -149,13 +149,13 @@ int BindMessage::GetChildMessage(unsigned int i, igtl::MessageBase * child)
     // Convert to network byte order
     igtl_header_convert_byte_order(header);
 
-    child->Unpack();
     child->AllocatePack();
 
     // TODO: Is there any way to avoid this memory copy?
     memcpy(child->GetPackBodyPointer(),
            this->m_ChildMessages[i].ptr, this->m_ChildMessages[i].size);
-
+	
+	  child->Unpack();
     return 1;
     }
   else

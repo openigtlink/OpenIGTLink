@@ -409,6 +409,14 @@ void  ImageMessage2::SetScalarPointer(void * p)
     delete [] this->m_Image;
     }
   this->m_Image = (unsigned char *) p;
+  for (int i = 0;i<IGTL_IMAGE_HEADER_SIZE; i++)
+  {
+    this->m_Body[i] = m_ImageHeader[i];
+  }
+  for (int i = 0;i<GetImageSize(); i++)
+  {
+    this->m_Body[i+IGTL_IMAGE_HEADER_SIZE] = m_Image[i];
+  }
 }
 
 
