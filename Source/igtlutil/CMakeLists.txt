@@ -31,7 +31,7 @@ SET(igtlutil_SOURCES
   )       
 
 
-if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
+if (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1")
   SET(igtlutil_HEADS
     ${igtlutil_HEADS}
     igtl_colortable.h
@@ -66,11 +66,29 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtl_qtrans.c
     igtl_polydata.c
     )
-endif (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
+endif (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1")
 
+if (${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
+  SET(igtlutil_HEADS
+    ${igtlutil_HEADS}
+    igtl_command.h
+    )
+  SET(igtlutil_SOURCES
+    ${igtlutil_SOURCES}
+    igtl_command.c
+    )
+endif (${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
+
+IF( ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
 ADD_LIBRARY(igtlutil
   ${igtlutil_SOURCES}
-)
+  ${igtlutil_HEADS}
+  )
+ELSE ( ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
+ADD_LIBRARY(igtlutil
+  ${igtlutil_SOURCES}
+  )
+ENDIF( ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
 
 SET_TARGET_PROPERTIES(igtlutil PROPERTIES
   VERSION ${OpenIGTLink_VERSION_MAJOR}.${OpenIGTLink_VERSION_MINOR}.${OpenIGTLink_VERSION_PATCH}

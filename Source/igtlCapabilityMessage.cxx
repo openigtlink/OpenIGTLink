@@ -45,27 +45,6 @@ CapabilityMessage::~CapabilityMessage()
   this->m_TypeNames.clear();
 }
 
-
-//void CapabilityMessage::SetTypes(int ntypes, const char names[][IGTL_HEADER_TYPE_SIZE])
-//{
-//  this->m_TypeNames.clear();
-//
-//  for(int i = 0; i < ntypes; i++)
-//    {
-//    std::string buf;
-//    if (strnlen(names[i], IGTL_HEADER_TYPE_SIZE) < IGTL_HEADER_TYPE_SIZE)
-//      {
-//      buf.append(names[i]);
-//      }
-//    else
-//      {
-//      buf.append(names[i], IGTL_HEADER_TYPE_SIZE);
-//      }
-//    this->m_TypeNames.push_back(buf);
-//    }
-//}
-
-
 void CapabilityMessage::SetTypes(std::vector<std::string> types)
 {
   this->m_TypeNames.clear();

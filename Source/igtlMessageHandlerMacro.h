@@ -19,7 +19,7 @@
 
 // Description:
 // The igtlMessageHandlerClassMacro() macro is to help developers to
-// define message handler class. It generates a chlid class of igtl::MessageHandler. 
+// define message handler class. It generates a child class of igtl::MessageHandler. 
 // The developer only needs to implement ProcessMessage() after calling this macro.
 // The following code shows how to define a handler that processes IMAGE message:
 //
@@ -54,6 +54,15 @@
     igtlTypeMacro(classname, ::igtl::MessageHandler);             \
     igtlNewMacro(classname);                                      \
   public:                                                         \
+#ifdef OpenIGTLink_PROTOCOL_VERSION >= 3                          \
+    virtual std::string GetMessageType() const                    \
+    {                                                             \
+      return this->m_Message->GetMessageType()                    \
+    }                                                             \
+    virtual const char* GetMessageType()                          \
+    {                                                             \
+      return this->m_Message->GetType();                          \
+    }                                                             \
     virtual const char* GetMessageType()                          \
     {                                                             \
       return this->m_Message->GetDeviceType();                    \

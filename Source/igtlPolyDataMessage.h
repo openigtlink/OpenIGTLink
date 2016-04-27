@@ -26,8 +26,25 @@
 namespace igtl
 {
 
+/// A base class for the POLYDATA message type.
+class IGTLCommon_EXPORT PolyDataMessageBase : public MessageBase
+{
+public:
+  typedef PolyDataMessageBase            Self;
+  typedef MessageBase                    Superclass;
+  typedef SmartPointer<Self>             Pointer;
+  typedef SmartPointer<const Self>       ConstPointer;
+
+  igtlTypeMacro(igtl::PolyDataMessageBase, igtl::MessageBase);
+  igtlNewMacro(igtl::PolyDataMessageBase);
+
+protected:
+  PolyDataMessageBase();
+  ~PolyDataMessageBase(){};
+};
+
 /// A class for the GET_POLYDATA message type.
-class IGTLCommon_EXPORT GetPolyDataMessage: public MessageBase
+class IGTLCommon_EXPORT GetPolyDataMessage: public PolyDataMessageBase
 {
 public:
   typedef GetPolyDataMessage            Self;
@@ -35,11 +52,11 @@ public:
   typedef SmartPointer<Self>             Pointer;
   typedef SmartPointer<const Self>       ConstPointer;
 
-  igtlTypeMacro(igtl::GetPolyDataMessage, igtl::MessageBase);
+  igtlTypeMacro(igtl::GetPolyDataMessage, igtl::PolyDataMessageBase);
   igtlNewMacro(igtl::GetPolyDataMessage);
 
 protected:
-  GetPolyDataMessage() : MessageBase() { this->m_DefaultBodyType  = "GET_POLYDATA"; };
+  GetPolyDataMessage();
   ~GetPolyDataMessage() {};
 protected:
   virtual int  GetBodyPackSize() { return 0; };
@@ -265,7 +282,7 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
 
 
 /// A class for the POLYDATA message type.
-class IGTLCommon_EXPORT PolyDataMessage: public MessageBase
+class IGTLCommon_EXPORT PolyDataMessage: public PolyDataMessageBase
 {
 public:
   typedef PolyDataMessage                Self;
@@ -273,12 +290,12 @@ public:
   typedef SmartPointer<Self>             Pointer;
   typedef SmartPointer<const Self>       ConstPointer;
 
-  igtlTypeMacro(igtl::PolyDataMessage, igtl::MessageBase);
+  igtlTypeMacro(igtl::PolyDataMessage, igtl::PolyDataMessageBase);
   igtlNewMacro(igtl::PolyDataMessage);
 
 public:
 
-  /// Clears the poly data.
+  /// Clears the polydata.
   void Clear();
 
   /// Sets an array of points.
@@ -356,6 +373,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlPolyDataMessage_h
-
-
-

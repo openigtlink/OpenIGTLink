@@ -116,21 +116,37 @@ protected:
   std::string   m_Owner; 
 };
 
-
-/// A class for the GET_POINT message type.
-class IGTLCommon_EXPORT GetPointMessage: public MessageBase
+/// A base class for the POINT message types.
+class IGTLCommon_EXPORT PointMessageBase : public MessageBase
 {
 public:
-  typedef GetPointMessage            Self;
+  typedef PointMessageBase               Self;
   typedef MessageBase                    Superclass;
   typedef SmartPointer<Self>             Pointer;
   typedef SmartPointer<const Self>       ConstPointer;
 
-  igtlTypeMacro(igtl::GetPointMessage, igtl::MessageBase);
+  igtlTypeMacro(igtl::PointMessageBase, igtl::MessageBase);
+  igtlNewMacro(igtl::PointMessageBase);
+
+protected:
+  PointMessageBase() : MessageBase() { this->m_Version = 2; };
+  ~PointMessageBase(){};
+};
+
+/// A class for the GET_POINT message type.
+class IGTLCommon_EXPORT GetPointMessage: public PointMessageBase
+{
+public:
+  typedef GetPointMessage                Self;
+  typedef PointMessageBase               Superclass;
+  typedef SmartPointer<Self>             Pointer;
+  typedef SmartPointer<const Self>       ConstPointer;
+
+  igtlTypeMacro(igtl::GetPointMessage, igtl::PointMessageBase);
   igtlNewMacro(igtl::GetPointMessage);
 
 protected:
-  GetPointMessage() : MessageBase() { this->m_DefaultBodyType  = "GET_POINT"; };
+  GetPointMessage() : PointMessageBase() { this->m_DefaultBodyType  = "GET_POINT"; };
   ~GetPointMessage() {};
 protected:
   virtual int  GetBodyPackSize() { return 0; };
@@ -141,15 +157,15 @@ protected:
 
 /// A class for the POINT message type.
 /// The POINT message type is designed to transfer information about fiducials, which are often used in surgical planning and navigation in the image-guided therapy.
-class IGTLCommon_EXPORT PointMessage: public MessageBase
+class IGTLCommon_EXPORT PointMessage: public PointMessageBase
 {
 public:
-  typedef PointMessage               Self;
-  typedef MessageBase                    Superclass;
+  typedef PointMessage                   Self;
+  typedef PointMessageBase               Superclass;
   typedef SmartPointer<Self>             Pointer;
   typedef SmartPointer<const Self>       ConstPointer;
 
-  igtlTypeMacro(igtl::PointMessage, igtl::MessageBase);
+  igtlTypeMacro(igtl::PointMessage, igtl::PointMessageBase);
   igtlNewMacro(igtl::PointMessage);
 
 public:
@@ -187,6 +203,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlPointMessage_h
-
-
-

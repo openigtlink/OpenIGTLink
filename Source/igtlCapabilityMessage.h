@@ -25,32 +25,10 @@
 namespace igtl
 {
 
-class IGTLCommon_EXPORT GetCapabilityMessage: public MessageBase
-{
-public:
-  typedef GetCapabilityMessage            Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
-  igtlTypeMacro(igtl::GetCapabilityMessage, igtl::MessageBase);
-  igtlNewMacro(igtl::GetCapabilityMessage);
-
-protected:
-  GetCapabilityMessage() : MessageBase() { this->m_DefaultBodyType  = "GET_CAPABIL"; };
-  ~GetCapabilityMessage() {};
-protected:
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
-};
-
-
 class IGTLCommon_EXPORT CapabilityMessage: public MessageBase
 {
 
 public:
-
   typedef CapabilityMessage          Self;
   typedef MessageBase                Superclass;
   typedef SmartPointer<Self>         Pointer;
@@ -60,16 +38,13 @@ public:
   igtlNewMacro(igtl::CapabilityMessage);
 
 public:
-
-  //void    SetTypes(int ntypes, const char names[][IGTL_HEADER_TYPE_SIZE]);
-  void    SetTypes(std::vector<std::string> types);
-  int     SetType(int id, const char* name);
-  const char* GetType(int id);
+  void                      SetTypes(std::vector<std::string> types);
+  int                       SetType(int id, const char* name);
+  const char*               GetType(int id);
   
-  void     SetNumberOfTypes(int n) { m_TypeNames.resize(n); }
-  int     GetNumberOfTypes() { return m_TypeNames.size(); }
-  //char**  GetTypeNames() { return m_TypeNames; }
-  std::vector<std::string> GetTypes() { return m_TypeNames; }
+  void                      SetNumberOfTypes(int n) { m_TypeNames.resize(n); }
+  int                       GetNumberOfTypes() { return m_TypeNames.size(); }
+  std::vector<std::string>  GetTypes() { return m_TypeNames; }
 
 protected:
   CapabilityMessage();

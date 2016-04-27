@@ -153,8 +153,7 @@ void QuaternionTrackingDataElement::GetQuaternion(float* qx, float* qy, float* q
 //----------------------------------------------------------------------
 // igtl::StartQuaternionTrackingDataMessage class
 
-StartQuaternionTrackingDataMessage::StartQuaternionTrackingDataMessage():
-  MessageBase()
+StartQuaternionTrackingDataMessage::StartQuaternionTrackingDataMessage()
 {
   this->m_DefaultBodyType = "STT_QTDATA";
   this->m_Resolution      = 0;
@@ -222,6 +221,12 @@ int StartQuaternionTrackingDataMessage::UnpackBody()
 }
 
 
+RTSQuaternionTrackingDataMessage::RTSQuaternionTrackingDataMessage() 
+  : m_Status(0)
+{
+  this->m_DefaultBodyType  = "RTS_QTDATA";
+}
+
 //----------------------------------------------------------------------
 // igtl::RTSQuaternionTrackingDataMessage class
 
@@ -260,8 +265,7 @@ int  RTSQuaternionTrackingDataMessage::UnpackBody()
 //----------------------------------------------------------------------
 // igtl::QuaternionTrackingDataMessage class
 
-QuaternionTrackingDataMessage::QuaternionTrackingDataMessage():
-  MessageBase()
+QuaternionTrackingDataMessage::QuaternionTrackingDataMessage()
 {
   this->m_DefaultBodyType = "QTDATA";
   this->m_QuaternionTrackingDataList.clear();
@@ -390,9 +394,14 @@ int QuaternionTrackingDataMessage::UnpackBody()
   return 1;
 }
 
+QuaternionTrackingDataMessageBase::QuaternionTrackingDataMessageBase()
+{
+  this->m_Version = 2;
+}
+
+StopQuaternionTrackingDataMessage::StopQuaternionTrackingDataMessage()
+{
+  this->m_DefaultBodyType  = "STP_QTDATA";
+}
+
 } // namespace igtl
-
-
-
-
-

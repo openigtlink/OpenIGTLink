@@ -13,12 +13,15 @@ SET(OpenIGTLink_VERSION_MINOR "11")
 SET(OpenIGTLink_VERSION_PATCH "0")
 
 option(OpenIGTLink_PROTOCOL_VERSION_2 "Build Library for Protocol Version 2" ON)
+option(OpenIGTLink_PROTOCOL_VERSION_3 "Build Library for Protocol Version 3" ON)
 
-IF(OpenIGTLink_PROTOCOL_VERSION_2)
+IF(OpenIGTLink_PROTOCOL_VERSION_3)
+  SET(OpenIGTLink_PROTOCOL_VERSION "3")
+ELSEIF(OpenIGTLink_PROTOCOL_VERSION_2)
   SET(OpenIGTLink_PROTOCOL_VERSION "2")
-ELSE(OpenIGTLink_PROTOCOL_VERSION_2)
+ELSE(OpenIGTLink_PROTOCOL_VERSION_3)
   SET(OpenIGTLink_PROTOCOL_VERSION "1")
-ENDIF(OpenIGTLink_PROTOCOL_VERSION_2)
+ENDIF(OpenIGTLink_PROTOCOL_VERSION_3)
 
 
 #-----------------------------------------------------------------------------
