@@ -54,6 +54,7 @@ namespace igtl
     this->AddMessageType("GET_IMAGE", (PointerToMessageBaseNew)&igtl::GetImageMessage::New);
     this->AddMessageType("STATUS", (PointerToMessageBaseNew)&igtl::StatusMessage::New);
     this->AddMessageType("GET_STATUS", (PointerToMessageBaseNew)&igtl::GetStatusMessage::New);
+    this->AddMessageType("CAPABILITY", (PointerToMessageBaseNew)&igtl::CapabilityMessage::New);
 #if OpenIGTLink_PROTOCOL_VERSION >= 2
     this->AddMessageType("POINT", (PointerToMessageBaseNew)&igtl::PointMessage::New);
     this->AddMessageType("GET_POINT", (PointerToMessageBaseNew)&igtl::GetPointMessage::New);
@@ -68,8 +69,6 @@ namespace igtl
     this->AddMessageType("RTS_QTDATA", (PointerToMessageBaseNew)&igtl::RTSQuaternionTrackingDataMessage::New);
     this->AddMessageType("STT_QTDATA", (PointerToMessageBaseNew)&igtl::StartQuaternionTrackingDataMessage::New);
     this->AddMessageType("STP_QTDATA", (PointerToMessageBaseNew)&igtl::StopQuaternionTrackingDataMessage::New);
-    this->AddMessageType("CAPABILITY", (PointerToMessageBaseNew)&igtl::CapabilityMessage::New);
-    this->AddMessageType("GET_CAPABIL", (PointerToMessageBaseNew)&igtl::GetCapabilityMessage::New);
 #endif //OpenIGTLink_PROTOCOL_VERSION >= 2
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
     this->AddMessageType("COMMAND", (PointerToMessageBaseNew)&igtl::CommandMessage::New);

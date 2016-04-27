@@ -28,6 +28,23 @@
 namespace igtl
 {
 
+/// A base class for the GET_IMGMETA message types.
+class IGTLCommon_EXPORT ImageMetaMessageBase : public MessageBase
+{
+public:
+  typedef ImageMetaMessageBase           Self;
+  typedef MessageBase                    Superclass;
+  typedef SmartPointer<Self>             Pointer;
+  typedef SmartPointer<const Self>       ConstPointer;
+
+  igtlTypeMacro(igtl::ImageMetaMessageBase, igtl::MessageBase);
+  igtlNewMacro(igtl::ImageMetaMessageBase);
+
+protected:
+  ImageMetaMessageBase() : MessageBase() { this->m_Version = 2; };
+  ~ImageMetaMessageBase() {};
+};
+
 /// A class to manage meta data of images.
 class IGTLCommon_EXPORT ImageMetaElement: public Object
 {
@@ -134,19 +151,19 @@ protected:
 
 
 /// A class for the GET_IMGMETA message type.
-class IGTLCommon_EXPORT GetImageMetaMessage: public MessageBase
+class IGTLCommon_EXPORT GetImageMetaMessage: public ImageMetaMessageBase
 {
 public:
   typedef GetImageMetaMessage            Self;
-  typedef MessageBase                    Superclass;
+  typedef ImageMetaMessageBase           Superclass;
   typedef SmartPointer<Self>             Pointer;
   typedef SmartPointer<const Self>       ConstPointer;
 
-  igtlTypeMacro(igtl::GetImageMetaMessage, igtl::MessageBase);
+  igtlTypeMacro(igtl::GetImageMetaMessage, igtl::ImageMetaMessageBase);
   igtlNewMacro(igtl::GetImageMetaMessage);
 
 protected:
-  GetImageMetaMessage() : MessageBase() { this->m_DefaultBodyType  = "GET_IMGMETA"; };
+  GetImageMetaMessage() : ImageMetaMessageBase() { this->m_DefaultBodyType  = "GET_IMGMETA"; };
   ~GetImageMetaMessage() {};
 protected:
   virtual int  GetBodyPackSize() { return 0; };
@@ -160,15 +177,15 @@ protected:
 /// modality etc. An IMGMETA message can contain meta data for multiple images.
 /// This message type may be used to obtain a list of images available in
 /// the remote system, such as image database or commercial image-guided surgery (IGS) system.
-class IGTLCommon_EXPORT ImageMetaMessage: public MessageBase
+class IGTLCommon_EXPORT ImageMetaMessage: public ImageMetaMessageBase
 {
 public:
   typedef ImageMetaMessage               Self;
-  typedef MessageBase                    Superclass;
+  typedef ImageMetaMessageBase           Superclass;
   typedef SmartPointer<Self>             Pointer;
   typedef SmartPointer<const Self>       ConstPointer;
 
-  igtlTypeMacro(igtl::ImageMetaMessage, igtl::MessageBase);
+  igtlTypeMacro(igtl::ImageMetaMessage, igtl::ImageMetaMessageBase);
   igtlNewMacro(igtl::ImageMetaMessage);
 
 public:

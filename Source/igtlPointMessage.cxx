@@ -163,7 +163,7 @@ int PointElement::SetOwner(const char* owner)
 // igtl::PointMessage class
 
 PointMessage::PointMessage():
-  MessageBase()
+  PointMessageBase()
 {
   this->m_DefaultBodyType = "POINT";
   this->m_PointList.clear();

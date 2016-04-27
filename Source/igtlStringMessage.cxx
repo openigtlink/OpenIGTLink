@@ -28,6 +28,7 @@ StringMessage::StringMessage():
   MessageBase()
 {
   this->m_DefaultBodyType = "STRING";
+  this->m_Version = 2;
   this->m_Encoding = IGTL_STRING_MESSAGE_DEFAULT_ENCODING;
   this->m_String.clear();
 }
