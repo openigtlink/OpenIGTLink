@@ -394,11 +394,6 @@ int QuaternionTrackingDataMessage::UnpackBody()
   return 1;
 }
 
-QuaternionTrackingDataMessageBase::QuaternionTrackingDataMessageBase()
-{
-  this->m_Version = 2;
-}
-
 StopQuaternionTrackingDataMessage::StopQuaternionTrackingDataMessage()
 {
   this->m_DefaultBodyType  = "STP_QTDATA";

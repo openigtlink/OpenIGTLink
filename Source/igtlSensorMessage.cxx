@@ -29,7 +29,6 @@ SensorMessage::SensorMessage():
 {
   m_DefaultBodyType  = "SENSOR";
 
-  this->m_Version = 2;
   this->m_Length = 0;
   this->m_Status = 0;
   this->m_Unit   = 0;

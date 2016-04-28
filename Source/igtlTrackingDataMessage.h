@@ -27,24 +27,6 @@
 namespace igtl
 {
 
-/// A base class for the TDATA message types.
-class IGTLCommon_EXPORT TrackingDataMessageBase : public MessageBase
-{
-
-public:
-  typedef TrackingDataMessageBase        Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
-  igtlTypeMacro(igtl::TrackingDataMessageBase, igtl::MessageBase);
-  igtlNewMacro(igtl::TrackingDataMessageBase);
-
-protected:
-  TrackingDataMessageBase();
-  ~TrackingDataMessageBase(){};
-};
-
 class IGTLCommon_EXPORT TrackingDataElement: public Object
 {
 public:
@@ -118,16 +100,16 @@ protected:
 
 
 /// A class for the STT_TDATA message type.
-class IGTLCommon_EXPORT StartTrackingDataMessage: public TrackingDataMessageBase
+class IGTLCommon_EXPORT StartTrackingDataMessage: public MessageBase
 {
 
 public:
-  typedef StartTrackingDataMessage       Self;
-  typedef TrackingDataMessageBase        Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef StartTrackingDataMessage        Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
-  igtlTypeMacro(igtl::StartTrackingDataMessage, igtl::TrackingDataMessageBase);
+  igtlTypeMacro(igtl::StartTrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StartTrackingDataMessage);
 
 public:
@@ -164,19 +146,19 @@ protected:
 
 
 /// A class for the STP_TDATA message type.
-class IGTLCommon_EXPORT StopTrackingDataMessage: public TrackingDataMessageBase
+class IGTLCommon_EXPORT StopTrackingDataMessage: public MessageBase
 {
 public:
-  typedef StopTrackingDataMessage        Self;
-  typedef TrackingDataMessageBase        Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef StopTrackingDataMessage         Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
-  igtlTypeMacro(igtl::StopTrackingDataMessage, igtl::TrackingDataMessageBase);
+  igtlTypeMacro(igtl::StopTrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StopTrackingDataMessage);
 
 protected:
-  StopTrackingDataMessage() : TrackingDataMessageBase() { this->m_DefaultBodyType  = "STP_TDATA"; };
+  StopTrackingDataMessage() : MessageBase() { this->m_DefaultBodyType  = "STP_TDATA"; };
   ~StopTrackingDataMessage() {};
 
 protected:
@@ -188,13 +170,13 @@ protected:
 
 
 /// A class for the RTS_TDATA message type.
-class IGTLCommon_EXPORT RTSTrackingDataMessage: public TrackingDataMessageBase
+class IGTLCommon_EXPORT RTSTrackingDataMessage: public MessageBase
 {
 public:
-  typedef RTSTrackingDataMessage         Self;
-  typedef TrackingDataMessageBase        Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef RTSTrackingDataMessage          Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   /// Status type
   enum {
@@ -202,7 +184,7 @@ public:
     STATUS_ERROR = 1
   };
 
-  igtlTypeMacro(igtl::RTSTrackingDataMessage, igtl::TrackingDataMessageBase);
+  igtlTypeMacro(igtl::RTSTrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::RTSTrackingDataMessage);
 
   /// Sets the status. 'status' must be either STATUS_SUCCESS or STATUS_ERROR.
@@ -212,7 +194,7 @@ public:
   igtlUint8     GetStatus()                { return this->m_Status; };
 
 protected:
-  RTSTrackingDataMessage() : TrackingDataMessageBase(), m_Status(0) { this->m_DefaultBodyType  = "RTS_TDATA"; };
+  RTSTrackingDataMessage() : MessageBase(), m_Status(0) { this->m_DefaultBodyType  = "RTS_TDATA"; };
   ~RTSTrackingDataMessage() {};
 
   /// A variable to store the status.
@@ -231,15 +213,15 @@ protected:
 /// type of 3D position sensor continuously and transferred as series of messages.
 /// Since it is important for software that receives TDATA to control data flow,
 /// STT_TDATA query data type has interval field to control the frame rate of consecutive messages.
-class IGTLCommon_EXPORT TrackingDataMessage: public TrackingDataMessageBase
+class IGTLCommon_EXPORT TrackingDataMessage: public MessageBase
 {
 public:
-  typedef TrackingDataMessage            Self;
-  typedef TrackingDataMessageBase        Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef TrackingDataMessage             Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
-  igtlTypeMacro(igtl::TrackingDataMessage, igtl::TrackingDataMessageBase);
+  igtlTypeMacro(igtl::TrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::TrackingDataMessage);
 
 public:

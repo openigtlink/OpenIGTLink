@@ -214,8 +214,7 @@ int TrajectoryElement::SetOwner(const char* owner)
 
 //----------------------------------------------------------------------
 // igtl::TrajectoryMessage class
-TrajectoryMessage::TrajectoryMessage():
-  TrajectoryMessageBase()
+TrajectoryMessage::TrajectoryMessage()
 {
   this->m_DefaultBodyType = "TRAJ";
   this->m_TrajectoryList.clear();

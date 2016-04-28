@@ -26,33 +26,16 @@
 namespace igtl
 {
 
-/// A base class for the POLYDATA message type.
-class IGTLCommon_EXPORT PolyDataMessageBase : public MessageBase
-{
-public:
-  typedef PolyDataMessageBase            Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
-  igtlTypeMacro(igtl::PolyDataMessageBase, igtl::MessageBase);
-  igtlNewMacro(igtl::PolyDataMessageBase);
-
-protected:
-  PolyDataMessageBase();
-  ~PolyDataMessageBase(){};
-};
-
 /// A class for the GET_POLYDATA message type.
-class IGTLCommon_EXPORT GetPolyDataMessage: public PolyDataMessageBase
+class IGTLCommon_EXPORT GetPolyDataMessage: public MessageBase
 {
 public:
   typedef GetPolyDataMessage            Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef MessageBase                   Superclass;
+  typedef SmartPointer<Self>            Pointer;
+  typedef SmartPointer<const Self>      ConstPointer;
 
-  igtlTypeMacro(igtl::GetPolyDataMessage, igtl::PolyDataMessageBase);
+  igtlTypeMacro(igtl::GetPolyDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::GetPolyDataMessage);
 
 protected:
@@ -282,7 +265,7 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
 
 
 /// A class for the POLYDATA message type.
-class IGTLCommon_EXPORT PolyDataMessage: public PolyDataMessageBase
+class IGTLCommon_EXPORT PolyDataMessage: public MessageBase
 {
 public:
   typedef PolyDataMessage                Self;
@@ -290,7 +273,7 @@ public:
   typedef SmartPointer<Self>             Pointer;
   typedef SmartPointer<const Self>       ConstPointer;
 
-  igtlTypeMacro(igtl::PolyDataMessage, igtl::PolyDataMessageBase);
+  igtlTypeMacro(igtl::PolyDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::PolyDataMessage);
 
 public:

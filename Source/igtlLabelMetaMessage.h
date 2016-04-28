@@ -28,23 +28,6 @@
 namespace igtl
 {
 
-/// A base class for the LBMETA message types.
-class IGTLCommon_EXPORT LabelMetaMessageBase : public MessageBase
-{
-public:
-  typedef LabelMetaMessageBase            Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
-  igtlTypeMacro(igtl::LabelMetaMessageBase, igtl::MessageBase);
-  igtlNewMacro(igtl::LabelMetaMessageBase);
-
-protected:
-  LabelMetaMessageBase() : MessageBase() { this->m_Version = 2; };
-  ~LabelMetaMessageBase(){};
-};
-
 class IGTLCommon_EXPORT LabelMetaElement: public Object
 {
 public:
@@ -137,19 +120,19 @@ protected:
 
 
 /// A class for the GET_LBMETA message type.
-class IGTLCommon_EXPORT GetLabelMetaMessage: public LabelMetaMessageBase
+class IGTLCommon_EXPORT GetLabelMetaMessage: public MessageBase
 {
 public:
-  typedef GetLabelMetaMessage            Self;
-  typedef LabelMetaMessageBase           Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef GetLabelMetaMessage             Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
-  igtlTypeMacro(igtl::GetLabelMetaMessage, igtl::LabelMetaMessageBase);
+  igtlTypeMacro(igtl::GetLabelMetaMessage, igtl::MessageBase);
   igtlNewMacro(igtl::GetLabelMetaMessage);
 
 protected:
-  GetLabelMetaMessage() : LabelMetaMessageBase() { this->m_DefaultBodyType  = "GET_LBMETA"; };
+  GetLabelMetaMessage() : MessageBase() { this->m_DefaultBodyType  = "GET_LBMETA"; };
   ~GetLabelMetaMessage() {};
 protected:
   virtual int  GetBodyPackSize() { return 0; };
@@ -161,15 +144,15 @@ protected:
 /// The LBMETA is used to transfer meta information for label maps, which are not available
 /// in the IMAGE message type. To retrieve voxel objects or a label map, GET_IMAGE / IMAGE
 /// can be used. But the client should be able to get a list of available structures.
-class IGTLCommon_EXPORT LabelMetaMessage: public LabelMetaMessageBase
+class IGTLCommon_EXPORT LabelMetaMessage: public MessageBase
 {
 public:
-  typedef LabelMetaMessage               Self;
-  typedef LabelMetaMessageBase           Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef LabelMetaMessage                Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
-  igtlTypeMacro(igtl::LabelMetaMessage, igtl::LabelMetaMessageBase);
+  igtlTypeMacro(igtl::LabelMetaMessage, igtl::MessageBase);
   igtlNewMacro(igtl::LabelMetaMessage);
 
 public:

@@ -98,6 +98,3 @@ int ColorTableMessage::UnpackBody()
 
 
 } // namespace igtl
-
-
-
