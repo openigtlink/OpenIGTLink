@@ -129,5 +129,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlCommandMessage_h
-
-

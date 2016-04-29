@@ -312,5 +312,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlImageMessage_h
-
-

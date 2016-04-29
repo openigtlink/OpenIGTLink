@@ -132,5 +132,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlColorTableMessage_h
-
-

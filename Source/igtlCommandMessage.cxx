@@ -47,6 +47,7 @@ CommandMessage::CommandMessage()
   , m_Encoding(3)
 {
   memset(m_CommandName, 0, IGTL_COMMAND_NAME_SIZE);
+  this->m_Version = IGTL_HEADER_VERSION_3;
   this->m_DefaultBodyType = "COMMAND";
   this->m_Command.clear();
 }

@@ -387,5 +387,3 @@ public:
 } // namespace igtl
 
 #endif // _igtlImageMessage2_h
-
-

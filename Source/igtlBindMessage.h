@@ -218,10 +218,10 @@ protected:
 class IGTLCommon_EXPORT RTSBindMessage: public MessageBase
 {
 public:
-  typedef RTSBindMessage         Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef RTSBindMessage                  Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   // Status type
   enum {
@@ -257,6 +257,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlBindMessage_h
-
-
-

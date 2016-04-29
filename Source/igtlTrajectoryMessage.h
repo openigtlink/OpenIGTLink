@@ -28,23 +28,6 @@
 namespace igtl
 {
 
-/// A base class for the TRAJ message types.
-class IGTLCommon_EXPORT TrajectoryMessageBase : public MessageBase
-{
-public:
-  typedef TrajectoryMessageBase          Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
-  igtlTypeMacro(igtl::TrajectoryMessageBase, igtl::MessageBase);
-  igtlNewMacro(igtl::TrajectoryMessageBase);
-
-protected:
-  TrajectoryMessageBase() : MessageBase() { this->m_Version = 2; };
-  ~TrajectoryMessageBase() {};
-};
-
 /// TrajectoryElement class is used to manage a trajectory in TrajectoryMessage class.
 class IGTLCommon_EXPORT TrajectoryElement: public Object
 {
@@ -164,19 +147,19 @@ protected:
 
 
 /// A class for the GET_TRAJ message type.
-class IGTLCommon_EXPORT GetTrajectoryMessage: public TrajectoryMessageBase
+class IGTLCommon_EXPORT GetTrajectoryMessage: public MessageBase
 {
 public:
-  typedef GetTrajectoryMessage           Self;
-  typedef TrajectoryMessageBase          Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef GetTrajectoryMessage            Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
-  igtlTypeMacro(igtl::GetTrajectoryMessage, igtl::TrajectoryMessageBase);
+  igtlTypeMacro(igtl::GetTrajectoryMessage, igtl::MessageBase);
   igtlNewMacro(igtl::GetTrajectoryMessage);
 
 protected:
-  GetTrajectoryMessage() : TrajectoryMessageBase() { this->m_DefaultBodyType  = "GET_TRAJ"; };
+  GetTrajectoryMessage() : MessageBase() { this->m_DefaultBodyType  = "GET_TRAJ"; };
   ~GetTrajectoryMessage() {};
 protected:
   virtual int  GetBodyPackSize() { return 0; };
@@ -187,15 +170,15 @@ protected:
 
 /// The TRAJECTORY message type support to transfer information about 3D trajectory,
 /// which is often used in surgical planning and guidance in image-guided therapy.
-class IGTLCommon_EXPORT TrajectoryMessage: public TrajectoryMessageBase
+class IGTLCommon_EXPORT TrajectoryMessage: public MessageBase
 {
 public:
-  typedef TrajectoryMessage              Self;
-  typedef TrajectoryMessageBase          Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef TrajectoryMessage               Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
-  igtlTypeMacro(igtl::TrajectoryMessage, igtl::TrajectoryMessageBase);
+  igtlTypeMacro(igtl::TrajectoryMessage, igtl::MessageBase);
   igtlNewMacro(igtl::TrajectoryMessage);
 
 public:
@@ -227,7 +210,6 @@ protected:
   std::vector<TrajectoryElement::Pointer> m_TrajectoryList;
   
 };
-
 
 } // namespace igtl
 

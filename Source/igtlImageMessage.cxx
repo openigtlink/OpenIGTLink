@@ -466,6 +466,3 @@ int ImageMessage::GetNumComponents()
 
 
 } // namespace igtl
-
-
-

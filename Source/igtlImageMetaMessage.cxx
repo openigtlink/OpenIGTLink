@@ -189,8 +189,7 @@ igtlUint8 ImageMetaElement::GetScalarType()
 //----------------------------------------------------------------------
 // igtl::ImageMetaMessage class
 
-ImageMetaMessage::ImageMetaMessage():
-  ImageMetaMessageBase()
+ImageMetaMessage::ImageMetaMessage()
 {
   this->m_DefaultBodyType = "IMGMETA";
   this->m_ImageMetaList.clear();
@@ -334,8 +333,3 @@ int ImageMetaMessage::UnpackBody()
 }
 
 } // namespace igtl
-
-
-
-
-
