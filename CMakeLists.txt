@@ -270,18 +270,23 @@ SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${OpenIGTLink_REQUIR
 #-----------------------------------------------------------------------------
 # Configure Subdirectories
 
-ADD_SUBDIRECTORY( Source    )
-ADD_SUBDIRECTORY( Tools     )
+ADD_SUBDIRECTORY(Source)
+ADD_SUBDIRECTORY(Tools)
 
 IF(OpenIGTLink_BUILD_TESTING)
-  ADD_SUBDIRECTORY( Testing )
+  ADD_SUBDIRECTORY(Testing)
 ENDIF(OpenIGTLink_BUILD_TESTING)
 
 IF(OpenIGTLink_BUILD_EXAMPLES)
- ADD_SUBDIRECTORY( Examples )
+ ADD_SUBDIRECTORY(Examples)
 ENDIF(OpenIGTLink_BUILD_EXAMPLES)
 
-
+#-----------------------------------------------------------------------------
+# Export targets
+export(TARGETS 
+  OpenIGTLink
+  FILE "${CMAKE_BINARY_DIR}/OpenIGTLinkTargets.cmake"
+  )
 
 #-----------------------------------------------------------------------------
 # Doxygen 
@@ -289,9 +294,5 @@ ENDIF(OpenIGTLink_BUILD_EXAMPLES)
 OPTION(BUILD_DOCUMENTATION "Build OpenIGTLink Documentation" OFF)
 
 IF(BUILD_DOCUMENTATION)
-
   ADD_SUBDIRECTORY( Documents/Doxygen )
-               
 ENDIF(BUILD_DOCUMENTATION)
-
-
