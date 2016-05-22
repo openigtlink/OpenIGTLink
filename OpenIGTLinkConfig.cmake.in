@@ -4,6 +4,8 @@
 #
 # This file is configured by OpenIGTLink and used by the UseOpenIGTLink.cmake module
 # to load OpenIGTLink's settings for an external project.
+
+INCLUDE(@CMAKE_BINARY_DIR@/OpenIGTLinkTargets.cmake)
 @OpenIGTLink_CONFIG_CODE@
 
 # The OpenIGTLink include file directories.
