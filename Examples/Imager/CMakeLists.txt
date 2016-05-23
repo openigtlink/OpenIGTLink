@@ -18,3 +18,8 @@ TARGET_LINK_LIBRARIES(ImagerClient2 OpenIGTLink)
 ADD_EXECUTABLE(ImagerServer   ImagerServer.cxx)
 TARGET_LINK_LIBRARIES(ImagerServer OpenIGTLink)
 
+ADD_EXECUTABLE(ImagerClient3   ImagerClient3.cxx)
+TARGET_LINK_LIBRARIES(ImagerClient3 OpenIGTLink)
+
+ADD_EXECUTABLE(ImagerServer3   ImagerServer3.cxx)
+TARGET_LINK_LIBRARIES(ImagerServer3 OpenIGTLink)

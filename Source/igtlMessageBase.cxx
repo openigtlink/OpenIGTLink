@@ -37,17 +37,28 @@ MessageBase::MessageBase():
 
   m_BodyType         = "";
   m_DefaultBodyType  = "";
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  m_Version = IGTL_HEADER_VERSION_3;
+  metaDataTotalSize = 2;
+  m_ExtendedHeader = NULL;
+  m_MetaData = NULL;
+  keySize.clear();
+  valueEncoding.clear();
+  valueSize.clear();
+  keys.clear();
+  values.clear();
+#endif
 }
 
 MessageBase::~MessageBase()
 {
   if (this->m_PackSize > 0 && this->m_Header != NULL)
-    {
+  {
     delete [] m_Header;
     m_PackSize = 0;
     m_Header = NULL;
     m_Body   = NULL;
-    }
+  }
 }
 
 void MessageBase::SetVersion(unsigned short version)
@@ -109,7 +120,23 @@ std::string MessageBase::GetMessageType() const
     return m_BodyType;
   }
 }
+
+  
+int MessageBase::AddMetaDataElement(std::string key, std::string value)
+{
+  igtlUint16 keyLength = key.length();
+  this->keySize.push_back(keyLength);
+  this->valueEncoding.push_back(0);
+  igtlUint16 valueLength = value.length();
+  this->valueSize.push_back(valueLength);
+  this->keys.push_back(key);
+  this->values.push_back(value);
+  this->indexCount = this->keySize.size();
+  metaDataTotalSize += keyLength + valueLength + 8;
+}
+  
 #endif
+
 
 int MessageBase::SetTimeStamp(unsigned int sec, unsigned int frac)
 {
@@ -140,15 +167,33 @@ void MessageBase::GetTimeStamp(igtl::TimeStamp::Pointer& ts)
 
 int MessageBase::Pack()
 {
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3 && m_ExtendedHeader !=NULL)
+  {
+    igtl_extended_header* extended_header = (igtl_extended_header*) m_ExtendedHeader;
+    extended_header->extended_header_size = IGTL_EXTENDED_HEADER_SIZE;
+    extended_header->meta_data_size       = this->GetMetaDataSize();
+    extended_header->msg_id               = 0;
+    extended_header->reserved             = 0;
+    igtl_extended_header_convert_byte_order(extended_header);
+  }
+#endif
   PackBody();
+  
   m_IsBodyUnpacked   = 0;
   
   // pack header
   igtl_header* h = (igtl_header*) m_Header;
 
   igtl_uint64 crc = crc64(0, 0, 0LL); // initial crc
-
-  h->version   = IGTL_HEADER_VERSION_1;
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    h->version   = IGTL_HEADER_VERSION_3;
+  }
+  else
+  {
+    h->version   = IGTL_HEADER_VERSION_1;
+  }
 
   igtl_uint64 ts  =  m_TimeStampSec & 0xFFFFFFFF;
   ts = (ts << 32) | (m_TimeStampSecFraction & 0xFFFFFFFF);
@@ -167,6 +212,46 @@ int MessageBase::Pack()
 
   m_IsHeaderUnpacked = 0;
 
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    igtl_uint16 index_count = this->indexCount; // first two byte are the total number of meta data
+    if(igtl_is_little_endian())
+    {
+      index_count = BYTE_SWAP_INT16(index_count);
+    }
+    memcpy(m_MetaData, &index_count, 2);
+    igtl_uint16 key_size = 0;
+    igtl_uint16 value_encoding = 0;
+    igtl_uint32 value_size = 0;
+    for (int i = 0; i < this->indexCount; i++)
+    {
+      key_size = this->keySize[i];
+      value_encoding = this->valueEncoding[i];
+      value_size = this->valueSize[i];
+      if(igtl_is_little_endian())
+      {
+        key_size = BYTE_SWAP_INT16(key_size);
+        value_encoding = BYTE_SWAP_INT16(value_encoding);
+        value_size = BYTE_SWAP_INT32(value_size);
+      }
+      memcpy(m_MetaData+2+i*8, &key_size, 2);
+      memcpy(m_MetaData+4+i*8, &value_encoding, 2);
+      memcpy(m_MetaData+6+i*8, &value_size, 4);
+    }
+    std::string key= "";
+    std::string value= "";
+    int stride = 2+this->indexCount*8;
+    for (int i = 0; i < this->indexCount; i++)
+    {
+      memcpy(m_MetaData+stride, this->keys[i].c_str(), this->keySize[i]);
+      stride += this->keySize[i];
+      memcpy(m_MetaData+stride, this->values[i].c_str(), this->valueSize[i]);
+      stride += this->valueSize[i];
+    }
+  }
+#endif
+  
   return 1;
 }
 
@@ -184,27 +269,22 @@ int MessageBase::Unpack(int crccheck)
       m_TimeStampSecFraction = h->timestamp & 0xFFFFFFFF;
       m_TimeStampSec = (h->timestamp >> 32 ) & 0xFFFFFFFF;
       m_Version = h->version;
+      m_BodySizeToRead = h->body_size;
       
-
-      if (h->version == IGTL_HEADER_VERSION_1)
-        {
-        m_BodySizeToRead = h->body_size;
-        
-        char bodyType[13];
-        char deviceName[21];
-        
-        bodyType[12]   = '\0';
-        deviceName[20] = '\0';
-        strncpy(bodyType, h->name, 12);
-        strncpy(deviceName, h->device_name, 20);
-        
-        m_BodyType   = bodyType;  // TODO: should check if the class is MessageBase...
-        m_DeviceName = deviceName;
-        
-        // Mark as unpacked.
-        m_IsHeaderUnpacked = 1;
-        r |= UNPACK_HEADER;
-        }
+      char bodyType[13];
+      char deviceName[21];
+      
+      bodyType[12]   = '\0';
+      deviceName[20] = '\0';
+      strncpy(bodyType, h->name, 12);
+      strncpy(deviceName, h->device_name, 20);
+      
+      m_BodyType   = bodyType;  // TODO: should check if the class is MessageBase...
+      m_DeviceName = deviceName;
+      
+      // Mark as unpacked.
+      m_IsHeaderUnpacked = 1;
+      r |= UNPACK_HEADER;
     }
 
   // Check if the body exists and it has not been unpacked

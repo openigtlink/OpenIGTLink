@@ -25,6 +25,8 @@
 #include "igtlMessageHeader.h"
 
 #include <string>
+#include <map>
+#include <vector>
 
 namespace igtl
 {
@@ -100,6 +102,27 @@ public:
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
   /// Gets the message type.
   std::string GetMessageType() const;
+  
+  /// Gets the size of the content in protocal version 3
+  int GetPackContentSize();
+  
+  /// Gets the size (length) of the byte array for the meta data.
+  /// The size is defined by the length of each meta data elements and the total number of
+  /// the meta data element.
+  igtlUint32 GetMetaDataSize()
+  {
+    return metaDataTotalSize;
+  };
+  
+  void SetMetaDataSize(igtlUint32 size)
+  {
+    metaDataTotalSize = size;
+  };
+  
+  
+  /// Add Meta data element
+  int AddMetaDataElement(std::string key, std::string value);
+  
 #endif
 
   /// Sets time of message creation. 'sec' and 'frac' are seconds and fractions of a second respectively.
@@ -236,6 +259,39 @@ protected:
 
   /// Unpacking (deserialization) status for the body (0: --   1: unpacked).
   int            m_IsBodyUnpacked;
+
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  /// A pointer to the serialized extended header.
+  unsigned char* m_ExtendedHeader;
+  
+  /// A pointer to the meta data.
+  unsigned char* m_MetaData;
+  
+  /// Total size of the meta data
+  igtlUint32 metaDataTotalSize;
+  
+  /// Message ID
+  igtlUint32 msgId;
+  
+  /// Index Count of the meta data
+  igtlUint16 indexCount;
+  
+  /// Vector storing the size of keys
+  std::vector<igtlUint16> keySize;
+  
+  /// Vector storing the value encoding for each meta data element
+  std::vector<igtlUint16> valueEncoding;
+  
+  /// Vector storing the size of value
+  std::vector<igtlUint32> valueSize;
+  
+  /// Vector storing the key value
+  std::vector<std::string> keys;
+  
+  /// Vector storing the size of value
+  std::vector<std::string> values;
+  
+#endif
 
 };
 
