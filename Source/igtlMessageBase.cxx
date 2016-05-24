@@ -167,6 +167,7 @@ void MessageBase::GetTimeStamp(igtl::TimeStamp::Pointer& ts)
 
 int MessageBase::Pack()
 {
+  PackBody();
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
   if (m_Version == IGTL_HEADER_VERSION_3 && m_ExtendedHeader !=NULL)
   {
@@ -177,42 +178,6 @@ int MessageBase::Pack()
     extended_header->reserved             = 0;
     igtl_extended_header_convert_byte_order(extended_header);
   }
-#endif
-  PackBody();
-  
-  m_IsBodyUnpacked   = 0;
-  
-  // pack header
-  igtl_header* h = (igtl_header*) m_Header;
-
-  igtl_uint64 crc = crc64(0, 0, 0LL); // initial crc
-  if (m_Version == IGTL_HEADER_VERSION_3)
-  {
-    h->version   = IGTL_HEADER_VERSION_3;
-  }
-  else
-  {
-    h->version   = IGTL_HEADER_VERSION_1;
-  }
-
-  igtl_uint64 ts  =  m_TimeStampSec & 0xFFFFFFFF;
-  ts = (ts << 32) | (m_TimeStampSecFraction & 0xFFFFFFFF);
-
-  h->timestamp = ts;
-  h->body_size = GetBodyPackSize();
-  h->crc       = crc64((unsigned char*)m_Body, GetBodyPackSize(), crc);
-
-
-  strncpy(h->name, m_DefaultBodyType.c_str(), 12);
-  // TODO: this does not allow creating pack with MessageBase class...
-
-  strncpy(h->device_name, m_DeviceName.c_str(), 20);
-
-  igtl_header_convert_byte_order(h);
-
-  m_IsHeaderUnpacked = 0;
-
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
   if (m_Version == IGTL_HEADER_VERSION_3)
   {
     igtl_uint16 index_count = this->indexCount; // first two byte are the total number of meta data
@@ -251,6 +216,38 @@ int MessageBase::Pack()
     }
   }
 #endif
+  
+  m_IsBodyUnpacked   = 0;
+  
+  // pack header
+  igtl_header* h = (igtl_header*) m_Header;
+
+  igtl_uint64 crc = crc64(0, 0, 0LL); // initial crc
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    h->version   = IGTL_HEADER_VERSION_3;
+  }
+  else
+  {
+    h->version   = IGTL_HEADER_VERSION_1;
+  }
+
+  igtl_uint64 ts  =  m_TimeStampSec & 0xFFFFFFFF;
+  ts = (ts << 32) | (m_TimeStampSecFraction & 0xFFFFFFFF);
+
+  h->timestamp = ts;
+  h->body_size = GetBodyPackSize();
+  h->crc       = crc64((unsigned char*)m_Body, GetBodyPackSize(), crc);
+
+
+  strncpy(h->name, m_DefaultBodyType.c_str(), 12);
+  // TODO: this does not allow creating pack with MessageBase class...
+
+  strncpy(h->device_name, m_DeviceName.c_str(), 20);
+
+  igtl_header_convert_byte_order(h);
+
+  m_IsHeaderUnpacked = 0;
   
   return 1;
 }
@@ -413,9 +410,9 @@ int MessageBase::CopyHeader(const MessageBase* mb)
   m_TimeStampSecFraction = mb->m_TimeStampSecFraction;
   m_IsHeaderUnpacked     = mb->m_IsHeaderUnpacked;
   m_IsBodyUnpacked       = mb->m_IsBodyUnpacked;
-
   m_BodySizeToRead       = mb->m_BodySizeToRead;
-
+  m_Version              = mb->m_Version;
+  
   return 1;
 }
 

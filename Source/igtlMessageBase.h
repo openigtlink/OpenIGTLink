@@ -261,6 +261,7 @@ protected:
   int            m_IsBodyUnpacked;
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
+public:
   /// A pointer to the serialized extended header.
   unsigned char* m_ExtendedHeader;
   

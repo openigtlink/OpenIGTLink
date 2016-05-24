@@ -427,7 +427,7 @@ int ImageMessage::UnpackBody()
     this->msgId   = extended_header->msg_id;
     m_ImageHeader = &m_Body[IGTL_EXTENDED_HEADER_SIZE];
     m_Image  = &m_ImageHeader[IGTL_IMAGE_HEADER_SIZE];
-    m_MetaData = &m_Image[GetPackBodySize()-this->GetMetaDataSize()-IGTL_IMAGE_HEADER_SIZE];
+    m_MetaData = &m_Image[GetPackBodySize()-this->metaDataTotalSize-IGTL_IMAGE_HEADER_SIZE-IGTL_EXTENDED_HEADER_SIZE]; // or use function GetSubVolumeImageSize()
     igtl_uint16 index_count = 0; // first two byte are the total number of meta data
     memcpy(&index_count, m_MetaData, 2);
     if(igtl_is_little_endian())
@@ -459,20 +459,14 @@ int ImageMessage::UnpackBody()
       this->valueEncoding[i] = value_encoding;
       this->valueSize[i] = value_size;
     }
-    std::string key= "";
-    std::string value= "";
     int stride = 2+this->indexCount*8;
     for (int i = 0; i < this->indexCount; i++)
     {
-      
-      memcpy(&key, m_MetaData+stride, this->keySize[i]);
-      this->keys[i] = key;
+      this->keys[i].assign(m_MetaData+stride, m_MetaData+stride+this->keySize[i]);
       stride += this->keySize[i];
-      memcpy(&value, m_MetaData+stride, this->valueSize[i]);
-      this->values[i] = value;
+      this->values[i].assign(m_MetaData+stride, m_MetaData+stride+this->valueSize[i]);
       stride += this->valueSize[i];
     }
-    
   }
   else
   {

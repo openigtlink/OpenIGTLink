@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
         imgMsg->SetDimensions(size);
         imgMsg->SetSpacing(spacing);
         imgMsg->SetScalarType(scalarType);
-        imgMsg->SetDeviceName("ImagerServer");
+        imgMsg->SetDeviceName("ImagerClient");
         imgMsg->SetSubVolume(svsize, svoffset);
         imgMsg->SetVersion(IGTL_HEADER_VERSION_3);
         imgMsg->AddMetaDataElement("A stupid idiot", "yes it is");

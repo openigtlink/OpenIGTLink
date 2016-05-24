@@ -24,7 +24,8 @@
 #include "igtlImageMessage.h"
 #include "igtlClientSocket.h"
 
-int ReceiveImageData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Pointer& header);
+int ReceiveImageData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Pointer& header, int loop);
+int SaveTestImage(igtl::ImageMessage::Pointer& msg, int i);
 
 int main(int argc, char* argv[])
 {
@@ -91,16 +92,16 @@ int main(int argc, char* argv[])
     }
     
     headerMsg->Unpack();
-    if (strcmp(headerMsg->GetDeviceName(), "ImagerServer") == 0)
+    if (strcmp(headerMsg->GetDeviceName(), "ImagerClient") == 0)
     {
-      ReceiveImageData(socket, headerMsg);
+      ReceiveImageData(socket, headerMsg, loop);
     }
     else
     {
       std::cerr << "Receiving : " << headerMsg->GetDeviceType() << std::endl;
       socket->Skip(headerMsg->GetBodySizeToRead(), 0);
     }
-    if (++loop >= 10) // if received 100 times
+    if (++loop >= 100) // if received 100 times
     {
       //------------------------------------------------------------
       // Ask the server to stop pushing tracking data
@@ -119,7 +120,7 @@ int main(int argc, char* argv[])
 
 //------------------------------------------------------------
 // Function to read test image data
-int ReceiveImageData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Pointer& header)
+int ReceiveImageData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Pointer& header,int loop)
 {
 
   std::cerr << "Receiving TDATA data type." << std::endl;
@@ -141,7 +142,49 @@ int ReceiveImageData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::P
   
   if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
   {
+    
+    SaveTestImage(imageData, loop);
+    igtl::Sleep(200);
     return 1;
   }
   return 0;
 }
+
+
+//------------------------------------------------------------
+// Function to read test image data
+int SaveTestImage(igtl::ImageMessage::Pointer& msg, int i)
+{
+  
+  //------------------------------------------------------------
+  // Check if image index is in the range
+  if (i < 0 || i >= 100)
+  {
+    std::cerr << "Image index is invalid." << std::endl;
+    return 0;
+  }
+  
+  //------------------------------------------------------------
+  // Generate path to the raw image file
+  char filename[128];
+  sprintf(filename, "igtlSaveImage%d.raw", i+1);
+  std::cerr << "Saving " << filename << "...";
+  
+  //------------------------------------------------------------
+  // Load raw data from the file
+  FILE *fp = fopen(filename, "wb");
+  if (fp == NULL)
+  {
+    std::cerr << "File opeining error: " << filename << std::endl;
+    return 0;
+  }
+  int fsize = msg->GetImageSize();
+  size_t b = fwrite(msg->GetScalarPointer(), 1, fsize, fp);
+  
+  fclose(fp);
+  
+  std::cerr << "done." << std::endl;
+  
+  return 1;
+}
+
