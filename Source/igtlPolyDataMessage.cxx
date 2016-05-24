@@ -604,7 +604,19 @@ int PolyDataMessage::GetBodyPackSize()
   //delete [] (info.attributes);
   delete [] info.attributes;
 
-  return  dataSize;
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    return dataSize + IGTL_EXTENDED_HEADER_SIZE + GetMetaDataSize();
+  }
+  else
+  {
+    return dataSize;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <= 2
+  return dataSize;
+#endif
+  
 }
 
 
@@ -692,7 +704,19 @@ int PolyDataMessage::PackBody()
 
   SetPolyDataInfoAttribute(&info, this);
 
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    igtl_polydata_pack(&info, this->m_Body + IGTL_EXTENDED_HEADER_SIZE, IGTL_TYPE_PREFIX_NONE);
+  }
+  else
+  {
+    igtl_polydata_pack(&info, this->m_Body, IGTL_TYPE_PREFIX_NONE);
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   igtl_polydata_pack(&info, this->m_Body, IGTL_TYPE_PREFIX_NONE);
+#endif
+  
   igtl_polydata_free_info(&info);
 
   return 1;
@@ -704,8 +728,22 @@ int PolyDataMessage::UnpackBody()
   igtl_polydata_info info;
 
   igtl_polydata_init_info(&info);
+  
+  int r = 0;
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    r = igtl_polydata_unpack(IGTL_TYPE_PREFIX_NONE, (void*)(this->m_Body+IGTL_EXTENDED_HEADER_SIZE), &info, this->GetPackBodySize());
+  }
+  else
+  {
+    r = igtl_polydata_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &info, this->GetPackBodySize());
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
+  r = igtl_polydata_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &info, this->GetPackBodySize());
+#endif
 
-  if (igtl_polydata_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &info, this->GetPackBodySize()) == 0)  
+  if ( r == 0)
     {
     return 0;
     }

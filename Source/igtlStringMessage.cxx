@@ -81,7 +81,18 @@ igtlUint16 StringMessage::GetEncoding()
 int StringMessage::GetBodyPackSize()
 {
   // Body pack size is the sum of ENCODING, LENGTH and STRING fields
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    return sizeof(igtlUint16)*2 + this->m_String.length() + IGTL_EXTENDED_HEADER_SIZE + GetMetaDataSize();
+  }
+  else
+  {
+    return sizeof(igtlUint16)*2 + this->m_String.length();
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <= 2
   return sizeof(igtlUint16)*2 + this->m_String.length();
+#endif
 }
 
 
@@ -91,10 +102,22 @@ int StringMessage::PackBody()
   AllocatePack();
   igtl_string_header * string_header;
   char * string;
-
   // Set pointers
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    string_header = (igtl_string_header*) (this->m_Body+IGTL_EXTENDED_HEADER_SIZE);
+    string        = (char *) this->m_Body + sizeof(igtlUint16)*2;
+  }
+  else
+  {
+    string_header = (igtl_string_header*) this->m_Body;
+    string        = (char *) this->m_Body + sizeof(igtlUint16)*2;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   string_header = (igtl_string_header*) this->m_Body;
   string        = (char *) this->m_Body + sizeof(igtlUint16)*2;
+#endif
 
   // Copy data
   string_header->encoding = static_cast<igtlUint16>(this->m_Encoding);
@@ -112,9 +135,21 @@ int StringMessage::UnpackBody()
 
   igtl_string_header * string_header;
   char * string;
-
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    string_header = (igtl_string_header*) (this->m_Body+IGTL_EXTENDED_HEADER_SIZE);
+    string        = (char *) this->m_Body + sizeof(igtlUint16)*2;
+  }
+  else
+  {
+    string_header = (igtl_string_header*) this->m_Body;
+    string        = (char *) this->m_Body + sizeof(igtlUint16)*2;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   string_header = (igtl_string_header*) this->m_Body;
-  string        = (char*) (this->m_Body + sizeof(igtlUint16)*2);
+  string        = (char *) this->m_Body + sizeof(igtlUint16)*2;
+#endif
 
   // Convert byte order from network to host
   igtl_string_convert_byte_order(string_header);

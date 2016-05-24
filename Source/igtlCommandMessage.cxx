@@ -47,6 +47,9 @@ CommandMessage::CommandMessage()
   , m_Encoding(3)
 {
   memset(m_CommandName, 0, IGTL_COMMAND_NAME_SIZE);
+  // The structure of the command message is actually version 1 now.
+  // either set the m_Version = IGTL_HEADER_VERSION_1, or change the structure of the command message
+  // however, set m_Version to 1 makes no sense, because application with earlier version will not interpret this message anyway.
   this->m_Version = IGTL_HEADER_VERSION_3;
   this->m_DefaultBodyType = "COMMAND";
   this->m_Command.clear();

@@ -123,6 +123,15 @@ public:
   /// Add Meta data element
   int AddMetaDataElement(std::string key, std::string value);
   
+  /// Pack the meta data
+  void PackMetaData();
+  
+  /// Unpack Extended header and the meta data
+  void UnpackExtendedHeaderAndMetaData();
+  
+  /// Allocate memory for the Extended Header and the meta data
+  virtual void AllocateHeaderAndMetaData() {};
+  
 #endif
 
   /// Sets time of message creation. 'sec' and 'frac' are seconds and fractions of a second respectively.

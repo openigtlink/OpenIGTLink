@@ -40,6 +40,7 @@ MessageBase::MessageBase():
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
   m_Version = IGTL_HEADER_VERSION_3;
   metaDataTotalSize = 2;
+  indexCount= 0;
   m_ExtendedHeader = NULL;
   m_MetaData = NULL;
   keySize.clear();
@@ -133,8 +134,108 @@ int MessageBase::AddMetaDataElement(std::string key, std::string value)
   this->values.push_back(value);
   this->indexCount = this->keySize.size();
   metaDataTotalSize += keyLength + valueLength + 8;
+  return 1;
 }
-  
+
+void MessageBase::PackMetaData()
+{
+  if (m_Version == IGTL_HEADER_VERSION_3 && m_ExtendedHeader != NULL)
+  {
+    igtl_extended_header* extended_header = (igtl_extended_header*) m_ExtendedHeader;
+    extended_header->extended_header_size = IGTL_EXTENDED_HEADER_SIZE;
+    extended_header->meta_data_size       = this->GetMetaDataSize();
+    extended_header->msg_id               = 0;
+    extended_header->reserved             = 0;
+    igtl_extended_header_convert_byte_order(extended_header);
+    igtl_uint16 index_count = this->indexCount; // first two byte are the total number of meta data
+    if(igtl_is_little_endian())
+    {
+      index_count = BYTE_SWAP_INT16(index_count);
+    }
+    m_MetaData = &m_Body[GetBodyPackSize()-this->metaDataTotalSize];
+    memcpy(m_MetaData, &index_count, 2);
+    igtl_uint16 key_size = 0;
+    igtl_uint16 value_encoding = 0;
+    igtl_uint32 value_size = 0;
+    for (int i = 0; i < this->indexCount; i++)
+    {
+      key_size = this->keySize[i];
+      value_encoding = this->valueEncoding[i];
+      value_size = this->valueSize[i];
+      if(igtl_is_little_endian())
+      {
+        key_size = BYTE_SWAP_INT16(key_size);
+        value_encoding = BYTE_SWAP_INT16(value_encoding);
+        value_size = BYTE_SWAP_INT32(value_size);
+      }
+      memcpy(m_MetaData+2+i*8, &key_size, 2);
+      memcpy(m_MetaData+4+i*8, &value_encoding, 2);
+      memcpy(m_MetaData+6+i*8, &value_size, 4);
+    }
+    std::string key= "";
+    std::string value= "";
+    int stride = 2+this->indexCount*8;
+    for (int i = 0; i < this->indexCount; i++)
+    {
+      memcpy(m_MetaData+stride, this->keys[i].c_str(), this->keySize[i]);
+      stride += this->keySize[i];
+      memcpy(m_MetaData+stride, this->values[i].c_str(), this->valueSize[i]);
+      stride += this->valueSize[i];
+    }
+  }
+}
+
+void MessageBase::UnpackExtendedHeaderAndMetaData()
+{
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    m_ExtendedHeader = m_Body;
+    igtl_extended_header* extended_header = (igtl_extended_header*)m_ExtendedHeader;
+    igtl_extended_header_convert_byte_order(extended_header);
+    this->metaDataTotalSize   = extended_header->meta_data_size;
+    this->msgId   = extended_header->msg_id;
+    m_MetaData = &m_Body[GetPackBodySize()-this->metaDataTotalSize];
+    igtl_uint16 index_count = 0; // first two byte are the total number of meta data
+    memcpy(&index_count, m_MetaData, 2);
+    if(igtl_is_little_endian())
+    {
+      index_count = BYTE_SWAP_INT16(index_count);
+    }
+    this->indexCount = index_count;
+    this->keys.resize(index_count);
+    this->values.resize(index_count);
+    this->keySize.resize(index_count);
+    this->valueSize.resize(index_count);
+    this->valueEncoding.resize(index_count);
+    igtl_uint16 key_size = 0;
+    igtl_uint16 value_encoding = 0;
+    igtl_uint32 value_size = 0;
+    for (int i = 0; i < this->indexCount; i++)
+    {
+      
+      memcpy(&key_size, m_MetaData+2+i*8, 2);
+      memcpy(&value_encoding, m_MetaData+4+i*8, 2);
+      memcpy(&value_size, m_MetaData+6+i*8, 4);
+      if(igtl_is_little_endian())
+      {
+        key_size = BYTE_SWAP_INT16(key_size);
+        value_encoding = BYTE_SWAP_INT16(value_encoding);
+        value_size = BYTE_SWAP_INT32(value_size);
+      }
+      this->keySize[i] = key_size;
+      this->valueEncoding[i] = value_encoding;
+      this->valueSize[i] = value_size;
+    }
+    int stride = 2+this->indexCount*8;
+    for (int i = 0; i < this->indexCount; i++)
+    {
+      this->keys[i].assign(m_MetaData+stride, m_MetaData+stride+this->keySize[i]);
+      stride += this->keySize[i];
+      this->values[i].assign(m_MetaData+stride, m_MetaData+stride+this->valueSize[i]);
+      stride += this->valueSize[i];
+    }
+  }
+}
 #endif
 
 
@@ -169,52 +270,11 @@ int MessageBase::Pack()
 {
   PackBody();
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
-  if (m_Version == IGTL_HEADER_VERSION_3 && m_ExtendedHeader !=NULL)
-  {
-    igtl_extended_header* extended_header = (igtl_extended_header*) m_ExtendedHeader;
-    extended_header->extended_header_size = IGTL_EXTENDED_HEADER_SIZE;
-    extended_header->meta_data_size       = this->GetMetaDataSize();
-    extended_header->msg_id               = 0;
-    extended_header->reserved             = 0;
-    igtl_extended_header_convert_byte_order(extended_header);
-  }
-  if (m_Version == IGTL_HEADER_VERSION_3)
-  {
-    igtl_uint16 index_count = this->indexCount; // first two byte are the total number of meta data
-    if(igtl_is_little_endian())
-    {
-      index_count = BYTE_SWAP_INT16(index_count);
-    }
-    memcpy(m_MetaData, &index_count, 2);
-    igtl_uint16 key_size = 0;
-    igtl_uint16 value_encoding = 0;
-    igtl_uint32 value_size = 0;
-    for (int i = 0; i < this->indexCount; i++)
-    {
-      key_size = this->keySize[i];
-      value_encoding = this->valueEncoding[i];
-      value_size = this->valueSize[i];
-      if(igtl_is_little_endian())
-      {
-        key_size = BYTE_SWAP_INT16(key_size);
-        value_encoding = BYTE_SWAP_INT16(value_encoding);
-        value_size = BYTE_SWAP_INT32(value_size);
-      }
-      memcpy(m_MetaData+2+i*8, &key_size, 2);
-      memcpy(m_MetaData+4+i*8, &value_encoding, 2);
-      memcpy(m_MetaData+6+i*8, &value_size, 4);
-    }
-    std::string key= "";
-    std::string value= "";
-    int stride = 2+this->indexCount*8;
-    for (int i = 0; i < this->indexCount; i++)
-    {
-      memcpy(m_MetaData+stride, this->keys[i].c_str(), this->keySize[i]);
-      stride += this->keySize[i];
-      memcpy(m_MetaData+stride, this->values[i].c_str(), this->valueSize[i]);
-      stride += this->valueSize[i];
-    }
-  }
+  ///To pack the meta data, the m_MetaData must be initialized,
+  ///However, the position of the m_MetaData in the m_Body is different for each derived class
+  ///due to the extra body header(such as m_ImageHeader...)
+  ///So after the body is packed, the m_MetaData must be set.
+  PackMetaData();
 #endif
   
   m_IsBodyUnpacked   = 0;
@@ -304,6 +364,9 @@ int MessageBase::Unpack(int crccheck)
         {
           // Unpack (deserialize) the Body
           UnpackBody();
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+          UnpackExtendedHeaderAndMetaData();
+#endif
           m_IsBodyUnpacked = 1;
           r |= UNPACK_BODY;
         }
@@ -316,6 +379,8 @@ int MessageBase::Unpack(int crccheck)
   return r;
 }
 
+
+  
 void* MessageBase::GetPackPointer()
 {
   return (void*) m_Header;
@@ -348,6 +413,12 @@ void MessageBase::AllocatePack()
       // called for creating pack to send
       AllocatePack(GetBodyPackSize());
     }
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    m_ExtendedHeader = m_Body;
+  }
+#endif
 }
 
 void MessageBase::InitPack()

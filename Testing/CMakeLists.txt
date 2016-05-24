@@ -58,6 +58,7 @@ ADD_EXECUTABLE(igtlStringMessageTest   igtlStringMessageTest.cxx)
 ADD_EXECUTABLE(igtlTrackingDataMessageTest   igtlTrackingDataMessageTest.cxx)
 ADD_EXECUTABLE(igtlTrajectoryMessageTest   igtlTrajectoryMessageTest.cxx)
 ADD_EXECUTABLE(igtlTransformMessageTest   igtlTransformMessageTest.cxx)
+ADD_EXECUTABLE(igtlPositionMessageTest   igtlPositionMessageTest.cxx)
 
 
 TARGET_LINK_LIBRARIES(igtlSocketTest OpenIGTLink)
@@ -87,6 +88,7 @@ TARGET_LINK_LIBRARIES(igtlStringMessageTest OpenIGTLink gtest_main gtest gmock_m
 TARGET_LINK_LIBRARIES(igtlTrackingDataMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
 TARGET_LINK_LIBRARIES(igtlTrajectoryMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
 TARGET_LINK_LIBRARIES(igtlTransformMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
+TARGET_LINK_LIBRARIES(igtlPositionMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
 
 
 ADD_TEST(igtlSocketTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlSocketTest)
@@ -116,4 +118,4 @@ ADD_TEST(igtlStringMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlStringMessageT
 ADD_TEST(igtlTrackingDataMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlTrackingDataMessageTest)
 ADD_TEST(igtlTrajectoryMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlTrajectoryMessageTest)
 ADD_TEST(igtlTransformMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlTransformMessageTest)
-
+ADD_TEST(igtlPositionMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlPositionMessageTest)

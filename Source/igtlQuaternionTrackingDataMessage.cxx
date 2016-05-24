@@ -308,7 +308,18 @@ void QuaternionTrackingDataMessage::GetQuaternionTrackingDataElement(int index, 
 int QuaternionTrackingDataMessage::GetBodyPackSize()
 {
   // The body size sum of the header size and status message size.
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    return IGTL_QTDATA_ELEMENT_SIZE * this->m_QuaternionTrackingDataList.size() + IGTL_EXTENDED_HEADER_SIZE + GetMetaDataSize();
+  }
+  else
+  {
+    return IGTL_QTDATA_ELEMENT_SIZE * this->m_QuaternionTrackingDataList.size();
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <= 2
   return IGTL_QTDATA_ELEMENT_SIZE * this->m_QuaternionTrackingDataList.size();
+#endif
 }
 
 
@@ -317,8 +328,20 @@ int QuaternionTrackingDataMessage::PackBody()
   // allocate pack
   AllocatePack();
   
-  igtl_qtdata_element* element;
+  igtl_qtdata_element* element = NULL;
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    element = (igtl_qtdata_element*)(this->m_Body + IGTL_EXTENDED_HEADER_SIZE);
+  }
+  else
+  {
+    element = (igtl_qtdata_element*)this->m_Body;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   element = (igtl_qtdata_element*)this->m_Body;
+#endif
+  
   std::vector<QuaternionTrackingDataElement::Pointer>::iterator iter;
 
   for (iter = this->m_QuaternionTrackingDataList.begin(); iter != this->m_QuaternionTrackingDataList.end(); iter ++)
@@ -354,9 +377,24 @@ int QuaternionTrackingDataMessage::UnpackBody()
 
   this->m_QuaternionTrackingDataList.clear();
 
-  igtl_qtdata_element* element = (igtl_qtdata_element*) this->m_Body;
-  int nElement = igtl_qtdata_get_data_n(this->m_BodySizeToRead);
-
+  igtl_qtdata_element* element = NULL;
+  int nElement = 0;
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    int bodySize = this->m_BodySizeToRead - this->metaDataTotalSize - IGTL_EXTENDED_HEADER_SIZE;
+    element = (igtl_qtdata_element*) (this->m_Body+IGTL_EXTENDED_HEADER_SIZE);
+    nElement = igtl_qtdata_get_data_n(bodySize);
+  }
+  else
+  {
+    element = (igtl_qtdata_element*) this->m_Body;
+    nElement = igtl_qtdata_get_data_n(this->m_BodySizeToRead);
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
+  element = (igtl_qtdata_element*) this->m_Body;
+  nElement = igtl_qtdata_get_data_n(this->m_BodySizeToRead);
+#endif
   igtl_qtdata_convert_byte_order(element, nElement);
   
   char strbuf[128];

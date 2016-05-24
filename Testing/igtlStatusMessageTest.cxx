@@ -31,6 +31,7 @@ igtl::StatusMessage::Pointer statusReceiveMsg = igtl::StatusMessage::New();
 TEST(StatusMessageTest, Pack)
 {
   std::string statusString = "randomstringrandomstring";
+  statusSendMsg->SetVersion(IGTL_HEADER_VERSION_1);
   statusSendMsg->SetStatusString(statusString.c_str());// pass an empty string with size 54,just to initialize the memory
   statusSendMsg->AllocatePack();
   statusSendMsg->SetTimeStamp(0, 1234567892);

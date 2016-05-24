@@ -409,7 +409,7 @@ int ImageMessage::PackBody()
                         image_header);
 
   igtl_image_convert_byte_order(image_header);
-
+  
   return 1;
 
 }
@@ -420,53 +420,8 @@ int ImageMessage::UnpackBody()
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
   if (m_Version == IGTL_HEADER_VERSION_3)
   {
-    m_ExtendedHeader = m_Body;
-    igtl_extended_header* extended_header = (igtl_extended_header*)m_ExtendedHeader;
-    igtl_extended_header_convert_byte_order(extended_header);
-    this->metaDataTotalSize   = extended_header->meta_data_size;
-    this->msgId   = extended_header->msg_id;
     m_ImageHeader = &m_Body[IGTL_EXTENDED_HEADER_SIZE];
     m_Image  = &m_ImageHeader[IGTL_IMAGE_HEADER_SIZE];
-    m_MetaData = &m_Image[GetPackBodySize()-this->metaDataTotalSize-IGTL_IMAGE_HEADER_SIZE-IGTL_EXTENDED_HEADER_SIZE]; // or use function GetSubVolumeImageSize()
-    igtl_uint16 index_count = 0; // first two byte are the total number of meta data
-    memcpy(&index_count, m_MetaData, 2);
-    if(igtl_is_little_endian())
-    {
-      index_count = BYTE_SWAP_INT16(index_count);
-    }
-    this->indexCount = index_count;
-    this->keys.resize(index_count);
-    this->values.resize(index_count);
-    this->keySize.resize(index_count);
-    this->valueSize.resize(index_count);
-    this->valueEncoding.resize(index_count);
-    igtl_uint16 key_size = 0;
-    igtl_uint16 value_encoding = 0;
-    igtl_uint32 value_size = 0;
-    for (int i = 0; i < this->indexCount; i++)
-    {
-      
-      memcpy(&key_size, m_MetaData+2+i*8, 2);
-      memcpy(&value_encoding, m_MetaData+4+i*8, 2);
-      memcpy(&value_size, m_MetaData+6+i*8, 4);
-      if(igtl_is_little_endian())
-      {
-        key_size = BYTE_SWAP_INT16(key_size);
-        value_encoding = BYTE_SWAP_INT16(value_encoding);
-        value_size = BYTE_SWAP_INT32(value_size);
-      }
-      this->keySize[i] = key_size;
-      this->valueEncoding[i] = value_encoding;
-      this->valueSize[i] = value_size;
-    }
-    int stride = 2+this->indexCount*8;
-    for (int i = 0; i < this->indexCount; i++)
-    {
-      this->keys[i].assign(m_MetaData+stride, m_MetaData+stride+this->keySize[i]);
-      stride += this->keySize[i];
-      this->values[i].assign(m_MetaData+stride, m_MetaData+stride+this->valueSize[i]);
-      stride += this->valueSize[i];
-    }
   }
   else
   {
