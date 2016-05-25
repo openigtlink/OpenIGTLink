@@ -139,7 +139,10 @@ int MessageBase::AddMetaDataElement(std::string key, std::string value)
 
 void MessageBase::PackMetaData()
 {
-  if (m_Version == IGTL_HEADER_VERSION_3 && m_ExtendedHeader != NULL)
+  // For the Get_, Start_, Stop_ .... command messages, the m_Version could be IGTL_HEADER_VERSION_3 for
+  // communication purpose, however the meta data is none. so use GetBodyPackSize() > 0 condition to
+  // stop the packMetaData() from excuting.
+  if (m_Version == IGTL_HEADER_VERSION_3 && m_ExtendedHeader != NULL && GetBodyPackSize()>0)
   {
     igtl_extended_header* extended_header = (igtl_extended_header*) m_ExtendedHeader;
     extended_header->extended_header_size = IGTL_EXTENDED_HEADER_SIZE;

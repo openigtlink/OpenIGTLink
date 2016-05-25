@@ -32,39 +32,45 @@ int main(int argc, char* argv[])
   //------------------------------------------------------------
   // Parse Arguments
 
-  if (argc != 4) // check number of arguments
+  if (argc != 5) // check number of arguments
     {
     // If not correct, print usage
     std::cerr << "Usage: " << argv[0] << " <hostname> <port> <fps> <imgdir>"    << std::endl;
     std::cerr << "    <hostname> : IP or host name"                    << std::endl;
     std::cerr << "    <port>     : Port # (18944 in Slicer default)"   << std::endl;
     std::cerr << "    <fps>      : Frequency (fps) to send coordinate" << std::endl;
+    std::cerr << "    Version    : Version number send to the server" << std::endl;
     exit(0);
     }
-
+  
   char*  hostname = argv[1];
   int    port     = atoi(argv[2]);
   double fps      = atof(argv[3]);
+  int    version  = atoi(argv[4]);
   int    interval = (int) (1000.0 / fps);
-
   //------------------------------------------------------------
   // Establish Connection
   igtl::ClientSocket::Pointer socket;
   socket = igtl::ClientSocket::New();
   int r = socket->ConnectToServer(hostname, port);
-
+  if (version > IGTL_HEADER_VERSION_3 || version < IGTL_HEADER_VERSION_1)
+  {
+    std::cerr << "Invalid version number" << std::endl;
+    exit(0);
+  }
   if (r != 0)
-    {
+  {
     std::cerr << "Cannot connect to the server." << std::endl;
     exit(0);
-    }
+  }
 
   //------------------------------------------------------------
   // Ask the server to start pushing tracking data
-  std::cerr << "Sending STT_TDATA message....." << std::endl;
+  std::cerr << "Sending Get_Image message....." << std::endl;
   igtl::GetImageMessage::Pointer getImageMsg;
   getImageMsg = igtl::GetImageMessage::New();
   getImageMsg->SetDeviceName("ImageClient");
+  getImageMsg->SetVersion(version);
   getImageMsg->Pack();
   socket->Send(getImageMsg->GetPackPointer(), getImageMsg->GetPackSize());
   
@@ -92,9 +98,16 @@ int main(int argc, char* argv[])
     }
     
     headerMsg->Unpack();
+    if (headerMsg->GetVersion() != version)
+    {
+      std::cerr << "Version of the client and server don't match." << std::endl;
+      socket->CloseSocket();
+      exit(0);
+    }
     if (strcmp(headerMsg->GetDeviceName(), "ImagerClient") == 0)
     {
       ReceiveImageData(socket, headerMsg, loop);
+      igtl::Sleep(interval);
     }
     else
     {
@@ -130,7 +143,7 @@ int ReceiveImageData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::P
   
   igtl::ImageMessage::Pointer imageData;
   imageData = igtl::ImageMessage::New();
-  imageData->SetMessageHeader(header);
+  imageData->SetMessageHeader(header);//Here the version is also set
   imageData->AllocatePack();
   
   // Receive body from the socket
@@ -144,7 +157,6 @@ int ReceiveImageData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::P
   {
     
     SaveTestImage(imageData, loop);
-    igtl::Sleep(200);
     return 1;
   }
   return 0;

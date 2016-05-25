@@ -74,46 +74,61 @@ int main(int argc, char* argv[])
     
     if (socket.IsNotNull()) // if client connected
       {
-      //------------------------------------------------------------
-      // loop
-      for (int i = 0; i < 100; i ++)
+        std::cerr << "A client is connected." << std::endl;
+        // Create a message buffer to receive header
+        igtl::MessageHeader::Pointer headerMsg;
+        headerMsg = igtl::MessageHeader::New();
+        headerMsg->InitPack();
+        
+        // Receive generic header from the socket
+        int rs = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
+        if (rs == headerMsg->GetPackSize())
         {
-        //------------------------------------------------------------
-        // size parameters
-        int   size[]     = {256, 256, 1};       // image dimension
-        float spacing[]  = {1.0, 1.0, 5.0};     // spacing (mm/pixel)
-        int   svsize[]   = {256, 256, 1};       // sub-volume size
-        int   svoffset[] = {0, 0, 0};           // sub-volume offset
-        int   scalarType = igtl::ImageMessage::TYPE_UINT8;// scalar type
-        
-        //------------------------------------------------------------
-        // Create a new IMAGE type message
-        igtl::ImageMessage::Pointer imgMsg = igtl::ImageMessage::New();
-        imgMsg->SetDimensions(size);
-        imgMsg->SetSpacing(spacing);
-        imgMsg->SetScalarType(scalarType);
-        imgMsg->SetDeviceName("ImagerClient");
-        imgMsg->SetSubVolume(svsize, svoffset);
-        imgMsg->SetVersion(IGTL_HEADER_VERSION_3);
-        imgMsg->AddMetaDataElement("A stupid idiot", "yes it is");
-        imgMsg->AllocateScalars();
-        
-        //------------------------------------------------------------
-        // Set image data (See GetTestImage() bellow for the details)
-        GetTestImage(imgMsg, filedir, i % 5);
-        
-        //------------------------------------------------------------
-        // Get randome orientation matrix and set it.
-        igtl::Matrix4x4 matrix;
-        GetRandomTestMatrix(matrix);
-        imgMsg->SetMatrix(matrix);
-        
-        //------------------------------------------------------------
-        // Pack (serialize) and send
-        imgMsg->Pack();
-        socket->Send(imgMsg->GetPackPointer(), imgMsg->GetPackSize());
-        
-        igtl::Sleep(interval); // wait
+          headerMsg->Unpack();
+          if (strcmp(headerMsg->GetDeviceType(), "GET_IMAGE") == 0)
+          {
+            //------------------------------------------------------------
+            // loop
+            for (int i = 0; i < 100; i ++)
+            {
+              //------------------------------------------------------------
+              // size parameters
+              int   size[]     = {256, 256, 1};       // image dimension
+              float spacing[]  = {1.0, 1.0, 5.0};     // spacing (mm/pixel)
+              int   svsize[]   = {256, 256, 1};       // sub-volume size
+              int   svoffset[] = {0, 0, 0};           // sub-volume offset
+              int   scalarType = igtl::ImageMessage::TYPE_UINT8;// scalar type
+              
+              //------------------------------------------------------------
+              // Create a new IMAGE type message
+              igtl::ImageMessage::Pointer imgMsg = igtl::ImageMessage::New();
+              imgMsg->SetDimensions(size);
+              imgMsg->SetSpacing(spacing);
+              imgMsg->SetScalarType(scalarType);
+              imgMsg->SetDeviceName("ImagerClient");
+              imgMsg->SetSubVolume(svsize, svoffset);
+              imgMsg->SetVersion(headerMsg->GetVersion());
+              imgMsg->AddMetaDataElement("A stupid idiot", "yes it is");
+              imgMsg->AllocateScalars();
+              
+              //------------------------------------------------------------
+              // Set image data (See GetTestImage() bellow for the details)
+              GetTestImage(imgMsg, filedir, i % 5);
+              
+              //------------------------------------------------------------
+              // Get randome orientation matrix and set it.
+              igtl::Matrix4x4 matrix;
+              GetRandomTestMatrix(matrix);
+              imgMsg->SetMatrix(matrix);
+              
+              //------------------------------------------------------------
+              // Pack (serialize) and send
+              imgMsg->Pack();
+              socket->Send(imgMsg->GetPackPointer(), imgMsg->GetPackSize());
+              
+              igtl::Sleep(interval); // wait
+            }
+          }
         }
       }
     }

@@ -38,7 +38,7 @@ public:
 
 protected:
 
- GetImageMessage() : HeaderOnlyMessageBase() { this->m_DefaultBodyType  = "GET_IMAGE"; m_Version = IGTL_HEADER_VERSION_1;};
+ GetImageMessage() : HeaderOnlyMessageBase() { this->m_DefaultBodyType  = "GET_IMAGE";};
   ~GetImageMessage() {};
 
 };
@@ -57,7 +57,7 @@ public:
   
 protected:
   
-  StopImageMessage() : HeaderOnlyMessageBase() { this->m_DefaultBodyType  = "STP_IMAGE"; m_Version = IGTL_HEADER_VERSION_1;};
+  StopImageMessage() : HeaderOnlyMessageBase() { this->m_DefaultBodyType  = "STP_IMAGE";};
   ~StopImageMessage() {};
   
 };
