@@ -14,10 +14,10 @@
 #ifndef __igtlCapabilityMessage_h
 #define __igtlCapabilityMessage_h
 
-#include <igtlObject.h>
-#include <igtlMath.h>
-#include <igtlMessageBase.h>
-#include <igtlTypes.h>
+#include "igtlObject.h"
+#include "igtlMath.h"
+#include "igtlMessageBase.h"
+#include "igtlTypes.h"
 
 #include <vector>
 #include <string>
