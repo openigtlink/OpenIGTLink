@@ -202,7 +202,7 @@ namespace igtl {
   
   int TransformMessage::PackBody()
   {
-    
+    this->m_Transform = this->m_Body;
     //igtl_float32* transform = (igtl_float32*)this->m_Transform; // doesn't work on Solaris
     igtl_float32 transform[12];
     
