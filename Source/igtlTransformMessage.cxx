@@ -202,6 +202,8 @@ namespace igtl {
   
   int TransformMessage::PackBody()
   {
+    // The m_Transform is not aligned with m_Body, when allocatePack() is called.
+    // This is to realign the two pointers.
     this->m_Transform = this->m_Body;
     //igtl_float32* transform = (igtl_float32*)this->m_Transform; // doesn't work on Solaris
     igtl_float32 transform[12];

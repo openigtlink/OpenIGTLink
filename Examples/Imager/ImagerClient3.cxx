@@ -155,7 +155,13 @@ int ReceiveImageData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::P
   
   if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
   {
-    
+    if (imageData->GetVersion() >= IGTL_HEADER_VERSION_3)
+    {
+      for (int i = 0; i <imageData->keys.size(); i++)
+      {
+        std::cerr<< imageData->keys[i]<< " " << imageData->values[i] << std::endl;
+      }
+    }
     SaveTestImage(imageData, loop);
     return 1;
   }

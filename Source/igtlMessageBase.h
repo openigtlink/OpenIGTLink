@@ -126,8 +126,11 @@ public:
   /// Pack the meta data
   void PackMetaData();
   
+  /// Unpack Extended header
+  void UnpackExtendedHeader();
+  
   /// Unpack Extended header and the meta data
-  void UnpackExtendedHeaderAndMetaData();
+  void UnpackMetaData();
   
   /// Allocate memory for the Extended Header and the meta data
   virtual void AllocateHeaderAndMetaData() {};

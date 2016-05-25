@@ -290,7 +290,7 @@ int TrajectoryMessage::PackBody()
 #elif OpenIGTLink_PROTOCOL_VERSION <=2
   element = (igtl_trajectory_element*)this->m_Body;
 #endif
-
+  igtl_trajectory_element * elementHolder = element;
   std::vector<TrajectoryElement::Pointer>::iterator iter;
   for (iter = this->m_TrajectoryList.begin(); iter != this->m_TrajectoryList.end(); iter ++)
     {
@@ -324,7 +324,7 @@ int TrajectoryMessage::PackBody()
     element ++;
     }
 
-  igtl_trajectory_convert_byte_order((igtl_trajectory_element*)this->m_Body, this->m_TrajectoryList.size());
+  igtl_trajectory_convert_byte_order(elementHolder, this->m_TrajectoryList.size());
 
   return 1;
 }

@@ -187,8 +187,7 @@ void MessageBase::PackMetaData()
     }
   }
 }
-
-void MessageBase::UnpackExtendedHeaderAndMetaData()
+void MessageBase::UnpackExtendedHeader()
 {
   if (m_Version == IGTL_HEADER_VERSION_3)
   {
@@ -197,6 +196,13 @@ void MessageBase::UnpackExtendedHeaderAndMetaData()
     igtl_extended_header_convert_byte_order(extended_header);
     this->metaDataTotalSize   = extended_header->meta_data_size;
     this->msgId   = extended_header->msg_id;
+  }
+}
+  
+void MessageBase::UnpackMetaData()
+{
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
     m_MetaData = &m_Body[GetPackBodySize()-this->metaDataTotalSize];
     igtl_uint16 index_count = 0; // first two byte are the total number of meta data
     memcpy(&index_count, m_MetaData, 2);
@@ -366,9 +372,12 @@ int MessageBase::Unpack(int crccheck)
       if (crc == h->crc)
         {
           // Unpack (deserialize) the Body
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+          UnpackExtendedHeader();
+#endif
           UnpackBody();
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
-          UnpackExtendedHeaderAndMetaData();
+          UnpackMetaData();
 #endif
           m_IsBodyUnpacked = 1;
           r |= UNPACK_BODY;

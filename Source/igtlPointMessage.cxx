@@ -239,7 +239,7 @@ int PointMessage::PackBody()
 #elif OpenIGTLink_PROTOCOL_VERSION <=2
   element = (igtl_point_element*)this->m_Body;
 #endif
-
+  igtl_point_element* elementHolder = element;
   std::vector<PointElement::Pointer>::iterator iter;
   for (iter = this->m_PointList.begin(); iter != this->m_PointList.end(); iter ++)
     {
@@ -266,7 +266,7 @@ int PointMessage::PackBody()
     element ++;
     }
 
-  igtl_point_convert_byte_order((igtl_point_element*)this->m_Body, this->m_PointList.size());
+  igtl_point_convert_byte_order(elementHolder, this->m_PointList.size());
    
   return 1;
 }

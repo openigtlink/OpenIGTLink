@@ -239,7 +239,18 @@ int NDArrayMessage::PackBody()
 //    }
 
   memcpy(info.array, this->m_Array->GetRawArray(), this->m_Array->GetRawArraySize());
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    igtl_ndarray_pack(&info, this->m_Body + IGTL_EXTENDED_HEADER_SIZE, IGTL_TYPE_PREFIX_NONE);
+  }
+  else
+  {
+    igtl_ndarray_pack(&info, this->m_Body, IGTL_TYPE_PREFIX_NONE);
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   igtl_ndarray_pack(&info, this->m_Body, IGTL_TYPE_PREFIX_NONE);
+#endif
 
   return 1;
 }

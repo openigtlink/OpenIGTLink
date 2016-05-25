@@ -342,8 +342,8 @@ int QuaternionTrackingDataMessage::PackBody()
   element = (igtl_qtdata_element*)this->m_Body;
 #endif
   
+  igtl_qtdata_element * elementHolder = element;
   std::vector<QuaternionTrackingDataElement::Pointer>::iterator iter;
-
   for (iter = this->m_QuaternionTrackingDataList.begin(); iter != this->m_QuaternionTrackingDataList.end(); iter ++)
     {
     strncpy((char*)element->name, (*iter)->GetName(), IGTL_QTDATA_LEN_NAME);
@@ -366,7 +366,7 @@ int QuaternionTrackingDataMessage::PackBody()
     element ++;
     }
   
-  igtl_qtdata_convert_byte_order((igtl_qtdata_element*)this->m_Body, this->m_QuaternionTrackingDataList.size());
+  igtl_qtdata_convert_byte_order(elementHolder, this->m_QuaternionTrackingDataList.size());
   
   return 1;
 }
