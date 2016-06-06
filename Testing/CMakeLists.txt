@@ -91,7 +91,7 @@ TARGET_LINK_LIBRARIES(igtlTransformMessageTest OpenIGTLink gtest_main gtest gmoc
 TARGET_LINK_LIBRARIES(igtlPositionMessageTest OpenIGTLink gtest_main gtest gmock_main gmock)
 
 
-ADD_TEST(igtlSocketTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlSocketTest)
+#ADD_TEST(igtlSocketTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlSocketTest)
 ADD_TEST(igtlMultiThreaderTest1 ${OpenIGTLink_EXECUTABLE_PATH}/igtlMultiThreaderTest1)
 ADD_TEST(igtlMultiThreaderTest2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlMultiThreaderTest2)
 ADD_TEST(igtlMultiThreaderTest3 ${OpenIGTLink_EXECUTABLE_PATH}/igtlMultiThreaderTest3)
