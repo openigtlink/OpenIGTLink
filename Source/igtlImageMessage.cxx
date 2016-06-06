@@ -333,8 +333,23 @@ void ImageMessage::AllocateScalars()
   // message and image header, by using AllocatePack() implemented
   // in the parent class.
   AllocatePack();
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    m_ExtendedHeader = m_Body;
+    m_ImageHeader = &m_Body[IGTL_EXTENDED_HEADER_SIZE];
+    m_Image  = &m_ImageHeader[IGTL_IMAGE_HEADER_SIZE];
+    m_MetaData = &m_Image[GetSubVolumeImageSize()];
+  }
+  else
+  {
+    m_ImageHeader = m_Body;
+    m_Image  = &m_ImageHeader[IGTL_IMAGE_HEADER_SIZE];
+  }
+#else
   m_ImageHeader = m_Body;
   m_Image  = &m_ImageHeader[IGTL_IMAGE_HEADER_SIZE];
+#endif
 }
 
 void* ImageMessage::GetScalarPointer()
@@ -344,7 +359,18 @@ void* ImageMessage::GetScalarPointer()
 
 int ImageMessage::GetBodyPackSize()
 {
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    return GetSubVolumeImageSize() + IGTL_IMAGE_HEADER_SIZE + IGTL_EXTENDED_HEADER_SIZE + GetMetaDataSize();
+  }
+  else
+  {
+    return GetSubVolumeImageSize() + IGTL_IMAGE_HEADER_SIZE;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <= 2
   return GetSubVolumeImageSize() + IGTL_IMAGE_HEADER_SIZE;
+#endif
 }
 
 int ImageMessage::PackBody()
@@ -383,7 +409,7 @@ int ImageMessage::PackBody()
                         image_header);
 
   igtl_image_convert_byte_order(image_header);
-
+  
   return 1;
 
 }
@@ -391,9 +417,19 @@ int ImageMessage::PackBody()
 
 int ImageMessage::UnpackBody()
 {
-
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    m_ImageHeader = &m_Body[IGTL_EXTENDED_HEADER_SIZE];
+    m_Image  = &m_ImageHeader[IGTL_IMAGE_HEADER_SIZE];
+  }
+  else
+  {
+    m_ImageHeader = m_Body;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   m_ImageHeader = m_Body;
-
+#endif
   igtl_image_header* image_header = (igtl_image_header*)m_ImageHeader;
   igtl_image_convert_byte_order(image_header);
 
@@ -466,6 +502,3 @@ int ImageMessage::GetNumComponents()
 
 
 } // namespace igtl
-
-
-

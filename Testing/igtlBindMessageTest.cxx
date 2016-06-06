@@ -68,6 +68,7 @@ igtlFloat64 sensorValues[6] = {123456.78,12345.678,1234.5678,123.45678,12.345678
 void BuildUpElements()
 {
   imageSendMsg2 = igtl::ImageMessage2::New();
+  imageSendMsg2->SetVersion(IGTL_HEADER_VERSION_1);
   imageSendMsg2->SetTimeStamp(0, 1234567892);
   imageSendMsg2->SetDeviceName("ChildImage");
   //Initialization of a image message
@@ -89,6 +90,7 @@ void BuildUpElements()
   imageReceiveMsg2->AllocatePack(imageSendMsg2->GetPackSize());
   imageReceiveMsg2->AllocateScalars();
   
+  sensorDataSendMsg->SetVersion(IGTL_HEADER_VERSION_1);
   sensorDataSendMsg->AllocatePack();
   sensorDataSendMsg->SetLength(6);
   sensorDataSendMsg->SetDeviceName("ChildSensor");
@@ -108,6 +110,7 @@ void BuildUpElements()
   sensorDataReceiveMsg->AllocatePack();
   sensorDataReceiveMsg->SetLength(6);
   
+  transformSendMsg->SetVersion(IGTL_HEADER_VERSION_1);
   transformSendMsg->AllocatePack();
   transformSendMsg->SetTimeStamp(0, 1234567892);
   transformSendMsg->SetDeviceName("ChildTrans");

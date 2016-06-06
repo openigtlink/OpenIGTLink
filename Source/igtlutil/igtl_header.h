@@ -15,8 +15,11 @@
 #ifndef __IGTL_HEADER_H
 #define __IGTL_HEADER_H
 
-#define IGTL_HEADER_VERSION   1
+#define IGTL_HEADER_VERSION_1   1
+#define IGTL_HEADER_VERSION_2   2
+#define IGTL_HEADER_VERSION_3   3
 #define IGTL_HEADER_SIZE      58
+#define IGTL_EXTENDED_HEADER_SIZE      14
 
 #define IGTL_HEADER_TYPE_SIZE  12
 #define IGTL_HEADER_NAME_SIZE  20
@@ -56,6 +59,17 @@ typedef struct {
   igtl_uint64    body_size;        /* size of the body        */
   igtl_uint64    crc;              /* CRC                     */
 } igtl_header;
+  
+/** Message extended header of OpenIGTLink message.
+ *  igtl_extended_header is an overall data extended header for OpenIGTLink protocol.
+ *  It is transfered with the data body to define the
+ *  size of extended header and the meta data size */
+typedef struct {
+  igtl_uint32    extended_header_size;          /* size of extended header */
+  igtl_uint32    meta_data_size;               /* size of meta data */
+  igtl_uint32    msg_id;      /*message id */
+  igtl_uint16    reserved;    /*reserved byte */
+} igtl_extended_header;
 
 #pragma pack()
 
@@ -63,6 +77,11 @@ typedef struct {
  *  member variable in igtl_header structre from host byte order
  *  to network byte order, or vice versa. */
 void igtl_export igtl_header_convert_byte_order(igtl_header * header);
+  
+/** igtl_extended_header_convert_byte_order() convers endianness of each
+ *  member variable in igtl_header structre from host byte order
+ *  to network byte order, or vice versa. */
+void igtl_export igtl_extended_header_convert_byte_order(igtl_extended_header * extended_header);
 
 #ifdef __cplusplus
 }

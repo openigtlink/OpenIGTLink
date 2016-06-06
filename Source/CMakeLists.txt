@@ -37,6 +37,7 @@ SET(OpenIGTLink_SOURCES
   igtlutil/igtl_position.c
   igtlutil/igtl_capability.c
   igtlClientSocket.cxx
+  igtlCapabilityMessage.cxx
   igtlConditionVariable.cxx
   igtlFastMutexLock.cxx
   igtlImageMessage.cxx
@@ -71,6 +72,7 @@ SET(OpenIGTLink_INCLUDE_FILES
   igtlutil/igtl_win32header.h
   igtlMessageHandler.h
   igtlMessageHandlerMacro.h
+  igtlCapabilityMessage.h
   igtlClientSocket.h
   igtlConditionVariable.h
   igtlCreateObjectFunction.h
@@ -103,8 +105,8 @@ SET(OpenIGTLink_INCLUDE_FILES
   igtlWindows.h
 )
 
-
-if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
+# Add support for OpenIGTLink version 2
+IF (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1" )
   SET(OpenIGTLink_SOURCES
     ${OpenIGTLink_SOURCES}
     igtlutil/igtl_colortable.c
@@ -122,7 +124,6 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtlutil/igtl_qtrans.c
     igtlutil/igtl_polydata.c
     igtlColorTableMessage.cxx
-    igtlCapabilityMessage.cxx
     igtlImageMetaMessage.cxx
     igtlLabelMetaMessage.cxx
     igtlPointMessage.cxx
@@ -153,7 +154,6 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtlutil/igtl_qtrans.h
     igtlutil/igtl_polydata.h
     igtlColorTableMessage.h
-    igtlCapabilityMessage.h
     igtlImageMetaMessage.h
     igtlLabelMetaMessage.h
     igtlPointMessage.h
@@ -167,11 +167,32 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtlBindMessage.h
     igtlNDArrayMessage.h
     )
-endif (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
+ENDIF ( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "1")
 
+# Add support for OpenIGTLink version 3
+IF ( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
+  SET(OpenIGTLink_SOURCES
+    ${OpenIGTLink_SOURCES}
+    igtlCommandMessage.cxx
+    igtlutil/igtl_command.c
+    )
+  SET(OpenIGTLink_INCLUDE_FILES
+    ${OpenIGTLink_INCLUDE_FILES}
+    igtlCommandMessage.h
+    igtlutil/igtl_command.h
+    )
+ENDIF ( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
+
+IF( ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
+ADD_LIBRARY(OpenIGTLink
+  ${OpenIGTLink_SOURCES}
+  ${OpenIGTLink_INCLUDE_FILES}
+  )
+ELSE ( ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
 ADD_LIBRARY(OpenIGTLink
   ${OpenIGTLink_SOURCES}
   )
+ENDIF( ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
 
 TARGET_LINK_LIBRARIES(OpenIGTLink
   ${LINK_LIBS}

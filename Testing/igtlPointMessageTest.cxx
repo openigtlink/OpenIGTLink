@@ -50,6 +50,7 @@ void BuildUpElements()
   pointElement2->SetOwner("IMAGE_0");
   pointSendMsg = igtl::PointMessage::New();
   pointSendMsg->SetDeviceName("DeviceName");
+  pointSendMsg->SetVersion(IGTL_HEADER_VERSION_1);
   pointSendMsg->SetTimeStamp(0, 1234567892);
   pointSendMsg->AddPointElement(pointElement0);
   pointSendMsg->AddPointElement(pointElement1);

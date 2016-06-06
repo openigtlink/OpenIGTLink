@@ -42,6 +42,7 @@ int   scalarType = igtl::ImageMessage::TYPE_UINT8;// scalar type
 void BuildUp()
 {
   imageSendMsg = igtl::ImageMessage::New();
+  imageSendMsg->SetVersion(IGTL_HEADER_VERSION_1);
   imageSendMsg->SetTimeStamp(0, 1234567892);
   imageSendMsg->SetDeviceName("DeviceName");
   //Initialization of a image message
