@@ -157,8 +157,7 @@ void TrackingDataElement::GetMatrix(Matrix4x4& mat)
 //----------------------------------------------------------------------
 // igtl::StartTrackingDataMessage class
 
-StartTrackingDataMessage::StartTrackingDataMessage():
-  MessageBase()
+StartTrackingDataMessage::StartTrackingDataMessage()
 {
   this->m_DefaultBodyType = "STT_TDATA";
   this->m_Resolution      = 0;
@@ -187,15 +186,37 @@ int StartTrackingDataMessage::SetCoordinateName(const char* name)
 
 int StartTrackingDataMessage::GetBodyPackSize()
 {
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    return IGTL_STT_TDATA_SIZE + IGTL_EXTENDED_HEADER_SIZE + GetMetaDataSize();
+  }
+  else
+  {
+    return IGTL_STT_TDATA_SIZE;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <= 2
   return IGTL_STT_TDATA_SIZE;
+#endif
 }
 
 
 int StartTrackingDataMessage::PackBody()
 {
   AllocatePack();
-
-  igtl_stt_tdata* stt_tdata = (igtl_stt_tdata*)this->m_Body;
+  igtl_stt_tdata* stt_tdata = NULL;
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+     stt_tdata = (igtl_stt_tdata*)(this->m_Body + IGTL_EXTENDED_HEADER_SIZE);
+  }
+  else
+  {
+    stt_tdata = (igtl_stt_tdata*)this->m_Body;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
+  stt_tdata = (igtl_stt_tdata*)this->m_Body;
+#endif
 
   stt_tdata->resolution = this->m_Resolution;
   strncpy(stt_tdata->coord_name, this->m_CoordinateName.c_str(), IGTL_STT_TDATA_LEN_COORDNAME);
@@ -209,7 +230,19 @@ int StartTrackingDataMessage::PackBody()
 
 int StartTrackingDataMessage::UnpackBody()
 {
-  igtl_stt_tdata* stt_tdata = (igtl_stt_tdata*)this->m_Body;
+  igtl_stt_tdata* stt_tdata = NULL;
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    stt_tdata = (igtl_stt_tdata*)(this->m_Body + IGTL_EXTENDED_HEADER_SIZE);
+  }
+  else
+  {
+    stt_tdata = (igtl_stt_tdata*)this->m_Body;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
+  stt_tdata = (igtl_stt_tdata*)this->m_Body;
+#endif
   
   igtl_stt_tdata_convert_byte_order(stt_tdata);
 
@@ -264,8 +297,7 @@ int  RTSTrackingDataMessage::UnpackBody()
 //----------------------------------------------------------------------
 // igtl::TrackingDataMessage class
 
-TrackingDataMessage::TrackingDataMessage():
-  MessageBase()
+TrackingDataMessage::TrackingDataMessage()
 {
   this->m_DefaultBodyType = "TDATA";
   this->m_TrackingDataList.clear();

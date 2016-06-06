@@ -60,6 +60,7 @@ void BuildUpElements()
   polyAttr->SetName("attr");
   polyAttr->SetData(attribute);
   polyDataSendMsg = igtl::PolyDataMessage::New();
+  polyDataSendMsg->SetVersion(IGTL_HEADER_VERSION_1);
   polyDataSendMsg->SetPoints(polyPoint.GetPointer());
   polyDataSendMsg->SetPolygons(polyGon.GetPointer());
   polyDataSendMsg->AddAttribute(polyAttr.GetPointer());

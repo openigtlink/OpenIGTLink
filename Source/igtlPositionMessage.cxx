@@ -181,7 +181,18 @@ int PositionMessage::GetBodyPackSize()
       break;
     }
 
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    return ret + IGTL_EXTENDED_HEADER_SIZE + GetMetaDataSize();
+  }
+  else
+  {
+    return ret;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <= 2
   return ret;
+#endif
 
 }
 
@@ -190,8 +201,19 @@ int PositionMessage::PackBody()
 {
   // allocate pack
   AllocatePack();
-
-  igtl_position* p = (igtl_position*)this->m_Body;
+  igtl_position* p = NULL;
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    p = (igtl_position*)(this->m_Body + IGTL_EXTENDED_HEADER_SIZE);
+  }
+  else
+  {
+    p = (igtl_position*)this->m_Body;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
+  p = (igtl_position*)this->m_Body;
+#endif
 
   p->position[0]   = this->m_Position[0];
   p->position[1]   = this->m_Position[1];
@@ -219,8 +241,20 @@ int PositionMessage::PackBody()
 
 int PositionMessage::UnpackBody()
 {
+  igtl_position* p = NULL;
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    p = (igtl_position*) (this->m_Body+IGTL_EXTENDED_HEADER_SIZE);
+  }
+  else
+  {
+    p = (igtl_position*)this->m_Body;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
+  p = (igtl_position*)this->m_Body;
+#endif
   
-  igtl_position* p = (igtl_position*)this->m_Body;
   
   int bodySize = this->m_PackSize - IGTL_HEADER_SIZE;
   switch (bodySize)

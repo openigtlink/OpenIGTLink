@@ -116,15 +116,14 @@ protected:
   std::string   m_Owner; 
 };
 
-
 /// A class for the GET_POINT message type.
 class IGTLCommon_EXPORT GetPointMessage: public MessageBase
 {
 public:
-  typedef GetPointMessage            Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef GetPointMessage                 Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   igtlTypeMacro(igtl::GetPointMessage, igtl::MessageBase);
   igtlNewMacro(igtl::GetPointMessage);
@@ -144,10 +143,10 @@ protected:
 class IGTLCommon_EXPORT PointMessage: public MessageBase
 {
 public:
-  typedef PointMessage               Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef PointMessage                    Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   igtlTypeMacro(igtl::PointMessage, igtl::MessageBase);
   igtlNewMacro(igtl::PointMessage);
@@ -187,6 +186,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlPointMessage_h
-
-
-

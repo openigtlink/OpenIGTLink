@@ -137,10 +137,10 @@ protected:
 class IGTLCommon_EXPORT GetImageMetaMessage: public MessageBase
 {
 public:
-  typedef GetImageMetaMessage            Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef GetImageMetaMessage             Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   igtlTypeMacro(igtl::GetImageMetaMessage, igtl::MessageBase);
   igtlNewMacro(igtl::GetImageMetaMessage);
@@ -163,10 +163,10 @@ protected:
 class IGTLCommon_EXPORT ImageMetaMessage: public MessageBase
 {
 public:
-  typedef ImageMetaMessage               Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef ImageMetaMessage                Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   igtlTypeMacro(igtl::ImageMetaMessage, igtl::MessageBase);
   igtlNewMacro(igtl::ImageMetaMessage);
@@ -206,6 +206,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlImageMetaMessage_h
-
-
-

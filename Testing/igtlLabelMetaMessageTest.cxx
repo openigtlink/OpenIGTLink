@@ -47,6 +47,7 @@ void BuildUpLabelElements()
   labelMetaElement2->SetSize(256,128,32);
   labelMetaElement2->SetOwner("IMAGE_0");
   labelMetaSendMsg = igtl::LabelMetaMessage::New();
+  labelMetaSendMsg->SetVersion(IGTL_HEADER_VERSION_1);
   labelMetaSendMsg->SetDeviceName("DeviceName");
   labelMetaSendMsg->SetTimeStamp(0, 1234567892);
   labelMetaSendMsg->AddLabelMetaElement(labelMetaElement0);

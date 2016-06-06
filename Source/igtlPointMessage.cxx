@@ -162,8 +162,7 @@ int PointElement::SetOwner(const char* owner)
 //----------------------------------------------------------------------
 // igtl::PointMessage class
 
-PointMessage::PointMessage():
-  MessageBase()
+PointMessage::PointMessage()
 {
   this->m_DefaultBodyType = "POINT";
   this->m_PointList.clear();
@@ -206,7 +205,18 @@ void PointMessage::GetPointElement(int index, PointElement::Pointer& elem)
 int PointMessage::GetBodyPackSize()
 {
   // The body size sum of the header size and status message size.
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    return IGTL_POINT_ELEMENT_SIZE * this->m_PointList.size() + IGTL_EXTENDED_HEADER_SIZE + GetMetaDataSize();
+  }
+  else
+  {
+    return IGTL_POINT_ELEMENT_SIZE * this->m_PointList.size();
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <= 2
   return IGTL_POINT_ELEMENT_SIZE * this->m_PointList.size();
+#endif
 }
 
 
@@ -217,8 +227,19 @@ int PointMessage::PackBody()
   
   igtl_point_element* element;
 
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    element = (igtl_point_element*)(this->m_Body + IGTL_EXTENDED_HEADER_SIZE);
+  }
+  else
+  {
+    element = (igtl_point_element*)this->m_Body;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   element = (igtl_point_element*)this->m_Body;
-
+#endif
+  igtl_point_element* elementHolder = element;
   std::vector<PointElement::Pointer>::iterator iter;
   for (iter = this->m_PointList.begin(); iter != this->m_PointList.end(); iter ++)
     {
@@ -245,20 +266,34 @@ int PointMessage::PackBody()
     element ++;
     }
 
-  igtl_point_convert_byte_order((igtl_point_element*)this->m_Body, this->m_PointList.size());
-
+  igtl_point_convert_byte_order(elementHolder, this->m_PointList.size());
+   
   return 1;
 }
 
 
 int PointMessage::UnpackBody()
 {
-
   this->m_PointList.clear();
-
-  igtl_point_element* element = (igtl_point_element*) this->m_Body;
-  int nElement = igtl_point_get_data_n(this->m_BodySizeToRead);
-
+  igtl_point_element* element = NULL;
+  int nElement = 0;
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    int bodySize = this->m_BodySizeToRead - this->metaDataTotalSize - IGTL_EXTENDED_HEADER_SIZE;
+    element = (igtl_point_element*) (this->m_Body+IGTL_EXTENDED_HEADER_SIZE);
+    nElement = igtl_point_get_data_n(bodySize);
+  }
+  else
+  {
+    element = (igtl_point_element*) this->m_Body;
+    nElement = igtl_point_get_data_n(this->m_BodySizeToRead);
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
+  element = (igtl_point_element*) this->m_Body;
+  nElement = igtl_point_get_data_n(this->m_BodySizeToRead);
+#endif
+  
   igtl_point_convert_byte_order(element, nElement);
   
   char strbuf[128];
@@ -293,8 +328,3 @@ int PointMessage::UnpackBody()
 }
 
 } // namespace igtl
-
-
-
-
-

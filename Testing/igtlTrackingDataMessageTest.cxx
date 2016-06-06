@@ -52,6 +52,7 @@ void BuildUpElements()
   trackingElement2->SetMatrix(inMatrix);
 
   trackingSendMsg = igtl::TrackingDataMessage::New();
+  trackingSendMsg->SetVersion(IGTL_HEADER_VERSION_1);
   trackingSendMsg->SetDeviceName("DeviceName");
   trackingSendMsg->SetTimeStamp(0, 1234567892);
   trackingSendMsg->AddTrackingDataElement(trackingElement0);

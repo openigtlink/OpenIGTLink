@@ -13,12 +13,15 @@ SET(OpenIGTLink_VERSION_MINOR "11")
 SET(OpenIGTLink_VERSION_PATCH "0")
 
 option(OpenIGTLink_PROTOCOL_VERSION_2 "Build Library for Protocol Version 2" ON)
+option(OpenIGTLink_PROTOCOL_VERSION_3 "Build Library for Protocol Version 3" ON)
 
-IF(OpenIGTLink_PROTOCOL_VERSION_2)
+IF(OpenIGTLink_PROTOCOL_VERSION_3)
+  SET(OpenIGTLink_PROTOCOL_VERSION "3")
+ELSEIF(OpenIGTLink_PROTOCOL_VERSION_2)
   SET(OpenIGTLink_PROTOCOL_VERSION "2")
-ELSE(OpenIGTLink_PROTOCOL_VERSION_2)
+ELSE(OpenIGTLink_PROTOCOL_VERSION_3)
   SET(OpenIGTLink_PROTOCOL_VERSION "1")
-ENDIF(OpenIGTLink_PROTOCOL_VERSION_2)
+ENDIF(OpenIGTLink_PROTOCOL_VERSION_3)
 
 
 #-----------------------------------------------------------------------------
@@ -267,18 +270,23 @@ SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${OpenIGTLink_REQUIR
 #-----------------------------------------------------------------------------
 # Configure Subdirectories
 
-ADD_SUBDIRECTORY( Source    )
-ADD_SUBDIRECTORY( Tools     )
+ADD_SUBDIRECTORY(Source)
+ADD_SUBDIRECTORY(Tools)
 
 IF(OpenIGTLink_BUILD_TESTING)
-  ADD_SUBDIRECTORY( Testing )
+  ADD_SUBDIRECTORY(Testing)
 ENDIF(OpenIGTLink_BUILD_TESTING)
 
 IF(OpenIGTLink_BUILD_EXAMPLES)
- ADD_SUBDIRECTORY( Examples )
+ ADD_SUBDIRECTORY(Examples)
 ENDIF(OpenIGTLink_BUILD_EXAMPLES)
 
-
+#-----------------------------------------------------------------------------
+# Export targets
+export(TARGETS 
+  OpenIGTLink
+  FILE "${CMAKE_BINARY_DIR}/OpenIGTLinkTargets.cmake"
+  )
 
 #-----------------------------------------------------------------------------
 # Doxygen 
@@ -286,9 +294,5 @@ ENDIF(OpenIGTLink_BUILD_EXAMPLES)
 OPTION(BUILD_DOCUMENTATION "Build OpenIGTLink Documentation" OFF)
 
 IF(BUILD_DOCUMENTATION)
-
   ADD_SUBDIRECTORY( Documents/Doxygen )
-               
 ENDIF(BUILD_DOCUMENTATION)
-
-

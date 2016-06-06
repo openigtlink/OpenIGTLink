@@ -25,6 +25,8 @@
 #include "igtlMessageHeader.h"
 
 #include <string>
+#include <map>
+#include <vector>
 
 namespace igtl
 {
@@ -73,14 +75,67 @@ public:
 
 public:
 
-  /// Sets the device (message) name.
+  /// Sets the message version number
+  void  SetVersion(unsigned short version);
+
+  /// Gets the message version number
+  unsigned short GetVersion() const;
+
+  /// Sets the device name.
   void  SetDeviceName(const char* name);
 
-  /// Gets the device (message) name.
+  /// Sets the device name.
+  void  SetDeviceName(const std::string& name);
+
+  /// Sets the device (message) type.
+  void  SetDeviceType(const std::string& type);
+
+  /// Gets the device name.
   const char* GetDeviceName();
+
+  /// Gets the device name.
+  std::string GetDeviceName() const;
 
   /// Gets the device (message) type.
   const char* GetDeviceType();
+  
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  /// Gets the message type.
+  std::string GetMessageType() const;
+  
+  /// Gets the size of the content in protocal version 3
+  int GetPackContentSize();
+  
+  /// Gets the size (length) of the byte array for the meta data.
+  /// The size is defined by the length of each meta data elements and the total number of
+  /// the meta data element.
+  igtlUint32 GetMetaDataSize()
+  {
+    return metaDataTotalSize;
+  };
+  
+  void SetMetaDataSize(igtlUint32 size)
+  {
+    metaDataTotalSize = size;
+  };
+  
+  
+  /// Add Meta data element
+  int AddMetaDataElement(std::string key, std::string value);
+  
+  /// Pack the meta data
+  void PackMetaData();
+  
+  /// Unpack Extended header
+  void UnpackExtendedHeader();
+  
+  /// Unpack Extended header and the meta data
+  void UnpackMetaData();
+  
+  /// Allocate memory for the Extended Header and the meta data
+  virtual void AllocateHeaderAndMetaData() {};
+  
+#endif
 
   /// Sets time of message creation. 'sec' and 'frac' are seconds and fractions of a second respectively.
   int   SetTimeStamp(unsigned int sec, unsigned int frac);
@@ -165,7 +220,7 @@ protected:
   virtual int  UnpackBody()      { return 0; };
 
   /// Allocates memory specifying the body size. This function is used when
-  /// creating a brank package to receive data)
+  /// creating a blank package to receive data)
   virtual void AllocatePack(int bodySize);
 
   /// Copies a header from 
@@ -178,12 +233,12 @@ protected:
 
   /// A pointer to the byte array for the serialized header. To prevent large
   /// copy of the byte array in the Pack() function, header byte array is
-  /// concatinated to the byte array for the body. 
+  /// concatenated to the byte array for the body. 
   unsigned char* m_Header;
 
   /// A pointer to the byte array for the serialized body. To prevent large
   /// copy of the byte array in the Pack() function, header byte array is
-  /// concatinated to the byte array for the header. 
+  /// concatenated to the byte array for the header. 
   unsigned char* m_Body;
 
   /// The size of the body to be read. This function must be called
@@ -194,30 +249,67 @@ protected:
   std::string    m_DefaultBodyType;
 
   /// A character string for the device type (message type). This will be used when the header
-  /// is desrialized from a byte stream received from the network.
+  /// is deserialized from a byte stream received from the network.
   std::string    m_BodyType;
+
+  /// An unsigned short for the message version
+  unsigned short m_Version;
 
   /// A character string for the device name (message name).
   std::string    m_DeviceName;
 
   /// A time stamp (second) for message creation. It consists of fields for seconds
-  /// (m_TimeStampSec)and franctions of a second (m_TimeStampSecFraction).
+  /// (m_TimeStampSec)and fractions of a second (m_TimeStampSecFraction).
   unsigned int   m_TimeStampSec;
 
   /// A time stamp (second) for message creation. It consists of fields for seconds
-  /// (m_TimeStampSec)and franctions of a second (m_TimeStampSecFraction).
+  /// (m_TimeStampSec)and fractions of a second (m_TimeStampSecFraction).
   unsigned int   m_TimeStampSecFraction;
 
-  /// Unpacking (desrialization) status for the header (0: --   1: unpacked).
+  /// Unpacking (deserialization) status for the header (0: --   1: unpacked).
   int            m_IsHeaderUnpacked;
 
-  /// Unpacking (desrialization) status for the body (0: --   1: unpacked).
+  /// Unpacking (deserialization) status for the body (0: --   1: unpacked).
   int            m_IsBodyUnpacked;
+
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+public:
+  /// A pointer to the serialized extended header.
+  unsigned char* m_ExtendedHeader;
+  
+  /// A pointer to the meta data.
+  unsigned char* m_MetaData;
+  
+  /// Total size of the meta data
+  igtlUint32 metaDataTotalSize;
+  
+  /// Message ID
+  igtlUint32 msgId;
+  
+  /// Index Count of the meta data
+  igtlUint16 indexCount;
+  
+  /// Vector storing the size of keys
+  std::vector<igtlUint16> keySize;
+  
+  /// Vector storing the value encoding for each meta data element
+  std::vector<igtlUint16> valueEncoding;
+  
+  /// Vector storing the size of value
+  std::vector<igtlUint32> valueSize;
+  
+  /// Vector storing the key value
+  std::vector<std::string> keys;
+  
+  /// Vector storing the size of value
+  std::vector<std::string> values;
+  
+#endif
 
 };
 
 
-/// A class for header-only message types, which are used for quearying.
+/// A class for header-only message types, which are used for querying.
 class IGTLCommon_EXPORT HeaderOnlyMessageBase: public MessageBase
 {
 public:

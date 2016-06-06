@@ -35,6 +35,7 @@ igtl::Matrix4x4 inMatrix = {{inT[0],inS[0],inN[0],inOrigin[0]},
 
 TEST(TransformMessageTest, Pack)
 {
+  transformSendMsg->SetVersion(IGTL_HEADER_VERSION_1);
   transformSendMsg->AllocatePack();
   transformSendMsg->SetTimeStamp(0, 1234567892);
   transformSendMsg->SetDeviceName("DeviceName");

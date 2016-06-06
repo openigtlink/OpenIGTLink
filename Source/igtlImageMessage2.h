@@ -46,7 +46,6 @@ public:
   igtlTypeMacro(igtl::GetImageMessage2, igtl::MessageBase);
   igtlNewMacro(igtl::GetImageMessage2);
 
-  
 protected:
   GetImageMessage2() : MessageBase() { this->m_DefaultBodyType  = "GET_IMAGE"; };
   ~GetImageMessage2() {};
@@ -90,7 +89,7 @@ public:
 
 public:
 
-  /// Coordinate sysmtem. Either left-posterior-superior (LPS) or right-anterior-superior (RAS).
+  /// Coordinate system. Either left-posterior-superior (LPS) or right-anterior-superior (RAS).
   enum {
     COORDINATE_RAS=1,
     COORDINATE_LPS=2
@@ -388,5 +387,3 @@ public:
 } // namespace igtl
 
 #endif // _igtlImageMessage2_h
-
-

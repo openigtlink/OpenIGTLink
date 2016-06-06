@@ -53,7 +53,7 @@ int SessionManager::AddMessageHandler(MessageHandler* handler)
   std::vector< MessageHandler* >::iterator iter;
   for (iter = this->m_MessageHandlerList.begin(); iter != this->m_MessageHandlerList.end(); iter ++)
     {
-    if (strcmp((*iter)->GetMessageType(), handler->GetMessageType()) == 0)
+    if ( (*iter)->GetMessageType() == handler->GetMessageType() )
       {
       return 0;
       }
@@ -252,7 +252,11 @@ int SessionManager::ProcessMessage()
     std::vector< MessageHandler* >::iterator iter;
     for (iter = this->m_MessageHandlerList.begin(); iter != this->m_MessageHandlerList.end(); iter ++)
       {
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+      if ( this->m_Header->GetMessageType() == (*iter)->GetMessageType() )
+#else
       if (strcmp(this->m_Header->GetDeviceType(), (*iter)->GetMessageType()) == 0)
+#endif
         {
         this->m_CurrentMessageHandler = *iter;
         found = 1;
@@ -263,7 +267,11 @@ int SessionManager::ProcessMessage()
     // If there is no message handler, skip the message
     if (!found)
       {
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+      std::cerr << "Receiving: " << this->m_Header->GetMessageType() << std::endl;
+#else
       std::cerr << "Receiving: " << this->m_Header->GetDeviceType() << std::endl;
+#endif
       this->m_Socket->Skip(this->m_Header->GetBodySizeToRead(), 0);
       // Reset the index counter to be ready for the next message
       this->m_CurrentReadIndex = 0;

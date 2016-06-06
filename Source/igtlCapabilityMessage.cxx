@@ -37,6 +37,11 @@ CapabilityMessage::CapabilityMessage():
 {
   this->m_DefaultBodyType = "CAPABILITY";
   this->m_TypeNames.clear();
+/// CapabilityMessage stay the same as previous versions, set m_Version = 1
+/// to make the pack and unpack procedures the same as OpenIGTLink_PROTOCOL_VERSION 1
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  m_Version = IGTL_HEADER_VERSION_1;
+#endif
 }
 
 
@@ -44,27 +49,6 @@ CapabilityMessage::~CapabilityMessage()
 {
   this->m_TypeNames.clear();
 }
-
-
-//void CapabilityMessage::SetTypes(int ntypes, const char names[][IGTL_HEADER_TYPE_SIZE])
-//{
-//  this->m_TypeNames.clear();
-//
-//  for(int i = 0; i < ntypes; i++)
-//    {
-//    std::string buf;
-//    if (strnlen(names[i], IGTL_HEADER_TYPE_SIZE) < IGTL_HEADER_TYPE_SIZE)
-//      {
-//      buf.append(names[i]);
-//      }
-//    else
-//      {
-//      buf.append(names[i], IGTL_HEADER_TYPE_SIZE);
-//      }
-//    this->m_TypeNames.push_back(buf);
-//    }
-//}
-
 
 void CapabilityMessage::SetTypes(std::vector<std::string> types)
 {

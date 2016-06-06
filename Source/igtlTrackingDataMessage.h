@@ -104,10 +104,10 @@ class IGTLCommon_EXPORT StartTrackingDataMessage: public MessageBase
 {
 
 public:
-  typedef StartTrackingDataMessage       Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef StartTrackingDataMessage        Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   igtlTypeMacro(igtl::StartTrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StartTrackingDataMessage);
@@ -149,10 +149,10 @@ protected:
 class IGTLCommon_EXPORT StopTrackingDataMessage: public MessageBase
 {
 public:
-  typedef StopTrackingDataMessage        Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef StopTrackingDataMessage         Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   igtlTypeMacro(igtl::StopTrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StopTrackingDataMessage);
@@ -173,10 +173,10 @@ protected:
 class IGTLCommon_EXPORT RTSTrackingDataMessage: public MessageBase
 {
 public:
-  typedef RTSTrackingDataMessage         Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef RTSTrackingDataMessage          Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   /// Status type
   enum {
@@ -216,10 +216,10 @@ protected:
 class IGTLCommon_EXPORT TrackingDataMessage: public MessageBase
 {
 public:
-  typedef TrackingDataMessage            Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef TrackingDataMessage             Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   igtlTypeMacro(igtl::TrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::TrackingDataMessage);
@@ -251,7 +251,7 @@ protected:
   virtual int  PackBody();
   virtual int  UnpackBody();
 
-  /// The list of trakcing data elements.  
+  /// The list of tracking data elements.  
   std::vector<TrackingDataElement::Pointer> m_TrackingDataList;
   
 };
@@ -260,6 +260,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlTrackingDataMessage_h
-
-
-

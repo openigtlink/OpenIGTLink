@@ -13,7 +13,7 @@ SET(EXAMPLE_DIRS
   Thread
   )
 
-if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
+if (${OpenIGTLink_PROTOCOL_VERSION} GREATER 1)
   SET(EXAMPLE_DIRS
     ${EXAMPLE_DIRS}
     ImageMeta
@@ -28,9 +28,9 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     Trajectory
     SessionManager
     )
-endif (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
+endif (${OpenIGTLink_PROTOCOL_VERSION} GREATER 1)
 
-
+message(${EXAMPLE_DIRS})
 ## Imager program isn't supported by QNX
 
 if(NOT OpenIGTLink_PLATFORM_QNX)

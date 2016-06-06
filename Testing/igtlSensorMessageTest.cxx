@@ -42,6 +42,7 @@ void UnitInitization()
 TEST(SensorMessageTest, Pack)
 {
   UnitInitization();
+  sensorDataSendMsg->SetVersion(IGTL_HEADER_VERSION_1);
   sensorDataSendMsg->AllocatePack();
   sensorDataSendMsg->SetLength(6);
   sensorDataSendMsg->SetDeviceName("DeviceName");

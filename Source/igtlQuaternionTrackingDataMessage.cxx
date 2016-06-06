@@ -153,8 +153,7 @@ void QuaternionTrackingDataElement::GetQuaternion(float* qx, float* qy, float* q
 //----------------------------------------------------------------------
 // igtl::StartQuaternionTrackingDataMessage class
 
-StartQuaternionTrackingDataMessage::StartQuaternionTrackingDataMessage():
-  MessageBase()
+StartQuaternionTrackingDataMessage::StartQuaternionTrackingDataMessage()
 {
   this->m_DefaultBodyType = "STT_QTDATA";
   this->m_Resolution      = 0;
@@ -222,6 +221,12 @@ int StartQuaternionTrackingDataMessage::UnpackBody()
 }
 
 
+RTSQuaternionTrackingDataMessage::RTSQuaternionTrackingDataMessage() 
+  : m_Status(0)
+{
+  this->m_DefaultBodyType  = "RTS_QTDATA";
+}
+
 //----------------------------------------------------------------------
 // igtl::RTSQuaternionTrackingDataMessage class
 
@@ -260,8 +265,7 @@ int  RTSQuaternionTrackingDataMessage::UnpackBody()
 //----------------------------------------------------------------------
 // igtl::QuaternionTrackingDataMessage class
 
-QuaternionTrackingDataMessage::QuaternionTrackingDataMessage():
-  MessageBase()
+QuaternionTrackingDataMessage::QuaternionTrackingDataMessage()
 {
   this->m_DefaultBodyType = "QTDATA";
   this->m_QuaternionTrackingDataList.clear();
@@ -304,7 +308,18 @@ void QuaternionTrackingDataMessage::GetQuaternionTrackingDataElement(int index, 
 int QuaternionTrackingDataMessage::GetBodyPackSize()
 {
   // The body size sum of the header size and status message size.
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    return IGTL_QTDATA_ELEMENT_SIZE * this->m_QuaternionTrackingDataList.size() + IGTL_EXTENDED_HEADER_SIZE + GetMetaDataSize();
+  }
+  else
+  {
+    return IGTL_QTDATA_ELEMENT_SIZE * this->m_QuaternionTrackingDataList.size();
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <= 2
   return IGTL_QTDATA_ELEMENT_SIZE * this->m_QuaternionTrackingDataList.size();
+#endif
 }
 
 
@@ -313,10 +328,22 @@ int QuaternionTrackingDataMessage::PackBody()
   // allocate pack
   AllocatePack();
   
-  igtl_qtdata_element* element;
+  igtl_qtdata_element* element = NULL;
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    element = (igtl_qtdata_element*)(this->m_Body + IGTL_EXTENDED_HEADER_SIZE);
+  }
+  else
+  {
+    element = (igtl_qtdata_element*)this->m_Body;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   element = (igtl_qtdata_element*)this->m_Body;
+#endif
+  
+  igtl_qtdata_element * elementHolder = element;
   std::vector<QuaternionTrackingDataElement::Pointer>::iterator iter;
-
   for (iter = this->m_QuaternionTrackingDataList.begin(); iter != this->m_QuaternionTrackingDataList.end(); iter ++)
     {
     strncpy((char*)element->name, (*iter)->GetName(), IGTL_QTDATA_LEN_NAME);
@@ -339,7 +366,7 @@ int QuaternionTrackingDataMessage::PackBody()
     element ++;
     }
   
-  igtl_qtdata_convert_byte_order((igtl_qtdata_element*)this->m_Body, this->m_QuaternionTrackingDataList.size());
+  igtl_qtdata_convert_byte_order(elementHolder, this->m_QuaternionTrackingDataList.size());
   
   return 1;
 }
@@ -350,9 +377,24 @@ int QuaternionTrackingDataMessage::UnpackBody()
 
   this->m_QuaternionTrackingDataList.clear();
 
-  igtl_qtdata_element* element = (igtl_qtdata_element*) this->m_Body;
-  int nElement = igtl_qtdata_get_data_n(this->m_BodySizeToRead);
-
+  igtl_qtdata_element* element = NULL;
+  int nElement = 0;
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    int bodySize = this->m_BodySizeToRead - this->metaDataTotalSize - IGTL_EXTENDED_HEADER_SIZE;
+    element = (igtl_qtdata_element*) (this->m_Body+IGTL_EXTENDED_HEADER_SIZE);
+    nElement = igtl_qtdata_get_data_n(bodySize);
+  }
+  else
+  {
+    element = (igtl_qtdata_element*) this->m_Body;
+    nElement = igtl_qtdata_get_data_n(this->m_BodySizeToRead);
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
+  element = (igtl_qtdata_element*) this->m_Body;
+  nElement = igtl_qtdata_get_data_n(this->m_BodySizeToRead);
+#endif
   igtl_qtdata_convert_byte_order(element, nElement);
   
   char strbuf[128];
@@ -390,9 +432,9 @@ int QuaternionTrackingDataMessage::UnpackBody()
   return 1;
 }
 
+StopQuaternionTrackingDataMessage::StopQuaternionTrackingDataMessage()
+{
+  this->m_DefaultBodyType  = "STP_QTDATA";
+}
+
 } // namespace igtl
-
-
-
-
-
