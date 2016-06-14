@@ -41,6 +41,7 @@ MessageBase::MessageBase():
   m_Version = IGTL_HEADER_VERSION_3;
   metaDataTotalSize = 2;
   indexCount= 0;
+  msgId = 0;
   m_ExtendedHeader = NULL;
   m_MetaData = NULL;
   keySize.clear();
@@ -123,11 +124,11 @@ std::string MessageBase::GetMessageType() const
 }
 
   
-int MessageBase::AddMetaDataElement(std::string key, std::string value)
+  int MessageBase::AddMetaDataElement(std::string key, igtlUint16 encodingScheme, std::string value)
 {
   igtlUint16 keyLength = key.length();
   this->keySize.push_back(keyLength);
-  this->valueEncoding.push_back(0);
+  this->valueEncoding.push_back(encodingScheme);
   igtlUint16 valueLength = value.length();
   this->valueSize.push_back(valueLength);
   this->keys.push_back(key);
@@ -147,7 +148,7 @@ void MessageBase::PackMetaData()
     igtl_extended_header* extended_header = (igtl_extended_header*) m_ExtendedHeader;
     extended_header->extended_header_size = IGTL_EXTENDED_HEADER_SIZE;
     extended_header->meta_data_size       = this->GetMetaDataSize();
-    extended_header->msg_id               = 0;
+    extended_header->msg_id               = this->GetMsgID();
     extended_header->reserved             = 0;
     igtl_extended_header_convert_byte_order(extended_header);
     igtl_uint16 index_count = this->indexCount; // first two byte are the total number of meta data

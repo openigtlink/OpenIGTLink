@@ -108,7 +108,12 @@ int main(int argc, char* argv[])
               imgMsg->SetDeviceName("ImagerClient");
               imgMsg->SetSubVolume(svsize, svoffset);
               imgMsg->SetVersion(headerMsg->GetVersion());
-              imgMsg->AddMetaDataElement("A stupid idiot", "yes it is");
+              if (headerMsg->GetVersion() == IGTL_HEADER_VERSION_3)
+              {
+                unsigned short codingScheme = 3; // 3 corresponding to US-ASCII
+                imgMsg->AddMetaDataElement("Patient age", codingScheme, "25");
+                imgMsg->SetMsgID(i);
+              }
               imgMsg->AllocateScalars();
               
               //------------------------------------------------------------

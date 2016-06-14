@@ -159,7 +159,8 @@ int ReceiveImageData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::P
     {
       for (int i = 0; i <imageData->keys.size(); i++)
       {
-        std::cerr<< imageData->keys[i]<< " " << imageData->values[i] << std::endl;
+        std::cerr<<"The message ID is:"<< " " << imageData->msgId << std::endl;
+        std::cerr<< imageData->keys[i]<< " coding scheme: " <<imageData->valueEncoding[i]<<" "<<imageData->values[i] << std::endl;
       }
     }
     SaveTestImage(imageData, loop);

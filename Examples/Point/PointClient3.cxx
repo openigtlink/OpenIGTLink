@@ -125,7 +125,8 @@ int main(int argc, char* argv[])
         {
           for (int i = 0; i <pointData->keys.size(); i++)
           {
-            std::cerr<< pointData->keys[i]<< " " << pointData->values[i] << std::endl;
+            std::cerr<<"The message ID is:"<< " " << pointData->msgId << std::endl;
+            std::cerr<< pointData->keys[i]<< " coding scheme: "<<pointData->valueEncoding[i]<<" "<< pointData->values[i] << std::endl;
           }
         }
       }

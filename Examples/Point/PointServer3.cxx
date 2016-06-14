@@ -121,8 +121,13 @@ int main(int argc, char* argv[])
               pointMsg->AddPointElement(point1);
               pointMsg->AddPointElement(point2);
               pointMsg->SetVersion(headerMsg->GetVersion());
-              pointMsg->AddMetaDataElement("A stupid idiot", "yes it is");
-              pointMsg->AddMetaDataElement("Two stupid idiot", "yes they are");
+              if (headerMsg->GetVersion() == IGTL_HEADER_VERSION_3)
+              {
+                unsigned short codingScheme = 3; // 3 corresponding to US-ASCII
+                pointMsg->AddMetaDataElement("First patient age", codingScheme, "22");
+                pointMsg->AddMetaDataElement("Second patient age",codingScheme, "25");
+                pointMsg->SetMsgID(i);
+              }
               pointMsg->Pack();
               
               //---------------------------

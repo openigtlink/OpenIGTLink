@@ -119,9 +119,21 @@ public:
     metaDataTotalSize = size;
   };
   
+  /// Gets the message ID (length) of packed message
+  igtlUint32 GetMsgID()
+  {
+    return msgId;
+  };
+  
+  void SetMsgID(igtlUint32 idValue)
+  {
+    msgId = idValue;
+  };
+  
+  
   
   /// Add Meta data element
-  int AddMetaDataElement(std::string key, std::string value);
+  int AddMetaDataElement(std::string key, igtlUint16 encodingScheme, std::string value);
   
   /// Pack the meta data
   void PackMetaData();
