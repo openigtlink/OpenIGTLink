@@ -112,6 +112,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtlutil/igtl_lbmeta.c
     igtlutil/igtl_point.c
     igtlutil/igtl_tdata.c
+    igtlutil/igtl_fulltdata.c
     igtlutil/igtl_qtdata.c
     igtlutil/igtl_trajectory.c
     igtlutil/igtl_unit.c
@@ -123,6 +124,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtlutil/igtl_polydata.c
     igtlColorTableMessage.cxx
     igtlCapabilityMessage.cxx
+    igtlFullTrackingDataWithErrorMessage.cxx
     igtlImageMetaMessage.cxx
     igtlLabelMetaMessage.cxx
     igtlPointMessage.cxx
@@ -143,6 +145,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtlutil/igtl_lbmeta.h
     igtlutil/igtl_point.h
     igtlutil/igtl_tdata.h
+    igtlutil/igtl_fulltdata.h
     igtlutil/igtl_qtdata.h
     igtlutil/igtl_trajectory.h
     igtlutil/igtl_unit.h
@@ -154,6 +157,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtlutil/igtl_polydata.h
     igtlColorTableMessage.h
     igtlCapabilityMessage.h
+    igtlFullTrackingDataWithErrorMessage.h
     igtlImageMetaMessage.h
     igtlLabelMetaMessage.h
     igtlPointMessage.h
