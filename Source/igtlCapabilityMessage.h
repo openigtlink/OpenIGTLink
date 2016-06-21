@@ -52,9 +52,9 @@ protected:
 
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  GetContentPackSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
   std::vector<std::string>  m_TypeNames;
 

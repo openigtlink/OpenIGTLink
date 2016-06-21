@@ -159,7 +159,7 @@ void TrackingDataElement::GetMatrix(Matrix4x4& mat)
 
 StartTrackingDataMessage::StartTrackingDataMessage()
 {
-  this->m_DefaultBodyType = "STT_TDATA";
+  this->m_SendMessageType = "STT_TDATA";
   this->m_Resolution      = 0;
   this->m_CoordinateName  = "";
 }
@@ -184,17 +184,28 @@ int StartTrackingDataMessage::SetCoordinateName(const char* name)
 }
 
 
-int StartTrackingDataMessage::GetBodyPackSize()
+int StartTrackingDataMessage::GetContentPackSize()
 {
   return IGTL_STT_TDATA_SIZE;
 }
 
 
-int StartTrackingDataMessage::PackBody()
+int StartTrackingDataMessage::PackContent()
 {
-  AllocatePack();
-
-  igtl_stt_tdata* stt_tdata = (igtl_stt_tdata*)this->m_Body;
+  AllocateBuffer();
+  igtl_stt_tdata* stt_tdata = NULL;
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+     stt_tdata = (igtl_stt_tdata*)(this->m_Content);
+  }
+  else
+  {
+    stt_tdata = (igtl_stt_tdata*)this->m_Body;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
+  stt_tdata = (igtl_stt_tdata*)this->m_Body;
+#endif
 
   stt_tdata->resolution = this->m_Resolution;
   strncpy(stt_tdata->coord_name, this->m_CoordinateName.c_str(), IGTL_STT_TDATA_LEN_COORDNAME);
@@ -206,9 +217,21 @@ int StartTrackingDataMessage::PackBody()
 }
 
 
-int StartTrackingDataMessage::UnpackBody()
+int StartTrackingDataMessage::UnpackContent()
 {
-  igtl_stt_tdata* stt_tdata = (igtl_stt_tdata*)this->m_Body;
+  igtl_stt_tdata* stt_tdata = NULL;
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    stt_tdata = (igtl_stt_tdata*)(this->m_Content);
+  }
+  else
+  {
+    stt_tdata = (igtl_stt_tdata*)this->m_Body;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
+  stt_tdata = (igtl_stt_tdata*)this->m_Body;
+#endif
   
   igtl_stt_tdata_convert_byte_order(stt_tdata);
 
@@ -228,14 +251,14 @@ int StartTrackingDataMessage::UnpackBody()
 //----------------------------------------------------------------------
 // igtl::RTSTrackingDataMessage class
 
-int  RTSTrackingDataMessage::GetBodyPackSize()
+int  RTSTrackingDataMessage::GetContentPackSize()
 { 
   return IGTL_RTS_TDATA_SIZE; 
 }
 
-int  RTSTrackingDataMessage::PackBody()
+int  RTSTrackingDataMessage::PackContent()
 {
-  AllocatePack(); 
+  AllocateBuffer(); 
 
   igtl_rts_tdata* rts_tdata = (igtl_rts_tdata*)this->m_Body;
 
@@ -247,7 +270,7 @@ int  RTSTrackingDataMessage::PackBody()
 }
 
 
-int  RTSTrackingDataMessage::UnpackBody()
+int  RTSTrackingDataMessage::UnpackContent()
 { 
   igtl_rts_tdata* rts_tdata = (igtl_rts_tdata*)this->m_Body;
   
@@ -265,7 +288,7 @@ int  RTSTrackingDataMessage::UnpackBody()
 
 TrackingDataMessage::TrackingDataMessage()
 {
-  this->m_DefaultBodyType = "TDATA";
+  this->m_SendMessageType = "TDATA";
   this->m_TrackingDataList.clear();
 }
 
@@ -303,17 +326,17 @@ void TrackingDataMessage::GetTrackingDataElement(int index, TrackingDataElement:
 }
 
 
-int TrackingDataMessage::GetBodyPackSize()
+int TrackingDataMessage::GetContentPackSize()
 {
   // The body size sum of the header size and status message size.
   return IGTL_TDATA_ELEMENT_SIZE * this->m_TrackingDataList.size();
 }
 
 
-int TrackingDataMessage::PackBody()
+int TrackingDataMessage::PackContent()
 {
-  // allocate pack
-  AllocatePack();
+  // Allocate buffer
+  AllocateBuffer();
   
   igtl_tdata_element* element;
   element = (igtl_tdata_element*)this->m_Body;
@@ -342,7 +365,7 @@ int TrackingDataMessage::PackBody()
 }
 
 
-int TrackingDataMessage::UnpackBody()
+int TrackingDataMessage::UnpackContent()
 {
 
   this->m_TrackingDataList.clear();
@@ -384,8 +407,3 @@ int TrackingDataMessage::UnpackBody()
 }
 
 } // namespace igtl
-
-
-
-
-

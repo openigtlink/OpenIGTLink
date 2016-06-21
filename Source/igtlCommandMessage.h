@@ -81,9 +81,9 @@ protected:
   ~CommandMessage();
 
 protected:
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  GetContentPackSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
   /// The unique ID of the command
   igtlUint32   m_CommandId;

@@ -31,7 +31,7 @@ StatusMessage::StatusMessage():
   m_StatusMessage = NULL;
 
   m_ErrorName[0]        = '\n';
-  m_DefaultBodyType     = "STATUS";
+  m_SendMessageType     = "STATUS";
   m_StatusMessageString = "";
 
 }
@@ -90,20 +90,31 @@ const char* StatusMessage::GetStatusString()
 }
 
 
-int StatusMessage::GetBodyPackSize()
+int StatusMessage::GetContentPackSize()
 {
   // The body size sum of the header size and status message size.
   // Note that the status message ends with '\0'
   return IGTL_STATUS_HEADER_SIZE + m_StatusMessageString.size() + 1;
 }
 
-int StatusMessage::PackBody()
+int StatusMessage::PackContent()
 {
-  // allocate pack
-  AllocatePack();
+  // Allocate buffer
+  AllocateBuffer();
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    m_StatusHeader = this->m_Content;
+  }
+  else
+  {
+    m_StatusHeader = this->m_Body;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   m_StatusHeader = this->m_Body;
+#endif
+  
   m_StatusMessage = (char*)&m_StatusHeader[IGTL_STATUS_HEADER_SIZE];
-
   igtl_status_header* status_header = (igtl_status_header*)this->m_StatusHeader;
 
   status_header->code    = static_cast<igtlUint16>(this->m_Code);
@@ -116,9 +127,20 @@ int StatusMessage::PackBody()
   return 1;
 }
 
-int StatusMessage::UnpackBody()
+int StatusMessage::UnpackContent()
 {
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    m_StatusHeader = this->m_Content;
+  }
+  else
+  {
+    m_StatusHeader = this->m_Body;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   m_StatusHeader = this->m_Body;
+#endif
   m_StatusMessage = (char*)&m_StatusHeader[IGTL_STATUS_HEADER_SIZE];
 
   igtl_status_header* status_header = (igtl_status_header*)this->m_StatusHeader;
@@ -143,8 +165,3 @@ int StatusMessage::UnpackBody()
 }
 
 } // namespace igtl
-
-
-
-
-

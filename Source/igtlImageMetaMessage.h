@@ -146,12 +146,12 @@ public:
   igtlNewMacro(igtl::GetImageMetaMessage);
 
 protected:
-  GetImageMetaMessage() : MessageBase() { this->m_DefaultBodyType  = "GET_IMGMETA"; };
+  GetImageMetaMessage() : MessageBase() { this->m_SendMessageType  = "GET_IMGMETA"; };
   ~GetImageMetaMessage() {};
 protected:
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
+  virtual int  GetContentPackSize() { return 0; };
+  virtual int  PackContent()        { AllocateBuffer(); return 1; };
+  virtual int  UnpackContent()      { return 1; };
 };
 
 
@@ -193,9 +193,9 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  GetContentPackSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
   /// A list of pointers to image meta data.
   std::vector<ImageMetaElement::Pointer> m_ImageMetaList;

@@ -141,9 +141,9 @@ protected:
   ~StartQuaternionTrackingDataMessage();
 
 protected:
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  GetContentPackSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
 protected:
 
@@ -172,9 +172,9 @@ protected:
   ~StopQuaternionTrackingDataMessage() {};
 
 protected:
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
+  virtual int  GetContentPackSize() { return 0; };
+  virtual int  PackContent()        { AllocateBuffer(); return 1; };
+  virtual int  UnpackContent()      { return 1; };
 
 };
 
@@ -211,9 +211,9 @@ protected:
   igtlUint8 m_Status;
 
 protected:
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  GetContentPackSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
 };
 
@@ -253,9 +253,9 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  GetContentPackSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
   
   /// The list of tracking data elements.
   std::vector<QuaternionTrackingDataElement::Pointer> m_QuaternionTrackingDataList;

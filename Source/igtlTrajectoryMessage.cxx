@@ -216,7 +216,7 @@ int TrajectoryElement::SetOwner(const char* owner)
 // igtl::TrajectoryMessage class
 TrajectoryMessage::TrajectoryMessage()
 {
-  this->m_DefaultBodyType = "TRAJ";
+  this->m_SendMessageType = "TRAJ";
   this->m_TrajectoryList.clear();
 }
 
@@ -254,22 +254,31 @@ void TrajectoryMessage::GetTrajectoryElement(int index, TrajectoryElement::Point
 }
 
 
-int TrajectoryMessage::GetBodyPackSize()
+int TrajectoryMessage::GetContentPackSize()
 {
-  // The body size sum of the header size and status message size.
   return IGTL_TRAJECTORY_ELEMENT_SIZE * this->m_TrajectoryList.size();
 }
 
 
-int TrajectoryMessage::PackBody()
+int TrajectoryMessage::PackContent()
 {
-  // allocate pack
-  AllocatePack();
+  // Allocate buffer
+  AllocateBuffer();
   
-  igtl_trajectory_element* element;
-
+  igtl_trajectory_element* element = NULL;
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    element = (igtl_trajectory_element*)(this->m_Content);
+  }
+  else
+  {
+    element = (igtl_trajectory_element*)this->m_Body;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   element = (igtl_trajectory_element*)this->m_Body;
-
+#endif
+  igtl_trajectory_element * elementHolder = element;
   std::vector<TrajectoryElement::Pointer>::iterator iter;
   for (iter = this->m_TrajectoryList.begin(); iter != this->m_TrajectoryList.end(); iter ++)
     {
@@ -303,20 +312,27 @@ int TrajectoryMessage::PackBody()
     element ++;
     }
 
-  igtl_trajectory_convert_byte_order((igtl_trajectory_element*)this->m_Body, this->m_TrajectoryList.size());
+  igtl_trajectory_convert_byte_order(elementHolder, this->m_TrajectoryList.size());
 
   return 1;
 }
 
 
-int TrajectoryMessage::UnpackBody()
+int TrajectoryMessage::UnpackContent()
 {
 
   this->m_TrajectoryList.clear();
 
-  igtl_trajectory_element* element = (igtl_trajectory_element*) this->m_Body;
-  int nElement = igtl_trajectory_get_data_n(this->m_BodySizeToRead);
-
+  igtl_trajectory_element* element = NULL;
+  int nElement = 0;
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  element = (igtl_trajectory_element*)(this->m_Content);
+  nElement = igtl_trajectory_get_data_n(GetCalculatedContentSize());
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
+  element = (igtl_trajectory_element*)this->m_Body;
+  nElement = igtl_trajectory_get_data_n(this->m_BodySizeToRead);
+#endif
+  
   igtl_trajectory_convert_byte_order(element, nElement);
   
   char strbuf[128];
@@ -354,8 +370,3 @@ int TrajectoryMessage::UnpackBody()
 }
 
 } // namespace igtl
-
-
-
-
-

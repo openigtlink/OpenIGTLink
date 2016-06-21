@@ -55,6 +55,7 @@ void BuildUpElements()
   trajectoryElement2->SetRadius(0.0);
   trajectoryElement2->SetOwner("IMAGE_0");
   trajectorySendMsg = igtl::TrajectoryMessage::New();
+  trajectorySendMsg->SetVersion(IGTL_HEADER_VERSION_1);
   trajectorySendMsg->SetDeviceName("DeviceName");
   trajectorySendMsg->SetTimeStamp(0, 1234567892);
   trajectorySendMsg->AddTrajectoryElement(trajectoryElement0);

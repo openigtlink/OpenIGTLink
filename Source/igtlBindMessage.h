@@ -109,9 +109,9 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  GetContentPackSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
 };
 
@@ -142,9 +142,9 @@ protected:
   
 protected:
   
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  GetContentPackSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
 };
 
@@ -179,9 +179,9 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  GetContentPackSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
   igtlUint64   m_Resolution;
 
@@ -202,13 +202,13 @@ public:
   igtlNewMacro(igtl::StopBindMessage);
 
 protected:
-  StopBindMessage() : MessageBase() { this->m_DefaultBodyType  = "STP_BIND"; };
+  StopBindMessage() : MessageBase() { this->m_SendMessageType  = "STP_BIND"; };
   ~StopBindMessage() {};
 
 protected:
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
+  virtual int  GetContentPackSize() { return 0; };
+  virtual int  PackContent()        { AllocateBuffer(); return 1; };
+  virtual int  UnpackContent()      { return 1; };
 
 };
 
@@ -239,16 +239,16 @@ public:
   igtlUint8     GetStatus()                { return this->m_Status; };
 
 protected:
-  RTSBindMessage() : MessageBase(), m_Status(0) { this->m_DefaultBodyType  = "RTS_BIND"; };
+  RTSBindMessage() : MessageBase(), m_Status(0) { this->m_SendMessageType  = "RTS_BIND"; };
   ~RTSBindMessage() {};
 
   /// Stores the status for the start/stop request.
   igtlUint8 m_Status;
 
 protected:
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  GetContentPackSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
 };
 

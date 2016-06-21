@@ -65,9 +65,9 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  GetContentPackSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
   
   /// The encoding of the string.
   /// The value is defined in IANA Character Sets (http://www.iana.org/assignments/character-sets).

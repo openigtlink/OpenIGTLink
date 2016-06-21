@@ -37,7 +37,7 @@ public:
   igtlNewMacro(igtl::GetStatusMessage);
 
 protected:
-  GetStatusMessage() : HeaderOnlyMessageBase() { this->m_DefaultBodyType  = "GET_STATUS"; };
+  GetStatusMessage() : HeaderOnlyMessageBase() { this->m_SendMessageType  = "GET_STATUS"; };
   ~GetStatusMessage() {};
 };
 
@@ -120,9 +120,9 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  GetContentPackSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
   /// The error code.
   igtlUint16   m_Code;
@@ -148,6 +148,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlStatusMessage_h
-
-
-

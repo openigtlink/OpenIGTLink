@@ -132,12 +132,12 @@ public:
   igtlNewMacro(igtl::GetLabelMetaMessage);
 
 protected:
-  GetLabelMetaMessage() : MessageBase() { this->m_DefaultBodyType  = "GET_LBMETA"; };
+  GetLabelMetaMessage() : MessageBase() { this->m_SendMessageType  = "GET_LBMETA"; };
   ~GetLabelMetaMessage() {};
 protected:
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
+  virtual int  GetContentPackSize() { return 0; };
+  virtual int  PackContent()        { AllocateBuffer(); return 1; };
+  virtual int  UnpackContent()      { return 1; };
 };
 
 
@@ -176,9 +176,9 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  GetContentPackSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
   
   // A list of pointers to label meta data.
   std::vector<LabelMetaElement::Pointer> m_LabelMetaList;

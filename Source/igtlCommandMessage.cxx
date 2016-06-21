@@ -48,7 +48,7 @@ CommandMessage::CommandMessage()
 {
   memset(m_CommandName, 0, IGTL_COMMAND_NAME_SIZE);
   this->m_Version = IGTL_HEADER_VERSION_3;
-  this->m_DefaultBodyType = "COMMAND";
+  this->m_SendMessageType = "COMMAND";
   this->m_Command.clear();
 }
 
@@ -145,23 +145,28 @@ igtlUint16 CommandMessage::GetContentEncoding() const
 }
 
 
-int CommandMessage::GetBodyPackSize()
+int CommandMessage::GetContentPackSize()
 {
   // Body pack size is the sum of ENCODING, LENGTH and STRING fields
   return sizeof(igtl_command_header) + this->m_Command.length();
 }
 
 
-int CommandMessage::PackBody()
+int CommandMessage::PackContent()
 {
-  // Allocate pack
-  AllocatePack();
+  // Allocate buffer
+  AllocateBuffer();
   igtl_command_header * command_header;
   char * command;
 
   // Set pointers
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  command_header = (igtl_command_header*) this->m_Content;
+  command        = (char *) this->m_Content + sizeof(igtl_command_header);
+#else
   command_header = (igtl_command_header*) this->m_Body;
   command        = (char *) this->m_Body + sizeof(igtl_command_header);
+#endif
 
   // Copy data
   command_header->encoding = static_cast<igtlUint16>(this->m_Encoding);
@@ -176,14 +181,18 @@ int CommandMessage::PackBody()
   return 1;
 }
 
-int CommandMessage::UnpackBody()
+int CommandMessage::UnpackContent()
 {
-
   igtl_command_header * command_header;
   char * command;
 
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  command_header = (igtl_command_header*) this->m_Content;
+  command        = (char *) this->m_Content + sizeof(igtl_command_header);
+#else
   command_header = (igtl_command_header*) this->m_Body;
-  command        = (char*) (this->m_Body + sizeof(igtl_command_header));
+  command        = (char *) this->m_Body + sizeof(igtl_command_header);
+#endif
 
   // Convert byte order from network to host
   igtl_command_convert_byte_order(command_header);
@@ -230,7 +239,7 @@ std::string RTSCommandMessage::GetCommandErrorString() const
 RTSCommandMessage::RTSCommandMessage()
   : CommandMessage()
 {
-  this->m_DefaultBodyType = std::string("RTS_COMMAND");
+  this->m_SendMessageType = std::string("RTS_COMMAND");
 }
 
 

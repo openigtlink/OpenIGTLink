@@ -19,6 +19,7 @@
 #include "igtlMacro.h"
 #include "igtlMath.h"
 #include "igtlMessageBase.h"
+#include "igtl_header.h"
 
 namespace igtl
 {
@@ -37,9 +38,28 @@ public:
 
 protected:
 
- GetImageMessage() : HeaderOnlyMessageBase() { this->m_DefaultBodyType  = "GET_IMAGE"; };
+ GetImageMessage() : HeaderOnlyMessageBase() { this->m_SendMessageType  = "GET_IMAGE";};
   ~GetImageMessage() {};
 
+};
+
+// A class for the STP_IMAGE message type.
+class IGTLCommon_EXPORT StopImageMessage: public HeaderOnlyMessageBase
+{
+public:
+  typedef StopImageMessage                Self;
+  typedef HeaderOnlyMessageBase          Superclass;
+  typedef SmartPointer<Self>             Pointer;
+  typedef SmartPointer<const Self>       ConstPointer;
+  
+  igtlTypeMacro(igtl::StopImageMessage, igtl::HeaderOnlyMessageBase);
+  igtlNewMacro(igtl::StopImageMessage);
+  
+protected:
+  
+  StopImageMessage() : HeaderOnlyMessageBase() { this->m_SendMessageType  = "STP_IMAGE";};
+  ~StopImageMessage() {};
+  
 };
 
 
@@ -251,7 +271,7 @@ public:
   {
     return subDimensions[0]*subDimensions[1]*subDimensions[2]*GetScalarSize()*numComponents;
   };
-
+  
   /// Allocates a memory area for the scalar data based on the dimensions of the subvolume,
   /// the number of components, and the scalar type.
   void  AllocateScalars();
@@ -265,9 +285,9 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  GetContentPackSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
   /// A vector containing the numbers of voxels in i, j and k directions.
   int    dimensions[3];
@@ -300,10 +320,10 @@ protected:
 
   /// A pointer to the serialized image header.
   unsigned char*  m_ImageHeader;
-
+  
   /// A pointer to the serialized image data.
   unsigned char*  m_Image;
-
+  
   /// A table to look up the size of a given scalar type.
   int ScalarSizeTable[12];
 };

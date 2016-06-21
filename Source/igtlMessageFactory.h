@@ -14,10 +14,11 @@
 #ifndef __igtlMessageFactory_h
 #define __igtlMessageFactory_h
 
-#include "igtlObject.h"
 #include "igtlMacro.h"
 #include "igtlMessageBase.h"
 #include "igtlMessageHeader.h"
+#include "igtlObject.h"
+#include "igtl_header.h"
 
 #include <map>
 
@@ -26,7 +27,6 @@ namespace igtl
 
 class IGTLCommon_EXPORT MessageFactory: public Object
 {
-
 public:
 
   typedef MessageFactory            Self;
@@ -61,7 +61,7 @@ public:
   /// Constructs a message from the given header.
   /// Throws invalid_argument if headerMsg is NULL.
   /// Throws invalid_argument if this->IsValid(headerMsg) returns false.
-  /// Creates message, sets header onto message and calls AllocatePack() on the message.
+  /// Creates message, sets header onto message and calls AllocateBuffer() on the message.
   igtl::MessageBase::Pointer GetMessage(igtl::MessageHeader::Pointer headerMsg);
 
   /// Constructs a message from the given populated header.
@@ -73,7 +73,7 @@ public:
   /// Constructs an empty message from the given message type.
   /// Throws invalid_argument if messageType is empty.
   /// Creates message, sets header onto message and calls AllocatePack() on the message.
-  igtl::MessageBase::Pointer CreateSendMessage(const std::string& messageType) const;
+  igtl::MessageBase::Pointer CreateSendMessage(const std::string& messageType, int version = IGTL_HEADER_VERSION_1) const;
 
   /// Return the list of known message types
   void GetAvailableMessageTypes(std::vector<std::string>& types) const;

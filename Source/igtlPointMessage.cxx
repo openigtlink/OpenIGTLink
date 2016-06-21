@@ -164,7 +164,7 @@ int PointElement::SetOwner(const char* owner)
 
 PointMessage::PointMessage()
 {
-  this->m_DefaultBodyType = "POINT";
+  this->m_SendMessageType = "POINT";
   this->m_PointList.clear();
 }
 
@@ -202,22 +202,33 @@ void PointMessage::GetPointElement(int index, PointElement::Pointer& elem)
 }
 
 
-int PointMessage::GetBodyPackSize()
+int PointMessage::GetContentPackSize()
 {
-  // The body size sum of the header size and status message size.
+  // The content size is the sum of the header size and status message size.
   return IGTL_POINT_ELEMENT_SIZE * this->m_PointList.size();
 }
 
 
-int PointMessage::PackBody()
+int PointMessage::PackContent()
 {
-  // allocate pack
-  AllocatePack();
+  // Allocate buffer
+  AllocateBuffer();
   
   igtl_point_element* element;
 
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    element = (igtl_point_element*)(this->m_Content);
+  }
+  else
+  {
+    element = (igtl_point_element*)this->m_Body;
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   element = (igtl_point_element*)this->m_Body;
-
+#endif
+  igtl_point_element* elementHolder = element;
   std::vector<PointElement::Pointer>::iterator iter;
   for (iter = this->m_PointList.begin(); iter != this->m_PointList.end(); iter ++)
     {
@@ -244,20 +255,25 @@ int PointMessage::PackBody()
     element ++;
     }
 
-  igtl_point_convert_byte_order((igtl_point_element*)this->m_Body, this->m_PointList.size());
-
+  igtl_point_convert_byte_order(elementHolder, this->m_PointList.size());
+   
   return 1;
 }
 
 
-int PointMessage::UnpackBody()
+int PointMessage::UnpackContent()
 {
-
   this->m_PointList.clear();
-
-  igtl_point_element* element = (igtl_point_element*) this->m_Body;
-  int nElement = igtl_point_get_data_n(this->m_BodySizeToRead);
-
+  igtl_point_element* element = NULL;
+  int nElement = 0;
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  element = (igtl_point_element*) (this->m_Content);
+  nElement = igtl_point_get_data_n(GetCalculatedContentSize());
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
+  element = (igtl_point_element*) this->m_Body;
+  nElement = igtl_point_get_data_n(this->m_BodySizeToRead);
+#endif
+  
   igtl_point_convert_byte_order(element, nElement);
   
   char strbuf[128];
@@ -266,7 +282,7 @@ int PointMessage::UnpackBody()
     PointElement::Pointer elemClass = PointElement::New();
 
     // Add '\n' at the end of each string
-    // (neccesary for a case, where a string reaches the maximum length.)
+    // (necessary for a case, where a string reaches the maximum length.)
     strbuf[IGTL_POINT_LEN_NAME] = '\n';
     strncpy(strbuf, (char*)element->name, IGTL_POINT_LEN_NAME);
     elemClass->SetName((const char*)strbuf);

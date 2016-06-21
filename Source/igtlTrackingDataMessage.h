@@ -130,9 +130,9 @@ protected:
   ~StartTrackingDataMessage();
 
 protected:
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  GetContentPackSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
 protected:
 
@@ -158,13 +158,13 @@ public:
   igtlNewMacro(igtl::StopTrackingDataMessage);
 
 protected:
-  StopTrackingDataMessage() : MessageBase() { this->m_DefaultBodyType  = "STP_TDATA"; };
+  StopTrackingDataMessage() : MessageBase() { this->m_SendMessageType  = "STP_TDATA"; };
   ~StopTrackingDataMessage() {};
 
 protected:
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
+  virtual int  GetContentPackSize() { return 0; };
+  virtual int  PackContent()        { AllocateBuffer(); return 1; };
+  virtual int  UnpackContent()      { return 1; };
 
 };
 
@@ -194,16 +194,16 @@ public:
   igtlUint8     GetStatus()                { return this->m_Status; };
 
 protected:
-  RTSTrackingDataMessage() : MessageBase(), m_Status(0) { this->m_DefaultBodyType  = "RTS_TDATA"; };
+  RTSTrackingDataMessage() : MessageBase(), m_Status(0) { this->m_SendMessageType  = "RTS_TDATA"; };
   ~RTSTrackingDataMessage() {};
 
   /// A variable to store the status.
   igtlUint8 m_Status;
 
 protected:
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  GetContentPackSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
 };
 
@@ -247,9 +247,9 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  GetContentPackSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
   /// The list of tracking data elements.  
   std::vector<TrackingDataElement::Pointer> m_TrackingDataList;

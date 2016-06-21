@@ -47,7 +47,7 @@ ImageMessage2::ImageMessage2():
   m_Image       = NULL;
   numComponents = 1;
 
-  m_DefaultBodyType  = "IMAGE";
+  m_SendMessageType  = "IMAGE";
 
   ScalarSizeTable[0] = 0;
   ScalarSizeTable[1] = 0;
@@ -74,7 +74,7 @@ ImageMessage2::ImageMessage2():
   this->m_SinglePackSize = 0; 
 
   // Size of the pack. Only header can be used after initialization
-  this->m_PackSize = IGTL_HEADER_SIZE;
+  this->m_MessageSize = IGTL_HEADER_SIZE;
 #endif
 
 }
@@ -383,10 +383,10 @@ void ImageMessage2::AllocateScalars()
   this->m_Image = new unsigned char [s];
   this->m_SelfAllocatedImage = 1;
   this->m_ImageSize = s;
-  this->m_PackSize = IGTL_HEADER_SIZE + IGTL_IMAGE_HEADER_SIZE + s;
+  this->m_MessageSize = IGTL_HEADER_SIZE + IGTL_IMAGE_HEADER_SIZE + s;
 
 #else
-  AllocatePack();
+  AllocateBuffer();
   this->m_ImageHeader = m_Body;
   this->m_Image  = &m_ImageHeader[IGTL_IMAGE_HEADER_SIZE];
 #endif
@@ -420,14 +420,14 @@ void  ImageMessage2::SetScalarPointer(void * p)
 }
 
 
-void* ImageMessage2::GetPackPointer()
+void* ImageMessage2::GetBufferPointer()
 {
   // This function is re-implemented for backward compatiblilty.
   // If fragmented pack is supported, this function may cause
   // memory copy that may considerably slows the program.
 
   // When the pack only contains header
-  if (this->m_PackSize == IGTL_HEADER_SIZE)
+  if (this->m_MessageSize == IGTL_HEADER_SIZE)
     {
     return this->m_Header;
     }
@@ -502,7 +502,7 @@ int ImageMessage2::GetPackFragmentSize(int id)
 #endif // FRAGMENTED_PACK  
 
 
-int ImageMessage2::GetBodyPackSize()
+int ImageMessage2::GetContentPackSize()
 {
   // This function is called by:
   //   MessageBase::Pack()
@@ -514,8 +514,8 @@ int ImageMessage2::GetBodyPackSize()
 #ifdef FRAGMENTED_PACK  
 int ImageMessage2::Pack()
 {
-  PackBody();
-  m_IsBodyUnpacked   = 0;
+  PackContent();
+  m_IsBodyUnpacked   = false;
   
   // pack header
   igtl_header* h = (igtl_header*) m_Header;
@@ -528,7 +528,7 @@ int ImageMessage2::Pack()
   ts = (ts << 32) | (m_TimeStampSecFraction & 0xFFFFFFFF);
 
   h->timestamp = ts;
-  h->body_size = GetBodyPackSize();
+  h->body_size = GetContentPackSize();
 
   // Note pack fragment #0 is the OpenIGTLink general hearder.
   for (int i = 1; i < this->GetNumberOfPackFragments(); i ++)
@@ -538,21 +538,21 @@ int ImageMessage2::Pack()
     }
   h->crc = crc;
 
-  strncpy(h->name, m_DefaultBodyType.c_str(), 12);
+  strncpy(h->name, m_SendMessageType.c_str(), 12);
   // TODO: this does not allow creating pack with MessageBase class...
 
   strncpy(h->device_name, m_DeviceName.c_str(), 20);
 
   igtl_header_convert_byte_order(h);
 
-  m_IsHeaderUnpacked = 0;
+  m_IsHeaderUnpacked = false;
 
   return 1;
 }
 #endif // FRAGMENTED_PACK  
 
 
-int ImageMessage2::PackBody()
+int ImageMessage2::PackContent()
 {
   igtl_image_header* image_header = (igtl_image_header*)this->m_ImageHeader;
 
@@ -594,7 +594,7 @@ int ImageMessage2::PackBody()
 }
 
 
-int ImageMessage2::UnpackBody()
+int ImageMessage2::UnpackContent()
 {
   if (this->m_ImageHeader && this->m_SelfAllocatedImageHeader)
     {
@@ -667,21 +667,20 @@ int ImageMessage2::UnpackBody()
 
 
 #ifdef FRAGMENTED_PACK  
-void ImageMessage2::AllocatePack(int bodySize)
+void ImageMessage2::AllocateBuffer(int contentSize)
 {
-
-  if (bodySize <= 0)
+  if (contentSize <= 0)
     {
-    bodySize = 0;
-    this->m_IsBodyUnpacked = 0;
+    contentSize = 0;
+    this->m_IsBodyUnpacked = false;
     }
 
-  int s = IGTL_HEADER_SIZE + bodySize;
+  int s = IGTL_HEADER_SIZE + contentSize;
 
-  m_IsHeaderUnpacked = 0;
-  m_IsBodyUnpacked = 0;
+  m_IsHeaderUnpacked = false;
+  m_IsBodyUnpacked = false;
 
-  if (bodySize > 0)
+  if (contentSize > 0)
     {
     if (this->m_ImageHeader && this->m_SelfAllocatedImageHeader)
       {
@@ -697,24 +696,23 @@ void ImageMessage2::AllocatePack(int bodySize)
       }
     if (this->m_Body)
       {
-      if (this->m_PackSize != s)
+      if (this->m_MessageSize != s)
         {
         // If the pack area exists but needs to be reallocated
         // m_IsHeaderUnpacked status is not changed in this case.
         unsigned char * old = this->m_Body;
-        this->m_Body = new unsigned char [bodySize];
-        memcpy(this->m_Body, old, bodySize);
+        this->m_Body = new unsigned char [contentSize];
+        memcpy(this->m_Body, old, contentSize);
         delete [] old;
         }
       }
     else 
       {
-      this->m_Body = new unsigned char [bodySize];
+      this->m_Body = new unsigned char [contentSize];
       }
-    this->m_PackSize = s;
+    this->m_MessageSize = s;
     }
 }
-
 #endif // FRAGMENTED_PACK  
 
 

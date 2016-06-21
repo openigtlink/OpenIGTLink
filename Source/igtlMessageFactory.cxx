@@ -174,7 +174,7 @@ namespace igtl
     assert(result.IsNotNull());
 
     result->SetMessageHeader(headerMsg);
-    result->AllocatePack();
+    result->AllocateBuffer();
 
     return result;
   }
@@ -218,13 +218,13 @@ namespace igtl
     assert(result.IsNotNull());
 
     result->SetMessageHeader(headerMsg);
-    result->AllocatePack();
+    result->AllocateBuffer();
 
     return result;
   }
 
   //----------------------------------------------------------------------------
-  igtl::MessageBase::Pointer MessageFactory::CreateSendMessage(const std::string& messageType) const
+  igtl::MessageBase::Pointer MessageFactory::CreateSendMessage(const std::string& messageType, int version /* = IGTL_HEADER_VERSION_1 */) const
   {
     if (messageType.empty())
     {
@@ -249,8 +249,8 @@ namespace igtl
     assert(result.IsNotNull());
 
     result->SetDeviceType(messageTypeUpper);
-    result->SetVersion(IGTL_HEADER_VERSION_3);
-    result->AllocatePack();
+    result->SetVersion(version);
+    result->InitBuffer();
     return result;
   }
 

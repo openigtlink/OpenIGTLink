@@ -42,7 +42,7 @@
 //  public:                                                         \
 //    virtual void Process(messagetype*);                           \
 //  }; 
-
+#ifdef OpenIGTLink_PROTOCOL_VERSION >= 3
 #define igtlMessageHandlerClassMacro(messagetype, classname, datatype)     \
   class classname : public ::igtl::MessageHandler                 \
   {                                                               \
@@ -54,15 +54,6 @@
     igtlTypeMacro(classname, ::igtl::MessageHandler);             \
     igtlNewMacro(classname);                                      \
   public:                                                         \
-#ifdef OpenIGTLink_PROTOCOL_VERSION >= 3                          \
-    virtual std::string GetMessageType() const                    \
-    {                                                             \
-      return this->m_Message->GetMessageType()                    \
-    }                                                             \
-    virtual const char* GetMessageType()                          \
-    {                                                             \
-      return this->m_Message->GetType();                          \
-    }                                                             \
     virtual const char* GetMessageType()                          \
     {                                                             \
       return this->m_Message->GetDeviceType();                    \
@@ -73,7 +64,7 @@
       if (pos == 0) /* New body */                                      \
         {                                                               \
         this->m_Message->SetMessageHeader(header);                      \
-        this->m_Message->AllocatePack();                                \
+        this->m_Message->AllocateUnpack();                                \
         }                                                               \
       int s = socket->Receive((void*)((char*)this->m_Message->GetPackBodyPointer()+pos), \
                               this->m_Message->GetPackBodySize()-pos);  \
@@ -127,5 +118,90 @@
     messagetype::Pointer m_Message;                               \
     datatype*   m_Data;                                           \
   }; 
+#else
+  #define igtlMessageHandlerClassMacro(messagetype, classname, datatype)     \
+  class classname : public ::igtl::MessageHandler                 \
+  {                                                               \
+    public:                                                         \
+      typedef classname                      Self;                  \
+      typedef ::igtl::MessageHandler    Superclass;                 \
+      typedef igtl::SmartPointer<Self>             Pointer;         \
+      typedef igtl::SmartPointer<const Self>       ConstPointer;    \
+      igtlTypeMacro(classname, ::igtl::MessageHandler);             \
+      igtlNewMacro(classname);                                      \
+    public:                                                         \
+      virtual std::string GetMessageType() const                    \
+      {                                                             \
+        return this->m_Message->GetMessageType()                    \
+      }                                                             \
+      virtual const char* GetMessageType()                           \
+      {                                                             \
+        return this->m_Message->GetType();                          \
+      }                                                          \
+      virtual const char* GetMessageType()                          \
+      {                                                             \
+        return this->m_Message->GetDeviceType();                    \
+      }                                                             \
+      virtual int Process(messagetype*, datatype*);                 \
+      int ReceiveMessage(::igtl::Socket* socket, ::igtl::MessageBase* header, int pos) \
+      {                                                                   \
+        if (pos == 0) /* New body */                                      \
+        {                                                               \
+          this->m_Message->SetMessageHeader(header);                      \
+          this->m_Message->AllocateUnpack();                                \
+          }                                                               \
+          int s = socket->Receive((void*)((char*)this->m_Message->GetPackBodyPointer()+pos), \
+          this->m_Message->GetPackBodySize()-pos);  \
+          if (s < 0) /* Time out */                                         \
+          {                                                               \
+            return pos;                                                     \
+          }                                                               \
+          if (s+pos >= this->m_Message->GetPackBodySize())                  \
+          {                                                               \
+            int r = this->m_Message->Unpack(this->m_CheckCRC);              \
+          if (r)                                                          \
+          {                                                             \
+            Process(this->m_Message, this->m_Data);                       \
+          }                                                             \
+          else                                                            \
+          {                                                             \
+            return -1;                                                    \
+          }                                                             \
+        }                                                               \
+        return s + pos;  /* return current position in the body */        \
+      }                                                                   \
+      virtual void CheckCRC(int i)                                  \
+      {                                                             \
+        if (i == 0)                                                 \
+        {                                                         \
+          this->m_CheckCRC = 0;                                     \
+        }                                                         \
+        else                                                        \
+        {                                                         \
+          this->m_CheckCRC = 1;                                     \
+        }                                                         \
+      }                                                             \
+      void SetData(datatype* p)                                     \
+      {                                                             \
+        this->m_Data = p;                                           \
+      }                                                             \
+      datatype* GetData()                                           \
+      {                                                             \
+        return this->m_Data;                                        \
+      }                                                             \
+    protected:                                                      \
+      classname()                                                   \
+      {                                                             \
+        this->m_Message  = messagetype::New();                      \
+        this->m_CheckCRC = 1;                                       \
+        this->m_Data = NULL;                                        \
+      }                                                             \
+      ~classname() {}                                               \
+    protected:                                                      \
+      int         m_CheckCRC;                                       \
+      messagetype::Pointer m_Message;                               \
+      datatype*   m_Data;                                           \
+  };
+#endif
 
 #endif // __igtlMessageHandlerMacro_h

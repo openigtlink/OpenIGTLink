@@ -15,16 +15,17 @@
 #ifndef __igtlMessageBase_h
 #define __igtlMessageBase_h
 
-#include "igtlObject.h"
-#include "igtlObjectFactory.h"
-//#include "igtlMacros.h"
 #include "igtlMacro.h"
 #include "igtlMath.h"
-#include "igtlTimeStamp.h"
-
 #include "igtlMessageHeader.h"
+#include "igtlObject.h"
+#include "igtlObjectFactory.h"
+#include "igtlTimeStamp.h"
+#include "igtl_header.h"
 
 #include <string>
+#include <map>
+#include <vector>
 
 namespace igtl
 {
@@ -34,7 +35,7 @@ namespace igtl
 /// both for serializing (packing) Open IGT Link message byte streams.
 /// The class can also deserializing (unpacking) Open IGT Link.
 /// For the deserialization example, please refer igtlMessageHeader.h.
-/// 
+///
 /// The typical packing procedures using sub-classes of
 /// MessageBase look like the followings
 ///
@@ -49,9 +50,30 @@ namespace igtl
 ///
 ///     // Set matrix data, serialize, and send it.
 ///     transMsg->SetMatrix(matrix);
+///     transMsg->AllocatePack(); // optional
 ///     transMsg->Pack();
-///     socket->Send(transMsg->GetPackPointer(), transMsg->GetPackSize());
+///     socket->Send(transMsg->GetBufferPointer(), transMsg->GetBufferSize());
 ///
+///     V1/V2 message structure:
+///                                    GetBodySize()
+///               /-------------------------/\----------------------------------------------------------\
+///                                    GetPackContentSize() (subclassed) 
+///               /-------------------------------------/\----------------------------------------------\
+///  |____________|_____________________________________________________________________________________|
+///  m_Header     m_Body
+///
+///
+///     V3 message structure:
+///                                      GetBodySize()
+///               /-------------------------/\------------------------------------------------------------\
+///                                          GetPackContentSize() (subclassed) 
+///                                             /\                (sending after setters are called, receiving after extended header has been parsed)
+///                                   /--------/  \-----------\
+///  |____________|___________________|________________________|___________________|_______________________|
+///  m_Header     m_ExtendedHeader    m_Content (old m_Body)   m_MetaDataHeader    m_MetaData
+///               m_Body
+///
+
 class IGTLCommon_EXPORT MessageBase: public Object
 {
 public:
@@ -64,14 +86,17 @@ public:
   igtlTypeMacro(igtl::MessageBase, igtl::Object)
   igtlNewMacro(igtl::MessageBase);
 
-  /// Unpack status. They are returned by the Unpack() function. 
-  enum {
+  /// Unpack status. They are returned by the Unpack() function.
+  enum
+  {
     UNPACK_UNDEF   = 0x0000,
     UNPACK_HEADER  = 0x0001,
     UNPACK_BODY    = 0x0002
   };
 
 public:
+  /// Create a clone of this message, new memory but all internals are preserved
+  virtual igtl::MessageBase::Pointer Clone();
 
   /// Sets the message version number
   void  SetVersion(unsigned short version);
@@ -96,10 +121,41 @@ public:
 
   /// Gets the device (message) type.
   const char* GetDeviceType();
-  
+
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
-  /// Gets the message type.
-  std::string GetMessageType() const;
+  /// Gets the size (length) of the byte array for the meta data.
+  /// The size is defined by the length of each meta data elements and the total number of
+  /// the meta data element.
+  igtlUint32 GetMetaDataSize();
+
+  /// Gets the size (length) of the byte array for the meta data header.
+  igtlUint16 GetMetaDataHeaderSize();
+
+  /// Gets the message ID
+  igtlUint32 GetMessageID();
+
+  /// Sets the message ID
+  void SetMessageID(igtlUint32 idValue);
+
+  /// Add Meta data element
+  void AddMetaDataElement(std::string key, igtlUint16 encodingScheme, std::string value);
+
+  /// Get meta data map
+  const std::map<std::string, std::string>& GetMetaData() const;
+
+  /// Pack the extended header
+  bool PackExtendedHeader();
+
+  /// Pack the meta data
+  bool PackMetaData();
+
+  /// Unpack Extended header
+  /// When receiving a message, after the base header is unpacked, the extended header is read
+  /// Once read, the m_MetaDataHeader and m_MetaData members are populated as we now know the message structure
+  bool UnpackExtendedHeader();
+
+  /// Unpack Extended header and the meta data
+  bool UnpackMetaData();
 #endif
 
   /// Sets time of message creation. 'sec' and 'frac' are seconds and fractions of a second respectively.
@@ -115,7 +171,7 @@ public:
   void  GetTimeStamp(igtl::TimeStamp::Pointer& ts);
 
   /// Pack() serializes the header and body based on the member variables.
-  /// PackBody() must be implemented in the child class.
+  /// PackContent() must be implemented in the child class.
   virtual int   Pack();
 
   /// Unpack() deserializes the header and/or body, extracting data from
@@ -135,87 +191,115 @@ public:
   int   Unpack(int crccheck = 0);
 
   /// Gets a pointer to the raw byte array for the serialized data including the header and the body.
-  void* GetPackPointer();
+  void* GetBufferPointer();
+  void* GetPackPointer() { return GetBufferPointer(); }
 
   /// Gets a pointer to the raw byte array for the serialized body data.
-  void* GetPackBodyPointer();
+  void* GetBufferBodyPointer();
+  void* GetPackBodyPointer() { return GetBufferBodyPointer(); }
 
-  /// Gets the size of the serialized data.
-  int   GetPackSize();
+  /// Gets the size of the serialized message data.
+  int GetBufferSize();
+  int GetPackSize() { return GetBufferSize(); }
 
   /// Gets the size of the serialized body data.
-  int   GetPackBodySize();
+  int GetBufferBodySize();
+  int GetPackBodySize() { return GetBufferBodySize(); }
 
-  /// GetBodyType() gets the type of the body. 
-  const char* GetBodyType() { return this->m_BodyType.c_str(); };
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  /// Gets the size of the serialized content data
+  /// Returns -1 if the extended header has not been properly initialized (meta data size, meta data header size, etc...)
+  /// Used when receiving data, not sending
+  int   GetCalculatedContentSize();
+#endif
 
-  /// AllocatePack() allocates memory for packing / receiving buffer
-  void AllocatePack();
-  
-  /// Call InitPack() before receive header. 
+  /// Gets the type of the body.
+  const char* GetBodyType();
+
+  /// Gets the message type.
+  std::string GetMessageType() const;
+
+  /// AllocatePack() allocates memory for underlying buffer
+  /// If m_BodySizeToRead > 0, we are allocating for receiving a message
+  void AllocateBuffer();
+  void AllocatePack() { AllocateBuffer(); }
+
+  /// Call InitPack() before receive header.
   /// This function simply resets the Unpacked flag for both
-  /// the header and body pack.
-  void InitPack();
+  /// the header and body pack
+  /// Only allocate the original 58 byte header 
+  void InitBuffer();
+  void InitPack() { InitBuffer(); }
 
   /// Copy() copies contents from the specified Massage class.
   /// If the type of the specified class is the same as this class,
-  /// both general header and body are copied. Otherwise, only
-  /// general header is copied.
+  /// general header and body are copied.
   int Copy(const MessageBase* mb);
 
   /// Sets the message header.
-  virtual int SetMessageHeader(const MessageHeader* mb) { return Copy(mb); };
+  virtual int SetMessageHeader(const MessageHeader* mb);
 
   /// GetBodySizeToRead() returns the size of the body to be read. This function must be called
   /// after the message header is set.
-  int GetBodySizeToRead()                       { return m_BodySizeToRead; };
-  
+  int GetBodySizeToRead();
+
 protected:
   MessageBase();
   ~MessageBase();
 
 protected:
+  /// Gets the size of the serialized content.
+  virtual int  GetContentPackSize();
 
-  /// Gets the size of the serialized body.
-  virtual int  GetBodyPackSize() { return 0; };
+  /// Packs (serialize) the content. Must be implemented in all child classes.
+  virtual int  PackContent();
+  /// Unpacks (deserialize) the content. Must be implemented in all child classes.
+  virtual int  UnpackContent();
 
-  /// Packs (serialize) the body. Must be implemented in a child class. 
-  virtual int  PackBody()        { return 0; };
-  /// Unpacks (deserialize) the body. Must be implemented in a child class.
-  virtual int  UnpackBody()      { return 0; };
+  /// Allocates memory specifying the content size.
+  /// Implicitly allocates extended header, metadata header and metadata in addition to content
+  virtual void AllocateBuffer(int contentSize);
 
-  /// Allocates memory specifying the body size. This function is used when
-  /// creating a blank package to receive data)
-  virtual void AllocatePack(int bodySize);
-
-  /// Copies a header from 
-  int CopyHeader(const MessageBase *mb);
+  /// Allocates memory specifying the unpack content size
+  /// Size of body to allocate is determined from v1 message header field 'body_size'
+  virtual void AllocateUnpack(int bodySizeToRead);
 
   /// Copies the serialized body data
   int CopyBody(const MessageBase *mb);
 
-  int            m_PackSize;
+  /// Copies a header from given message
+  int CopyHeader(const MessageBase *mb);
+
+  /// Unpack the first 58 bytes
+  void UnpackHeader(int& r);
+
+  /// Unpack the body
+  /// If it's a v3 message, body is ext header + content + metadataheader + metadata<optional>
+  void UnpackBody(int crccheck, int& r);
+
+protected:
+  int            m_MessageSize;
 
   /// A pointer to the byte array for the serialized header. To prevent large
   /// copy of the byte array in the Pack() function, header byte array is
-  /// concatenated to the byte array for the body. 
+  /// concatenated to the byte array for the body.
   unsigned char* m_Header;
 
   /// A pointer to the byte array for the serialized body. To prevent large
   /// copy of the byte array in the Pack() function, header byte array is
-  /// concatenated to the byte array for the header. 
+  /// concatenated to the byte array for the header.
   unsigned char* m_Body;
 
   /// The size of the body to be read. This function must be called
   /// after the message header is set.
   int            m_BodySizeToRead;
 
-  /// A character string for the default device type (message type).
-  std::string    m_DefaultBodyType;
+  /// A character string for the send device type (message type).
+  std::string    m_SendMessageType;
 
   /// A character string for the device type (message type). This will be used when the header
   /// is deserialized from a byte stream received from the network.
-  std::string    m_BodyType;
+  std::string    m_ReceiveMessageType;
 
   /// An unsigned short for the message version
   unsigned short m_Version;
@@ -231,12 +315,44 @@ protected:
   /// (m_TimeStampSec)and fractions of a second (m_TimeStampSecFraction).
   unsigned int   m_TimeStampSecFraction;
 
-  /// Unpacking (deserialization) status for the header (0: --   1: unpacked).
-  int            m_IsHeaderUnpacked;
+  /// Unpacking (deserialization) status for the header
+  bool           m_IsHeaderUnpacked;
 
-  /// Unpacking (deserialization) status for the body (0: --   1: unpacked).
-  int            m_IsBodyUnpacked;
+  /// Unpacking (deserialization) status for the body
+  bool           m_IsBodyUnpacked;
 
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+protected:
+  /// A pointer to the serialized extended header.
+  unsigned char* m_ExtendedHeader;
+
+  /// A flag to record the unpacked state of the extended header
+  bool m_IsExtendedHeaderUnpacked;
+
+  /// A pointer to the underlying content of a message
+  unsigned char* m_Content;
+
+  /// A pointer to the meta data.
+  unsigned char* m_MetaData;
+
+  /// A pointer to the meta data header.
+  unsigned char* m_MetaDataHeader;
+
+  /// Size of the meta data
+  igtlUint32 m_MetaDataSize;
+
+  /// Size of the meta data header
+  igtlUint32 m_MetaDataHeaderSize;
+
+  /// Message ID
+  igtlUint32 m_MessageId;
+
+  /// Vector storing the meta data header entries
+  std::vector<igtl_metadata_header_entry> m_MetaDataHeaderEntries;
+
+  /// Map storing the key value pairs
+  std::map<std::string, std::string> m_MetaDataMap;
+#endif
 };
 
 
@@ -253,20 +369,30 @@ public:
   igtlNewMacro(igtl::HeaderOnlyMessageBase);
 
 protected:
-  HeaderOnlyMessageBase()  { this->m_DefaultBodyType  = ""; };
+  HeaderOnlyMessageBase()
+  {
+    this->m_SendMessageType  = "";
+  };
   ~HeaderOnlyMessageBase() {};
-  
+
 protected:
-
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
-
+  virtual int  GetContentPackSize()
+  {
+    return 0;
+  };
+  virtual int  PackContent()
+  {
+    AllocateBuffer();
+    return 1;
+  };
+  virtual int  UnpackContent()
+  {
+    return 1;
+  };
 };
 
-
 /// A macro to help defining a class for query message types
-/// that do not have message bodies. 
+/// that do not have message bodies.
 //  TODO: Need test.
 #define igtlCreateDefaultQueryMessageClass(name, msgtype) \
 class IGTLCommon_EXPORT name : public  HeaderOnlyMessageBase\
@@ -283,7 +409,7 @@ public: \
 protected: \
   name() : HeaderOnlyMessageBase() { this->m_DefaultBodyType  = msgtype; }; \
   ~name() {}; \
-}; 
+};
 
 } // namespace igtl
 
