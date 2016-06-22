@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
               {
                 unsigned short codingScheme = 3; // 3 corresponding to US-ASCII
                 imgMsg->AddMetaDataElement("Patient age", codingScheme, "25");
-                imgMsg->SetMsgID(i);
+                imgMsg->SetMessageID(i);
               }
               imgMsg->AllocateScalars();
               

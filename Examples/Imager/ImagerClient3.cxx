@@ -157,10 +157,11 @@ int ReceiveImageData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::P
   {
     if (imageData->GetVersion() >= IGTL_HEADER_VERSION_3)
     {
-      for (int i = 0; i <imageData->keys.size(); i++)
+      int i = 0;
+      for (std::map<std::string, std::string>::const_iterator it = imageData->GetMetaData().begin(); it != imageData->GetMetaData().end(); ++it, ++i)
       {
-        std::cerr<<"The message ID is:"<< " " << imageData->msgId << std::endl;
-        std::cerr<< imageData->keys[i]<< " coding scheme: " <<imageData->valueEncoding[i]<<" "<<imageData->values[i] << std::endl;
+        std::cerr<<"The message ID is:"<< " " << imageData->GetMessageID() << std::endl;
+        std::cerr<< it->first << " coding scheme: " << imageData->GetMetaDataHeaderEntries()[i].value_encoding << " " << it->second << std::endl;
       }
     }
     SaveTestImage(imageData, loop);

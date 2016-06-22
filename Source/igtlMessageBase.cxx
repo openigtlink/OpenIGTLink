@@ -212,6 +212,11 @@ const std::map<std::string, std::string>& MessageBase::GetMetaData() const
   return this->m_MetaDataMap;
 }
 
+const std::vector<igtl_metadata_header_entry>& MessageBase::GetMetaDataHeaderEntries() const
+{
+  return this->m_MetaDataHeaderEntries;
+}
+
 bool MessageBase::PackExtendedHeader()
 {
   if( m_Version == IGTL_HEADER_VERSION_3 )

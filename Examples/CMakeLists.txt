@@ -30,9 +30,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} GREATER 1)
     )
 endif (${OpenIGTLink_PROTOCOL_VERSION} GREATER 1)
 
-message(${EXAMPLE_DIRS})
 ## Imager program isn't supported by QNX
-
 if(NOT OpenIGTLink_PLATFORM_QNX)
   SUBDIRS(
     ${EXAMPLE_DIRS}  

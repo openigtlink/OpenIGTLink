@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
                 unsigned short codingScheme = 3; // 3 corresponding to US-ASCII
                 pointMsg->AddMetaDataElement("First patient age", codingScheme, "22");
                 pointMsg->AddMetaDataElement("Second patient age",codingScheme, "25");
-                pointMsg->SetMsgID(i);
+                pointMsg->SetMessageID(i);
               }
               pointMsg->Pack();
               

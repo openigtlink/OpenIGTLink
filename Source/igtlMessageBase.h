@@ -143,6 +143,9 @@ public:
   /// Get meta data map
   const std::map<std::string, std::string>& GetMetaData() const;
 
+  /// Get meta data header entries
+  const std::vector<igtl_metadata_header_entry>& GetMetaDataHeaderEntries() const;
+
   /// Pack the extended header
   bool PackExtendedHeader();
 
@@ -407,7 +410,7 @@ public: \
   igtlNewMacro(igtl::name); \
   \
 protected: \
-  name() : HeaderOnlyMessageBase() { this->m_DefaultBodyType  = msgtype; }; \
+  name() : HeaderOnlyMessageBase() { this->m_SendMessageType  = msgtype; }; \
   ~name() {}; \
 };
 

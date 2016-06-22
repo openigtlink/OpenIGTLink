@@ -4,19 +4,20 @@ INCLUDE(CheckSymbolExists)
 INCLUDE(CheckFunctionExists)
 
 CHECK_LIBRARY_EXISTS("socket" getsockname "" OpenIGTLink_HAVE_LIBSOCKET)
-
-IF("OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T" MATCHES "^OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T$")
+IF( NOT OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T )
   IF(OpenIGTLink_HAVE_LIBSOCKET)
     SET(OpenIGTLink_GETSOCKNAME_LIBS "socket")
-  ELSE(OpenIGTLink_HAVE_LIBSOCKET)
+  ELSE()
     SET(OpenIGTLink_GETSOCKNAME_LIBS)
-  ENDIF(OpenIGTLink_HAVE_LIBSOCKET)
+  ENDIF()
+
   MESSAGE(STATUS "Checking for getsockname with socklen_t")
   TRY_COMPILE(OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T
     ${OpenIGTLink_BINARY_DIR}/CMakeTmp/SocklenT
     ${OpenIGTLink_CMAKE_DIR}/igtlTestSocklenT.cxx
     CMAKE_FLAGS "-DLINK_LIBRARIES:STRING=${OpenIGTLink_GETSOCKNAME_LIBS}"
     OUTPUT_VARIABLE OUTPUT)
+
   IF(OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T)
     MESSAGE(STATUS "Checking for getsockname with socklen_t -- yes")
     SET(OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T 1 CACHE INTERNAL "Support for getsockname with socklen_t")
@@ -24,16 +25,15 @@ IF("OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T" MATCHES "^OpenIGTLink_HAVE_GETS
       "Determining if getsockname accepts socklen_t type  "
       "passed with the following output:\n"
       "${OUTPUT}\n" APPEND)
-  ELSE(OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T)
+  ELSE()
     MESSAGE(STATUS "Checking for getsockname with socklen_t -- no")
     SET(OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T 0 CACHE INTERNAL "Support for getsockname with socklen_t")
     WRITE_FILE(${CMAKE_BINARY_DIR}/CMakeFiles/CMakeError.log
       "Determining if getsockname accepts socklen_t type  "
       "failed with the following output:\n"
       "${OUTPUT}\n" APPEND)
-  ENDIF(OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T)
-ENDIF("OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T" MATCHES "^OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T$")
-
+  ENDIF()
+ENDIF()
 
 # e.g. Mac OS X Snow Leopard does not have strnlen().
 CHECK_FUNCTION_EXISTS(strnlen OpenIGTLink_HAVE_STRNLEN)
@@ -49,4 +49,3 @@ SET(HAVE_SOCKETS TRUE)
 IF(CMAKE_SYSTEM MATCHES Catamount)
   SET(HAVE_SOCKETS FALSE)
 ENDIF(CMAKE_SYSTEM MATCHES Catamount)
-

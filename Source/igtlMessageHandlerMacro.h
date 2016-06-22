@@ -64,7 +64,7 @@
       if (pos == 0) /* New body */                                      \
         {                                                               \
         this->m_Message->SetMessageHeader(header);                      \
-        this->m_Message->AllocateUnpack();                                \
+        this->m_Message->InitPack();                                \
         }                                                               \
       int s = socket->Receive((void*)((char*)this->m_Message->GetPackBodyPointer()+pos), \
                               this->m_Message->GetPackBodySize()-pos);  \
