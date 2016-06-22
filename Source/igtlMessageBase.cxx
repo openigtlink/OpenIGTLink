@@ -17,6 +17,7 @@
 #include "igtl_header.h"
 #include "igtl_util.h"
 
+#include <algorithm>
 #include <string>
 
 namespace
