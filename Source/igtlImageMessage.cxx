@@ -347,7 +347,7 @@ void* ImageMessage::GetScalarPointer()
   return (void*)m_Image;
 }
 
-int ImageMessage::GetContentPackSize()
+int ImageMessage::CalculateContentBufferSize()
 {
   return GetSubVolumeImageSize() + IGTL_IMAGE_HEADER_SIZE;
 }

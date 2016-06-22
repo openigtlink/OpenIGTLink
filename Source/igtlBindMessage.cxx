@@ -165,7 +165,7 @@ int BindMessage::GetChildMessage(unsigned int i, igtl::MessageBase * child)
 }
 
 
-int BindMessage::GetContentPackSize()
+int BindMessage::CalculateContentBufferSize()
 {
   int size;
   int nameTableSectionSize = 0; // Size of name table section
@@ -307,7 +307,7 @@ int GetBindMessage::AppendChildMessage(const char * type, const char * name)
 }
 
 
-int GetBindMessage::GetContentPackSize()
+int GetBindMessage::CalculateContentBufferSize()
 {
   int size;
 
@@ -416,7 +416,7 @@ igtlUint64 StartBindMessage::GetResolution()
 }
 
 
-int StartBindMessage::GetContentPackSize()
+int StartBindMessage::CalculateContentBufferSize()
 {
   if (this->m_ChildMessages.size() == 0)
     {
@@ -424,7 +424,7 @@ int StartBindMessage::GetContentPackSize()
     return sizeof(igtlUint64);
     }
 
-  return Superclass::GetContentPackSize() + sizeof(igtlUint64);
+  return Superclass::CalculateContentBufferSize() + sizeof(igtlUint64);
 }
 
 
@@ -506,7 +506,7 @@ int StartBindMessage::UnpackContent()
 }
 
 
-int  RTSBindMessage::GetContentPackSize()
+int  RTSBindMessage::CalculateContentBufferSize()
 { 
   return sizeof (igtlUint8);
 }

@@ -50,7 +50,7 @@ protected:
   GetImageMessage2() : MessageBase() { this->m_SendMessageType  = "GET_IMAGE"; };
   ~GetImageMessage2() {};
 protected:
-  virtual int  GetContentPackSize() { return 0; };
+  virtual int  CalculateContentBufferSize() { return 0; };
   virtual int  PackContent()        { AllocateBuffer(); return 1; };
   virtual int  UnpackContent()      { return 1; };
 };
@@ -306,7 +306,7 @@ protected:
   
 protected:
 
-  virtual int  GetContentPackSize();
+  virtual int  CalculateContentBufferSize();
 
 #ifdef FRAGMENTED_PACK  
 public:  

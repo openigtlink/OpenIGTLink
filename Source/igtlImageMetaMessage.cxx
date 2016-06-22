@@ -229,7 +229,7 @@ void ImageMetaMessage::GetImageMetaElement(int index, ImageMetaElement::Pointer&
 }
 
 
-int ImageMetaMessage::GetContentPackSize()
+int ImageMetaMessage::CalculateContentBufferSize()
 {
   // The body size sum of the header size and status message size.
   return IGTL_IMGMETA_ELEMENT_SIZE * this->m_ImageMetaList.size();

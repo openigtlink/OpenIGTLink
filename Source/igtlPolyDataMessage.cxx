@@ -558,7 +558,7 @@ void IGTLCommon_EXPORT UnSetPolyDataInfoAttribute(igtl_polydata_info * info)
 }
 
 
-int PolyDataMessage::GetContentPackSize()
+int PolyDataMessage::CalculateContentBufferSize()
 {
   // TODO: The current implementation of GetBodyPackSize() allocates
   // igtl_polydata_info and the array of igtl_polydata_attribute to calculate
@@ -719,7 +719,7 @@ int PolyDataMessage::UnpackContent()
   
   int r = 0;
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
-  r = igtl_polydata_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &info, this->GetCalculatedContentSize());
+  r = igtl_polydata_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &info, this->CalculateReceiveContentSize());
 #elif OpenIGTLink_PROTOCOL_VERSION <=2
   r = igtl_polydata_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &info, this->GetBufferBodySize());
 #endif

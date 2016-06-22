@@ -202,7 +202,7 @@ void PointMessage::GetPointElement(int index, PointElement::Pointer& elem)
 }
 
 
-int PointMessage::GetContentPackSize()
+int PointMessage::CalculateContentBufferSize()
 {
   // The content size is the sum of the header size and status message size.
   return IGTL_POINT_ELEMENT_SIZE * this->m_PointList.size();
@@ -268,7 +268,7 @@ int PointMessage::UnpackContent()
   int nElement = 0;
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
   element = (igtl_point_element*) (this->m_Content);
-  nElement = igtl_point_get_data_n(GetCalculatedContentSize());
+  nElement = igtl_point_get_data_n(CalculateReceiveContentSize());
 #elif OpenIGTLink_PROTOCOL_VERSION <=2
   element = (igtl_point_element*) this->m_Body;
   nElement = igtl_point_get_data_n(this->m_BodySizeToRead);

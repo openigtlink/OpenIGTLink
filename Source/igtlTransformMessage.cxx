@@ -182,7 +182,7 @@ namespace igtl {
     mat[3][3] = matrix[3][3];
   }
   
-  int TransformMessage::GetContentPackSize()
+  int TransformMessage::CalculateContentBufferSize()
   {
     return IGTL_TRANSFORM_SIZE;
   }

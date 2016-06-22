@@ -285,7 +285,7 @@ protected:
   
 protected:
 
-  virtual int  GetContentPackSize();
+  virtual int  CalculateContentBufferSize();
   virtual int  PackContent();
   virtual int  UnpackContent();
 

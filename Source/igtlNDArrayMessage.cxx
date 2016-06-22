@@ -174,7 +174,7 @@ int NDArrayMessage::SetArray(int type, ArrayBase * a)
 }
 
 
-int NDArrayMessage::GetContentPackSize()
+int NDArrayMessage::CalculateContentBufferSize()
 {
   int dataSize;
   int dim;
@@ -249,7 +249,7 @@ int NDArrayMessage::UnpackContent()
 {
   igtl_ndarray_info info;
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
-  igtl_ndarray_unpack(IGTL_TYPE_PREFIX_NONE, this->m_Content, &info, this->GetCalculatedContentSize());
+  igtl_ndarray_unpack(IGTL_TYPE_PREFIX_NONE, this->m_Content, &info, this->CalculateReceiveContentSize());
 #elif OpenIGTLink_PROTOCOL_VERSION <=2
   igtl_ndarray_unpack(IGTL_TYPE_PREFIX_NONE, this->m_Body, &info, this->GetBufferBodySize());
 #endif

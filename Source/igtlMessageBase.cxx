@@ -73,7 +73,7 @@ MessageBase::~MessageBase()
   }
 }
 
-int MessageBase::GetContentPackSize()
+int MessageBase::CalculateContentBufferSize()
 {
   return 0;
 }
@@ -505,7 +505,7 @@ int MessageBase::GetBufferBodySize()
   return GetBufferSize() - IGTL_HEADER_SIZE;
 }
 
-int MessageBase::GetCalculatedContentSize()
+int MessageBase::CalculateReceiveContentSize()
 {
   if( m_Version >= IGTL_HEADER_VERSION_3 )
   {
@@ -548,7 +548,7 @@ void MessageBase::AllocateBuffer()
   else
   {
     // called for creating pack to send
-    AllocateBuffer(GetContentPackSize());
+    AllocateBuffer(CalculateContentBufferSize());
   }
 }
 

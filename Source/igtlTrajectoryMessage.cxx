@@ -254,7 +254,7 @@ void TrajectoryMessage::GetTrajectoryElement(int index, TrajectoryElement::Point
 }
 
 
-int TrajectoryMessage::GetContentPackSize()
+int TrajectoryMessage::CalculateContentBufferSize()
 {
   return IGTL_TRAJECTORY_ELEMENT_SIZE * this->m_TrajectoryList.size();
 }
@@ -327,7 +327,7 @@ int TrajectoryMessage::UnpackContent()
   int nElement = 0;
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
   element = (igtl_trajectory_element*)(this->m_Content);
-  nElement = igtl_trajectory_get_data_n(GetCalculatedContentSize());
+  nElement = igtl_trajectory_get_data_n(CalculateReceiveContentSize());
 #elif OpenIGTLink_PROTOCOL_VERSION <=2
   element = (igtl_trajectory_element*)this->m_Body;
   nElement = igtl_trajectory_get_data_n(this->m_BodySizeToRead);

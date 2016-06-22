@@ -502,7 +502,7 @@ int ImageMessage2::GetPackFragmentSize(int id)
 #endif // FRAGMENTED_PACK  
 
 
-int ImageMessage2::GetContentPackSize()
+int ImageMessage2::CalculateContentBufferSize()
 {
   // This function is called by:
   //   MessageBase::Pack()
@@ -528,7 +528,7 @@ int ImageMessage2::Pack()
   ts = (ts << 32) | (m_TimeStampSecFraction & 0xFFFFFFFF);
 
   h->timestamp = ts;
-  h->body_size = GetContentPackSize();
+  h->body_size = CalculateContentBufferSize();
 
   // Note pack fragment #0 is the OpenIGTLink general hearder.
   for (int i = 1; i < this->GetNumberOfPackFragments(); i ++)

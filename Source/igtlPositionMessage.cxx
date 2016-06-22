@@ -143,12 +143,12 @@ void PositionMessage::GetQuaternion(float* ox, float* oy, float* oz, float* w)
 int PositionMessage::SetMessageHeader(const MessageHeader* mb)
 {
   int rc = Copy(mb);
-  int rt = SetPackTypeByContentSize(this->GetCalculatedContentSize());
+  int rt = SetPackTypeByContentSize(this->CalculateReceiveContentSize());
 
   return (rc && rt);  
 }
 
-int PositionMessage::GetContentPackSize()
+int PositionMessage::CalculateContentBufferSize()
 {
   int ret;
 
@@ -212,7 +212,7 @@ int PositionMessage::UnpackContent()
   p = (igtl_position*)(this->m_Body);
 #endif
 
-  int contentSize = GetCalculatedContentSize();
+  int contentSize = CalculateReceiveContentSize();
   if( contentSize == -1 )
   {
     return 0;

@@ -207,10 +207,10 @@ public:
   int GetPackBodySize() { return GetBufferBodySize(); }
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
-  /// Gets the size of the serialized content data
+  /// Calculate the size of the received content data
   /// Returns -1 if the extended header has not been properly initialized (meta data size, meta data header size, etc...)
   /// Used when receiving data, not sending
-  int   GetCalculatedContentSize();
+  int   CalculateReceiveContentSize();
 #endif
 
   /// Gets the type of the body.
@@ -249,7 +249,7 @@ protected:
 
 protected:
   /// Gets the size of the serialized content.
-  virtual int  GetContentPackSize();
+  virtual int  CalculateContentBufferSize();
 
   /// Packs (serialize) the content. Must be implemented in all child classes.
   virtual int  PackContent();
@@ -376,7 +376,7 @@ protected:
   ~HeaderOnlyMessageBase() {};
 
 protected:
-  virtual int  GetContentPackSize()
+  virtual int  CalculateContentBufferSize()
   {
     return 0;
   };

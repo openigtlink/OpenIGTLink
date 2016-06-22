@@ -184,7 +184,7 @@ int StartTrackingDataMessage::SetCoordinateName(const char* name)
 }
 
 
-int StartTrackingDataMessage::GetContentPackSize()
+int StartTrackingDataMessage::CalculateContentBufferSize()
 {
   return IGTL_STT_TDATA_SIZE;
 }
@@ -251,7 +251,7 @@ int StartTrackingDataMessage::UnpackContent()
 //----------------------------------------------------------------------
 // igtl::RTSTrackingDataMessage class
 
-int  RTSTrackingDataMessage::GetContentPackSize()
+int  RTSTrackingDataMessage::CalculateContentBufferSize()
 { 
   return IGTL_RTS_TDATA_SIZE; 
 }
@@ -326,7 +326,7 @@ void TrackingDataMessage::GetTrackingDataElement(int index, TrackingDataElement:
 }
 
 
-int TrackingDataMessage::GetContentPackSize()
+int TrackingDataMessage::CalculateContentBufferSize()
 {
   // The body size sum of the header size and status message size.
   return IGTL_TDATA_ELEMENT_SIZE * this->m_TrackingDataList.size();

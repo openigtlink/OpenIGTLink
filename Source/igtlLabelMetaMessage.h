@@ -135,7 +135,7 @@ protected:
   GetLabelMetaMessage() : MessageBase() { this->m_SendMessageType  = "GET_LBMETA"; };
   ~GetLabelMetaMessage() {};
 protected:
-  virtual int  GetContentPackSize() { return 0; };
+  virtual int  CalculateContentBufferSize() { return 0; };
   virtual int  PackContent()        { AllocateBuffer(); return 1; };
   virtual int  UnpackContent()      { return 1; };
 };
@@ -176,7 +176,7 @@ protected:
   
 protected:
 
-  virtual int  GetContentPackSize();
+  virtual int  CalculateContentBufferSize();
   virtual int  PackContent();
   virtual int  UnpackContent();
   
