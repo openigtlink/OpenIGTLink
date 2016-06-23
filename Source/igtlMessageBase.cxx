@@ -461,11 +461,10 @@ int MessageBase::Unpack(int crccheck)
 {
   int r = UNPACK_UNDEF;
 
-  AllocateBuffer(m_BodySizeToRead);
-
   // Check if the pack exists and if it has not been unpacked.
   if (m_Header != NULL && m_MessageSize >= IGTL_HEADER_SIZE && !m_IsHeaderUnpacked )
   {
+    InitBuffer();
     UnpackHeader(r);
   }
 
@@ -567,7 +566,38 @@ void MessageBase::InitBuffer()
   m_ReceiveMessageType         = "";
 
   // Re-allocate header area
-  AllocateBuffer(0);
+  int message_size = IGTL_HEADER_SIZE;
+
+  if (m_Header == NULL)
+  {
+    // For the first time
+    m_Header = new unsigned char [message_size];
+    m_IsHeaderUnpacked = false;
+    m_IsBodyUnpacked = false;
+  }
+  else if (m_MessageSize != message_size)
+  {
+    // If the pack area exists but needs to be reallocated
+    // m_IsHeaderUnpacked status is not changed in this case.
+    unsigned char* old = m_Header;
+    m_Header = new unsigned char [message_size];
+    memcpy(m_Header, old, std::min<int>(m_MessageSize, message_size));
+    delete [] old;
+    m_IsBodyUnpacked = false;
+  }
+  m_Body   = &m_Header[IGTL_HEADER_SIZE];
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+  if (m_Version == IGTL_HEADER_VERSION_3)
+  {
+    m_ExtendedHeader = m_Body;
+    // Other members can't be populated until the message is unpacked
+  }
+  else
+  {
+    m_Content = m_Body;
+  }
+#endif
+  m_MessageSize = message_size;
 }
 
 void MessageBase::AllocateBuffer(int contentSize)
