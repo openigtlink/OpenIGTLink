@@ -64,6 +64,12 @@ public:
   /// Creates message, sets header onto message and calls AllocateBuffer() on the message.
   igtl::MessageBase::Pointer GetMessage(igtl::MessageHeader::Pointer headerMsg);
 
+  /// Constructs a message header.
+  /// Throws invalid_argument if headerMsg is NULL.
+  /// Throws invalid_argument if this->IsValid(headerMsg) returns false.
+  /// Creates message, calls InitBuffer()
+  igtl::MessageHeader::Pointer CreateHeaderMessage(int version = IGTL_HEADER_VERSION_1) const;
+
   /// Constructs a message from the given populated header.
   /// Throws invalid_argument if headerMsg is NULL.
   /// Throws invalid_argument if this->IsValid(headerMsg) returns false.

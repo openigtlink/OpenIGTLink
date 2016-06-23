@@ -179,93 +179,99 @@ namespace igtl
     return result;
   }
 
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-  //----------------------------------------------------------------------------
-  igtl::MessageBase::Pointer MessageFactory::CreateReceiveMessage(igtl::MessageHeader::Pointer headerMsg) const
+//----------------------------------------------------------------------------
+igtl::MessageHeader::Pointer MessageFactory::CreateHeaderMessage(int version /*= IGTL_HEADER_VERSION_1*/) const
+{
+  igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
+  headerMsg->InitBuffer();
+
+  return headerMsg;
+}
+
+//----------------------------------------------------------------------------
+igtl::MessageBase::Pointer MessageFactory::CreateReceiveMessage(igtl::MessageHeader::Pointer headerMsg) const
+{
+  if (headerMsg.IsNull())
   {
-    if (headerMsg.IsNull())
-    {
-      std::ostringstream oss;
-      oss << "Error: In " __FILE__ ", line " << __LINE__ << ", header is NULL." << std::endl;
-      throw std::invalid_argument(oss.str());
-    }
+    std::ostringstream oss;
+    oss << "Error: In " __FILE__ ", line " << __LINE__ << ", header is NULL." << std::endl;
+    throw std::invalid_argument(oss.str());
+  }
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
-    std::string messageType(headerMsg->GetMessageType());
+  std::string messageType(headerMsg->GetMessageType());
 #else
-    std::string messageType(headerMsg->GetDeviceType());
+  std::string messageType(headerMsg->GetDeviceType());
 #endif
-    std::string messageTypeUpper(messageType);
-    std::transform(messageTypeUpper.begin(), messageTypeUpper.end(), messageTypeUpper.begin(), ::toupper);
+  std::string messageTypeUpper(messageType);
+  std::transform(messageTypeUpper.begin(), messageTypeUpper.end(), messageTypeUpper.begin(), ::toupper);
 
-    if (!this->IsValid(headerMsg))
-    {
-      std::ostringstream oss;
-      oss << "Error: In " __FILE__ ", line " << __LINE__ << ", receiving message of type:" << messageTypeUpper << std::endl;
-      throw std::invalid_argument(oss.str());
-    }
-
-    igtl::MessageBase::Pointer result = NULL;
-    if( GetMessageTypeNewPointer(messageTypeUpper) == NULL )
-    {
-      std::ostringstream oss;
-      oss << "Error: In " __FILE__ ", line " << __LINE__ << ", unable to create message of type:" << messageTypeUpper << std::endl;
-      throw std::invalid_argument(oss.str());
-    }
-    result = GetMessageTypeNewPointer(messageTypeUpper)();
-
-    // Must have a valid message at this point, otherwise its a programming bug.
-    assert(result.IsNotNull());
-
-    result->SetMessageHeader(headerMsg);
-    result->AllocateBuffer();
-
-    return result;
-  }
-
-  //----------------------------------------------------------------------------
-  igtl::MessageBase::Pointer MessageFactory::CreateSendMessage(const std::string& messageType, int version /* = IGTL_HEADER_VERSION_1 */) const
+  if (!this->IsValid(headerMsg))
   {
-    if (messageType.empty())
-    {
-      std::ostringstream oss;
-      oss << "Error: In " __FILE__ ", line " << __LINE__ << ", message type is undefined." << std::endl;
-      throw std::invalid_argument(oss.str());
-    }
-
-    std::string messageTypeUpper(messageType);
-    std::transform(messageTypeUpper.begin(), messageTypeUpper.end(), messageTypeUpper.begin(), ::toupper);
-
-    igtl::MessageBase::Pointer result = NULL;
-    if( GetMessageTypeNewPointer(messageTypeUpper) == NULL )
-    {
-      std::ostringstream oss;
-      oss << "Error: In " __FILE__ ", line " << __LINE__ << ", unable to create message of type:" << messageTypeUpper << std::endl;
-      throw std::invalid_argument(oss.str());
-    }
-    result = GetMessageTypeNewPointer(messageTypeUpper)();
-
-    // Must have a valid message at this point, otherwise its a programming bug.
-    assert(result.IsNotNull());
-
-    result->SetDeviceType(messageTypeUpper);
-    result->SetVersion(version);
-    result->AllocateBuffer();
-    return result;
+    std::ostringstream oss;
+    oss << "Error: In " __FILE__ ", line " << __LINE__ << ", receiving message of type:" << messageTypeUpper << std::endl;
+    throw std::invalid_argument(oss.str());
   }
 
-  //----------------------------------------------------------------------------
-  void MessageFactory::GetAvailableMessageTypes(std::vector<std::string>& types) const
+  igtl::MessageBase::Pointer result = NULL;
+  if( GetMessageTypeNewPointer(messageTypeUpper) == NULL )
   {
-    types.clear();
-    for( std::map<std::string, PointerToMessageBaseNew>::const_iterator it = IgtlMessageTypes.begin(); it != IgtlMessageTypes.end(); ++it )
-    {
-      types.push_back(it->first);
-    }
+    std::ostringstream oss;
+    oss << "Error: In " __FILE__ ", line " << __LINE__ << ", unable to create message of type:" << messageTypeUpper << std::endl;
+    throw std::invalid_argument(oss.str());
+  }
+  result = GetMessageTypeNewPointer(messageTypeUpper)();
 
-    return;
+  // Must have a valid message at this point, otherwise its a programming bug.
+  assert(result.IsNotNull());
+
+  result->SetMessageHeader(headerMsg);
+  result->AllocateBuffer();
+
+  return result;
+}
+
+//----------------------------------------------------------------------------
+igtl::MessageBase::Pointer MessageFactory::CreateSendMessage(const std::string& messageType, int version /* = IGTL_HEADER_VERSION_1 */) const
+{
+  if (messageType.empty())
+  {
+    std::ostringstream oss;
+    oss << "Error: In " __FILE__ ", line " << __LINE__ << ", message type is undefined." << std::endl;
+    throw std::invalid_argument(oss.str());
   }
 
-#endif
+  std::string messageTypeUpper(messageType);
+  std::transform(messageTypeUpper.begin(), messageTypeUpper.end(), messageTypeUpper.begin(), ::toupper);
+
+  igtl::MessageBase::Pointer result = NULL;
+  if( GetMessageTypeNewPointer(messageTypeUpper) == NULL )
+  {
+    std::ostringstream oss;
+    oss << "Error: In " __FILE__ ", line " << __LINE__ << ", unable to create message of type:" << messageTypeUpper << std::endl;
+    throw std::invalid_argument(oss.str());
+  }
+  result = GetMessageTypeNewPointer(messageTypeUpper)();
+
+  // Must have a valid message at this point, otherwise its a programming bug.
+  assert(result.IsNotNull());
+
+  result->SetDeviceType(messageTypeUpper);
+  result->SetVersion(version);
+  result->AllocateBuffer();
+  return result;
+}
+
+//----------------------------------------------------------------------------
+void MessageFactory::GetAvailableMessageTypes(std::vector<std::string>& types) const
+{
+  types.clear();
+  for( std::map<std::string, PointerToMessageBaseNew>::const_iterator it = IgtlMessageTypes.begin(); it != IgtlMessageTypes.end(); ++it )
+  {
+    types.push_back(it->first);
+  }
+
+  return;
+}
 
 } // end namespace
