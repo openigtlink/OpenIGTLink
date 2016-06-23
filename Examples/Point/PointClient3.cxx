@@ -123,12 +123,14 @@ int main(int argc, char* argv[])
       {
         if (pointData->GetVersion() >= IGTL_HEADER_VERSION_3)
         {
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
           int i = 0;
           for (std::map<std::string, std::string>::const_iterator it = pointData->GetMetaData().begin(); it != pointData->GetMetaData().end(); ++it, ++i)
           {
             std::cerr<<"The message ID is:"<< " " << pointData->GetMessageID() << std::endl;
             std::cerr<< it->first << " coding scheme: " << pointData->GetMetaDataHeaderEntries()[i].value_encoding << " " << it->second << std::endl;
           }
+#endif
         }
       }
       igtl::PointElement::Pointer point;

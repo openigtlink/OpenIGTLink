@@ -473,6 +473,7 @@ int MessageBase::Unpack(int crccheck)
     UnpackHeader(r);
   }
 
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
   // Check if the body exists and it has not been unpacked
   // The extended header is technically located inside the body, so we have to check to see if the remaining body size
   // is > 0, or if full body size > sizeof(igtl_extended_header)
@@ -485,11 +486,14 @@ int MessageBase::Unpack(int crccheck)
   }
   else
   {
+#endif
     if(GetBufferBodySize() > 0 && !m_IsBodyUnpacked)
     {
       UnpackBody(crccheck, r);
     }
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
   }
+#endif
 
   return r;
 }
@@ -516,6 +520,7 @@ int MessageBase::GetBufferBodySize()
 
 int MessageBase::CalculateReceiveContentSize()
 {
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
   if( m_Version >= IGTL_HEADER_VERSION_3 )
   {
     if( !m_IsExtendedHeaderUnpacked )
@@ -528,8 +533,11 @@ int MessageBase::CalculateReceiveContentSize()
   }
   else
   {
+#endif
     return GetBufferBodySize();
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
   }
+#endif
 }
 
 const char* MessageBase::GetBodyType()

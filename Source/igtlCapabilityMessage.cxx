@@ -123,7 +123,11 @@ int CapabilityMessage::UnpackContent()
   igtl_capability_info info;
 
   igtl_capability_init_info(&info);
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
   igtl_capability_unpack(this->m_Content, &info, this->CalculateReceiveContentSize());
+#else
+  igtl_capability_unpack(this->m_Body, &info, this->GetBufferBodySize());
+#endif
 
   int ntypes = info.ntypes;
 

@@ -121,6 +121,7 @@ int main(int argc, char* argv[])
               pointMsg->AddPointElement(point1);
               pointMsg->AddPointElement(point2);
               pointMsg->SetVersion(headerMsg->GetVersion());
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
               if (headerMsg->GetVersion() == IGTL_HEADER_VERSION_3)
               {
                 unsigned short codingScheme = 3; // 3 corresponding to US-ASCII
@@ -128,6 +129,7 @@ int main(int argc, char* argv[])
                 pointMsg->AddMetaDataElement("Second patient age",codingScheme, "25");
                 pointMsg->SetMessageID(i);
               }
+#endif
               pointMsg->Pack();
               
               //---------------------------

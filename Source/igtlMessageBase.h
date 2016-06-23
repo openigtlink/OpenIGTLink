@@ -209,12 +209,10 @@ public:
   int GetBufferBodySize();
   int GetPackBodySize() { return GetBufferBodySize(); }
 
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
   /// Calculate the size of the received content data
   /// Returns -1 if the extended header has not been properly initialized (meta data size, meta data header size, etc...)
   /// Used when receiving data, not sending
   int   CalculateReceiveContentSize();
-#endif
 
   /// Gets the type of the body.
   const char* GetBodyType();

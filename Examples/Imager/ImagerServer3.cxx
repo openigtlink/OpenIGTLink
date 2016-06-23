@@ -108,12 +108,14 @@ int main(int argc, char* argv[])
               imgMsg->SetDeviceName("ImagerClient");
               imgMsg->SetSubVolume(svsize, svoffset);
               imgMsg->SetVersion(headerMsg->GetVersion());
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
               if (headerMsg->GetVersion() == IGTL_HEADER_VERSION_3)
               {
                 unsigned short codingScheme = 3; // 3 corresponding to US-ASCII
                 imgMsg->AddMetaDataElement("Patient age", codingScheme, "25");
                 imgMsg->SetMessageID(i);
               }
+#endif
               imgMsg->AllocateScalars();
               
               //------------------------------------------------------------
@@ -121,7 +123,7 @@ int main(int argc, char* argv[])
               GetTestImage(imgMsg, filedir, i % 5);
               
               //------------------------------------------------------------
-              // Get randome orientation matrix and set it.
+              // Get random orientation matrix and set it.
               igtl::Matrix4x4 matrix;
               GetRandomTestMatrix(matrix);
               imgMsg->SetMatrix(matrix);

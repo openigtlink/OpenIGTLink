@@ -155,6 +155,7 @@ int ReceiveImageData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::P
   
   if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
   {
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
     if (imageData->GetVersion() >= IGTL_HEADER_VERSION_3)
     {
       int i = 0;
@@ -164,6 +165,7 @@ int ReceiveImageData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::P
         std::cerr<< it->first << " coding scheme: " << imageData->GetMetaDataHeaderEntries()[i].value_encoding << " " << it->second << std::endl;
       }
     }
+#endif
     SaveTestImage(imageData, loop);
     return 1;
   }
