@@ -82,8 +82,11 @@ int MessageBase::CalculateContentBufferSize()
 
 igtl::MessageBase::Pointer MessageBase::Clone()
 {
-  igtl::MessageFactory::Pointer factory = igtl::MessageFactory::New();
-  igtl::MessageBase::Pointer clone = factory->CreateSendMessage(this->GetMessageType(), this->GetVersion());
+  igtl::MessageBase::Pointer clone;
+  {
+    igtl::MessageFactory::Pointer factory = igtl::MessageFactory::New();
+    clone = factory->CreateSendMessage(this->GetMessageType(), this->GetVersion());
+  }
 
   int bodySize = this->m_MessageSize - IGTL_HEADER_SIZE;
   clone->InitBuffer();

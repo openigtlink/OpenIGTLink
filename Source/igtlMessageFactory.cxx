@@ -258,7 +258,7 @@ igtl::MessageBase::Pointer MessageFactory::CreateSendMessage(const std::string& 
 
   result->SetDeviceType(messageTypeUpper);
   result->SetVersion(version);
-  result->AllocateBuffer();
+  result->InitBuffer();
   return result;
 }
 
