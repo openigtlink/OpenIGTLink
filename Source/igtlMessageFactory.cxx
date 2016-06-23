@@ -174,7 +174,7 @@ namespace igtl
     assert(result.IsNotNull());
 
     result->SetMessageHeader(headerMsg);
-    result->AllocateBuffer();
+    result->InitBuffer();
 
     return result;
   }
@@ -250,7 +250,7 @@ namespace igtl
 
     result->SetDeviceType(messageTypeUpper);
     result->SetVersion(version);
-    result->InitBuffer();
+    result->AllocateBuffer();
     return result;
   }
 
