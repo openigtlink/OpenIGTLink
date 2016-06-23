@@ -76,7 +76,7 @@ public:
   igtlNewMacro(StopImageSendingMessage);
   
 protected:
-  StopImageSendingMessage() : MessageBase() { this->m_DefaultBodyType  = "StopSending"; };
+  StopImageSendingMessage() : MessageBase() { this->m_SendMessageType  = "STP_IMAGE"; };
   ~StopImageSendingMessage() {};
   
 protected:
@@ -98,7 +98,7 @@ public:
   igtlNewMacro(StartImageSendingMessage);
   
 protected:
-  StartImageSendingMessage() : MessageBase() { this->m_DefaultBodyType  = "StartSending"; };
+  StartImageSendingMessage() : MessageBase() { this->m_SendMessageType  = "STT_IMAGE"; };
   ~StartImageSendingMessage() {};
   
 protected:
@@ -126,7 +126,7 @@ void setupTest()
   imageMessage2Test->SetScalarType(scalarType);
   imageMessage2Test->SetDeviceName("Image");
   imageMessage2Test->SetSubVolume(svsize, svoffset);
-  imageMessage2Test->AllocatePack(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
+  imageMessage2Test->AllocateBuffer(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
   imageMessage2Test->AllocateScalars();
   memcpy((void*)imageMessage2Test->GetPackBodyPointer(), test_image_message+IGTL_HEADER_SIZE, IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);//here m_Body is set.
   imageMessage2Test->SetScalarPointer((void*)test_image);
@@ -235,7 +235,7 @@ int ReceiveImageData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::P
   imageData->SetSpacing(spacing);
   imageData->SetScalarType(scalarType);
   imageData->SetSubVolume(svsize, svoffset);
-  imageData->AllocatePack(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
+  imageData->AllocateBuffer(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
   imageData->AllocateScalars();
   // Receive imageHeader from the socket
   socket->Receive(imageData->GetPackBodyPointer(), imageData->GetPackBodySize());

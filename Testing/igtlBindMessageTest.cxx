@@ -81,13 +81,13 @@ void BuildUpElements()
   imageSendMsg2->SetEndian(IGTL_IMAGE_ENDIAN_LITTLE);
   imageSendMsg2->SetCoordinateSystem(IGTL_IMAGE_COORD_RAS);
   imageSendMsg2->SetMatrix(inMatrix);
-  imageSendMsg2->AllocatePack(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
+  imageSendMsg2->AllocateBuffer(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
   imageSendMsg2->AllocateScalars();
   memcpy(imageSendMsg2->GetPackFragmentPointer(1), (void*)(test_image_message+IGTL_HEADER_SIZE), IGTL_IMAGE_HEADER_SIZE);//here m_Body is set.
   imageSendMsg2->SetScalarPointer((void*)test_image);
   imageSendMsg2->Pack();
   
-  imageReceiveMsg2->AllocatePack(imageSendMsg2->GetPackSize());
+  imageReceiveMsg2->AllocateBuffer(imageSendMsg2->GetPackSize());
   imageReceiveMsg2->AllocateScalars();
   
   sensorDataSendMsg->SetVersion(IGTL_HEADER_VERSION_1);
