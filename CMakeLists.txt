@@ -198,7 +198,7 @@ ENDIF(CMAKE_USE_PTHREADS)
 # Socket tests etc.
 INCLUDE(${OpenIGTLink_CMAKE_DIR}/OpenIGTLinkCMakeTests.cmake)
 
-
+SET(OpenIGTLink_LIBRARY_TARGETS_FILE "${CMAKE_BINARY_DIR}/OpenIGTLinkTargets.cmake")
 
 #-----------------------------------------------------------------------------
 # Generate Configuration Header files.
@@ -234,9 +234,9 @@ CMAKE_EXPORT_BUILD_SETTINGS(${OpenIGTLink_BINARY_DIR}/OpenIGTLinkBuildSettings.c
 
 INSTALL(FILES
   ${OpenIGTLink_BINARY_DIR}/OpenIGTLinkBuildSettings.cmake
-#  ${OpenIGTLink_BINARY_DIR}/OpenIGTLinkLibraryDepends.cmake
+  ${OpenIGTLink_LIBRARY_TARGETS_FILE}
   ${OpenIGTLink_BINARY_DIR}/UseOpenIGTLink.cmake
-  ${OpenIGTLink_BINARY_DIR}/Utilities/OpenIGTLinkConfig.cmake
+  ${OpenIGTLink_BINARY_DIR}/OpenIGTLinkConfig.cmake
   DESTINATION ${OpenIGTLink_INSTALL_PACKAGE_DIR}
   COMPONENT Development
   )
@@ -288,7 +288,7 @@ ENDIF(OpenIGTLink_BUILD_EXAMPLES)
 # Export targets
 export(TARGETS 
   OpenIGTLink
-  FILE "${CMAKE_BINARY_DIR}/OpenIGTLinkTargets.cmake"
+  FILE "${OpenIGTLink_LIBRARY_TARGETS_FILE}"
   )
 
 #-----------------------------------------------------------------------------

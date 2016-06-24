@@ -25,8 +25,15 @@ ELSE(OpenIGTLink_PLATFORM_WIN32) # for POSIX-compatible OSs
   ENDIF(OpenIGTLink_PLATFORM_SUNOS)
 ENDIF(OpenIGTLink_PLATFORM_WIN32)
 
-
 ADD_SUBDIRECTORY( igtlutil )
+
+set(OpenIGTLink_INCLUDE_DIRS
+  PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_BINARY_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/igtlutil
+  ${CMAKE_CURRENT_BINARY_DIR}/igtlutil
+  )
 
 SET(OpenIGTLink_SOURCES
   igtlutil/igtl_header.c
@@ -195,6 +202,7 @@ ADD_LIBRARY(OpenIGTLink
   )
 ENDIF( ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
 
+target_include_directories(OpenIGTLink ${OpenIGTLink_INCLUDE_DIRS})
 TARGET_LINK_LIBRARIES(OpenIGTLink
   ${LINK_LIBS}
   )
