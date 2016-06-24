@@ -178,7 +178,7 @@ void igtl_export igtl_image_convert_byte_order(igtl_image_header * header)
   if (igtl_is_little_endian()) 
     {
 
-    header->version = BYTE_SWAP_INT16(header->version);
+    header->header_version = BYTE_SWAP_INT16(header->header_version);
 
     for (i = 0; i < 3; i ++) 
       {

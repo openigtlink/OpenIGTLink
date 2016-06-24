@@ -92,7 +92,7 @@ int StringMessage::PackContent()
   igtl_string_header * string_header;
   char * string;
   // Set pointers
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   string_header = (igtl_string_header*) this->m_Content;
   string        = (char *) this->m_Content + sizeof(igtlUint16)*2;
 #elif OpenIGTLink_PROTOCOL_VERSION <=2
@@ -115,7 +115,7 @@ int StringMessage::UnpackContent()
 {
   igtl_string_header * string_header;
   char * string;
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   string_header = (igtl_string_header*) (this->m_Content);
   string        = (char *) this->m_Content + sizeof(igtlUint16)*2;
 #elif OpenIGTLink_PROTOCOL_VERSION <=2

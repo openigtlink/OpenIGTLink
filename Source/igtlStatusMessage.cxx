@@ -101,8 +101,8 @@ int StatusMessage::PackContent()
 {
   // Allocate buffer
   AllocateBuffer();
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-  if (m_Version == IGTL_HEADER_VERSION_3)
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
     m_StatusHeader = this->m_Content;
   }
@@ -129,8 +129,8 @@ int StatusMessage::PackContent()
 
 int StatusMessage::UnpackContent()
 {
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-  if (m_Version == IGTL_HEADER_VERSION_3)
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
     m_StatusHeader = this->m_Content;
   }

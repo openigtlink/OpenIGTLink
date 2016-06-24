@@ -522,7 +522,7 @@ int ImageMessage2::Pack()
 
   igtl_uint64 crc = crc64(0, 0, 0LL); // initial crc
 
-  h->version   = IGTL_HEADER_VERSION_1;
+  h->header_version   = IGTL_HEADER_VERSION_1;
 
   igtl_uint64 ts  =  m_TimeStampSec & 0xFFFFFFFF;
   ts = (ts << 32) | (m_TimeStampSecFraction & 0xFFFFFFFF);
@@ -556,7 +556,7 @@ int ImageMessage2::PackContent()
 {
   igtl_image_header* image_header = (igtl_image_header*)this->m_ImageHeader;
 
-  image_header->version           = IGTL_IMAGE_HEADER_VERSION;
+  image_header->header_version           = IGTL_IMAGE_HEADER_VERSION;
   image_header->num_components    = this->numComponents;
   image_header->scalar_type       = this->scalarType;
   image_header->endian            = this->endian;
@@ -612,7 +612,7 @@ int ImageMessage2::UnpackContent()
   igtl_image_header* image_header = (igtl_image_header*)m_ImageHeader;
   igtl_image_convert_byte_order(image_header);
 
-  if (image_header->version == IGTL_IMAGE_HEADER_VERSION)
+  if (image_header->header_version == IGTL_IMAGE_HEADER_VERSION)
     {
       // Image format version 1
       this->scalarType       = image_header->scalar_type;

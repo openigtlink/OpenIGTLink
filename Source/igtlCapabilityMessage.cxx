@@ -39,8 +39,8 @@ CapabilityMessage::CapabilityMessage():
   this->m_TypeNames.clear();
 /// CapabilityMessage stay the same as previous versions, set m_Version = 1
 /// to make the pack and unpack procedures the same as OpenIGTLink_PROTOCOL_VERSION 1
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-  m_Version = IGTL_HEADER_VERSION_1;
+#if OpenIGTLink_HEADER_VERSION >= 2
+  m_HeaderVersion = IGTL_HEADER_VERSION_1;
 #endif
 }
 
@@ -123,7 +123,7 @@ int CapabilityMessage::UnpackContent()
   igtl_capability_info info;
 
   igtl_capability_init_info(&info);
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   igtl_capability_unpack(this->m_Content, &info, this->CalculateReceiveContentSize());
 #else
   igtl_capability_unpack(this->m_Body, &info, this->GetBufferBodySize());

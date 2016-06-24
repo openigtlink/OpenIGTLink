@@ -333,7 +333,7 @@ void ImageMessage::AllocateScalars()
   // message and image header, by using AllocatePack() implemented
   // in the parent class.
   AllocateBuffer();
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   m_ImageHeader = m_Content;
   m_Image  = &m_ImageHeader[IGTL_IMAGE_HEADER_SIZE];
 #else
@@ -358,7 +358,7 @@ int ImageMessage::PackContent()
 
   igtl_image_header* image_header = (igtl_image_header*)m_ImageHeader;
 
-  image_header->version           = IGTL_IMAGE_HEADER_VERSION;
+  image_header->header_version           = IGTL_IMAGE_HEADER_VERSION;
   image_header->num_components    = this->numComponents;
   image_header->scalar_type       = this->scalarType;
   image_header->endian            = this->endian;
@@ -398,7 +398,7 @@ int ImageMessage::PackContent()
 
 int ImageMessage::UnpackContent()
 {
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   m_ImageHeader = m_Content;
 #elif OpenIGTLink_PROTOCOL_VERSION <=2
   m_ImageHeader = m_Body;
@@ -406,7 +406,7 @@ int ImageMessage::UnpackContent()
   igtl_image_header* image_header = (igtl_image_header*)m_ImageHeader;
   igtl_image_convert_byte_order(image_header);
 
-  if (image_header->version == IGTL_IMAGE_HEADER_VERSION)
+  if (image_header->header_version == IGTL_IMAGE_HEADER_VERSION)
     {
       // Image format version 1
       this->scalarType       = image_header->scalar_type;

@@ -36,7 +36,7 @@ BindMessageBase::~BindMessageBase()
 
 void BindMessageBase::Init()
 {
-  this->m_Version = 2;
+  this->m_HeaderVersion = 2;
   this->m_ChildMessages.clear();
 }
 
@@ -59,7 +59,7 @@ int BindMessageBase::AppendChildMessage(igtl::MessageBase * child)
   if (this->m_ChildMessages.size() < 0xFFFF)
     {
     ChildMessageInfo info;
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
     info.type = child->GetMessageType();
 #else
     info.type = child->GetDeviceType();
@@ -82,7 +82,7 @@ int BindMessageBase::SetChildMessage(unsigned int i, igtl::MessageBase * child)
 {
   if (i < this->m_ChildMessages.size())
     {
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
     this->m_ChildMessages[i].type = child->GetMessageType();
 #else
     this->m_ChildMessages[i].type = child->GetDeviceType();
@@ -135,7 +135,7 @@ int BindMessage::GetChildMessage(unsigned int i, igtl::MessageBase * child)
     {
     child->InitBuffer();
     igtl_header * header = (igtl_header *) child->GetBufferPointer();
-    header->version = 1;
+    header->header_version = 1;
     strncpy( header->name, this->m_ChildMessages[i].type.c_str(),  IGTL_HEADER_TYPE_SIZE);
     strncpy( header->device_name, this->m_ChildMessages[i].name.c_str(), IGTL_HEADER_NAME_SIZE);
 

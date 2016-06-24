@@ -29,19 +29,6 @@
 //     // do something
 //   }
 
-//#define igtlMessageHandlerClassMacro(messagetype, classname)      \
-//  template <typename messagetype>                                 \
-//  class classname : public MessageHandler<messagetype>            \
-//  {                                                               \
-//    typedef classname                      Self;                  \
-//    typedef MessageHandler<messagetype>    Superclass;            \
-//    typedef SmartPointer<Self>             Pointer;               \
-//    typedef SmartPointer<const Self>       ConstPointer;          \
-//    igtlTypeMacro(classname, MessageHandler<messagetype>);        \
-//    igtlNewMacro(classname);                                      \
-//  public:                                                         \
-//    virtual void Process(messagetype*);                           \
-//  }; 
 #ifdef OpenIGTLink_PROTOCOL_VERSION >= 3
 #define igtlMessageHandlerClassMacro(messagetype, classname, datatype)     \
   class classname : public ::igtl::MessageHandler                 \
@@ -64,15 +51,15 @@
       if (pos == 0) /* New body */                                      \
         {                                                               \
         this->m_Message->SetMessageHeader(header);                      \
-        this->m_Message->InitPack();                                \
+        this->m_Message->InitBuffer();                                  \
         }                                                               \
-      int s = socket->Receive((void*)((char*)this->m_Message->GetPackBodyPointer()+pos), \
-                              this->m_Message->GetPackBodySize()-pos);  \
+      int s = socket->Receive((void*)((char*)this->m_Message->GetBufferBodyPointer()+pos), \
+                              this->m_Message->GetBufferBodySize()-pos);  \
       if (s < 0) /* Time out */                                         \
         {                                                               \
         return pos;                                                     \
         }                                                               \
-      if (s+pos >= this->m_Message->GetPackBodySize())                  \
+      if (s+pos >= this->m_Message->GetBufferBodySize())                \
         {                                                               \
         int r = this->m_Message->Unpack(this->m_CheckCRC);              \
         if (r)                                                          \
@@ -148,15 +135,15 @@
         if (pos == 0) /* New body */                                      \
         {                                                               \
           this->m_Message->SetMessageHeader(header);                      \
-          this->m_Message->AllocateUnpack();                                \
+          this->m_Message->AllocateBuffer();                                \
           }                                                               \
-          int s = socket->Receive((void*)((char*)this->m_Message->GetPackBodyPointer()+pos), \
-          this->m_Message->GetPackBodySize()-pos);  \
+          int s = socket->Receive((void*)((char*)this->m_Message->GetBufferBodyPointer()+pos), \
+          this->m_Message->GetBufferBodySize()-pos);  \
           if (s < 0) /* Time out */                                         \
           {                                                               \
             return pos;                                                     \
           }                                                               \
-          if (s+pos >= this->m_Message->GetPackBodySize())                  \
+          if (s+pos >= this->m_Message->GetBufferBodySize())                  \
           {                                                               \
             int r = this->m_Message->Unpack(this->m_CheckCRC);              \
           if (r)                                                          \

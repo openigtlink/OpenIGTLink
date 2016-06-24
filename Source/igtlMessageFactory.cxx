@@ -29,7 +29,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "igtlCapabilityMessage.h"
 #endif // OpenIGTLink_PROTOCOL_VERSION >= 2
 
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
 #include "igtlCommandMessage.h"
 #endif // OpenIGTLink_PROTOCOL_VERSION >= 3
 
@@ -69,11 +69,12 @@ namespace igtl
     this->AddMessageType("RTS_QTDATA", (PointerToMessageBaseNew)&igtl::RTSQuaternionTrackingDataMessage::New);
     this->AddMessageType("STT_QTDATA", (PointerToMessageBaseNew)&igtl::StartQuaternionTrackingDataMessage::New);
     this->AddMessageType("STP_QTDATA", (PointerToMessageBaseNew)&igtl::StopQuaternionTrackingDataMessage::New);
-#endif //OpenIGTLink_PROTOCOL_VERSION >= 2
+#endif
+
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
     this->AddMessageType("COMMAND", (PointerToMessageBaseNew)&igtl::CommandMessage::New);
     this->AddMessageType("RTS_COMMAND", (PointerToMessageBaseNew)&igtl::RTSCommandMessage::New);
-#endif //OpenIGTLink_PROTOCOL_VERSION >= 3
+#endif
   }
 
 
@@ -108,7 +109,7 @@ namespace igtl
   {
     bool result = false;
 
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
     if (headerMsg.IsNotNull() && IgtlMessageTypes.find(headerMsg->GetMessageType()) != IgtlMessageTypes.end() )
 #else
     if (headerMsg.IsNotNull() && IgtlMessageTypes.find(headerMsg->GetDeviceType()) != IgtlMessageTypes.end())
@@ -124,7 +125,7 @@ namespace igtl
   {
     bool result = false;
 
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
     if (headerMsg.IsNotNull() && IgtlMessageTypes.find(headerMsg->GetMessageType()) != IgtlMessageTypes.end() )
 #else
     if (headerMsg.IsNotNull() && IgtlMessageTypes.find(headerMsg->GetDeviceType()) != IgtlMessageTypes.end())
@@ -145,7 +146,7 @@ namespace igtl
       throw std::invalid_argument(oss.str());
     }
 
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
     std::string messageType(headerMsg->GetMessageType());
 #else
     std::string messageType(headerMsg->GetDeviceType());
@@ -180,9 +181,10 @@ namespace igtl
   }
 
 //----------------------------------------------------------------------------
-igtl::MessageHeader::Pointer MessageFactory::CreateHeaderMessage(int version /*= IGTL_HEADER_VERSION_1*/) const
+igtl::MessageHeader::Pointer MessageFactory::CreateHeaderMessage(int headerVersion) const
 {
   igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
+  headerMsg->SetHeaderVersion(headerVersion);
   headerMsg->InitBuffer();
 
   return headerMsg;
@@ -198,7 +200,7 @@ igtl::MessageBase::Pointer MessageFactory::CreateReceiveMessage(igtl::MessageHea
     throw std::invalid_argument(oss.str());
   }
 
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   std::string messageType(headerMsg->GetMessageType());
 #else
   std::string messageType(headerMsg->GetDeviceType());
@@ -232,7 +234,7 @@ igtl::MessageBase::Pointer MessageFactory::CreateReceiveMessage(igtl::MessageHea
 }
 
 //----------------------------------------------------------------------------
-igtl::MessageBase::Pointer MessageFactory::CreateSendMessage(const std::string& messageType, int version /* = IGTL_HEADER_VERSION_1 */) const
+igtl::MessageBase::Pointer MessageFactory::CreateSendMessage(const std::string& messageType, int headerVersion) const
 {
   if (messageType.empty())
   {
@@ -257,7 +259,7 @@ igtl::MessageBase::Pointer MessageFactory::CreateSendMessage(const std::string& 
   assert(result.IsNotNull());
 
   result->SetDeviceType(messageTypeUpper);
-  result->SetVersion(version);
+  result->SetHeaderVersion(headerVersion);
   result->InitBuffer();
   return result;
 }

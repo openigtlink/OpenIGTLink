@@ -31,8 +31,8 @@ ColorTableMessage::ColorTableMessage():
   m_SendMessageType  = "COLORT";
 /// ColorTableMessage stay the same as previous versions, set m_Version = 1
 /// to make the pack and unpack procedures the same as OpenIGTLink_PROTOCOL_VERSION 1
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-  m_Version = IGTL_HEADER_VERSION_1;
+#if OpenIGTLink_HEADER_VERSION >= 2
+  m_HeaderVersion = IGTL_HEADER_VERSION_1;
 #endif
 
 }

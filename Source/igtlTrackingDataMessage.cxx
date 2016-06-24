@@ -194,8 +194,8 @@ int StartTrackingDataMessage::PackContent()
 {
   AllocateBuffer();
   igtl_stt_tdata* stt_tdata = NULL;
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-  if (m_Version == IGTL_HEADER_VERSION_3)
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
      stt_tdata = (igtl_stt_tdata*)(this->m_Content);
   }
@@ -220,8 +220,8 @@ int StartTrackingDataMessage::PackContent()
 int StartTrackingDataMessage::UnpackContent()
 {
   igtl_stt_tdata* stt_tdata = NULL;
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-  if (m_Version == IGTL_HEADER_VERSION_3)
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
     stt_tdata = (igtl_stt_tdata*)(this->m_Content);
   }

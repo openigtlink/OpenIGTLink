@@ -193,7 +193,7 @@ namespace igtl {
 
     // The m_Transform is not aligned with m_Body, when allocatePack() is called.
     // This is to realign the two pointers.
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
     this->m_Transform = this->m_Content;
 #else
     this->m_Transform = m_Body;
@@ -209,8 +209,8 @@ namespace igtl {
     }
     
     igtl_transform_convert_byte_order(transform);
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-    if (m_Version == IGTL_HEADER_VERSION_3)
+#if OpenIGTLink_HEADER_VERSION >= 2
+    if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
     {
       memcpy((void*)(this->m_Transform), (void*)transform, sizeof(igtl_float32)*12);
     }
@@ -227,8 +227,8 @@ namespace igtl {
   
   int TransformMessage::UnpackContent()
   {
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-    if (m_Version == IGTL_HEADER_VERSION_3)
+#if OpenIGTLink_HEADER_VERSION >= 2
+    if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
     {
       this->m_Transform = this->m_Content;
     }
@@ -242,8 +242,8 @@ namespace igtl {
     
     //igtl_float32* transform = (igtl_float32*)this->m_Transform;  // doesn't work on Solaris
     igtl_float32 transform[12];
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-    if (m_Version == IGTL_HEADER_VERSION_3)
+#if OpenIGTLink_HEADER_VERSION >= 2
+    if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
     {
       memcpy((void*)transform, (void*)(this->m_Transform), sizeof(igtl_float32)*12);
     }

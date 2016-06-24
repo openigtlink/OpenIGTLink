@@ -103,6 +103,7 @@ SET(OpenIGTLink_INCLUDE_FILES
   igtlTypes.h
   igtlWin32Header.h
   igtlWindows.h
+  igtlCommon.h
 )
 
 # Add support for OpenIGTLink version 2

@@ -317,8 +317,8 @@ int QuaternionTrackingDataMessage::PackContent()
   AllocateBuffer();
   
   igtl_qtdata_element* element = NULL;
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-  if (m_Version == IGTL_HEADER_VERSION_3)
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
     element = (igtl_qtdata_element*)(this->m_Content);
   }
@@ -366,7 +366,7 @@ int QuaternionTrackingDataMessage::UnpackContent()
 
   igtl_qtdata_element* element = NULL;
   int nElement = 0;
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   element = (igtl_qtdata_element*) (this->m_Content);
   nElement = igtl_qtdata_get_data_n(CalculateReceiveContentSize());
 #elif OpenIGTLink_PROTOCOL_VERSION <=2

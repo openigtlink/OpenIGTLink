@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
         if (rs == headerMsg->GetPackSize())
         {
           headerMsg->Unpack();
-          int version = headerMsg->GetVersion();
+          int version = headerMsg->GetHeaderVersion();
           if (strcmp(headerMsg->GetDeviceType(), "GET_POINT") == 0)
           {
             //------------------------------------------------------------
@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
               // Create a point message
               igtl::PointMessage::Pointer pointMsg;
               pointMsg = igtl::PointMessage::New();
-              pointMsg->SetVersion(version);
+              pointMsg->SetHeaderVersion(version);
               pointMsg->SetDeviceName("PointSender");
               
               //---------------------------
@@ -120,9 +120,9 @@ int main(int argc, char* argv[])
               pointMsg->AddPointElement(point0);
               pointMsg->AddPointElement(point1);
               pointMsg->AddPointElement(point2);
-              pointMsg->SetVersion(headerMsg->GetVersion());
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-              if (headerMsg->GetVersion() == IGTL_HEADER_VERSION_3)
+              pointMsg->SetHeaderVersion(headerMsg->GetHeaderVersion());
+#if OpenIGTLink_HEADER_VERSION >= 2
+              if (headerMsg->GetHeaderVersion() == IGTL_HEADER_VERSION_2)
               {
                 unsigned short codingScheme = 3; // 3 corresponding to US-ASCII
                 pointMsg->AddMetaDataElement("First patient age", codingScheme, "22");

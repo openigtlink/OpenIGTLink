@@ -99,10 +99,10 @@ public:
   virtual igtl::MessageBase::Pointer Clone();
 
   /// Sets the message version number
-  void  SetVersion(unsigned short version);
+  void  SetHeaderVersion(unsigned short headerVersion);
 
   /// Gets the message version number
-  unsigned short GetVersion() const;
+  unsigned short GetHeaderVersion() const;
 
   /// Sets the device name.
   void  SetDeviceName(const char* name);
@@ -122,7 +122,7 @@ public:
   /// Gets the device (message) type.
   const char* GetDeviceType();
 
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   /// Gets the size (length) of the byte array for the meta data.
   /// The size is defined by the length of each meta data elements and the total number of
   /// the meta data element.
@@ -302,8 +302,8 @@ protected:
   /// is deserialized from a byte stream received from the network.
   std::string    m_ReceiveMessageType;
 
-  /// An unsigned short for the message version
-  unsigned short m_Version;
+  /// An unsigned short for the message format version
+  unsigned short m_HeaderVersion;
 
   /// A character string for the device name (message name).
   std::string    m_DeviceName;
@@ -322,7 +322,7 @@ protected:
   /// Unpacking (deserialization) status for the body
   bool           m_IsBodyUnpacked;
 
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
 protected:
   /// A pointer to the serialized extended header.
   unsigned char* m_ExtendedHeader;

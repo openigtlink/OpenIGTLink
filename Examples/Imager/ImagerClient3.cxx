@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
   igtl::ClientSocket::Pointer socket;
   socket = igtl::ClientSocket::New();
   int r = socket->ConnectToServer(hostname, port);
-  if (version > IGTL_HEADER_VERSION_3 || version < IGTL_HEADER_VERSION_1)
+  if (version > IGTL_HEADER_VERSION_2 || version < IGTL_HEADER_VERSION_1)
   {
     std::cerr << "Invalid version number" << std::endl;
     exit(0);
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
   igtl::GetImageMessage::Pointer getImageMsg;
   getImageMsg = igtl::GetImageMessage::New();
   getImageMsg->SetDeviceName("ImageClient");
-  getImageMsg->SetVersion(version);
+  getImageMsg->SetHeaderVersion(version);
   getImageMsg->Pack();
   socket->Send(getImageMsg->GetPackPointer(), getImageMsg->GetPackSize());
   
@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
     }
     
     headerMsg->Unpack();
-    if (headerMsg->GetVersion() != version)
+    if (headerMsg->GetHeaderVersion() != version)
     {
       std::cerr << "Version of the client and server don't match." << std::endl;
       socket->CloseSocket();
@@ -155,8 +155,8 @@ int ReceiveImageData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::P
   
   if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
   {
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-    if (imageData->GetVersion() >= IGTL_HEADER_VERSION_3)
+#if OpenIGTLink_HEADER_VERSION >= 2
+    if (imageData->GetHeaderVersion() >= IGTL_HEADER_VERSION_2)
     {
       int i = 0;
       for (std::map<std::string, std::string>::const_iterator it = imageData->GetMetaData().begin(); it != imageData->GetMetaData().end(); ++it, ++i)

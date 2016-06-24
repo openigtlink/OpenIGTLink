@@ -17,7 +17,6 @@
 
 #define IGTL_HEADER_VERSION_1   1
 #define IGTL_HEADER_VERSION_2   2
-#define IGTL_HEADER_VERSION_3   3
 #define IGTL_HEADER_SIZE      58
 
 #define IGTL_HEADER_TYPE_SIZE  12
@@ -52,7 +51,7 @@ extern "C" {
  *  type and size of following data body to a receiver.
  *  These parameters allow the receiver to parse or skip the data body. */
 typedef struct {
-  igtl_uint16    version;          /* protocol version number */
+  igtl_uint16    header_version;          /* header version number */
   char           name[IGTL_HEADER_TYPE_SIZE];       /* data type name          */
   char           device_name[IGTL_HEADER_NAME_SIZE]; /* device name             */
   igtl_uint64    timestamp;        /* time stamp message      */
@@ -60,7 +59,7 @@ typedef struct {
   igtl_uint64    crc;              /* CRC                     */
 } igtl_header;
   
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
 /** Message extended header of OpenIGTLink message.
  *  igtl_extended_header is an overall data extended header for OpenIGTLink protocol.
  *  It is transfered with the data body to define the
@@ -86,7 +85,7 @@ typedef struct {
  *  to network byte order, or vice versa. */
 void igtl_export igtl_header_convert_byte_order(igtl_header * header);
 
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
 /** igtl_extended_header_convert_byte_order() convers endianness of each
  *  member variable in igtl_header structure from host byte order
  *  to network byte order, or vice versa. */

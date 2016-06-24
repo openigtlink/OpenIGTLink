@@ -47,7 +47,7 @@ CommandMessage::CommandMessage()
   , m_Encoding(3)
 {
   memset(m_CommandName, 0, IGTL_COMMAND_NAME_SIZE);
-  this->m_Version = IGTL_HEADER_VERSION_3;
+  this->m_HeaderVersion = IGTL_HEADER_VERSION_2;
   this->m_SendMessageType = "COMMAND";
   this->m_Command.clear();
 }
@@ -160,7 +160,7 @@ int CommandMessage::PackContent()
   char * command;
 
   // Set pointers
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   command_header = (igtl_command_header*) this->m_Content;
   command        = (char *) this->m_Content + sizeof(igtl_command_header);
 #else
@@ -186,7 +186,7 @@ int CommandMessage::UnpackContent()
   igtl_command_header * command_header;
   char * command;
 
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   command_header = (igtl_command_header*) this->m_Content;
   command        = (char *) this->m_Content + sizeof(igtl_command_header);
 #else

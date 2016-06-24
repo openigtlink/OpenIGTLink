@@ -68,7 +68,7 @@ public:
   /// Throws invalid_argument if headerMsg is NULL.
   /// Throws invalid_argument if this->IsValid(headerMsg) returns false.
   /// Creates message, calls InitBuffer()
-  igtl::MessageHeader::Pointer CreateHeaderMessage(int version = IGTL_HEADER_VERSION_1) const;
+  igtl::MessageHeader::Pointer CreateHeaderMessage(int headerVersion) const;
 
   /// Constructs a message from the given populated header.
   /// Throws invalid_argument if headerMsg is NULL.
@@ -79,7 +79,7 @@ public:
   /// Constructs an empty message from the given message type.
   /// Throws invalid_argument if messageType is empty.
   /// Creates message, sets header onto message and calls AllocatePack() on the message.
-  igtl::MessageBase::Pointer CreateSendMessage(const std::string& messageType, int version = IGTL_HEADER_VERSION_1) const;
+  igtl::MessageBase::Pointer CreateSendMessage(const std::string& messageType, int headerVersion) const;
 
   /// Return the list of known message types
   void GetAvailableMessageTypes(std::vector<std::string>& types) const;

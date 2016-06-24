@@ -31,11 +31,7 @@ namespace igtl
 
 MessageBase::MessageBase()
   : Object()
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-  , m_Version(IGTL_HEADER_VERSION_3)
-#else
-  , m_Version(IGTL_HEADER_VERSION_1)
-#endif
+  , m_HeaderVersion(IGTL_HEADER_VERSION_1)
   , m_MessageSize(0)
   , m_Header(NULL)
   , m_Body(NULL)
@@ -45,7 +41,7 @@ MessageBase::MessageBase()
   , m_IsBodyUnpacked(false)
   , m_ReceiveMessageType("")
   , m_SendMessageType("")
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   , m_ExtendedHeader(NULL)
   , m_IsExtendedHeaderUnpacked(false)
   , m_MetaDataHeaderSize(0)
@@ -66,7 +62,7 @@ MessageBase::~MessageBase()
     m_MessageSize = 0;
     m_Header = NULL;
     m_Body   = NULL;
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
     m_Content = NULL;
     m_ExtendedHeader = NULL;
     m_MetaDataHeader = NULL;
@@ -85,7 +81,7 @@ igtl::MessageBase::Pointer MessageBase::Clone()
   igtl::MessageBase::Pointer clone;
   {
     igtl::MessageFactory::Pointer factory = igtl::MessageFactory::New();
-    clone = factory->CreateSendMessage(this->GetMessageType(), this->GetVersion());
+    clone = factory->CreateSendMessage(this->GetMessageType(), this->GetHeaderVersion());
   }
 
   int bodySize = this->m_MessageSize - IGTL_HEADER_SIZE;
@@ -97,7 +93,7 @@ igtl::MessageBase::Pointer MessageBase::Clone()
     clone->CopyBody(this);
   }
 
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   clone->m_MetaDataHeader = this->m_MetaDataHeader;
   clone->m_MetaDataMap = this->m_MetaDataMap;
   clone->m_IsExtendedHeaderUnpacked = this->m_IsExtendedHeaderUnpacked;
@@ -106,14 +102,14 @@ igtl::MessageBase::Pointer MessageBase::Clone()
   return clone;
 }
 
-void MessageBase::SetVersion(unsigned short version)
+void MessageBase::SetHeaderVersion(unsigned short version)
 {
-  m_Version = version;
+  m_HeaderVersion = version;
 }
 
-unsigned short MessageBase::GetVersion() const
+unsigned short MessageBase::GetHeaderVersion() const
 {
-  return m_Version;
+  return m_HeaderVersion;
 }
 
 void MessageBase::SetDeviceName(const char* name)
@@ -165,10 +161,10 @@ std::string MessageBase::GetMessageType() const
   }
 }
 
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
 igtlUint32 MessageBase::GetMetaDataSize()
 {
-  if( m_Version >= IGTL_HEADER_VERSION_3 )
+  if( m_HeaderVersion >= IGTL_HEADER_VERSION_2 )
   {
     return m_MetaDataSize;
   }
@@ -180,7 +176,7 @@ igtlUint32 MessageBase::GetMetaDataSize()
 
 igtlUint16 MessageBase::GetMetaDataHeaderSize()
 {
-  if( m_Version >= IGTL_HEADER_VERSION_3 )
+  if( m_HeaderVersion >= IGTL_HEADER_VERSION_2 )
   {
     return m_MetaDataHeaderSize + sizeof(igtlUint16); // index_count is at beginning of header
   }
@@ -224,7 +220,7 @@ const std::vector<igtl_metadata_header_entry>& MessageBase::GetMetaDataHeaderEnt
 
 bool MessageBase::PackExtendedHeader()
 {
-  if( m_Version == IGTL_HEADER_VERSION_3 )
+  if( m_HeaderVersion == IGTL_HEADER_VERSION_2 )
   {
     int aSize = m_MessageSize - IGTL_HEADER_SIZE - sizeof(igtl_extended_header);
     if( aSize < 0 )
@@ -248,7 +244,7 @@ bool MessageBase::PackExtendedHeader()
 
 bool MessageBase::PackMetaData()
 {
-  if( m_Version == IGTL_HEADER_VERSION_3 )
+  if( m_HeaderVersion == IGTL_HEADER_VERSION_2 )
   {
     igtl_uint16 index_count = m_MetaDataMap.size(); // first two byte are the total number of meta data
     if(igtl_is_little_endian())
@@ -306,7 +302,7 @@ bool MessageBase::PackMetaData()
 
 bool MessageBase::UnpackExtendedHeader()
 {
-  if (m_Version == IGTL_HEADER_VERSION_3)
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
     igtl_extended_header* extended_header = (igtl_extended_header*)m_ExtendedHeader;
     igtl_extended_header_convert_byte_order(extended_header);
@@ -333,7 +329,7 @@ bool MessageBase::UnpackExtendedHeader()
 
 bool MessageBase::UnpackMetaData()
 {
-  if (m_Version == IGTL_HEADER_VERSION_3)
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
     // Parse the header
     igtl_uint16 index_count = 0; // first two byte are the total number of meta data
@@ -425,14 +421,14 @@ int MessageBase::Pack()
     return 0;
   }
 
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   PackExtendedHeader();
 #endif
 
   // Derived classes will re-call allocate pack with their required content size
   PackContent();
 
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   PackMetaData();
 #endif
 
@@ -442,7 +438,7 @@ int MessageBase::Pack()
   igtl_header* h = (igtl_header*) m_Header;
 
   igtl_uint64 crc = crc64(0, 0, 0LL); // initial crc
-  h->version   = m_Version;
+  h->header_version   = m_HeaderVersion;
 
   igtl_uint64 ts  =  m_TimeStampSec & 0xFFFFFFFF;
   ts = (ts << 32) | (m_TimeStampSecFraction & 0xFFFFFFFF);
@@ -473,11 +469,11 @@ int MessageBase::Unpack(int crccheck)
     UnpackHeader(r);
   }
 
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   // Check if the body exists and it has not been unpacked
   // The extended header is technically located inside the body, so we have to check to see if the remaining body size
   // is > 0, or if full body size > sizeof(igtl_extended_header)
-  if( m_Version >= IGTL_HEADER_VERSION_3 )
+  if( m_HeaderVersion >= IGTL_HEADER_VERSION_2 )
   {
     if (GetBufferBodySize() > sizeof(igtl_extended_header) + META_DATA_INDEX_COUNT_SIZE && !m_IsBodyUnpacked)
     {
@@ -491,7 +487,7 @@ int MessageBase::Unpack(int crccheck)
     {
       UnpackBody(crccheck, r);
     }
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   }
 #endif
 
@@ -520,8 +516,8 @@ int MessageBase::GetBufferBodySize()
 
 int MessageBase::CalculateReceiveContentSize()
 {
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-  if( m_Version >= IGTL_HEADER_VERSION_3 )
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if( m_HeaderVersion >= IGTL_HEADER_VERSION_2 )
   {
     if( !m_IsExtendedHeaderUnpacked )
     {
@@ -535,7 +531,7 @@ int MessageBase::CalculateReceiveContentSize()
   {
 #endif
     return GetBufferBodySize();
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   }
 #endif
 }
@@ -599,8 +595,8 @@ void MessageBase::InitBuffer()
     m_IsBodyUnpacked = false;
   }
   m_Body   = &m_Header[IGTL_HEADER_SIZE];
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-  if (m_Version == IGTL_HEADER_VERSION_3)
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
     m_ExtendedHeader = m_Body;
     // Other members can't be populated until the message is unpacked
@@ -615,9 +611,9 @@ void MessageBase::InitBuffer()
 
 void MessageBase::AllocateBuffer(int contentSize)
 {
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   int message_size(-1);
-  if (m_Version == IGTL_HEADER_VERSION_3)
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
     message_size = IGTL_HEADER_SIZE + contentSize + sizeof(igtl_extended_header) + GetMetaDataHeaderSize() + GetMetaDataSize();
   }
@@ -647,8 +643,8 @@ void MessageBase::AllocateBuffer(int contentSize)
     m_IsBodyUnpacked = false;
   }
   m_Body   = &m_Header[IGTL_HEADER_SIZE];
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-  if (m_Version == IGTL_HEADER_VERSION_3)
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
     m_ExtendedHeader = m_Body;
     m_Content = &m_Body[sizeof(igtl_extended_header)];
@@ -678,7 +674,7 @@ int MessageBase::CopyHeader(const MessageBase* mb)
   m_IsHeaderUnpacked     = mb->m_IsHeaderUnpacked;
   m_IsBodyUnpacked       = mb->m_IsBodyUnpacked;
   m_BodySizeToRead       = mb->m_BodySizeToRead;
-  m_Version              = mb->m_Version;
+  m_HeaderVersion              = mb->m_HeaderVersion;
 
   return 1;
 }
@@ -690,8 +686,8 @@ int MessageBase::CopyBody(const MessageBase *mb)
   {
     memcpy(m_Body, mb->m_Body, bodySize);
 
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-    if( m_Version == IGTL_HEADER_VERSION_3 )
+#if OpenIGTLink_HEADER_VERSION >= 2
+    if( m_HeaderVersion == IGTL_HEADER_VERSION_2 )
     {
       igtl_extended_header* other_ext_header = (igtl_extended_header*)(mb->m_ExtendedHeader);
       if( other_ext_header->extended_header_size != sizeof(igtl_extended_header) )
@@ -724,7 +720,7 @@ void MessageBase::UnpackHeader(int& r)
   igtl_header_convert_byte_order(h);
   m_TimeStampSecFraction = h->timestamp & 0xFFFFFFFF;
   m_TimeStampSec = (h->timestamp >> 32 ) & 0xFFFFFFFF;
-  m_Version = h->version;
+  m_HeaderVersion = h->header_version;
   m_BodySizeToRead = h->body_size;
 
   char bodyType[IGTL_HEADER_TYPE_SIZE+1];
@@ -766,11 +762,11 @@ void MessageBase::UnpackBody(int crccheck, int& r)
   if (crc == h->crc)
   {
     // Unpack (deserialize) the Body
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
     UnpackExtendedHeader();
 #endif
     UnpackContent();
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
     UnpackMetaData();
 #endif
     m_IsBodyUnpacked = true;
@@ -810,8 +806,8 @@ void MessageBase::AllocateUnpack(int bodySizeToRead)
     m_IsBodyUnpacked = false;
   }
   m_Body   = &m_Header[IGTL_HEADER_SIZE];
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-  if (m_Version == IGTL_HEADER_VERSION_3)
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
     m_ExtendedHeader = m_Body;
     // Other members can't be populated until the message is unpacked

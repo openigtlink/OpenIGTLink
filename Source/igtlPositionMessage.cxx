@@ -173,7 +173,7 @@ int PositionMessage::PackContent()
   // Allocate buffer
   AllocateBuffer();
   igtl_position* p = NULL;
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   p = (igtl_position*)(this->m_Content);
 #elif OpenIGTLink_PROTOCOL_VERSION <=2
   p = (igtl_position*)(this->m_Body);
@@ -206,7 +206,7 @@ int PositionMessage::PackContent()
 int PositionMessage::UnpackContent()
 {
   igtl_position* p = NULL;
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_HEADER_VERSION >= 2
   p = (igtl_position*)(this->m_Content);
 #elif OpenIGTLink_PROTOCOL_VERSION <=2
   p = (igtl_position*)(this->m_Body);

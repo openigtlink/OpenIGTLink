@@ -137,8 +137,8 @@ int SensorMessage::PackContent()
   // Set pointers
   igtl_sensor_header * sensor_header;
   igtl_float64       * data;
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-  if (m_Version == IGTL_HEADER_VERSION_3)
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
     sensor_header = (igtl_sensor_header *) (this->m_Content);
     data = (igtl_float64 *) (this->m_Content + sizeof(igtl_sensor_header));
@@ -174,8 +174,8 @@ int SensorMessage::UnpackContent()
   // Set pointers
   igtl_sensor_header * sensor_header;
   igtl_float64       * data;
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-  if (m_Version == IGTL_HEADER_VERSION_3)
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
     sensor_header = (igtl_sensor_header *) (this->m_Content);
     data = (igtl_float64 *) (this->m_Content + sizeof(igtl_sensor_header));

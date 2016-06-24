@@ -107,9 +107,9 @@ int main(int argc, char* argv[])
               imgMsg->SetScalarType(scalarType);
               imgMsg->SetDeviceName("ImagerClient");
               imgMsg->SetSubVolume(svsize, svoffset);
-              imgMsg->SetVersion(headerMsg->GetVersion());
-#if OpenIGTLink_PROTOCOL_VERSION >= 3
-              if (headerMsg->GetVersion() == IGTL_HEADER_VERSION_3)
+              imgMsg->SetHeaderVersion(headerMsg->GetHeaderVersion());
+#if OpenIGTLink_HEADER_VERSION >= 2
+              if (headerMsg->GetHeaderVersion() == IGTL_HEADER_VERSION_2)
               {
                 unsigned short codingScheme = 3; // 3 corresponding to US-ASCII
                 imgMsg->AddMetaDataElement("Patient age", codingScheme, "25");
