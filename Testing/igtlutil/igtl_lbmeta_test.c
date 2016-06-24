@@ -97,7 +97,7 @@ int main( int argc, char * argv [] )
   igtl_lbmeta_convert_byte_order(message.metalist, TEST_LBMETA_NUM);
 
   /* Create OpenIGTLink header */
-  message.header.version = 1;
+  message.header.header_version = 1;
   strncpy( (char*)&(message.header.name), "LBMETA", 12 );
   strncpy( (char*)&(message.header.device_name), "DeviceName", 20 );
   message.header.timestamp = 1234567892;

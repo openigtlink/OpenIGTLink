@@ -52,7 +52,7 @@ void BuildUpElements()
   trackingElement2->SetMatrix(inMatrix);
 
   trackingSendMsg = igtl::TrackingDataMessage::New();
-  trackingSendMsg->SetVersion(IGTL_HEADER_VERSION_1);
+  trackingSendMsg->SetHeaderVersion(IGTL_HEADER_VERSION_1);
   trackingSendMsg->SetDeviceName("DeviceName");
   trackingSendMsg->SetTimeStamp(0, 1234567892);
   trackingSendMsg->AddTrackingDataElement(trackingElement0);
@@ -86,7 +86,7 @@ TEST(TrackingMessageTest, Unpack)
   igtl_header *messageHeader = (igtl_header *)trackingReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "TDATA");
-  EXPECT_EQ(messageHeader->version, 1);
+  EXPECT_EQ(messageHeader->header_version, 1);
   EXPECT_EQ(messageHeader->timestamp, 1234567892);
   EXPECT_EQ(messageHeader->body_size, IGTL_TDATA_ELEMENT_SIZE*3);
   
