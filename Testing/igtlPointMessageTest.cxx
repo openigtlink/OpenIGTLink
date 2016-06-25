@@ -50,7 +50,7 @@ void BuildUpElements()
   pointElement2->SetOwner("IMAGE_0");
   pointSendMsg = igtl::PointMessage::New();
   pointSendMsg->SetDeviceName("DeviceName");
-  pointSendMsg->SetVersion(IGTL_HEADER_VERSION_1);
+  pointSendMsg->SetHeaderVersion(IGTL_HEADER_VERSION_1);
   pointSendMsg->SetTimeStamp(0, 1234567892);
   pointSendMsg->AddPointElement(pointElement0);
   pointSendMsg->AddPointElement(pointElement1);
@@ -85,7 +85,7 @@ TEST(PointMessageTest, Unpack)
   igtl_header *messageHeader = (igtl_header *)pointReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "POINT");
-  EXPECT_EQ(messageHeader->version, 1);
+  EXPECT_EQ(messageHeader->header_version, 1);
   EXPECT_EQ(messageHeader->timestamp, 1234567892);
   EXPECT_EQ(messageHeader->body_size, IGTL_POINT_ELEMENT_SIZE*3);
   

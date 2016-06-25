@@ -109,7 +109,7 @@ int main( int argc, char * argv [] )
   igtl_trajectory_convert_byte_order(message.tlist, TEST_TRAJECTORY_NUM);
 
   /* Create OpenIGTLink header */
-  message.header.version = 1;
+  message.header.header_version = 1;
   strncpy( (char*)&(message.header.name), "TRAJ", 12 );
   strncpy( (char*)&(message.header.device_name), "DeviceName", 20 );
   message.header.timestamp = 1234567892;

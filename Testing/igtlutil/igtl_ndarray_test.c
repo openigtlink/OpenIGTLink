@@ -89,7 +89,7 @@ int main( int argc, char * argv [] )
   igtl_ndarray_pack(&info, body, IGTL_TYPE_PREFIX_NONE);
 
   /*** Set OpenIGTLink header ***/
-  header.version = 1;
+  header.header_version = 1;
   strncpy( (char*)&(header.name), "NDARRAY", 12 );
   strncpy( (char*)&(header.device_name), "DeviceName", 20 );
   header.timestamp = 1234567892;

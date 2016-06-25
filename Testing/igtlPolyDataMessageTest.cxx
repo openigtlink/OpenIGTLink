@@ -60,7 +60,7 @@ void BuildUpElements()
   polyAttr->SetName("attr");
   polyAttr->SetData(attribute);
   polyDataSendMsg = igtl::PolyDataMessage::New();
-  polyDataSendMsg->SetVersion(IGTL_HEADER_VERSION_1);
+  polyDataSendMsg->SetHeaderVersion(IGTL_HEADER_VERSION_1);
   polyDataSendMsg->SetPoints(polyPoint.GetPointer());
   polyDataSendMsg->SetPolygons(polyGon.GetPointer());
   polyDataSendMsg->AddAttribute(polyAttr.GetPointer());
@@ -93,7 +93,7 @@ TEST(PolyDataMessageTest, Unpack)
   igtl_header *messageHeader = (igtl_header *)polyDataReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "POLYDATA");
-  EXPECT_EQ(messageHeader->version, 1);
+  EXPECT_EQ(messageHeader->header_version, 1);
   EXPECT_EQ(messageHeader->timestamp, 1234567892);
   EXPECT_EQ(messageHeader->body_size, POLY_BODY_SIZE);
   

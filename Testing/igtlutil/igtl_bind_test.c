@@ -100,7 +100,7 @@ igtl_uint64 generate_image_body(image_message_body * body)
   igtl_float32 norm_k[]  = {0.222525f, 0.970014f, -0.0977491f};
 
   /* Set data */
-  body->iheader.version     = 1;
+  body->iheader.header_version  = 1;
   body->iheader.num_components = 1; /* Scalar */
   body->iheader.scalar_type = 3; /* uint8 */
   body->iheader.endian      = 2; /* Little endian */
@@ -234,7 +234,7 @@ int main( int argc, char * argv [] )
     bind_info.child_info_array[2].size);
 
   /* Set header */
-  header.version = 1;
+  header.header_version = 1;
   strncpy( (char*)&(header.name), "BIND", 12 );
   strncpy( (char*)&(header.device_name), "DeviceName", 20 );
   header.timestamp = 1234567892;

@@ -49,7 +49,7 @@ void BuildUpArrayElements()
   NDArraySendMsg->SetDeviceName("DeviceName");
   NDArraySendMsg->SetArray(igtl::NDArrayMessage::TYPE_FLOAT64, &array);
   NDArraySendMsg->SetTimeStamp(0, 1234567892);
-  NDArraySendMsg->SetVersion(IGTL_HEADER_VERSION_1);
+  NDArraySendMsg->SetHeaderVersion(IGTL_HEADER_VERSION_1);
   NDArraySendMsg->Pack();
 }
 

@@ -63,8 +63,9 @@ TEST(MessageBaseTest, TimeStampTest)
 TEST(MessageBaseTest, UNPACKTEST)
 {
   igtl::MessageBase::Pointer messageBaseTest = igtl::MessageBase::New();
-  int status = messageBaseTest->Unpack(); // The m_packSize cannot be set, so the unpack cannot be tested
-  EXPECT_EQ(status, static_cast<int>(messageBaseTest->UNPACK_UNDEF));
+  messageBaseTest->AllocateBuffer();
+  int status = messageBaseTest->Unpack();
+  EXPECT_EQ(status, static_cast<int>(messageBaseTest->UNPACK_HEADER));
 }
 
 
