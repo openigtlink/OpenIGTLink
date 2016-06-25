@@ -28,7 +28,12 @@ ColorTableMessage::ColorTableMessage():
   mapType   = MAP_UINT8;
   m_ColorTableHeader = NULL;
   m_ColorTable       = NULL;
-  m_DefaultBodyType  = "COLORT";
+  m_SendMessageType  = "COLORT";
+/// ColorTableMessage stay the same as previous versions, set m_Version = 1
+/// to make the pack and unpack procedures the same as OpenIGTLink_PROTOCOL_VERSION 1
+#if OpenIGTLink_HEADER_VERSION >= 2
+  m_HeaderVersion = IGTL_HEADER_VERSION_1;
+#endif
 
 }
 
@@ -41,7 +46,7 @@ void ColorTableMessage::AllocateTable()
   // Memory area to store image scalar is allocated with
   // message and image header, by using AllocatePack() implemented
   // in the parent class.
-  AllocatePack();
+  AllocateBuffer();
   m_ColorTableHeader = m_Body;
   m_ColorTable       = &m_ColorTableHeader[IGTL_COLORTABLE_HEADER_SIZE];
 }
@@ -62,12 +67,12 @@ int ColorTableMessage::GetColorTableSize()
 
 }
 
-int ColorTableMessage::GetBodyPackSize()
+int ColorTableMessage::CalculateContentBufferSize()
 {
   return GetColorTableSize() + IGTL_COLORTABLE_HEADER_SIZE;
 }
 
-int ColorTableMessage::PackBody()
+int ColorTableMessage::PackContent()
 {
   igtl_colortable_header* colortable_header = (igtl_colortable_header*)m_ColorTableHeader;
 
@@ -81,7 +86,7 @@ int ColorTableMessage::PackBody()
 }
 
 
-int ColorTableMessage::UnpackBody()
+int ColorTableMessage::UnpackContent()
 {
 
   this->m_ColorTableHeader = this->m_Body;
@@ -98,6 +103,3 @@ int ColorTableMessage::UnpackBody()
 
 
 } // namespace igtl
-
-
-

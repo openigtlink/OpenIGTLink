@@ -45,7 +45,7 @@ public:
   int        SetString(const char* string);
 
   /// Sets the string by std::string.
-  int        SetString(std::string & string);
+  int        SetString(const std::string & string);
 
   /// Sets the encoding of the string. For character encoding, please refer IANA Character Sets
   /// (http://www.iana.org/assignments/character-sets).
@@ -65,9 +65,9 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
   
   /// The encoding of the string.
   /// The value is defined in IANA Character Sets (http://www.iana.org/assignments/character-sets).

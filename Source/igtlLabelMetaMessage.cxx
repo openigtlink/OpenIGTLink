@@ -167,10 +167,9 @@ int LabelMetaElement::SetOwner(const char* owner)
 //----------------------------------------------------------------------
 // igtl::LabelMetaMessage class
 
-LabelMetaMessage::LabelMetaMessage():
-  MessageBase()
+LabelMetaMessage::LabelMetaMessage()
 {
-  this->m_DefaultBodyType = "LBMETA";
+  this->m_SendMessageType = "LBMETA";
   this->m_LabelMetaList.clear();
 }
 
@@ -208,17 +207,17 @@ void LabelMetaMessage::GetLabelMetaElement(int index, LabelMetaElement::Pointer&
 }
 
 
-int LabelMetaMessage::GetBodyPackSize()
+int LabelMetaMessage::CalculateContentBufferSize()
 {
   // The body size sum of the header size and status message size.
   return IGTL_LBMETA_ELEMENT_SIZE * this->m_LabelMetaList.size();
 }
 
 
-int LabelMetaMessage::PackBody()
+int LabelMetaMessage::PackContent()
 {
-  // allocate pack
-  AllocatePack();
+  // Allocate buffer
+  AllocateBuffer();
   
   igtl_lbmeta_element* element;
   element = (igtl_lbmeta_element*)this->m_Body;
@@ -255,7 +254,7 @@ int LabelMetaMessage::PackBody()
 }
 
 
-int LabelMetaMessage::UnpackBody()
+int LabelMetaMessage::UnpackContent()
 {
 
   this->m_LabelMetaList.clear();
@@ -297,8 +296,3 @@ int LabelMetaMessage::UnpackBody()
 }
 
 } // namespace igtl
-
-
-
-
-

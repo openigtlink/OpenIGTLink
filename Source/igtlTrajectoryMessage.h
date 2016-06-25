@@ -32,7 +32,7 @@ namespace igtl
 class IGTLCommon_EXPORT TrajectoryElement: public Object
 {
 public:
-  typedef TrajectoryElement                   Self;
+  typedef TrajectoryElement              Self;
   typedef Object                         Superclass;
   typedef SmartPointer<Self>             Pointer;
   typedef SmartPointer<const Self>       ConstPointer;
@@ -151,20 +151,20 @@ class IGTLCommon_EXPORT GetTrajectoryMessage: public MessageBase
 {
 public:
   typedef GetTrajectoryMessage            Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   igtlTypeMacro(igtl::GetTrajectoryMessage, igtl::MessageBase);
   igtlNewMacro(igtl::GetTrajectoryMessage);
 
 protected:
-  GetTrajectoryMessage() : MessageBase() { this->m_DefaultBodyType  = "GET_TRAJ"; };
+  GetTrajectoryMessage() : MessageBase() { this->m_SendMessageType  = "GET_TRAJ"; };
   ~GetTrajectoryMessage() {};
 protected:
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
+  virtual int  CalculateContentBufferSize() { return 0; };
+  virtual int  PackContent()        { AllocateBuffer(); return 1; };
+  virtual int  UnpackContent()      { return 1; };
 };
 
 
@@ -174,9 +174,9 @@ class IGTLCommon_EXPORT TrajectoryMessage: public MessageBase
 {
 public:
   typedef TrajectoryMessage               Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   igtlTypeMacro(igtl::TrajectoryMessage, igtl::MessageBase);
   igtlNewMacro(igtl::TrajectoryMessage);
@@ -202,19 +202,15 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
   
   /// A list of pointers to the trajectories.
   std::vector<TrajectoryElement::Pointer> m_TrajectoryList;
   
 };
 
-
 } // namespace igtl
 
 #endif // _igtlTrajectoryMessage_h
-
-
-

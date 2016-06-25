@@ -45,7 +45,7 @@ ImageMessage::ImageMessage():
   m_Image       = NULL;
   numComponents = 1;
 
-  m_DefaultBodyType  = "IMAGE";
+  m_SendMessageType  = "IMAGE";
 
   ScalarSizeTable[0] = 0;
   ScalarSizeTable[1] = 0;
@@ -332,9 +332,14 @@ void ImageMessage::AllocateScalars()
   // Memory area to store image scalar is allocated with
   // message and image header, by using AllocatePack() implemented
   // in the parent class.
-  AllocatePack();
+  AllocateBuffer();
+#if OpenIGTLink_HEADER_VERSION >= 2
+  m_ImageHeader = m_Content;
+  m_Image  = &m_ImageHeader[IGTL_IMAGE_HEADER_SIZE];
+#else
   m_ImageHeader = m_Body;
   m_Image  = &m_ImageHeader[IGTL_IMAGE_HEADER_SIZE];
+#endif
 }
 
 void* ImageMessage::GetScalarPointer()
@@ -342,16 +347,18 @@ void* ImageMessage::GetScalarPointer()
   return (void*)m_Image;
 }
 
-int ImageMessage::GetBodyPackSize()
+int ImageMessage::CalculateContentBufferSize()
 {
   return GetSubVolumeImageSize() + IGTL_IMAGE_HEADER_SIZE;
 }
 
-int ImageMessage::PackBody()
+int ImageMessage::PackContent()
 {
+  AllocateBuffer();
+
   igtl_image_header* image_header = (igtl_image_header*)m_ImageHeader;
 
-  image_header->version           = IGTL_IMAGE_HEADER_VERSION;
+  image_header->header_version           = IGTL_IMAGE_HEADER_VERSION;
   image_header->num_components    = this->numComponents;
   image_header->scalar_type       = this->scalarType;
   image_header->endian            = this->endian;
@@ -383,21 +390,23 @@ int ImageMessage::PackBody()
                         image_header);
 
   igtl_image_convert_byte_order(image_header);
-
+  
   return 1;
 
 }
 
 
-int ImageMessage::UnpackBody()
+int ImageMessage::UnpackContent()
 {
-
+#if OpenIGTLink_HEADER_VERSION >= 2
+  m_ImageHeader = m_Content;
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   m_ImageHeader = m_Body;
-
+#endif
   igtl_image_header* image_header = (igtl_image_header*)m_ImageHeader;
   igtl_image_convert_byte_order(image_header);
 
-  if (image_header->version == IGTL_IMAGE_HEADER_VERSION)
+  if (image_header->header_version == IGTL_IMAGE_HEADER_VERSION)
     {
       // Image format version 1
       this->scalarType       = image_header->scalar_type;
@@ -437,10 +446,9 @@ int ImageMessage::UnpackBody()
       matrix[3][1] = 0.0;
       matrix[3][2] = 0.0;
       matrix[3][3] = 1.0;
-
-      m_ImageHeader = m_Body;
-      m_Image       = &m_ImageHeader[IGTL_IMAGE_HEADER_SIZE];
       
+      m_Image  = &m_ImageHeader[IGTL_IMAGE_HEADER_SIZE];
+
       return 1;
     }
   else
@@ -466,6 +474,3 @@ int ImageMessage::GetNumComponents()
 
 
 } // namespace igtl
-
-
-

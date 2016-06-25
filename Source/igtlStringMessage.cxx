@@ -17,17 +17,16 @@
 #include "igtl_header.h"
 #include "igtl_string.h"
 
+#include <cstring>
+
 // Disable warning C4996 (strncpy() may be unsafe) in Windows. 
 #define _CRT_SECURE_NO_WARNINGS
 
-#include <string.h>
-
 namespace igtl {
 
-StringMessage::StringMessage():
-  MessageBase()
+StringMessage::StringMessage()
 {
-  this->m_DefaultBodyType = "STRING";
+  this->m_SendMessageType = "STRING";
   this->m_Encoding = IGTL_STRING_MESSAGE_DEFAULT_ENCODING;
   this->m_String.clear();
 }
@@ -48,7 +47,7 @@ int StringMessage::SetString(const char* string)
 }
 
 
-int StringMessage::SetString(std::string & string)
+int StringMessage::SetString(const std::string & string)
 {
   if (string.length() > 0xFFFF) /* If the length is beyond the range of unsigned short */
     {
@@ -79,23 +78,27 @@ igtlUint16 StringMessage::GetEncoding()
 }
 
 
-int StringMessage::GetBodyPackSize()
+int StringMessage::CalculateContentBufferSize()
 {
   // Body pack size is the sum of ENCODING, LENGTH and STRING fields
   return sizeof(igtlUint16)*2 + this->m_String.length();
 }
 
 
-int StringMessage::PackBody()
+int StringMessage::PackContent()
 {
-  // Allocate pack
-  AllocatePack();
+  // Allocate buffer
+  AllocateBuffer();
   igtl_string_header * string_header;
   char * string;
-
   // Set pointers
+#if OpenIGTLink_HEADER_VERSION >= 2
+  string_header = (igtl_string_header*) this->m_Content;
+  string        = (char *) this->m_Content + sizeof(igtlUint16)*2;
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   string_header = (igtl_string_header*) this->m_Body;
   string        = (char *) this->m_Body + sizeof(igtlUint16)*2;
+#endif
 
   // Copy data
   string_header->encoding = static_cast<igtlUint16>(this->m_Encoding);
@@ -108,14 +111,17 @@ int StringMessage::PackBody()
   return 1;
 }
 
-int StringMessage::UnpackBody()
+int StringMessage::UnpackContent()
 {
-
   igtl_string_header * string_header;
   char * string;
-
+#if OpenIGTLink_HEADER_VERSION >= 2
+  string_header = (igtl_string_header*) (this->m_Content);
+  string        = (char *) this->m_Content + sizeof(igtlUint16)*2;
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   string_header = (igtl_string_header*) this->m_Body;
-  string        = (char*) (this->m_Body + sizeof(igtlUint16)*2);
+  string        = (char *) this->m_Body + sizeof(igtlUint16)*2;
+#endif
 
   // Convert byte order from network to host
   igtl_string_convert_byte_order(string_header);
@@ -129,8 +135,3 @@ int StringMessage::UnpackBody()
 }
 
 } // namespace igtl
-
-
-
-
-

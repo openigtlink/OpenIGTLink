@@ -98,7 +98,6 @@ public:
   igtlNewMacro(igtl::BindMessage);
 
 public:
-  
   /// Gets a child message specified by the index 'i'. A pointer to the instance of
   /// the specified child message is substituted to the message base specified by 'child'.
   /// Returns non-zero value if success. 
@@ -110,9 +109,9 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
 };
 
@@ -132,7 +131,6 @@ public:
   igtlNewMacro(igtl::GetBindMessage);
 
 public:
-  
   /// Appends the type and name of a new child message to the end of the list of child messages.
   /// The AppendChildMessage() function will increment the number of child messages.
   /// Returns the number of child messages.
@@ -144,9 +142,9 @@ protected:
   
 protected:
   
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
 };
 
@@ -181,9 +179,9 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
   igtlUint64   m_Resolution;
 
@@ -204,13 +202,13 @@ public:
   igtlNewMacro(igtl::StopBindMessage);
 
 protected:
-  StopBindMessage() : MessageBase() { this->m_DefaultBodyType  = "STP_BIND"; };
+  StopBindMessage() : MessageBase() { this->m_SendMessageType  = "STP_BIND"; };
   ~StopBindMessage() {};
 
 protected:
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
+  virtual int  CalculateContentBufferSize() { return 0; };
+  virtual int  PackContent()        { AllocateBuffer(); return 1; };
+  virtual int  UnpackContent()      { return 1; };
 
 };
 
@@ -220,10 +218,10 @@ protected:
 class IGTLCommon_EXPORT RTSBindMessage: public MessageBase
 {
 public:
-  typedef RTSBindMessage         Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef RTSBindMessage                  Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   // Status type
   enum {
@@ -241,16 +239,16 @@ public:
   igtlUint8     GetStatus()                { return this->m_Status; };
 
 protected:
-  RTSBindMessage() : MessageBase(), m_Status(0) { this->m_DefaultBodyType  = "RTS_BIND"; };
+  RTSBindMessage() : MessageBase(), m_Status(0) { this->m_SendMessageType  = "RTS_BIND"; };
   ~RTSBindMessage() {};
 
   /// Stores the status for the start/stop request.
   igtlUint8 m_Status;
 
 protected:
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
 };
 
@@ -259,6 +257,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlBindMessage_h
-
-
-

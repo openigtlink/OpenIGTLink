@@ -36,6 +36,7 @@ BindMessageBase::~BindMessageBase()
 
 void BindMessageBase::Init()
 {
+  this->m_HeaderVersion = 2;
   this->m_ChildMessages.clear();
 }
 
@@ -58,14 +59,18 @@ int BindMessageBase::AppendChildMessage(igtl::MessageBase * child)
   if (this->m_ChildMessages.size() < 0xFFFF)
     {
     ChildMessageInfo info;
+#if OpenIGTLink_HEADER_VERSION >= 2
+    info.type = child->GetMessageType();
+#else
     info.type = child->GetDeviceType();
+#endif
     info.name = child->GetDeviceName();
 
     // If the class instance is BindMessage.
-    if (strncmp(this->m_DefaultBodyType.c_str(), "BIND", 4) == 0)
+    if (strncmp(this->m_SendMessageType.c_str(), "BIND", 4) == 0)
       {
-      info.size = child->GetPackBodySize();
-      info.ptr  = child->GetPackBodyPointer();
+      info.size = child->GetBufferBodySize();
+      info.ptr  = child->GetBufferBodyPointer();
       }
     this->m_ChildMessages.push_back(info);
     }
@@ -77,13 +82,17 @@ int BindMessageBase::SetChildMessage(unsigned int i, igtl::MessageBase * child)
 {
   if (i < this->m_ChildMessages.size())
     {
+#if OpenIGTLink_HEADER_VERSION >= 2
+    this->m_ChildMessages[i].type = child->GetMessageType();
+#else
     this->m_ChildMessages[i].type = child->GetDeviceType();
+#endif
     this->m_ChildMessages[i].name = child->GetDeviceName();
     // If the class instance is BindMessage.
-    if (strncmp(this->m_DefaultBodyType.c_str(), "BIND", 4) == 0)
+    if (strncmp(this->m_SendMessageType.c_str(), "BIND", 4) == 0)
       {
-      this->m_ChildMessages[i].size = child->GetPackBodySize();
-      this->m_ChildMessages[i].ptr  = child->GetPackBodyPointer();
+      this->m_ChildMessages[i].size = child->GetBufferBodySize();
+      this->m_ChildMessages[i].ptr  = child->GetBufferBodyPointer();
       }
     return 1;
     }
@@ -111,7 +120,7 @@ const char* BindMessageBase::GetChildMessageType(unsigned int i)
 BindMessage::BindMessage():
   BindMessageBase()
 {
-  this->m_DefaultBodyType = "BIND";
+  this->m_SendMessageType = "BIND";
 }
 
 
@@ -124,9 +133,9 @@ int BindMessage::GetChildMessage(unsigned int i, igtl::MessageBase * child)
 {
   if (i < this->m_ChildMessages.size())
     {
-    child->InitPack();
-    igtl_header * header = (igtl_header *) child->GetPackPointer();
-    header->version = 1;
+    child->InitBuffer();
+    igtl_header * header = (igtl_header *) child->GetBufferPointer();
+    header->header_version = 1;
     strncpy( header->name, this->m_ChildMessages[i].type.c_str(),  IGTL_HEADER_TYPE_SIZE);
     strncpy( header->device_name, this->m_ChildMessages[i].name.c_str(), IGTL_HEADER_NAME_SIZE);
 
@@ -140,10 +149,10 @@ int BindMessage::GetChildMessage(unsigned int i, igtl::MessageBase * child)
     // Convert to network byte order
     igtl_header_convert_byte_order(header);
 
-    child->AllocatePack();
+    child->AllocateBuffer();
 
     // TODO: Is there any way to avoid this memory copy?
-    memcpy(child->GetPackBodyPointer(),
+    memcpy(child->GetBufferBodyPointer(),
            this->m_ChildMessages[i].ptr, this->m_ChildMessages[i].size);
 	
 	  child->Unpack();
@@ -156,7 +165,7 @@ int BindMessage::GetChildMessage(unsigned int i, igtl::MessageBase * child)
 }
 
 
-int BindMessage::GetBodyPackSize()
+int BindMessage::CalculateContentBufferSize()
 {
   int size;
   int nameTableSectionSize = 0; // Size of name table section
@@ -186,10 +195,10 @@ int BindMessage::GetBodyPackSize()
 }
 
 
-int BindMessage::PackBody()
+int BindMessage::PackContent()
 {
-  // Allocate pack
-  AllocatePack();
+  // Allocate buffer
+  AllocateBuffer();
 
   igtl_bind_info bind_info;
   igtl_bind_init_info(&bind_info);
@@ -240,12 +249,12 @@ int BindMessage::PackBody()
 }
 
 
-int BindMessage::UnpackBody()
+int BindMessage::UnpackContent()
 {
 
   igtl_bind_info bind_info;
 
-  if (igtl_bind_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &bind_info, this->GetPackBodySize()) == 0)
+  if (igtl_bind_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &bind_info, this->GetBufferBodySize()) == 0)
     {
     return 0;
     }
@@ -275,7 +284,7 @@ int BindMessage::UnpackBody()
 GetBindMessage::GetBindMessage():
   BindMessageBase()
 {
-  this->m_DefaultBodyType = "GET_BIND";
+  this->m_SendMessageType = "GET_BIND";
 }
 
 
@@ -298,7 +307,7 @@ int GetBindMessage::AppendChildMessage(const char * type, const char * name)
 }
 
 
-int GetBindMessage::GetBodyPackSize()
+int GetBindMessage::CalculateContentBufferSize()
 {
   int size;
 
@@ -317,10 +326,10 @@ int GetBindMessage::GetBodyPackSize()
 }
 
 
-int GetBindMessage::PackBody()
+int GetBindMessage::PackContent()
 {
-  // Allocate pack
-  AllocatePack();
+  // Allocate buffer
+  AllocateBuffer();
   igtl_bind_info bind_info;
   igtl_bind_init_info(&bind_info);
   
@@ -352,12 +361,12 @@ int GetBindMessage::PackBody()
 }
 
 
-int GetBindMessage::UnpackBody()
+int GetBindMessage::UnpackContent()
 {
 
   igtl_bind_info bind_info;
 
-  if (igtl_bind_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &bind_info, this->GetPackBodySize()) == 0)
+  if (igtl_bind_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &bind_info, this->GetBufferBodySize()) == 0)
     {
     return 0;
     }
@@ -386,7 +395,7 @@ int GetBindMessage::UnpackBody()
 StartBindMessage::StartBindMessage():
   GetBindMessage()
 {
-  this->m_DefaultBodyType = "STT_BIND";
+  this->m_SendMessageType = "STT_BIND";
 }
 
 
@@ -407,7 +416,7 @@ igtlUint64 StartBindMessage::GetResolution()
 }
 
 
-int StartBindMessage::GetBodyPackSize()
+int StartBindMessage::CalculateContentBufferSize()
 {
   if (this->m_ChildMessages.size() == 0)
     {
@@ -415,14 +424,14 @@ int StartBindMessage::GetBodyPackSize()
     return sizeof(igtlUint64);
     }
 
-  return Superclass::GetBodyPackSize() + sizeof(igtlUint64);
+  return Superclass::CalculateContentBufferSize() + sizeof(igtlUint64);
 }
 
 
-int StartBindMessage::PackBody()
+int StartBindMessage::PackContent()
 {
-  // Allocate pack
-  AllocatePack();
+  // Allocate buffer
+  AllocateBuffer();
   
   igtl_bind_info bind_info;
   igtl_bind_init_info(&bind_info);
@@ -464,12 +473,12 @@ int StartBindMessage::PackBody()
 }
 
 
-int StartBindMessage::UnpackBody()
+int StartBindMessage::UnpackContent()
 {
 
   igtl_bind_info bind_info;
 
-  if (igtl_bind_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &bind_info, this->GetPackBodySize()) == 0)
+  if (igtl_bind_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &bind_info, this->GetBufferBodySize()) == 0)
     {
     return 0;
     }
@@ -497,14 +506,14 @@ int StartBindMessage::UnpackBody()
 }
 
 
-int  RTSBindMessage::GetBodyPackSize()
+int  RTSBindMessage::CalculateContentBufferSize()
 { 
   return sizeof (igtlUint8);
 }
 
-int  RTSBindMessage::PackBody()
+int  RTSBindMessage::PackContent()
 {
-  AllocatePack(); 
+  AllocateBuffer(); 
 
   * (igtlUint8 * )this->m_Body = this->m_Status;
 
@@ -512,7 +521,7 @@ int  RTSBindMessage::PackBody()
 }
 
 
-int  RTSBindMessage::UnpackBody()
+int  RTSBindMessage::UnpackContent()
 { 
   this->m_Status = * (igtlUint8 * )this->m_Body;
 

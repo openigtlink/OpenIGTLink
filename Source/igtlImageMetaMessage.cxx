@@ -189,10 +189,9 @@ igtlUint8 ImageMetaElement::GetScalarType()
 //----------------------------------------------------------------------
 // igtl::ImageMetaMessage class
 
-ImageMetaMessage::ImageMetaMessage():
-  MessageBase()
+ImageMetaMessage::ImageMetaMessage()
 {
-  this->m_DefaultBodyType = "IMGMETA";
+  this->m_SendMessageType = "IMGMETA";
   this->m_ImageMetaList.clear();
 }
 
@@ -230,17 +229,17 @@ void ImageMetaMessage::GetImageMetaElement(int index, ImageMetaElement::Pointer&
 }
 
 
-int ImageMetaMessage::GetBodyPackSize()
+int ImageMetaMessage::CalculateContentBufferSize()
 {
   // The body size sum of the header size and status message size.
   return IGTL_IMGMETA_ELEMENT_SIZE * this->m_ImageMetaList.size();
 }
 
 
-int ImageMetaMessage::PackBody()
+int ImageMetaMessage::PackContent()
 {
-  // allocate pack
-  AllocatePack();
+  // Allocate buffer
+  AllocateBuffer();
   
   igtl_imgmeta_element* element;
 
@@ -281,7 +280,7 @@ int ImageMetaMessage::PackBody()
 }
 
 
-int ImageMetaMessage::UnpackBody()
+int ImageMetaMessage::UnpackContent()
 {
 
   this->m_ImageMetaList.clear();
@@ -334,8 +333,3 @@ int ImageMetaMessage::UnpackBody()
 }
 
 } // namespace igtl
-
-
-
-
-

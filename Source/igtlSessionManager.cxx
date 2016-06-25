@@ -53,7 +53,7 @@ int SessionManager::AddMessageHandler(MessageHandler* handler)
   std::vector< MessageHandler* >::iterator iter;
   for (iter = this->m_MessageHandlerList.begin(); iter != this->m_MessageHandlerList.end(); iter ++)
     {
-    if (strcmp((*iter)->GetMessageType(), handler->GetMessageType()) == 0)
+    if ( (*iter)->GetMessageType() == handler->GetMessageType() )
       {
       return 0;
       }
@@ -179,17 +179,17 @@ int SessionManager::ProcessMessage()
   if (this->m_CurrentReadIndex == 0)
     {
     // Initialize receive buffer
-    this->m_Header->InitPack();
+    this->m_Header->InitBuffer();
   
     // Receive generic header from the socket
-    int r = this->m_Socket->Receive(this->m_Header->GetPackPointer(), this->m_Header->GetPackSize(), 0);
+    int r = this->m_Socket->Receive(this->m_Header->GetBufferPointer(), this->m_Header->GetBufferSize(), 0);
     if (r == 0)
       {
       this->m_CurrentReadIndex = 0;
       this->m_HeaderDeserialized = 0;
       return 0; // Disconnected
       }
-    if (r != this->m_Header->GetPackSize())
+    if (r != this->m_Header->GetBufferSize())
       {
       // Only a part of header has arrived.
       if (r < 0) // timeout
@@ -208,15 +208,15 @@ int SessionManager::ProcessMessage()
   else if (this->m_CurrentReadIndex < IGTL_HEADER_SIZE)
     {
     // Message transfer was interrupted in the header
-    int r = this->m_Socket->Receive((void*)((char*)this->m_Header->GetPackPointer()+this->m_CurrentReadIndex),
-                                    this->m_Header->GetPackSize()-this->m_CurrentReadIndex, 0);
+    int r = this->m_Socket->Receive((void*)((char*)this->m_Header->GetBufferPointer()+this->m_CurrentReadIndex),
+                                    this->m_Header->GetBufferSize()-this->m_CurrentReadIndex, 0);
     if (r == 0)
       {
       this->m_CurrentReadIndex = 0;
       this->m_HeaderDeserialized = 0;
       return 0; // Disconnected
       }
-    if (r != this->m_Header->GetPackSize()-this->m_CurrentReadIndex)
+    if (r != this->m_Header->GetBufferSize()-this->m_CurrentReadIndex)
       {
       // Only a part of header has arrived.
       if (r > 0) // exclude a case of timeout 
@@ -252,7 +252,11 @@ int SessionManager::ProcessMessage()
     std::vector< MessageHandler* >::iterator iter;
     for (iter = this->m_MessageHandlerList.begin(); iter != this->m_MessageHandlerList.end(); iter ++)
       {
+#if OpenIGTLink_HEADER_VERSION >= 2
+      if ( this->m_Header->GetMessageType() == (*iter)->GetMessageType() )
+#else
       if (strcmp(this->m_Header->GetDeviceType(), (*iter)->GetMessageType()) == 0)
+#endif
         {
         this->m_CurrentMessageHandler = *iter;
         found = 1;
@@ -263,7 +267,11 @@ int SessionManager::ProcessMessage()
     // If there is no message handler, skip the message
     if (!found)
       {
+#if OpenIGTLink_HEADER_VERSION >= 2
+      std::cerr << "Receiving: " << this->m_Header->GetMessageType() << std::endl;
+#else
       std::cerr << "Receiving: " << this->m_Header->GetDeviceType() << std::endl;
+#endif
       this->m_Socket->Skip(this->m_Header->GetBodySizeToRead(), 0);
       // Reset the index counter to be ready for the next message
       this->m_CurrentReadIndex = 0;
@@ -295,7 +303,7 @@ int SessionManager::PushMessage(MessageBase* message)
   
   if (message && this->m_Socket.IsNotNull() && this->m_Socket->GetConnected()) // if client connected
     {
-    return this->m_Socket->Send(message->GetPackPointer(), message->GetPackSize());
+    return this->m_Socket->Send(message->GetBufferPointer(), message->GetBufferSize());
     }
   else
     {

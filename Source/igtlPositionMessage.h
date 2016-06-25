@@ -64,7 +64,7 @@ public:
   int          GetPackType()  { return  m_PackType; };
 
   /// Specifies the pack type by body size (in most case obtained from general header).
-  int          SetPackTypeByBodySize(int s);
+  int          SetPackTypeByContentSize(int s);
 
   /// Sets the position by 3-element array of x, y, and z coordinates.
   void         SetPosition(const float* pos);
@@ -100,9 +100,9 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
   /// The type of message formats (either POSITION_ONLY, WITH_QUATERNION3, or ALL).
   igtlInt32    m_PackType;

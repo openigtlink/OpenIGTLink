@@ -422,10 +422,8 @@ static Pointer New(void) \
 } \
 virtual ::igtl::LightObject::Pointer CreateAnother(void) const \
 { \
-  ::igtl::LightObject::Pointer smartPtr; \
-  smartPtr = x::New().GetPointer(); \
-  return smartPtr; \
-}
+  return x::New().GetPointer(); \
+} \
 
 
 /** Define two object creation methods.  The first method, New(),

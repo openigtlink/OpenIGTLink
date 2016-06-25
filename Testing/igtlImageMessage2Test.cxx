@@ -56,7 +56,7 @@ void BuildUp()
   imageSendMsg2->SetEndian(IGTL_IMAGE_ENDIAN_LITTLE);
   imageSendMsg2->SetCoordinateSystem(IGTL_IMAGE_COORD_RAS);
   imageSendMsg2->SetMatrix(inMatrix);
-  imageSendMsg2->AllocatePack(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
+  imageSendMsg2->AllocateBuffer(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
   imageSendMsg2->AllocateScalars();
   memcpy(imageSendMsg2->GetPackFragmentPointer(1), (void*)(test_image_message+IGTL_HEADER_SIZE), IGTL_IMAGE_HEADER_SIZE);//here m_ImageHeader is set.
   imageSendMsg2->SetScalarPointer((void*)test_image); //m_Image and m_Body are set
@@ -75,16 +75,22 @@ TEST(ImageMessage2Test, Pack)
 
 TEST(ImageMessage2Test, Unpack)
 {
-  imageReceiveMsg2->AllocatePack(imageSendMsg2->GetPackBodySize());
+  igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
+  headerMsg->AllocatePack();
+  memcpy(headerMsg->GetPackPointer(), (const void*)imageSendMsg2->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
+  imageReceiveMsg2->SetMessageHeader(headerMsg);
+  imageReceiveMsg2->SetDimensions(50, 50, 1);
+  imageReceiveMsg2->SetSubVolume(50, 50, 1, 0, 0, 0);
   imageReceiveMsg2->AllocateScalars();
   memcpy(imageReceiveMsg2->GetPackFragmentPointer(0), imageSendMsg2->GetPackFragmentPointer(0), IGTL_HEADER_SIZE);
   
   memcpy(imageReceiveMsg2->GetPackBodyPointer(), imageSendMsg2->GetPackBodyPointer(), IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
   imageReceiveMsg2->Unpack();
-  igtl_header *messageHeader = (igtl_header *)imageReceiveMsg2->GetPackPointer();
+  igtl_header *messageHeader = (igtl_header *)headerMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "IMAGE");
-  EXPECT_EQ(messageHeader->version, 1);
+  EXPECT_EQ(messageHeader->header_version, 1);
   EXPECT_EQ(messageHeader->timestamp, 1234567892);
   EXPECT_EQ(messageHeader->body_size, IGTL_IMAGE_HEADER_SIZE + TEST_IMAGE_MESSAGE_SIZE);
   

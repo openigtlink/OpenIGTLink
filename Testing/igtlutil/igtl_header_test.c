@@ -48,7 +48,7 @@ int main( int argc, char * argv [] )
     }
 
   // Test binary
-  header.version = 1;
+  header.header_version = 1;
   strncpy( header.name, "TYPENAME", 12 );
   strncpy( header.device_name, "DeviceName", 20 );
   header.timestamp = 1234567890;

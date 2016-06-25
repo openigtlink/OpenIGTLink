@@ -109,7 +109,6 @@ protected:
   igtlFloat32   m_quaternion[4];
 };
 
-
 /// A class for the STT_QTDATA message type.
 class IGTLCommon_EXPORT StartQuaternionTrackingDataMessage: public MessageBase
 {
@@ -142,9 +141,9 @@ protected:
   ~StartQuaternionTrackingDataMessage();
 
 protected:
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
 protected:
 
@@ -160,22 +159,22 @@ protected:
 class IGTLCommon_EXPORT StopQuaternionTrackingDataMessage: public MessageBase
 {
 public:
-  typedef StopQuaternionTrackingDataMessage  Self;
-  typedef MessageBase                        Superclass;
-  typedef SmartPointer<Self>                 Pointer;
-  typedef SmartPointer<const Self>           ConstPointer;
+  typedef StopQuaternionTrackingDataMessage   Self;
+  typedef MessageBase                         Superclass;
+  typedef SmartPointer<Self>                  Pointer;
+  typedef SmartPointer<const Self>            ConstPointer;
 
   igtlTypeMacro(igtl::StopQuaternionTrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StopQuaternionTrackingDataMessage);
 
 protected:
-  StopQuaternionTrackingDataMessage() : MessageBase() { this->m_DefaultBodyType  = "STP_QTDATA"; };
+  StopQuaternionTrackingDataMessage();
   ~StopQuaternionTrackingDataMessage() {};
 
 protected:
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
+  virtual int  CalculateContentBufferSize() { return 0; };
+  virtual int  PackContent()        { AllocateBuffer(); return 1; };
+  virtual int  UnpackContent()      { return 1; };
 
 };
 
@@ -205,16 +204,16 @@ public:
   igtlUint8     GetStatus()                { return this->m_Status; };
 
 protected:
-  RTSQuaternionTrackingDataMessage() : MessageBase(), m_Status(0) { this->m_DefaultBodyType  = "RTS_QTDATA"; };
+  RTSQuaternionTrackingDataMessage();
   ~RTSQuaternionTrackingDataMessage() {};
 
   /// A variable to store the status.
   igtlUint8 m_Status;
 
 protected:
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
 };
 
@@ -225,10 +224,10 @@ protected:
 class IGTLCommon_EXPORT QuaternionTrackingDataMessage: public MessageBase
 {
 public:
-  typedef QuaternionTrackingDataMessage  Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef QuaternionTrackingDataMessage       Self;
+  typedef MessageBase                         Superclass;
+  typedef SmartPointer<Self>                  Pointer;
+  typedef SmartPointer<const Self>            ConstPointer;
 
   igtlTypeMacro(igtl::QuaternionTrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::QuaternionTrackingDataMessage);
@@ -254,11 +253,11 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
   
-  /// The list of trakcing data elements.
+  /// The list of tracking data elements.
   std::vector<QuaternionTrackingDataElement::Pointer> m_QuaternionTrackingDataList;
   
 };
@@ -267,6 +266,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlQuaternionTrackingDataMessage_h
-
-
-

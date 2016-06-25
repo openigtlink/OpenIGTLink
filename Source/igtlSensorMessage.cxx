@@ -27,7 +27,7 @@ namespace igtl {
 SensorMessage::SensorMessage():
   MessageBase()
 {
-  m_DefaultBodyType  = "SENSOR";
+  m_SendMessageType  = "SENSOR";
 
   this->m_Length = 0;
   this->m_Status = 0;
@@ -122,24 +122,36 @@ igtlFloat64 SensorMessage::GetValue(unsigned int i)
 }
 
 
-int SensorMessage::GetBodyPackSize()
+int SensorMessage::CalculateContentBufferSize()
 {
   // Body pack size is the sum of LARRAY, STATUS, UNIT and DATA
   return sizeof(igtlUint8)*2 + sizeof(igtlUnit) + sizeof(igtlFloat64)*this->m_Length;
 }
 
 
-int SensorMessage::PackBody()
+int SensorMessage::PackContent()
 {
-  // Allocate pack
-  AllocatePack();
-
+  // Allocate buffer
+  AllocateBuffer();
+  
+  // Set pointers
   igtl_sensor_header * sensor_header;
   igtl_float64       * data;
-
-  // Set pointers
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
+  {
+    sensor_header = (igtl_sensor_header *) (this->m_Content);
+    data = (igtl_float64 *) (this->m_Content + sizeof(igtl_sensor_header));
+  }
+  else
+  {
+    sensor_header = (igtl_sensor_header *) this->m_Body;
+    data = (igtl_float64 *) (this->m_Body + sizeof(igtl_sensor_header));
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   sensor_header = (igtl_sensor_header *) this->m_Body;
   data = (igtl_float64 *) (this->m_Body + sizeof(igtl_sensor_header));
+#endif
 
   // Copy data
   sensor_header->larray = this->m_Length;
@@ -157,15 +169,26 @@ int SensorMessage::PackBody()
   return 1;
 }
 
-int SensorMessage::UnpackBody()
+int SensorMessage::UnpackContent()
 {
-
+  // Set pointers
   igtl_sensor_header * sensor_header;
   igtl_float64       * data;
-
-  // Set pointers
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
+  {
+    sensor_header = (igtl_sensor_header *) (this->m_Content);
+    data = (igtl_float64 *) (this->m_Content + sizeof(igtl_sensor_header));
+  }
+  else
+  {
+    sensor_header = (igtl_sensor_header *) this->m_Body;
+    data = (igtl_float64 *) (this->m_Body + sizeof(igtl_sensor_header));
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   sensor_header = (igtl_sensor_header *) this->m_Body;
   data = (igtl_float64 *) (this->m_Body + sizeof(igtl_sensor_header));
+#endif
 
   // Convert byte order from local to network  
   igtl_sensor_convert_byte_order(sensor_header, data);

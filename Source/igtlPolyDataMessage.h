@@ -31,20 +31,20 @@ class IGTLCommon_EXPORT GetPolyDataMessage: public MessageBase
 {
 public:
   typedef GetPolyDataMessage            Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef MessageBase                   Superclass;
+  typedef SmartPointer<Self>            Pointer;
+  typedef SmartPointer<const Self>      ConstPointer;
 
   igtlTypeMacro(igtl::GetPolyDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::GetPolyDataMessage);
 
 protected:
-  GetPolyDataMessage() : MessageBase() { this->m_DefaultBodyType  = "GET_POLYDATA"; };
+  GetPolyDataMessage();
   ~GetPolyDataMessage() {};
 protected:
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
+  virtual int  CalculateContentBufferSize() { return 0; };
+  virtual int  PackContent()        { AllocateBuffer(); return 1; };
+  virtual int  UnpackContent()      { return 1; };
 };
 
 
@@ -278,7 +278,7 @@ public:
 
 public:
 
-  /// Clears the poly data.
+  /// Clears the polydata.
   void Clear();
 
   /// Sets an array of points.
@@ -329,9 +329,9 @@ protected:
 
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
   /// A pointer to the array of points.
   PolyDataPointArray::Pointer m_Points;
@@ -356,6 +356,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlPolyDataMessage_h
-
-
-

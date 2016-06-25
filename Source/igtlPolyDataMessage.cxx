@@ -420,10 +420,9 @@ int PolyDataAttribute::GetNthData(unsigned int n, igtlFloat32 * data)
 
 // Description:
 // PolyDataMessage class implementation
-PolyDataMessage::PolyDataMessage():
-  MessageBase()
+PolyDataMessage::PolyDataMessage()
 {
-  this->m_DefaultBodyType = "POLYDATA";
+  this->m_SendMessageType = "POLYDATA";
   Clear();
 }
 
@@ -559,11 +558,11 @@ void IGTLCommon_EXPORT UnSetPolyDataInfoAttribute(igtl_polydata_info * info)
 }
 
 
-int PolyDataMessage::GetBodyPackSize()
+int PolyDataMessage::CalculateContentBufferSize()
 {
   // TODO: The current implementation of GetBodyPackSize() allocates
   // igtl_polydata_info and the array of igtl_polydata_attribute to calculate
-  // the size of pack. However, this approach is not efficent because
+  // the size of pack. However, this approach is not efficient because
   // it causes unnecessary memory allocation. 
 
   int dataSize;
@@ -574,7 +573,7 @@ int PolyDataMessage::GetBodyPackSize()
   // Instead of calling igtl_polydata_alloc_info(), we only allocate
   // memory for the attribute array, since igtl_polydata_alloc_info()
   // allocates also allocates the memory area for actual points and
-  // cell data, which is not neccessary to calculate polydata size.
+  // cell data, which is not necessary to calculate polydata size.
 
   info.attributes = new igtl_polydata_attribute[info.header.nattributes];
   
@@ -605,14 +604,14 @@ int PolyDataMessage::GetBodyPackSize()
   //delete [] (info.attributes);
   delete [] info.attributes;
 
-  return  dataSize;
+  return dataSize;
 }
 
 
-int PolyDataMessage::PackBody()
+int PolyDataMessage::PackContent()
 {
-  // Allocate pack
-  AllocatePack();
+  // Allocate buffer
+  AllocateBuffer();
 
   igtl_polydata_info info;
 
@@ -693,20 +692,39 @@ int PolyDataMessage::PackBody()
 
   SetPolyDataInfoAttribute(&info, this);
 
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
+  {
+    igtl_polydata_pack(&info, this->m_Content, IGTL_TYPE_PREFIX_NONE);
+  }
+  else
+  {
+    igtl_polydata_pack(&info, this->m_Body, IGTL_TYPE_PREFIX_NONE);
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   igtl_polydata_pack(&info, this->m_Body, IGTL_TYPE_PREFIX_NONE);
+#endif
+  
   igtl_polydata_free_info(&info);
 
   return 1;
 }
 
 
-int PolyDataMessage::UnpackBody()
+int PolyDataMessage::UnpackContent()
 {
   igtl_polydata_info info;
 
   igtl_polydata_init_info(&info);
+  
+  int r = 0;
+#if OpenIGTLink_HEADER_VERSION >= 2
+  r = igtl_polydata_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &info, this->CalculateReceiveContentSize());
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
+  r = igtl_polydata_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &info, this->GetBufferBodySize());
+#endif
 
-  if (igtl_polydata_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &info, this->GetPackBodySize()) == 0)  
+  if ( r == 0)
     {
     return 0;
     }
@@ -873,6 +891,11 @@ PolyDataAttribute * PolyDataMessage::GetAttribute(unsigned int id)
     }
 
   return this->m_Attributes[id];
+}
+
+GetPolyDataMessage::GetPolyDataMessage()
+{
+  this->m_SendMessageType  = "GET_POLYDATA";
 }
 
 } // namespace igtl

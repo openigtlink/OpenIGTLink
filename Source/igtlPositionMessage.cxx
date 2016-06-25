@@ -26,14 +26,12 @@ PositionMessage::PositionMessage():
   MessageBase()
 {
   Init();
-  m_DefaultBodyType  = "POSITION";
+  m_SendMessageType  = "POSITION";
 }
-
 
 PositionMessage::~PositionMessage()
 {
 }
-
 
 void PositionMessage::Init()
 {
@@ -49,7 +47,6 @@ void PositionMessage::Init()
   this->m_Quaternion[3] = 1.0;
 }
 
-
 void PositionMessage::SetPackType(int t)
 {
   if (t >= POSITION_ONLY && t <= ALL)
@@ -58,10 +55,8 @@ void PositionMessage::SetPackType(int t)
     }
 }
 
-
-int PositionMessage::SetPackTypeByBodySize(int s)
+int PositionMessage::SetPackTypeByContentSize(int s)
 {
-
   if (s == IGTL_POSITION_MESSAGE_POSITON_ONLY_SIZE)
     {
     this->m_PackType = POSITION_ONLY;
@@ -82,9 +77,7 @@ int PositionMessage::SetPackTypeByBodySize(int s)
     }
 
   return this->m_PackType;
-
 }
-
 
 void PositionMessage::SetPosition(const float* pos)
 {
@@ -92,7 +85,6 @@ void PositionMessage::SetPosition(const float* pos)
   this->m_Position[1] = pos[1];
   this->m_Position[2] = pos[2];
 }
-
 
 void PositionMessage::SetPosition(float x, float y, float z)
 {
@@ -110,7 +102,6 @@ void PositionMessage::SetQuaternion(const float* quat)
   this->m_Quaternion[3] = quat[3];
 }
 
-
 void PositionMessage::SetQuaternion(float ox, float oy, float oz, float w)
 {
   this->m_Quaternion[0] = ox;
@@ -119,7 +110,6 @@ void PositionMessage::SetQuaternion(float ox, float oy, float oz, float w)
   this->m_Quaternion[3] = w;
 }
 
-
 void PositionMessage::GetPosition(float* pos)
 {
   pos[0] = this->m_Position[0];
@@ -127,14 +117,12 @@ void PositionMessage::GetPosition(float* pos)
   pos[2] = this->m_Position[2];
 }
 
-
 void PositionMessage::GetPosition(float* x, float* y, float* z)
 {
   *x = this->m_Position[0];
   *y = this->m_Position[1];
   *z = this->m_Position[2];
 }
-
 
 void PositionMessage::GetQuaternion(float* quat)
 {
@@ -144,7 +132,6 @@ void PositionMessage::GetQuaternion(float* quat)
   quat[3] = this->m_Quaternion[3];
 }
 
-
 void PositionMessage::GetQuaternion(float* ox, float* oy, float* oz, float* w)
 {
   *ox = this->m_Quaternion[0];
@@ -153,18 +140,15 @@ void PositionMessage::GetQuaternion(float* ox, float* oy, float* oz, float* w)
   *w  = this->m_Quaternion[3];
 }
 
-
 int PositionMessage::SetMessageHeader(const MessageHeader* mb)
 {
   int rc = Copy(mb);
-  int rt = SetPackTypeByBodySize(this->GetPackBodySize());
+  int rt = SetPackTypeByContentSize(this->CalculateContentBufferSize());
 
-  return (rc && rt);
-  
+  return (rc && rt);  
 }
 
-
-int PositionMessage::GetBodyPackSize()
+int PositionMessage::CalculateContentBufferSize()
 {
   int ret;
 
@@ -182,16 +166,18 @@ int PositionMessage::GetBodyPackSize()
     }
 
   return ret;
-
 }
 
-
-int PositionMessage::PackBody()
+int PositionMessage::PackContent()
 {
-  // allocate pack
-  AllocatePack();
-
-  igtl_position* p = (igtl_position*)this->m_Body;
+  // Allocate buffer
+  AllocateBuffer();
+  igtl_position* p = NULL;
+#if OpenIGTLink_HEADER_VERSION >= 2
+  p = (igtl_position*)(this->m_Content);
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
+  p = (igtl_position*)(this->m_Body);
+#endif
 
   p->position[0]   = this->m_Position[0];
   p->position[1]   = this->m_Position[1];
@@ -217,13 +203,21 @@ int PositionMessage::PackBody()
   return 1;
 }
 
-int PositionMessage::UnpackBody()
+int PositionMessage::UnpackContent()
 {
-  
-  igtl_position* p = (igtl_position*)this->m_Body;
-  
-  int bodySize = this->m_PackSize - IGTL_HEADER_SIZE;
-  switch (bodySize)
+  igtl_position* p = NULL;
+#if OpenIGTLink_HEADER_VERSION >= 2
+  p = (igtl_position*)(this->m_Content);
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
+  p = (igtl_position*)(this->m_Body);
+#endif
+
+  int contentSize = CalculateReceiveContentSize();
+  if( contentSize == -1 )
+  {
+    return 0;
+  }
+  switch (contentSize)
     {
     case IGTL_POSITION_MESSAGE_POSITON_ONLY_SIZE:
       this->m_PackType = POSITION_ONLY;
@@ -284,12 +278,6 @@ int PositionMessage::UnpackBody()
     }
     
   return 1;
-
 }
 
 } // namespace igtl
-
-
-
-
-

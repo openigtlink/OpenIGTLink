@@ -46,14 +46,13 @@ public:
   igtlTypeMacro(igtl::GetImageMessage2, igtl::MessageBase);
   igtlNewMacro(igtl::GetImageMessage2);
 
-  
 protected:
-  GetImageMessage2() : MessageBase() { this->m_DefaultBodyType  = "GET_IMAGE"; };
+  GetImageMessage2() : MessageBase() { this->m_SendMessageType  = "GET_IMAGE"; };
   ~GetImageMessage2() {};
 protected:
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
+  virtual int  CalculateContentBufferSize() { return 0; };
+  virtual int  PackContent()        { AllocateBuffer(); return 1; };
+  virtual int  UnpackContent()      { return 1; };
 };
 
 
@@ -90,7 +89,7 @@ public:
 
 public:
 
-  /// Coordinate sysmtem. Either left-posterior-superior (LPS) or right-anterior-superior (RAS).
+  /// Coordinate system. Either left-posterior-superior (LPS) or right-anterior-superior (RAS).
   enum {
     COORDINATE_RAS=1,
     COORDINATE_LPS=2
@@ -287,7 +286,7 @@ public:
   virtual void  SetScalarPointer(void * p);
 
   /// Gets a pointer to the scalar data (for fragmented pack support).
-  void* GetPackPointer();
+  void* GetBufferPointer();
 
   /// Gets the number of fragments for the packed (serialized) data. Returns 3
   /// consisting of header, image header and image body. (for fragmented pack support)
@@ -307,7 +306,7 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
+  virtual int  CalculateContentBufferSize();
 
 #ifdef FRAGMENTED_PACK  
 public:  
@@ -317,13 +316,13 @@ public:
 public:
 #endif //FRAGMENTED_PACK  
 
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
 #ifdef FRAGMENTED_PACK  
   /// Allocate memory specifying the body size
   /// (used when create a brank package to receive data) (for fragmented pack support)
-  virtual void AllocatePack(int bodySize);
+  virtual void AllocateBuffer(int contentSize);
 #endif //FRAGMENTED_PACK  
 
   /// A vector containing the numbers of voxels in i, j and k directions.
@@ -388,5 +387,3 @@ public:
 } // namespace igtl
 
 #endif // _igtlImageMessage2_h
-
-

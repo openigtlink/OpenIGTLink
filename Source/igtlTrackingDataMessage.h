@@ -104,10 +104,10 @@ class IGTLCommon_EXPORT StartTrackingDataMessage: public MessageBase
 {
 
 public:
-  typedef StartTrackingDataMessage       Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef StartTrackingDataMessage        Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   igtlTypeMacro(igtl::StartTrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StartTrackingDataMessage);
@@ -130,9 +130,9 @@ protected:
   ~StartTrackingDataMessage();
 
 protected:
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
 protected:
 
@@ -149,22 +149,22 @@ protected:
 class IGTLCommon_EXPORT StopTrackingDataMessage: public MessageBase
 {
 public:
-  typedef StopTrackingDataMessage        Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef StopTrackingDataMessage         Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   igtlTypeMacro(igtl::StopTrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StopTrackingDataMessage);
 
 protected:
-  StopTrackingDataMessage() : MessageBase() { this->m_DefaultBodyType  = "STP_TDATA"; };
+  StopTrackingDataMessage() : MessageBase() { this->m_SendMessageType  = "STP_TDATA"; };
   ~StopTrackingDataMessage() {};
 
 protected:
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
+  virtual int  CalculateContentBufferSize() { return 0; };
+  virtual int  PackContent()        { AllocateBuffer(); return 1; };
+  virtual int  UnpackContent()      { return 1; };
 
 };
 
@@ -173,10 +173,10 @@ protected:
 class IGTLCommon_EXPORT RTSTrackingDataMessage: public MessageBase
 {
 public:
-  typedef RTSTrackingDataMessage         Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef RTSTrackingDataMessage          Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   /// Status type
   enum {
@@ -194,16 +194,16 @@ public:
   igtlUint8     GetStatus()                { return this->m_Status; };
 
 protected:
-  RTSTrackingDataMessage() : MessageBase(), m_Status(0) { this->m_DefaultBodyType  = "RTS_TDATA"; };
+  RTSTrackingDataMessage() : MessageBase(), m_Status(0) { this->m_SendMessageType  = "RTS_TDATA"; };
   ~RTSTrackingDataMessage() {};
 
   /// A variable to store the status.
   igtlUint8 m_Status;
 
 protected:
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
 };
 
@@ -216,10 +216,10 @@ protected:
 class IGTLCommon_EXPORT TrackingDataMessage: public MessageBase
 {
 public:
-  typedef TrackingDataMessage            Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef TrackingDataMessage             Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   igtlTypeMacro(igtl::TrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::TrackingDataMessage);
@@ -247,11 +247,11 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
-  /// The list of trakcing data elements.  
+  /// The list of tracking data elements.  
   std::vector<TrackingDataElement::Pointer> m_TrackingDataList;
   
 };
@@ -260,6 +260,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlTrackingDataMessage_h
-
-
-

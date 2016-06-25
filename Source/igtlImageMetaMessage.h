@@ -137,21 +137,21 @@ protected:
 class IGTLCommon_EXPORT GetImageMetaMessage: public MessageBase
 {
 public:
-  typedef GetImageMetaMessage            Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef GetImageMetaMessage             Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   igtlTypeMacro(igtl::GetImageMetaMessage, igtl::MessageBase);
   igtlNewMacro(igtl::GetImageMetaMessage);
 
 protected:
-  GetImageMetaMessage() : MessageBase() { this->m_DefaultBodyType  = "GET_IMGMETA"; };
+  GetImageMetaMessage() : MessageBase() { this->m_SendMessageType  = "GET_IMGMETA"; };
   ~GetImageMetaMessage() {};
 protected:
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
+  virtual int  CalculateContentBufferSize() { return 0; };
+  virtual int  PackContent()        { AllocateBuffer(); return 1; };
+  virtual int  UnpackContent()      { return 1; };
 };
 
 
@@ -163,10 +163,10 @@ protected:
 class IGTLCommon_EXPORT ImageMetaMessage: public MessageBase
 {
 public:
-  typedef ImageMetaMessage               Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef ImageMetaMessage                Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   igtlTypeMacro(igtl::ImageMetaMessage, igtl::MessageBase);
   igtlNewMacro(igtl::ImageMetaMessage);
@@ -193,9 +193,9 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
   /// A list of pointers to image meta data.
   std::vector<ImageMetaElement::Pointer> m_ImageMetaList;
@@ -206,6 +206,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlImageMetaMessage_h
-
-
-

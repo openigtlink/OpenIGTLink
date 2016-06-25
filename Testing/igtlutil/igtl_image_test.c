@@ -60,7 +60,7 @@ int main( int argc, char * argv [] )
     }
 
   /* Set data */
-  message.iheader.version     = 1;
+  message.iheader.header_version     = 1;
   message.iheader.num_components = 1; /* Scalar */
   message.iheader.scalar_type = 3; /* uint8 */
   message.iheader.endian      = 2; /* Little endian */
@@ -89,7 +89,7 @@ int main( int argc, char * argv [] )
   igtl_image_convert_byte_order(&(message.iheader));
 
   /* Create OpenIGTLink header */
-  message.header.version = 1;
+  message.header.header_version = 1;
   strncpy( (char*)&(message.header.name), "IMAGE", 12 );
   strncpy( (char*)&(message.header.device_name), "DeviceName", 20 );
   message.header.timestamp = 1234567892;

@@ -35,7 +35,7 @@ public:
   igtlNewMacro(igtl::GetTransformMessage);
 
 protected:
-  GetTransformMessage() : HeaderOnlyMessageBase() { this->m_DefaultBodyType  = "GET_TRANS"; };
+  GetTransformMessage() : HeaderOnlyMessageBase() { this->m_SendMessageType  = "GET_TRANS"; };
   ~GetTransformMessage() {};
 };
 
@@ -99,9 +99,9 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
   
   /// The transformation matrix.
   Matrix4x4 matrix;

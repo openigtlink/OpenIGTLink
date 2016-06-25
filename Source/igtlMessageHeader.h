@@ -18,11 +18,11 @@
 namespace igtl
 {
 /// The MessageHeader class is used to receive and parse general headers
-/// to prepare for recieving body data. The class is currently just the alias
+/// to prepare for receiving body data. The class is currently just the alias
 /// of MessageBase class. Please refer igtlMessageBase.h for more details and
 /// the implementation of the class.
 ///
-/// The following is the typical unpacking (deserialization) prcedures
+/// The following is the typical unpacking (deserialization) procedures
 /// using igtl::MessssageHeader class:
 ///
 ///     // Create instance and set Device Name

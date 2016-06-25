@@ -61,7 +61,7 @@ extern "C" {
  *  In case of transferring entire image in one message, 'size' and
  *  'subvol_size' should be same, and 'subvol_offset' equals (0, 0, 0). */
 typedef struct {
-  igtl_uint16    version;          /* data format version number(1)   */
+  igtl_uint16    header_version;          /* data format version number(1)   */
   igtl_uint8     num_components;   /* number of components per element*/
   igtl_uint8     scalar_type;      /* scalar type                     */
   /*2:int8 3:uint8 4:int16 5:uint16 6:int32 7:uint32 10:float32 11:float64) */

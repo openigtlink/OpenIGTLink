@@ -141,7 +141,7 @@ igtlUint32 ArrayBase::Get1DIndex(IndexType index)
 NDArrayMessage::NDArrayMessage():
   MessageBase()
 {
-  this->m_DefaultBodyType = "NDARRAY";
+  this->m_SendMessageType = "NDARRAY";
   this->m_Array = NULL;
   this->m_Type = 0;
 }
@@ -174,27 +174,26 @@ int NDArrayMessage::SetArray(int type, ArrayBase * a)
 }
 
 
-int NDArrayMessage::GetBodyPackSize()
+int NDArrayMessage::CalculateContentBufferSize()
 {
   int dataSize;
   int dim;
-
   if (this->m_Array == NULL)
-    {
+  {
     return 0;
-    }
-
+  }
   dim = this->m_Array->GetDimension();
   dataSize = sizeof(igtlUint8) * 2 + sizeof(igtlUint16) * (igtl_uint64) dim
-    + this->m_Array->GetRawArraySize();
+  + this->m_Array->GetRawArraySize();
+
   return  dataSize;
 }
 
 
-int NDArrayMessage::PackBody()
+int NDArrayMessage::PackContent()
 {
-  // Allocate pack
-  AllocatePack();
+  // Allocate buffer
+  AllocateBuffer();
 
   if (this->m_Array == NULL)
     {
@@ -229,18 +228,32 @@ int NDArrayMessage::PackBody()
 //    }
 
   memcpy(info.array, this->m_Array->GetRawArray(), this->m_Array->GetRawArraySize());
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
+  {
+    igtl_ndarray_pack(&info, this->m_Content, IGTL_TYPE_PREFIX_NONE);
+  }
+  else
+  {
+    igtl_ndarray_pack(&info, this->m_Body, IGTL_TYPE_PREFIX_NONE);
+  }
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
   igtl_ndarray_pack(&info, this->m_Body, IGTL_TYPE_PREFIX_NONE);
+#endif
 
   return 1;
 }
 
 
-int NDArrayMessage::UnpackBody()
+int NDArrayMessage::UnpackContent()
 {
-
   igtl_ndarray_info info;
-
-  igtl_ndarray_unpack(IGTL_TYPE_PREFIX_NONE, this->m_Body, &info, this->GetPackBodySize());
+#if OpenIGTLink_HEADER_VERSION >= 2
+  igtl_ndarray_unpack(IGTL_TYPE_PREFIX_NONE, this->m_Content, &info, this->CalculateReceiveContentSize());
+#elif OpenIGTLink_PROTOCOL_VERSION <=2
+  igtl_ndarray_unpack(IGTL_TYPE_PREFIX_NONE, this->m_Body, &info, this->GetBufferBodySize());
+#endif
+  
 
   this->m_Type = info.type;
   ArrayBase::IndexType size;
@@ -291,8 +304,3 @@ int NDArrayMessage::UnpackBody()
 }
 
 } // namespace igtl
-
-
-
-
-

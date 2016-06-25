@@ -116,26 +116,25 @@ protected:
   std::string   m_Owner; 
 };
 
-
 /// A class for the GET_POINT message type.
 class IGTLCommon_EXPORT GetPointMessage: public MessageBase
 {
 public:
-  typedef GetPointMessage            Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef GetPointMessage                 Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   igtlTypeMacro(igtl::GetPointMessage, igtl::MessageBase);
   igtlNewMacro(igtl::GetPointMessage);
 
 protected:
-  GetPointMessage() : MessageBase() { this->m_DefaultBodyType  = "GET_POINT"; };
+  GetPointMessage() : MessageBase() { this->m_SendMessageType  = "GET_POINT"; };
   ~GetPointMessage() {};
 protected:
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
+  virtual int  CalculateContentBufferSize() { return 0; };
+  virtual int  PackContent()        { AllocateBuffer(); return 1; };
+  virtual int  UnpackContent()      { return 1; };
 };
 
 
@@ -144,10 +143,10 @@ protected:
 class IGTLCommon_EXPORT PointMessage: public MessageBase
 {
 public:
-  typedef PointMessage               Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
+  typedef PointMessage                    Self;
+  typedef MessageBase                     Superclass;
+  typedef SmartPointer<Self>              Pointer;
+  typedef SmartPointer<const Self>        ConstPointer;
 
   igtlTypeMacro(igtl::PointMessage, igtl::MessageBase);
   igtlNewMacro(igtl::PointMessage);
@@ -174,9 +173,9 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
 
   /// A list of pointers to the points.
   std::vector<PointElement::Pointer> m_PointList;
@@ -187,6 +186,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlPointMessage_h
-
-
-

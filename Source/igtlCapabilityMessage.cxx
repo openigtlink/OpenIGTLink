@@ -35,8 +35,13 @@ namespace igtl {
 CapabilityMessage::CapabilityMessage():
     MessageBase()
 {
-  this->m_DefaultBodyType = "CAPABILITY";
+  this->m_SendMessageType = "CAPABILITY";
   this->m_TypeNames.clear();
+/// CapabilityMessage stay the same as previous versions, set m_Version = 1
+/// to make the pack and unpack procedures the same as OpenIGTLink_PROTOCOL_VERSION 1
+#if OpenIGTLink_HEADER_VERSION >= 2
+  m_HeaderVersion = IGTL_HEADER_VERSION_1;
+#endif
 }
 
 
@@ -44,27 +49,6 @@ CapabilityMessage::~CapabilityMessage()
 {
   this->m_TypeNames.clear();
 }
-
-
-//void CapabilityMessage::SetTypes(int ntypes, const char names[][IGTL_HEADER_TYPE_SIZE])
-//{
-//  this->m_TypeNames.clear();
-//
-//  for(int i = 0; i < ntypes; i++)
-//    {
-//    std::string buf;
-//    if (strnlen(names[i], IGTL_HEADER_TYPE_SIZE) < IGTL_HEADER_TYPE_SIZE)
-//      {
-//      buf.append(names[i]);
-//      }
-//    else
-//      {
-//      buf.append(names[i], IGTL_HEADER_TYPE_SIZE);
-//      }
-//    this->m_TypeNames.push_back(buf);
-//    }
-//}
-
 
 void CapabilityMessage::SetTypes(std::vector<std::string> types)
 {
@@ -100,15 +84,15 @@ const char* CapabilityMessage::GetType(int id)
 }
 
 
-int CapabilityMessage::GetBodyPackSize()
+int CapabilityMessage::CalculateContentBufferSize()
 {
   return (sizeof(char) * IGTL_HEADER_TYPE_SIZE * this->m_TypeNames.size());
 }
 
 
-int CapabilityMessage::PackBody()
+int CapabilityMessage::PackContent()
 {
-  AllocatePack();
+  AllocateBuffer();
 
   if (this->m_TypeNames.size() == 0)
   {
@@ -133,13 +117,17 @@ int CapabilityMessage::PackBody()
 }
 
 
-int CapabilityMessage::UnpackBody()
+int CapabilityMessage::UnpackContent()
 {
 
   igtl_capability_info info;
 
   igtl_capability_init_info(&info);
-  igtl_capability_unpack(this->m_Body, &info, this->GetPackBodySize());
+#if OpenIGTLink_HEADER_VERSION >= 2
+  igtl_capability_unpack(this->m_Content, &info, this->CalculateReceiveContentSize());
+#else
+  igtl_capability_unpack(this->m_Body, &info, this->GetBufferBodySize());
+#endif
 
   int ntypes = info.ntypes;
 

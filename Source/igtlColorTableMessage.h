@@ -36,13 +36,13 @@ public:
   igtlNewMacro(igtl::GetColorTableMessage);
 
 protected:
-  GetColorTableMessage() : MessageBase() { this->m_DefaultBodyType  = "GET_COLORT"; };
+  GetColorTableMessage() : MessageBase() { this->m_SendMessageType  = "GET_COLORT"; };
   ~GetColorTableMessage() {};
 
 protected:
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
+  virtual int  CalculateContentBufferSize() { return 0; };
+  virtual int  PackContent()        { AllocateBuffer(); return 1; };
+  virtual int  UnpackContent()      { return 1; };
 };
 
 
@@ -110,9 +110,9 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
-  virtual int  PackBody();
-  virtual int  UnpackBody();
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
   
   /// A variable to store the index type. Either INDEX_UINT8 or INDEX_UINT16.
   int indexType;
@@ -132,5 +132,3 @@ protected:
 } // namespace igtl
 
 #endif // _igtlColorTableMessage_h
-
-

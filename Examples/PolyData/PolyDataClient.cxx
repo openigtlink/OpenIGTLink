@@ -139,7 +139,7 @@ int ReceivePolyData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Po
     if (pointsArray.IsNotNull())
       {
       std::cerr << "  ------ Points ------" << std::endl;
-      for (unsigned int i = 0; i < pointsArray->GetNumberOfPoints(); i ++)
+      for (int i = 0; i < pointsArray->GetNumberOfPoints(); i ++)
         {
         igtlFloat32 point[3];
         pointsArray->GetPoint(i, point);

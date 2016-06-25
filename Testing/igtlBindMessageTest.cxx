@@ -16,7 +16,7 @@
 #include "igtlutil/igtl_test_data_bind.h"
 #include "igtlutil/igtl_test_data_image.h"
 #include "igtlTransformMessage.h"
-#include "igtlImageMessage2.h"
+#include "igtlImageMessage.h"
 #include "igtlSensorMessage.h"
 #include "igtlMessageDebugFunction.h"
 #include "igtlUnit.h"
@@ -34,8 +34,8 @@
 #define TEST_IMAGE_MESSAGE_SIZE 2500
 #define MESSAGE_SENSOR_BODY_SIZE 58
 
-igtl::ImageMessage2::Pointer imageSendMsg2 = igtl::ImageMessage2::New();
-igtl::ImageMessage2::Pointer imageReceiveMsg2 = igtl::ImageMessage2::New();
+igtl::ImageMessage::Pointer imageSendMsg2 = igtl::ImageMessage::New();
+igtl::ImageMessage::Pointer imageReceiveMsg2 = igtl::ImageMessage::New();
 igtl::SensorMessage::Pointer sensorDataSendMsg = igtl::SensorMessage::New();
 igtl::SensorMessage::Pointer sensorDataReceiveMsg = igtl::SensorMessage::New();
 igtl::TransformMessage::Pointer transformSendMsg = igtl::TransformMessage::New();
@@ -61,13 +61,14 @@ int   size[3]     = {50, 50, 1};       // image dimension
 float spacing[3]  = {1.0f, 1.0f, 1.0f};     // spacing (mm/pixel)
 int   svsize[3]   = {50, 50, 1};       // sub-volume size
 int   svoffset[3] = {0, 0, 0};           // sub-volume offset
-int   scalarType = igtl::ImageMessage2::TYPE_UINT8;// scalar type
+int   scalarType = igtl::ImageMessage::TYPE_UINT8;// scalar type
 igtlFloat64 sensorValues[6] = {123456.78,12345.678,1234.5678,123.45678,12.345678,1.2345678};
 
 
 void BuildUpElements()
 {
-  imageSendMsg2 = igtl::ImageMessage2::New();
+  imageSendMsg2 = igtl::ImageMessage::New();
+  imageSendMsg2->SetHeaderVersion(IGTL_HEADER_VERSION_1);
   imageSendMsg2->SetTimeStamp(0, 1234567892);
   imageSendMsg2->SetDeviceName("ChildImage");
   //Initialization of a image message
@@ -80,15 +81,21 @@ void BuildUpElements()
   imageSendMsg2->SetEndian(IGTL_IMAGE_ENDIAN_LITTLE);
   imageSendMsg2->SetCoordinateSystem(IGTL_IMAGE_COORD_RAS);
   imageSendMsg2->SetMatrix(inMatrix);
-  imageSendMsg2->AllocatePack(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
+  //imageSendMsg2->AllocateBuffer(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
   imageSendMsg2->AllocateScalars();
-  memcpy(imageSendMsg2->GetPackFragmentPointer(1), (void*)(test_image_message+IGTL_HEADER_SIZE), IGTL_IMAGE_HEADER_SIZE);//here m_Body is set.
-  imageSendMsg2->SetScalarPointer((void*)test_image);
+  memcpy(imageSendMsg2->GetPackBodyPointer(), (const void*)test_image_message,
+         (size_t)(IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE));//here m_Body is set.
+  //imageSendMsg2->SetScalarPointer((void*)test_image);
   imageSendMsg2->Pack();
+  TestDebugCharArrayCmp( (void* )bindSendMsg->GetPackPointer(), test_bind_message_header, IGTL_HEADER_SIZE);
+  igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
+  headerMsg->AllocatePack();
+  memcpy(headerMsg->GetPackPointer(), (const void*)imageSendMsg2->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
+  imageReceiveMsg2->SetMessageHeader(headerMsg);
+  imageReceiveMsg2->AllocatePack();
   
-  imageReceiveMsg2->AllocatePack(imageSendMsg2->GetPackSize());
-  imageReceiveMsg2->AllocateScalars();
-  
+  sensorDataSendMsg->SetHeaderVersion(IGTL_HEADER_VERSION_1);
   sensorDataSendMsg->AllocatePack();
   sensorDataSendMsg->SetLength(6);
   sensorDataSendMsg->SetDeviceName("ChildSensor");
@@ -108,6 +115,7 @@ void BuildUpElements()
   sensorDataReceiveMsg->AllocatePack();
   sensorDataReceiveMsg->SetLength(6);
   
+  transformSendMsg->SetHeaderVersion(IGTL_HEADER_VERSION_1);
   transformSendMsg->AllocatePack();
   transformSendMsg->SetTimeStamp(0, 1234567892);
   transformSendMsg->SetDeviceName("ChildTrans");
@@ -128,7 +136,7 @@ void BuildUpElements()
 TEST(BindMessageTest, Pack)
 {
   BuildUpElements();
-
+  //TestDebugCharArrayCmp( (void* )bindSendMsg->GetPackPointer(), test_bind_message_header, IGTL_HEADER_SIZE);
   int r = memcmp((const void*)bindSendMsg->GetPackPointer(), (const void*)test_bind_message_header,
                  (size_t)(IGTL_HEADER_SIZE));
   EXPECT_EQ(r, 0);
@@ -136,7 +144,7 @@ TEST(BindMessageTest, Pack)
   r = memcmp((const void*)bindSendMsg->GetPackBodyPointer(), (const void*)test_bind_message_bind_header,  MESSAGE_BIND_HEADER_SIZE);  
   EXPECT_EQ(r, 0);
   char * messageBody = (char*)bindSendMsg->GetPackBodyPointer() + MESSAGE_BIND_HEADER_SIZE;
-  //TestDebugCharArrayCmp((void*)messageBody,test_bind_message_bind_body,MESSAGE_BIND_BODY_SIZE);
+  TestDebugCharArrayCmp((void*)messageBody,test_bind_message_bind_body,MESSAGE_BIND_BODY_SIZE);
   r = memcmp((const void*)(messageBody), (const void*)test_bind_message_bind_body,  MESSAGE_BIND_BODY_SIZE);
   EXPECT_EQ(r, 0);
 }
@@ -158,16 +166,16 @@ TEST(BindMessageTest, Unpack)
   igtl_header *messageHeader = (igtl_header *)bindReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "BIND");
-  EXPECT_EQ(messageHeader->version, 1);
+  EXPECT_EQ(messageHeader->header_version, 1);
   EXPECT_EQ(messageHeader->timestamp, 1234567892);
   EXPECT_EQ(messageHeader->body_size, MESSAGE_BIND_HEADER_SIZE + MESSAGE_BIND_BODY_SIZE);
   int r = memcmp(bindReceiveMsg->GetPackBodyPointer(), test_bind_message_bind_header, MESSAGE_BIND_HEADER_SIZE);
   EXPECT_EQ(r, 0);
   
-  igtl_header *imageHeader = (igtl_header *)imageReceiveMsg2->GetPackFragmentPointer(0);
+  igtl_header *imageHeader = (igtl_header *)imageReceiveMsg2->GetPackPointer();
   EXPECT_STREQ(imageHeader->device_name, "ChildImage");
   EXPECT_STREQ(imageHeader->name, "IMAGE");
-  EXPECT_EQ(imageHeader->version, 1);
+  EXPECT_EQ(imageHeader->header_version, 1);
   EXPECT_EQ(imageHeader->timestamp, 1234567892);
   EXPECT_EQ(imageHeader->body_size, IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
   
@@ -186,13 +194,13 @@ TEST(BindMessageTest, Unpack)
   EXPECT_EQ(imageReceiveMsg2->GetEndian(), IGTL_IMAGE_ENDIAN_LITTLE);
   EXPECT_EQ(imageReceiveMsg2->GetCoordinateSystem(), IGTL_IMAGE_COORD_RAS);
   
-  r = memcmp(imageReceiveMsg2->GetPackFragmentPointer(2), test_image, TEST_IMAGE_MESSAGE_SIZE);
+  r = memcmp((const char*)imageReceiveMsg2->GetPackBodyPointer()+IGTL_IMAGE_HEADER_SIZE, test_image, TEST_IMAGE_MESSAGE_SIZE);
   EXPECT_EQ(r, 0);
 
   igtl_header *transformHeader = (igtl_header *)transformReceiveMsg->GetPackPointer();
   EXPECT_STREQ(transformHeader->device_name, "ChildTrans");
   EXPECT_STREQ(transformHeader->name, "TRANSFORM");
-  EXPECT_EQ(transformHeader->version, 1);
+  EXPECT_EQ(transformHeader->header_version, 1);
   EXPECT_EQ(transformHeader->timestamp, 1234567892);
   EXPECT_EQ(transformHeader->body_size, IGTL_TRANSFORM_SIZE);
  
@@ -206,7 +214,7 @@ TEST(BindMessageTest, Unpack)
   igtl_header *sensorHeader = (igtl_header *)sensorDataReceiveMsg->GetPackPointer();
   EXPECT_STREQ(sensorHeader->device_name, "ChildSensor");
   EXPECT_STREQ(sensorHeader->name, "SENSOR");
-  EXPECT_EQ(sensorHeader->version, 1);
+  EXPECT_EQ(sensorHeader->header_version, 1);
   EXPECT_EQ(sensorHeader->timestamp, 1234567892);
   EXPECT_EQ(sensorHeader->body_size, MESSAGE_SENSOR_BODY_SIZE);
   

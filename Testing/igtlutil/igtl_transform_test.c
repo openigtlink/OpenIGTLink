@@ -60,7 +60,7 @@ int main( int argc, char * argv [] )
   igtl_transform_convert_byte_order(message.transform);
 
   /* Set header */
-  message.header.version = 1;
+  message.header.header_version = 1;
   strncpy( (char*)&(message.header.name), "TRANSFORM", 12 );
   strncpy( (char*)&(message.header.device_name), "DeviceName", 20 );
   message.header.timestamp = 1234567892;

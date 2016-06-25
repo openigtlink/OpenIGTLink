@@ -64,6 +64,7 @@ void BuildUpLabelElements()
   timestamp = igtl::TimeStamp::New();
   timestamp->SetTime((igtlUint64)1234567892);
   imageMetaSendMsg = igtl::ImageMetaMessage::New();
+  imageMetaSendMsg->SetHeaderVersion(IGTL_HEADER_VERSION_1);
   imageMetaSendMsg->SetDeviceName("DeviceName");
   imageMetaSendMsg->SetTimeStamp(timestamp);
   imageMetaSendMsg->AddImageMetaElement(imageMetaElement0);
@@ -125,7 +126,7 @@ TEST(ImageMetaMessageTest, Unpack)
   igtl_header *messageHeader = (igtl_header *)imageMetaReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "IMGMETA");
-  EXPECT_EQ(messageHeader->version, 1);
+  EXPECT_EQ(messageHeader->header_version, 1);
   EXPECT_EQ(messageHeader->timestamp, 1234567892);
   EXPECT_EQ(messageHeader->body_size, IGTL_IMGMETA_ELEMENT_SIZE*3);
   

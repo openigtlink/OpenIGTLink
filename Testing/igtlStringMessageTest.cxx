@@ -28,6 +28,7 @@ igtl::StringMessage::Pointer stringReceiveMsg = igtl::StringMessage::New();
 
 TEST(StringMessageTest, Pack)
 {
+  stringSendMsg->SetHeaderVersion(IGTL_HEADER_VERSION_1);
   stringSendMsg->SetString(IGTL_STRING_TEST_STRING);
   stringSendMsg->AllocatePack();
   stringSendMsg->SetTimeStamp(0, 1234567892);
