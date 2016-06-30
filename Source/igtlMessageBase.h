@@ -322,6 +322,9 @@ protected:
   /// Unpacking (deserialization) status for the body
   bool           m_IsBodyUnpacked;
 
+  /// Packing (serialization) status for the body
+  bool           m_IsBodyPacked;
+
 #if OpenIGTLink_HEADER_VERSION >= 2
 protected:
   /// A pointer to the serialized extended header.

@@ -39,6 +39,7 @@ MessageBase::MessageBase()
   , m_DeviceName("")
   , m_IsHeaderUnpacked(false)
   , m_IsBodyUnpacked(false)
+  , m_IsBodyPacked(false)
   , m_ReceiveMessageType("")
   , m_SendMessageType("")
 #if OpenIGTLink_HEADER_VERSION >= 2
@@ -414,6 +415,12 @@ void MessageBase::GetTimeStamp(igtl::TimeStamp::Pointer& ts)
 
 int MessageBase::Pack()
 {
+  if (m_IsBodyPacked)
+  {
+    // Allow for multiple packs
+    return 1;
+  }
+
   if( m_SendMessageType.empty() )
   {
     // We do not allow sending of base class messages, aka igtl::MessageBase
@@ -432,7 +439,7 @@ int MessageBase::Pack()
   PackMetaData();
 #endif
 
-  m_IsBodyUnpacked   = false;
+  m_IsBodyPacked = true;
 
   // pack header
   igtl_header* h = (igtl_header*) m_Header;
@@ -452,8 +459,6 @@ int MessageBase::Pack()
   strncpy(h->device_name, m_DeviceName.c_str(), 20);
 
   igtl_header_convert_byte_order(h);
-
-  m_IsHeaderUnpacked = false;
 
   return 1;
 }
