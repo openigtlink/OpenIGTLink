@@ -79,16 +79,18 @@ if (${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
     )
 endif (${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
 
-IF( ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
-ADD_LIBRARY(igtlutil
-  ${igtlutil_SOURCES}
-  ${igtlutil_HEADS}
-  )
-ELSE ( ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
-ADD_LIBRARY(igtlutil
-  ${igtlutil_SOURCES}
-  )
-ENDIF( ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
+IF( MSVC )
+  ADD_LIBRARY(igtlutil
+    ${igtlutil_SOURCES}
+    ${igtlutil_HEADS}
+    )
+
+  target_compile_options(igtlutil PRIVATE /MP)
+ELSE()
+  ADD_LIBRARY(igtlutil
+    ${igtlutil_SOURCES}
+    )
+ENDIF()
 
 SET_TARGET_PROPERTIES(igtlutil PROPERTIES
   VERSION ${OpenIGTLink_VERSION_MAJOR}.${OpenIGTLink_VERSION_MINOR}.${OpenIGTLink_VERSION_PATCH}
