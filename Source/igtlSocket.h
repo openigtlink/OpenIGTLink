@@ -72,7 +72,7 @@ class IGTLCommon_EXPORT Socket : public Object
 public:
 
   /// Check is the socket is alive.
-  int GetConnected() { return (this->m_SocketDescriptor >=0); }
+  bool GetConnected() { return (this->m_SocketDescriptor >=0); }
   
   /// Close the socket.
   void CloseSocket() {
