@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -17,9 +16,8 @@
 #include "igtlMessageDebugFunction.h"
 #include "igtl_trajectory.h"
 #include "igtl_header.h"
+#include "igtlTestConfig.h"
 
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
 
 igtl::TrajectoryMessage::Pointer trajectorySendMsg = igtl::TrajectoryMessage::New();
 igtl::TrajectoryMessage::Pointer trajectoryReceiveMsg = igtl::TrajectoryMessage::New();

@@ -208,6 +208,8 @@ CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtl_typeconfig.h.in
 CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtlTypeConfig.h.in 
   ${OpenIGTLink_BINARY_DIR}/igtlTypeConfig.h)
 
+CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/Testing/igtlTestConfig.h.in 
+  ${OpenIGTLink_BINARY_DIR}/igtlTestConfig.h)
 
 #-----------------------------------------------------------------------------
 # Help other projects use OpenIGTLink.

@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -17,8 +16,7 @@
 #include "igtlMessageDebugFunction.h"
 #include "igtl_imgmeta.h"
 #include "igtl_header.h"
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
+#include "igtlTestConfig.h"
 
 igtl::ImageMetaElement::Pointer imageMetaElement0 = igtl::ImageMetaElement::New();
 igtl::ImageMetaElement::Pointer imageMetaElement1 = igtl::ImageMetaElement::New();

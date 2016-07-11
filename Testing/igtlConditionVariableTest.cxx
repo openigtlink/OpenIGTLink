@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -15,10 +14,7 @@
 #include "igtlConditionVariable.h"
 #include "igtlMultiThreader.h"
 #include "igtlOSUtil.h"
-
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
-
+#include "igtlTestConfig.h"
 
 void* TestThreadCounter(void* ptr);
 void* TestThreadWaiting1(void* ptr);

@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -16,9 +15,7 @@
 #include "igtlutil/igtl_test_data_capability.h"
 #include "igtlMessageDebugFunction.h"
 #include "igtl_header.h"
-
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
+#include "igtlTestConfig.h"
 
 #define CAPABILITY_MESSAGE_BODY_SIZE 48
 
