@@ -228,18 +228,7 @@ int NDArrayMessage::PackContent()
 //    }
 
   memcpy(info.array, this->m_Array->GetRawArray(), this->m_Array->GetRawArraySize());
-#if OpenIGTLink_HEADER_VERSION >= 2
-  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
-  {
-    igtl_ndarray_pack(&info, this->m_Content, IGTL_TYPE_PREFIX_NONE);
-  }
-  else
-  {
-    igtl_ndarray_pack(&info, this->m_Body, IGTL_TYPE_PREFIX_NONE);
-  }
-#elif OpenIGTLink_PROTOCOL_VERSION <=2
-  igtl_ndarray_pack(&info, this->m_Body, IGTL_TYPE_PREFIX_NONE);
-#endif
+  igtl_ndarray_pack(&info, this->m_Content, IGTL_TYPE_PREFIX_NONE);
 
   return 1;
 }
@@ -248,12 +237,7 @@ int NDArrayMessage::PackContent()
 int NDArrayMessage::UnpackContent()
 {
   igtl_ndarray_info info;
-#if OpenIGTLink_HEADER_VERSION >= 2
   igtl_ndarray_unpack(IGTL_TYPE_PREFIX_NONE, this->m_Content, &info, this->CalculateReceiveContentSize());
-#elif OpenIGTLink_PROTOCOL_VERSION <=2
-  igtl_ndarray_unpack(IGTL_TYPE_PREFIX_NONE, this->m_Body, &info, this->GetBufferBodySize());
-#endif
-  
 
   this->m_Type = info.type;
   ArrayBase::IndexType size;

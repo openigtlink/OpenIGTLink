@@ -535,7 +535,7 @@ int MessageBase::CalculateReceiveContentSize()
   else
   {
 #endif
-    return GetBufferBodySize();
+    return m_BodySizeToRead;
 #if OpenIGTLink_HEADER_VERSION >= 2
   }
 #endif
@@ -669,17 +669,17 @@ int MessageBase::CopyHeader(const MessageBase* mb)
   if (m_Header != NULL && mb->m_Header != NULL)
   {
     memcpy(m_Header, mb->m_Header, IGTL_HEADER_SIZE);
-    m_Body           = &m_Header[IGTL_HEADER_SIZE];
+    m_Body = &m_Header[IGTL_HEADER_SIZE];
   }
-  m_MessageSize             = mb->m_MessageSize;
-  m_ReceiveMessageType             = mb->m_ReceiveMessageType;
+  m_MessageSize          = mb->m_MessageSize;
+  m_ReceiveMessageType   = mb->m_ReceiveMessageType;
   m_DeviceName           = mb->m_DeviceName;
   m_TimeStampSec         = mb->m_TimeStampSec;
   m_TimeStampSecFraction = mb->m_TimeStampSecFraction;
   m_IsHeaderUnpacked     = mb->m_IsHeaderUnpacked;
   m_IsBodyUnpacked       = mb->m_IsBodyUnpacked;
   m_BodySizeToRead       = mb->m_BodySizeToRead;
-  m_HeaderVersion              = mb->m_HeaderVersion;
+  m_HeaderVersion        = mb->m_HeaderVersion;
 
   return 1;
 }

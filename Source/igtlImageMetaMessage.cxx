@@ -241,9 +241,7 @@ int ImageMetaMessage::PackContent()
   // Allocate buffer
   AllocateBuffer();
   
-  igtl_imgmeta_element* element;
-
-  element = (igtl_imgmeta_element*)this->m_Body;
+  igtl_imgmeta_element* element = (igtl_imgmeta_element*)this->m_Content;
 
   std::vector<ImageMetaElement::Pointer>::iterator iter;
   for (iter = this->m_ImageMetaList.begin(); iter != this->m_ImageMetaList.end(); iter ++)
@@ -274,7 +272,7 @@ int ImageMetaMessage::PackContent()
     element ++;
     }
 
-  igtl_imgmeta_convert_byte_order((igtl_imgmeta_element*)this->m_Body, this->m_ImageMetaList.size());
+  igtl_imgmeta_convert_byte_order((igtl_imgmeta_element*)this->m_Content, this->m_ImageMetaList.size());
 
   return 1;
 }
@@ -285,7 +283,7 @@ int ImageMetaMessage::UnpackContent()
 
   this->m_ImageMetaList.clear();
 
-  igtl_imgmeta_element* element = (igtl_imgmeta_element*) this->m_Body;
+  igtl_imgmeta_element* element = (igtl_imgmeta_element*) this->m_Content;
   int nElement = igtl_imgmeta_get_data_n(this->m_BodySizeToRead);
 
   igtl_imgmeta_convert_byte_order(element, nElement);
@@ -296,7 +294,7 @@ int ImageMetaMessage::UnpackContent()
     ImageMetaElement::Pointer elemClass = ImageMetaElement::New();
 
     // Add '\n' at the end of each string
-    // (neccesary for a case, where a string reaches the maximum length.)
+    // (necessary for a case, where a string reaches the maximum length.)
     strbuf[IGTL_IMGMETA_LEN_NAME] = '\n';
     strncpy(strbuf, (char*)element->name, IGTL_IMGMETA_LEN_NAME);
     elemClass->SetName((const char*)strbuf);

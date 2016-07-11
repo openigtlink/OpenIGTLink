@@ -215,19 +215,8 @@ int PointMessage::PackContent()
   AllocateBuffer();
   
   igtl_point_element* element;
+  element = (igtl_point_element*)(this->m_Content);
 
-#if OpenIGTLink_HEADER_VERSION >= 2
-  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
-  {
-    element = (igtl_point_element*)(this->m_Content);
-  }
-  else
-  {
-    element = (igtl_point_element*)this->m_Body;
-  }
-#elif OpenIGTLink_PROTOCOL_VERSION <=2
-  element = (igtl_point_element*)this->m_Body;
-#endif
   igtl_point_element* elementHolder = element;
   std::vector<PointElement::Pointer>::iterator iter;
   for (iter = this->m_PointList.begin(); iter != this->m_PointList.end(); iter ++)

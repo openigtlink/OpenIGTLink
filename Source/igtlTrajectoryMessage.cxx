@@ -266,18 +266,8 @@ int TrajectoryMessage::PackContent()
   AllocateBuffer();
   
   igtl_trajectory_element* element = NULL;
-#if OpenIGTLink_HEADER_VERSION >= 2
-  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
-  {
-    element = (igtl_trajectory_element*)(this->m_Content);
-  }
-  else
-  {
-    element = (igtl_trajectory_element*)this->m_Body;
-  }
-#elif OpenIGTLink_PROTOCOL_VERSION <=2
-  element = (igtl_trajectory_element*)this->m_Body;
-#endif
+  element = (igtl_trajectory_element*)(this->m_Content);
+
   igtl_trajectory_element * elementHolder = element;
   std::vector<TrajectoryElement::Pointer>::iterator iter;
   for (iter = this->m_TrajectoryList.begin(); iter != this->m_TrajectoryList.end(); iter ++)

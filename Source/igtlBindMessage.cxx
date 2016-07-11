@@ -220,10 +220,10 @@ int BindMessage::PackContent()
       i ++;
       }
     
-    igtl_bind_pack(&bind_info, this->m_Body, IGTL_TYPE_PREFIX_NONE);
+    igtl_bind_pack(&bind_info, this->m_Content, IGTL_TYPE_PREFIX_NONE);
     int nc = this->m_ChildMessages.size();
     size_t bind_size = (size_t) igtl_bind_get_size(&bind_info, IGTL_TYPE_PREFIX_NONE);
-    char * ptr = (char *)this->m_Body;
+    char * ptr = (char *)this->m_Content;
     ptr = ptr + bind_size;
     for (int i = 0; i < nc; i ++)
       {
@@ -254,7 +254,7 @@ int BindMessage::UnpackContent()
 
   igtl_bind_info bind_info;
 
-  if (igtl_bind_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &bind_info, this->GetBufferBodySize()) == 0)
+  if (igtl_bind_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Content, &bind_info, this->GetBufferBodySize()) == 0)
     {
     return 0;
     }
@@ -349,7 +349,7 @@ int GetBindMessage::PackContent()
       i ++;
       }
     
-    igtl_bind_pack(&bind_info, this->m_Body, IGTL_TYPE_PREFIX_GET);
+    igtl_bind_pack(&bind_info, this->m_Content, IGTL_TYPE_PREFIX_GET);
     igtl_bind_free_info(&bind_info);
 
     return 1;
@@ -366,7 +366,7 @@ int GetBindMessage::UnpackContent()
 
   igtl_bind_info bind_info;
 
-  if (igtl_bind_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &bind_info, this->GetBufferBodySize()) == 0)
+  if (igtl_bind_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Content, &bind_info, this->GetBufferBodySize()) == 0)
     {
     return 0;
     }
@@ -461,7 +461,7 @@ int StartBindMessage::PackContent()
     
     bind_info.resol = this->m_Resolution;
 
-    igtl_bind_pack(&bind_info, this->m_Body, IGTL_TYPE_PREFIX_STT);
+    igtl_bind_pack(&bind_info, this->m_Content, IGTL_TYPE_PREFIX_STT);
     igtl_bind_free_info(&bind_info);
 
     return 1;
@@ -478,7 +478,7 @@ int StartBindMessage::UnpackContent()
 
   igtl_bind_info bind_info;
 
-  if (igtl_bind_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &bind_info, this->GetBufferBodySize()) == 0)
+  if (igtl_bind_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Content, &bind_info, this->GetBufferBodySize()) == 0)
     {
     return 0;
     }
@@ -515,7 +515,7 @@ int  RTSBindMessage::PackContent()
 {
   AllocateBuffer(); 
 
-  * (igtlUint8 * )this->m_Body = this->m_Status;
+  * (igtlUint8 * )this->m_Content = this->m_Status;
 
   return 1; 
 }
@@ -523,7 +523,7 @@ int  RTSBindMessage::PackContent()
 
 int  RTSBindMessage::UnpackContent()
 { 
-  this->m_Status = * (igtlUint8 * )this->m_Body;
+  this->m_Status = * (igtlUint8 * )this->m_Content;
 
   return 1; 
 }
@@ -533,8 +533,3 @@ int  RTSBindMessage::UnpackContent()
 
 
 } // namespace igtl
-
-
-
-
-

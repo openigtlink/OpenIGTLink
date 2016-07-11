@@ -220,7 +220,7 @@ int LabelMetaMessage::PackContent()
   AllocateBuffer();
   
   igtl_lbmeta_element* element;
-  element = (igtl_lbmeta_element*)this->m_Body;
+  element = (igtl_lbmeta_element*)this->m_Content;
   std::vector<LabelMetaElement::Pointer>::iterator iter;
 
   for (iter = this->m_LabelMetaList.begin(); iter != this->m_LabelMetaList.end(); iter ++)
@@ -248,7 +248,7 @@ int LabelMetaMessage::PackContent()
     element ++;
     }
 
-  igtl_lbmeta_convert_byte_order((igtl_lbmeta_element*)this->m_Body, this->m_LabelMetaList.size());
+  igtl_lbmeta_convert_byte_order((igtl_lbmeta_element*)this->m_Content, this->m_LabelMetaList.size());
 
   return 1;
 }
@@ -259,7 +259,7 @@ int LabelMetaMessage::UnpackContent()
 
   this->m_LabelMetaList.clear();
 
-  igtl_lbmeta_element* element = (igtl_lbmeta_element*) this->m_Body;
+  igtl_lbmeta_element* element = (igtl_lbmeta_element*) this->m_Content;
   int nElement = igtl_lbmeta_get_data_n(this->m_BodySizeToRead);
 
   igtl_lbmeta_convert_byte_order(element, nElement);

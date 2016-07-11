@@ -63,8 +63,8 @@ ImageMessage2::ImageMessage2():
   ScalarSizeTable[11]= sizeof(igtlFloat64); // TYPE_FLOAT64
 
 #ifdef FRAGMENTED_PACK
-  this->m_Header = new unsigned char [IGTL_HEADER_SIZE];
-  this->m_Body   = NULL;
+  this->m_Header  = new unsigned char [IGTL_HEADER_SIZE];
+  this->m_Content = NULL;
 
   this->m_SelfAllocatedImageHeader = 0;
   this->m_ImageSize = 0;
@@ -87,7 +87,7 @@ ImageMessage2::~ImageMessage2()
   //  {
   //  delete [] this->m_Header;
   //  }
-  if (this->m_ImageHeader && this->m_ImageHeader!= this->m_Body && this->m_SelfAllocatedImageHeader)
+  if (this->m_ImageHeader && this->m_ImageHeader!= this->m_Content && this->m_SelfAllocatedImageHeader)
     {
     delete [] this->m_ImageHeader;
     }
@@ -387,7 +387,7 @@ void ImageMessage2::AllocateScalars()
 
 #else
   AllocateBuffer();
-  this->m_ImageHeader = m_Body;
+  this->m_ImageHeader = m_Content;
   this->m_Image  = &m_ImageHeader[IGTL_IMAGE_HEADER_SIZE];
 #endif
 }
@@ -411,18 +411,18 @@ void  ImageMessage2::SetScalarPointer(void * p)
   this->m_Image = (unsigned char *) p;
   for (int i = 0;i<IGTL_IMAGE_HEADER_SIZE; i++)
   {
-    this->m_Body[i] = m_ImageHeader[i];
+    this->m_Content[i] = m_ImageHeader[i];
   }
   for (int i = 0;i<GetImageSize(); i++)
   {
-    this->m_Body[i+IGTL_IMAGE_HEADER_SIZE] = m_Image[i];
+    this->m_Content[i+IGTL_IMAGE_HEADER_SIZE] = m_Image[i];
   }
 }
 
 
 void* ImageMessage2::GetBufferPointer()
 {
-  // This function is re-implemented for backward compatiblilty.
+  // This function is re-implemented for backward compatibility.
   // If fragmented pack is supported, this function may cause
   // memory copy that may considerably slows the program.
 
@@ -431,7 +431,6 @@ void* ImageMessage2::GetBufferPointer()
     {
     return this->m_Header;
     }
-
 
   // 
   int vs = this->GetSubVolumeImageSize();
@@ -530,7 +529,7 @@ int ImageMessage2::Pack()
   h->timestamp = ts;
   h->body_size = CalculateContentBufferSize();
 
-  // Note pack fragment #0 is the OpenIGTLink general hearder.
+  // Note pack fragment #0 is the OpenIGTLink general header.
   for (int i = 1; i < this->GetNumberOfPackFragments(); i ++)
     {
     crc = crc64((unsigned char*)this->GetPackFragmentPointer(i),
@@ -539,7 +538,6 @@ int ImageMessage2::Pack()
   h->crc = crc;
 
   strncpy(h->name, m_SendMessageType.c_str(), 12);
-  // TODO: this does not allow creating pack with MessageBase class...
 
   strncpy(h->device_name, m_DeviceName.c_str(), 20);
 
@@ -556,7 +554,7 @@ int ImageMessage2::PackContent()
 {
   igtl_image_header* image_header = (igtl_image_header*)this->m_ImageHeader;
 
-  image_header->header_version           = IGTL_IMAGE_HEADER_VERSION;
+  image_header->header_version    = IGTL_IMAGE_HEADER_VERSION;
   image_header->num_components    = this->numComponents;
   image_header->scalar_type       = this->scalarType;
   image_header->endian            = this->endian;
@@ -607,7 +605,7 @@ int ImageMessage2::UnpackContent()
     this->m_SelfAllocatedImage = 0;
     }
 
-  this->m_ImageHeader = this->m_Body;
+  this->m_ImageHeader = this->m_Content;
 
   igtl_image_header* image_header = (igtl_image_header*)m_ImageHeader;
   igtl_image_convert_byte_order(image_header);
@@ -664,7 +662,6 @@ int ImageMessage2::UnpackContent()
       return 0;
     }
 }
-
 
 #ifdef FRAGMENTED_PACK  
 void ImageMessage2::AllocateBuffer(int contentSize)

@@ -111,7 +111,7 @@ int CapabilityMessage::PackContent()
     memcpy(info.typenames[i], this->m_TypeNames[i].c_str(), IGTL_HEADER_TYPE_SIZE);
     }
 
-  igtl_capability_pack(&info, this->m_Body);
+  igtl_capability_pack(&info, this->m_Content);
 
   return 1;
 }
@@ -123,11 +123,7 @@ int CapabilityMessage::UnpackContent()
   igtl_capability_info info;
 
   igtl_capability_init_info(&info);
-#if OpenIGTLink_HEADER_VERSION >= 2
   igtl_capability_unpack(this->m_Content, &info, this->CalculateReceiveContentSize());
-#else
-  igtl_capability_unpack(this->m_Body, &info, this->GetBufferBodySize());
-#endif
 
   int ntypes = info.ntypes;
 

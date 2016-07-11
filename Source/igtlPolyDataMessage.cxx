@@ -692,18 +692,7 @@ int PolyDataMessage::PackContent()
 
   SetPolyDataInfoAttribute(&info, this);
 
-#if OpenIGTLink_HEADER_VERSION >= 2
-  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
-  {
-    igtl_polydata_pack(&info, this->m_Content, IGTL_TYPE_PREFIX_NONE);
-  }
-  else
-  {
-    igtl_polydata_pack(&info, this->m_Body, IGTL_TYPE_PREFIX_NONE);
-  }
-#elif OpenIGTLink_PROTOCOL_VERSION <=2
-  igtl_polydata_pack(&info, this->m_Body, IGTL_TYPE_PREFIX_NONE);
-#endif
+  igtl_polydata_pack(&info, this->m_Content, IGTL_TYPE_PREFIX_NONE);
   
   igtl_polydata_free_info(&info);
 
@@ -718,11 +707,8 @@ int PolyDataMessage::UnpackContent()
   igtl_polydata_init_info(&info);
   
   int r = 0;
-#if OpenIGTLink_HEADER_VERSION >= 2
-  r = igtl_polydata_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &info, this->CalculateReceiveContentSize());
-#elif OpenIGTLink_PROTOCOL_VERSION <=2
-  r = igtl_polydata_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Body, &info, this->GetBufferBodySize());
-#endif
+
+  r = igtl_polydata_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Content, &info, this->CalculateReceiveContentSize());
 
   if ( r == 0)
     {

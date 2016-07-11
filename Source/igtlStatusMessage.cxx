@@ -101,18 +101,7 @@ int StatusMessage::PackContent()
 {
   // Allocate buffer
   AllocateBuffer();
-#if OpenIGTLink_HEADER_VERSION >= 2
-  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
-  {
-    m_StatusHeader = this->m_Content;
-  }
-  else
-  {
-    m_StatusHeader = this->m_Body;
-  }
-#elif OpenIGTLink_PROTOCOL_VERSION <=2
-  m_StatusHeader = this->m_Body;
-#endif
+  m_StatusHeader = this->m_Content;
   
   m_StatusMessage = (char*)&m_StatusHeader[IGTL_STATUS_HEADER_SIZE];
   igtl_status_header* status_header = (igtl_status_header*)this->m_StatusHeader;
@@ -129,18 +118,7 @@ int StatusMessage::PackContent()
 
 int StatusMessage::UnpackContent()
 {
-#if OpenIGTLink_HEADER_VERSION >= 2
-  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
-  {
-    m_StatusHeader = this->m_Content;
-  }
-  else
-  {
-    m_StatusHeader = this->m_Body;
-  }
-#elif OpenIGTLink_PROTOCOL_VERSION <=2
-  m_StatusHeader = this->m_Body;
-#endif
+  m_StatusHeader = this->m_Content;
   m_StatusMessage = (char*)&m_StatusHeader[IGTL_STATUS_HEADER_SIZE];
 
   igtl_status_header* status_header = (igtl_status_header*)this->m_StatusHeader;

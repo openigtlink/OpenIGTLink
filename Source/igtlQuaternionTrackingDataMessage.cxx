@@ -190,7 +190,7 @@ int StartQuaternionTrackingDataMessage::PackContent()
 {
   AllocateBuffer();
 
-  igtl_stt_qtdata* stt_qtdata = (igtl_stt_qtdata*)this->m_Body;
+  igtl_stt_qtdata* stt_qtdata = (igtl_stt_qtdata*)this->m_Content;
 
   stt_qtdata->resolution = this->m_Resolution;
   strncpy(stt_qtdata->coord_name, this->m_CoordinateName.c_str(), IGTL_STT_QTDATA_LEN_COORDNAME);
@@ -204,7 +204,7 @@ int StartQuaternionTrackingDataMessage::PackContent()
 
 int StartQuaternionTrackingDataMessage::UnpackContent()
 {
-  igtl_stt_qtdata* stt_qtdata = (igtl_stt_qtdata*)this->m_Body;
+  igtl_stt_qtdata* stt_qtdata = (igtl_stt_qtdata*)this->m_Content;
   
   igtl_stt_qtdata_convert_byte_order(stt_qtdata);
 
@@ -239,7 +239,7 @@ int  RTSQuaternionTrackingDataMessage::PackContent()
 {
   AllocateBuffer(); 
 
-  igtl_rts_qtdata* rts_qtdata = (igtl_rts_qtdata*)this->m_Body;
+  igtl_rts_qtdata* rts_qtdata = (igtl_rts_qtdata*)this->m_Content;
 
   rts_qtdata->status = this->m_Status;
 
@@ -251,7 +251,7 @@ int  RTSQuaternionTrackingDataMessage::PackContent()
 
 int  RTSQuaternionTrackingDataMessage::UnpackContent()
 { 
-  igtl_rts_qtdata* rts_qtdata = (igtl_rts_qtdata*)this->m_Body;
+  igtl_rts_qtdata* rts_qtdata = (igtl_rts_qtdata*)this->m_Content;
   
   igtl_rts_qtdata_convert_byte_order(rts_qtdata);
 
@@ -317,18 +317,7 @@ int QuaternionTrackingDataMessage::PackContent()
   AllocateBuffer();
   
   igtl_qtdata_element* element = NULL;
-#if OpenIGTLink_HEADER_VERSION >= 2
-  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
-  {
-    element = (igtl_qtdata_element*)(this->m_Content);
-  }
-  else
-  {
-    element = (igtl_qtdata_element*)this->m_Body;
-  }
-#elif OpenIGTLink_PROTOCOL_VERSION <=2
-  element = (igtl_qtdata_element*)this->m_Body;
-#endif
+  element = (igtl_qtdata_element*)(this->m_Content);
   
   igtl_qtdata_element * elementHolder = element;
   std::vector<QuaternionTrackingDataElement::Pointer>::iterator iter;

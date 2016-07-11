@@ -25,7 +25,7 @@ namespace igtl {
   TransformMessage::TransformMessage()
     : MessageBase()
   {
-    m_Transform = m_Body;
+    m_Transform = m_Content;
     
     matrix[0][0] = 1.0;
     matrix[1][0] = 0.0;
@@ -227,18 +227,7 @@ namespace igtl {
   
   int TransformMessage::UnpackContent()
   {
-#if OpenIGTLink_HEADER_VERSION >= 2
-    if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
-    {
-      this->m_Transform = this->m_Content;
-    }
-    else
-    {
-      this->m_Transform = m_Body;
-    }
-#else
-    this->m_Transform = m_Body;
-#endif
+    this->m_Transform = this->m_Content;
     
     //igtl_float32* transform = (igtl_float32*)this->m_Transform;  // doesn't work on Solaris
     igtl_float32 transform[12];

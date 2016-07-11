@@ -47,7 +47,7 @@ void ColorTableMessage::AllocateTable()
   // message and image header, by using AllocatePack() implemented
   // in the parent class.
   AllocateBuffer();
-  m_ColorTableHeader = m_Body;
+  m_ColorTableHeader = m_Content;
   m_ColorTable       = &m_ColorTableHeader[IGTL_COLORTABLE_HEADER_SIZE];
 }
 
@@ -89,8 +89,8 @@ int ColorTableMessage::PackContent()
 int ColorTableMessage::UnpackContent()
 {
 
-  this->m_ColorTableHeader = this->m_Body;
-  this->m_ColorTable       = &(this->m_Body[IGTL_COLORTABLE_HEADER_SIZE]);
+  this->m_ColorTableHeader = this->m_Content;
+  this->m_ColorTable       = &(this->m_Content[IGTL_COLORTABLE_HEADER_SIZE]);
 
   igtl_colortable_header* colortable_header = (igtl_colortable_header*)this->m_ColorTableHeader;
   igtl_colortable_convert_byte_order(colortable_header, (void*)this->m_ColorTable);
