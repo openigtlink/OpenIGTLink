@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -25,9 +24,7 @@
 #include "igtl_image.h"
 #include "igtl_transform.h"
 #include "igtl_bind.h"
-
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
+#include "igtlTestConfig.h"
 
 #define MESSAGE_BIND_HEADER_SIZE 98
 #define MESSAGE_BIND_BODY_SIZE 2678

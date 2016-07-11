@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -19,10 +18,7 @@
 #include "igtl_types.h"
 #include "igtl_header.h"
 #include "igtl_util.h"
-
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
-
+#include "igtlTestConfig.h"
 
 igtl::ImageMessage2::Pointer imageSendMsg2 = igtl::ImageMessage2::New();
 igtl::ImageMessage2::Pointer imageReceiveMsg2 = igtl::ImageMessage2::New();

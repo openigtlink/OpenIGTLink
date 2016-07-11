@@ -1,10 +1,7 @@
 /*=========================================================================
  
  Program:   OpenIGTLink Library
- Module:    $RCSfile: itkImage.h,v $
  Language:  C++
- Date:      $Date: 2008/01/13 19:48:38 $
- Version:   $Revision: 1.142 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -21,19 +18,20 @@
 #include "igtlMessageHeader.h"
 #include "igtl_util.h"
 #include "igtlOSUtil.h"
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
 #include "igtlClientSocket.h"
 #include "igtlMultiThreader.h"
 #include "igtlQuaternionTrackingDataMessage.h"
 
+#include "igtlTestConfig.h"
+
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Invoke;
+using ::testing::IsNull;
+
 using igtl::ServerSocket;
 using igtl::ClientSocket;
 using igtl::Socket;
-using ::testing::IsNull;
 
 
 class ClientSocketMock {

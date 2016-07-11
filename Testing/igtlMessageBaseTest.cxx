@@ -2,7 +2,6 @@
 
   Program:   OpenIGTLink Library
   Language:  C++
-  Date:      $Date: 2016/01/25 19:53:38 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -14,8 +13,7 @@
 
 #include "igtlMessageBase.h"
 #include "igtlMessageHeader.h"
-
-#include "gtest/gtest.h"
+#include "igtlTestConfig.h"
 
 TEST(MessageBaseTest, InitializationTest)
 {

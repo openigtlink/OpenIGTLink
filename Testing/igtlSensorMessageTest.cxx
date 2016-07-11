@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -18,11 +17,7 @@
 #include "igtl_sensor.h"
 #include "igtl_unit.h"
 #include "igtl_header.h"
-
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
-
-
+#include "igtlTestConfig.h"
 
 igtl::SensorMessage::Pointer sensorDataSendMsg = igtl::SensorMessage::New();
 igtl::SensorMessage::Pointer sensorDataReceiveMsg = igtl::SensorMessage::New();
