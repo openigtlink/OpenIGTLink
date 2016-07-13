@@ -13,7 +13,7 @@ platform:
 before_build:
   - cmd: cmake --version
   - cmd: cd c:\
-  - cmd: git clone https://github.com/openigtlink/OpenIGTLink OpenIGTLink
+  - cmd: git clone https://github.com/openigtlink/OpenIGTLink
   - cmd: cd c:\OpenIGTLink
   - cmd: git checkout Version3-Development
   - cmd: mkdir c:\OpenIGTLink-VSBuild
