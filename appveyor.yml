@@ -1,0 +1,27 @@
+version: 0.0.{build}
+os:
+  - Visual Studio 2015
+clone_depth: 1
+skip_tags: true
+clone_folder: c:\OpenIGTLink
+install:
+  - cinst cmake
+configuration:
+  - Release
+platform:
+  - x64
+before_build:
+  - cmd: cmake --version
+  - cmd: cd c:\
+  - cmd: git clone https://github.com/openigtlink/OpenIGTLink OpenIGTLink
+  - cmd: cd c:\OpenIGTLink
+  - cmd: git checkout Version3-Development
+  - cmd: mkdir c:\OpenIGTLink-VSBuild
+  - cmd: cd c:\OpenIGTLink-VSBuild
+  - cmd: cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE:STRING=Release c:\OpenIGTLink
+  - cmd: dir
+build_script:
+  - cmd: msbuild ALL_BUILD.vcxproj
+cache:
+  - C:\ProgramData\chocolatey\bin
+  - C:\ProgramData\chocolatey\lib
