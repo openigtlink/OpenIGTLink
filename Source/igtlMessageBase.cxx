@@ -61,10 +61,10 @@ MessageBase::~MessageBase()
   {
     delete [] m_Header;
     m_MessageSize = 0;
-    m_Header = NULL;
-    m_Body   = NULL;
+    m_Header      = NULL;
+    m_Body        = NULL;
+    m_Content     = NULL;
 #if OpenIGTLink_HEADER_VERSION >= 2
-    m_Content = NULL;
     m_ExtendedHeader = NULL;
     m_MetaDataHeader = NULL;
     m_MetaData = NULL;
@@ -648,6 +648,7 @@ void MessageBase::AllocateBuffer(int contentSize)
     m_IsBodyUnpacked = false;
   }
   m_Body   = &m_Header[IGTL_HEADER_SIZE];
+
 #if OpenIGTLink_HEADER_VERSION >= 2
   if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
@@ -658,9 +659,12 @@ void MessageBase::AllocateBuffer(int contentSize)
   }
   else
   {
+#endif
     m_Content = m_Body;
+#if OpenIGTLink_HEADER_VERSION >= 2
   }
 #endif
+
   m_MessageSize = message_size;
 }
 
@@ -670,6 +674,10 @@ int MessageBase::CopyHeader(const MessageBase* mb)
   {
     memcpy(m_Header, mb->m_Header, IGTL_HEADER_SIZE);
     m_Body = &m_Header[IGTL_HEADER_SIZE];
+    if (mb->m_HeaderVersion < IGTL_HEADER_VERSION_2)
+    {
+      m_Content = m_Body;
+    }
   }
   m_MessageSize          = mb->m_MessageSize;
   m_ReceiveMessageType   = mb->m_ReceiveMessageType;
@@ -708,7 +716,9 @@ int MessageBase::CopyBody(const MessageBase *mb)
     }
     else
     {
+#endif
       m_Content = m_Body;
+#if OpenIGTLink_HEADER_VERSION >= 2
     }
 #endif
 
@@ -811,17 +821,21 @@ void MessageBase::AllocateUnpack(int bodySizeToRead)
     m_IsBodyUnpacked = false;
   }
   m_Body   = &m_Header[IGTL_HEADER_SIZE];
+
 #if OpenIGTLink_HEADER_VERSION >= 2
-  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
+  if (m_HeaderVersion >= IGTL_HEADER_VERSION_2)
   {
     m_ExtendedHeader = m_Body;
     // Other members can't be populated until the message is unpacked
   }
   else
   {
+#endif
     m_Content = m_Body;
+#if OpenIGTLink_HEADER_VERSION >= 2
   }
 #endif
+
   m_MessageSize = message_size;
 }
 
