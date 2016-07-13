@@ -22,6 +22,3 @@ before_build:
   - cmd: dir
 build_script:
   - cmd: msbuild ALL_BUILD.vcxproj
-cache:
-  - C:\ProgramData\chocolatey\bin
-  - C:\ProgramData\chocolatey\lib
