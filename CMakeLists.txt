@@ -119,7 +119,7 @@ INCLUDE (FindThreads)
 IF(CMAKE_COMPILER_IS_GNUCXX)
   # '-fno-tree-vectorize' option is added to avoid segmentation fault that occurs in
   # igtl_image_convert_byte_order() (Source/igtlutil/igtl_image.c) built with 'Release'
-  # option on 64-bit Linux. 
+  # option on 64-bit Linux.
   INCLUDE (CheckCXXCompilerFlag)
   CHECK_CXX_COMPILER_FLAG("-fno-tree-vectorize" OpenIGTLink_GNUCXX_TREE_VECTORIZE_SUPPORT)
   IF (OpenIGTLink_GNUCXX_TREE_VECTORIZE_SUPPORT)
@@ -167,16 +167,16 @@ SET(OpenIGTLink_LIBRARY_TARGETS_FILE "${CMAKE_BINARY_DIR}/OpenIGTLinkTargets.cma
 
 include (${OpenIGTLink_SOURCE_DIR}/OpenIGTLinkConfigPlatform.cmake)
 
-CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtlConfigure.h.in 
+CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtlConfigure.h.in
   ${OpenIGTLink_BINARY_DIR}/igtlConfigure.h)
 
-CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtl_typeconfig.h.in 
+CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtl_typeconfig.h.in
   ${OpenIGTLink_BINARY_DIR}/igtl_typeconfig.h)
 
-CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtlTypeConfig.h.in 
+CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtlTypeConfig.h.in
   ${OpenIGTLink_BINARY_DIR}/igtlTypeConfig.h)
 
-CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/Testing/igtlTestConfig.h.in 
+CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/Testing/igtlTestConfig.h.in
   ${OpenIGTLink_BINARY_DIR}/igtlTestConfig.h)
 
 #-----------------------------------------------------------------------------
@@ -246,7 +246,7 @@ ENDIF(OpenIGTLink_BUILD_EXAMPLES)
 
 #-----------------------------------------------------------------------------
 # Export targets
-export(TARGETS 
+export(TARGETS
   OpenIGTLink
   FILE "${OpenIGTLink_LIBRARY_TARGETS_FILE}"
   )
@@ -265,7 +265,7 @@ IF(OpenIGTLink_BUILD_TESTING)
 ENDIF(OpenIGTLink_BUILD_TESTING)
 
 #-----------------------------------------------------------------------------
-# Doxygen 
+# Doxygen
 
 OPTION(BUILD_DOCUMENTATION "Build OpenIGTLink Documentation" OFF)
 
