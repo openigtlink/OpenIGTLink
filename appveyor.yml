@@ -3,20 +3,20 @@ os:
   - Visual Studio 2013
 clone_depth: 1
 skip_tags: true
-clone_folder: c:\OpenIGTLink
+clone_folder: c:\projects
 configuration:
   - Release
 platform:
   - x64
 before_build:
-  - cmd: cd c:/projects
+  - cmd: cd c:\projects
   - cmd: mkdir OpenIGTLink-Build
   - cmd: cd OpenIGTLink-Build
   - cmd: echo Running cmake...
   - cmd: SET PATH=C:\Program Files (x86)\MSBuild\12.0\bin\;%PATH%
-  - cmd: SET P=c:/projects/openigtlink
+  - cmd: SET P=c:\projects\openigtlink
   - cmd: set TBB_INSTALL_DIR=%P%/tbb
   - cmd: set TBB_ARCH_PLATFORM=intel64/vc12
-  - cmd: cmake -G"Visual Studio 12 Win64" ../openigtlink
+  - cmd: cmake -G"Visual Studio 12 Win64" ..\openigtlink
 build_script:
   - cmd: msbuild /clp:Verbosity=minimal /nologo OpenIGTLink.sln
