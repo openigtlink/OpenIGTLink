@@ -129,6 +129,7 @@ namespace testing {
   int TestInfo::Add( TestBase* test )
   {
     TestInfo::TestList.push_back(test);
+	return 1;
   }
 
   int TestInfo::Run()
