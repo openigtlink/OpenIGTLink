@@ -3,7 +3,7 @@ os:
   - Visual Studio 2013
 clone_depth: 1
 skip_tags: true
-clone_folder: c:\projects
+clone_folder: c:\projects\openigtlink
 configuration:
   - Release
 platform:
