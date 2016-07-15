@@ -17,6 +17,8 @@ before_build:
   - cmd: SET P=c:\projects\openigtlink
   - cmd: set TBB_INSTALL_DIR=%P%/tbb
   - cmd: set TBB_ARCH_PLATFORM=intel64/vc12
-  - cmd: cmake -G"Visual Studio 12 Win64" ..\openigtlink
+  - cmd: cmake -G"Visual Studio 14 2015 Win64" ..\openigtlink
 build_script:
   - cmd: msbuild /clp:Verbosity=minimal /nologo OpenIGTLink.sln
+after_build:
+  - cmd: msbuild RUN_TESTS.vcxproj
