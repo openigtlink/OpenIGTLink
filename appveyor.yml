@@ -11,14 +11,14 @@ configuration:
 platform:
   - x64
 before_build:
-  - cmd: cmake --version
-  - cmd: cd c:\
-  - cmd: git clone https://github.com/openigtlink/OpenIGTLink
-  - cmd: cd c:\OpenIGTLink
-  - cmd: git checkout Version3-Development
-  - cmd: mkdir c:\OpenIGTLink-VSBuild
-  - cmd: cd c:\OpenIGTLink-VSBuild
-  - cmd: cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_BUILD_TYPE:STRING=Release c:\OpenIGTLink
-  - cmd: dir
+  - cmd: cd c:/projects
+  - cmd: mkdir OpenIGTLink-Build
+  - cmd: cd OpenIGTLink-Build
+  - cmd: echo Running cmake...
+  - cmd: SET PATH=C:\Program Files (x86)\MSBuild\12.0\bin\;%PATH%
+  - cmd: SET P=c:/projects/openigtlink
+  - cmd: set TBB_INSTALL_DIR=%P%/tbb
+  - cmd: set TBB_ARCH_PLATFORM=intel64/vc12
+  - cmd: cmake -G"Visual Studio 12 Win64" ../openigtlink
 build_script:
-  - cmd: msbuild ALL_BUILD.vcxproj
+  - cmd: msbuild /clp:Verbosity=minimal /nologo OpenIGTLink.sln

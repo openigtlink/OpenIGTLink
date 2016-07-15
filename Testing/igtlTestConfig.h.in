@@ -30,6 +30,9 @@
 #include <vector>
 #include <cmath>
 #include <igtlConfigure.h>
+#ifdef _WIN32
+#include <typeinfo.h>
+#endif
 
 #define TEST_FAILURE 1
 #define TEST_SUCCESS 0
@@ -175,14 +178,27 @@ namespace testing {
 #define EXPECT_STREQ(a, b)                      \
   if (strcmp(a, b) != 0) return TEST_FAILURE;
 
+#ifdef _WIN32
 #define EXPECT_THAT(a, comp)                                            \
   {                                                                     \
     const int N = sizeof(a)/sizeof(a[0]);                               \
-    testing::ElementsAreArrayMatcher< typeof(a[0])> matcher = comp; \
+    std::string dataType = typeid(a[0]).name();                                \
+    testing::ElementsAreArrayMatcher< ##dataType > matcher = comp; \
+    ::std::vector<  ##dataType > vecA;                                 \
+    for (int i = 0; i < N; i ++) vecA.push_back(a[i]);                  \
+    if (!matcher.Compare(vecA)) return TEST_FAILURE;                    \
+  }
+#else
+#define EXPECT_THAT(a, comp)                                            \
+  {                                                                     \
+    const int N = sizeof(a)/sizeof(a[0]);                               \
+    std::string dataType = typeid(a[0]).name();                                \
+    testing::ElementsAreArrayMatcher< typeof(a[0]) > matcher = comp; \
     ::std::vector< typeof(a[0]) > vecA;                                 \
     for (int i = 0; i < N; i ++) vecA.push_back(a[i]);                  \
     if (!matcher.Compare(vecA)) return TEST_FAILURE;                    \
   }
+#endif
 
 #define EXPECT_TRUE(a)                          \
   if (a != true) return TEST_FAILURE; 
