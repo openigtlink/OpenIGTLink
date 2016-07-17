@@ -111,7 +111,6 @@ SET(OpenIGTLink_INCLUDE_FILES
   igtlTypes.h
   igtlWin32Header.h
   igtlWindows.h
-  igtlCommon.h
 )
 
 # Add support for OpenIGTLink version 2
@@ -203,7 +202,7 @@ ADD_LIBRARY(OpenIGTLink
   )
 ENDIF( ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
 
-target_include_directories(OpenIGTLink ${OpenIGTLink_INCLUDE_DIRS})
+include_directories(OpenIGTLink ${OpenIGTLink_INCLUDE_DIRS})
 TARGET_LINK_LIBRARIES(OpenIGTLink
   ${LINK_LIBS}
   )
