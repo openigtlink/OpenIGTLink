@@ -2,7 +2,7 @@ The OpenIGTLink Library
 =======================
 
 * Linux/Mac build: [![Build Status](https://travis-ci.org/openigtlink/OpenIGTLink.svg?branch=master)](https://travis-ci.org/openigtlink/OpenIGTLink)
-* Windows build: [![Build status](https://ci.appveyor.com/api/github/webhook?id=hqm0c2tye39bmaqd?svg=true)](https://ci.appveyor.com/project/leochan2009/openigtlink-axxyr)
+* Windows build: [![Build status](https://ci.appveyor.com/api/projects/status/54gyada22g0widn3?svg=true)](https://ci.appveyor.com/project/leochan2009/openigtlink-axxyr)
 * This project provides a C/C++ implementation of the OpenIGTLink protocol defined in [OpenIGTLink Web Page](http://openigtlink.org/). 
 
 Build Instruction
