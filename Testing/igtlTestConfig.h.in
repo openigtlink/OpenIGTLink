@@ -204,7 +204,7 @@ namespace testing {
   if (a != true) return TEST_FAILURE; 
   
 #define TEST(test_case_name, test_name) \
-  class IGTLCommon_EXPORT test_case_name##_##test_name##_Test : ::testgin::TestBase {     \
+  class IGTLCommon_EXPORT test_case_name##_##test_name##_Test : ::testing::TestBase {     \
   public:                                                               \
     test_case_name##_##test_name##_Test();                              \
     int Run();                                                          \
