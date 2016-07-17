@@ -2,7 +2,6 @@ ADD_SUBDIRECTORY( igtlutil )
 
 find_package(OpenIGTLink REQUIRED)
 include(${OpenIGTLink_USE_FILE})
-
 if( OpenIGTLink_USE_GTEST )
   if( MSVC ) # VS2012 doesn't support correctly the tuples yet
     add_definitions( /D _VARIADIC_MAX=10 )
@@ -59,12 +58,6 @@ ADD_EXECUTABLE(igtlTrajectoryMessageTest   igtlTrajectoryMessageTest.cxx)
 ADD_EXECUTABLE(igtlTransformMessageTest   igtlTransformMessageTest.cxx)
 ADD_EXECUTABLE(igtlPositionMessageTest   igtlPositionMessageTest.cxx)
 
-IF( OpenIGTLink_USE_GTEST )
-  ADD_EXECUTABLE(igtlSocketTest   igtlSocketTest.cxx)
-  ADD_EXECUTABLE(igtlServerSocketTest   igtlServerSocketTest.cxx)
-  ADD_EXECUTABLE(igtlClientSocketTest   igtlClientSocketTest.cxx)
-ENDIF( OpenIGTLink_USE_GTEST )
-
 SET(GTEST_LINK OpenIGTLink)
 IF( OpenIGTLink_USE_GTEST )
   SET(GTEST_LINK ${GTEST_LINK} gtest_main gtest gmock_main gmock)
@@ -94,12 +87,6 @@ TARGET_LINK_LIBRARIES(igtlTrackingDataMessageTest ${GTEST_LINK})
 TARGET_LINK_LIBRARIES(igtlTrajectoryMessageTest ${GTEST_LINK})
 TARGET_LINK_LIBRARIES(igtlTransformMessageTest ${GTEST_LINK})
 TARGET_LINK_LIBRARIES(igtlPositionMessageTest ${GTEST_LINK})
-
-IF( OpenIGTLink_USE_GTEST )
-  TARGET_LINK_LIBRARIES(igtlSocketTest ${GTEST_LINK})
-  TARGET_LINK_LIBRARIES(igtlClientSocketTest ${GTEST_LINK})
-  TARGET_LINK_LIBRARIES(igtlServerSocketTest ${GTEST_LINK})
-ENDIF( OpenIGTLink_USE_GTEST )
 
 set(TestStringFormat1 "--gtest_filter=*.*FormatVersion1")
 
