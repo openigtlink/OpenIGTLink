@@ -252,19 +252,6 @@ export(TARGETS
   )
 
 #-----------------------------------------------------------------------------
-# Testing
-
-IF(OpenIGTLink_BUILD_TESTING)
-  OPTION(OpenIGTLink_USE_GTEST OFF)
-  ENABLE_TESTING()
-  INCLUDE (${CMAKE_ROOT}/Modules/Dart.cmake)
-ENDIF()
-
-IF(OpenIGTLink_BUILD_TESTING)
-  ADD_SUBDIRECTORY(Testing)
-ENDIF(OpenIGTLink_BUILD_TESTING)
-
-#-----------------------------------------------------------------------------
 # Doxygen
 
 OPTION(BUILD_DOCUMENTATION "Build OpenIGTLink Documentation" OFF)

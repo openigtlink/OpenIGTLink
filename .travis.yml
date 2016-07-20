@@ -10,11 +10,16 @@ compiler:
 
 before_script:
   - mkdir build
-  - cd build
+  - cd    build
   - cmake ..
 
 script:
   - make
+  - cd ..
+  - mkdir TestBuild
+  - cd TestBuild
+  - cmake ../Testing
+  - make 
   - make test
 
 
