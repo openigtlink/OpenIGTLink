@@ -192,16 +192,16 @@ IF ( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
     )
 ENDIF ( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
 
-IF( ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
-ADD_LIBRARY(OpenIGTLink
-  ${OpenIGTLink_SOURCES}
-  ${OpenIGTLink_INCLUDE_FILES}
-  )
-ELSE ( ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
-ADD_LIBRARY(OpenIGTLink
-  ${OpenIGTLink_SOURCES}
-  )
-ENDIF( ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
+IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
+  ADD_LIBRARY(OpenIGTLink
+    ${OpenIGTLink_SOURCES}
+    ${OpenIGTLink_INCLUDE_FILES}
+    )
+ELSE ()
+  ADD_LIBRARY(OpenIGTLink
+    ${OpenIGTLink_SOURCES}
+    )
+ENDIF()
 
 target_include_directories(OpenIGTLink ${OpenIGTLink_INCLUDE_DIRS})
 TARGET_LINK_LIBRARIES(OpenIGTLink

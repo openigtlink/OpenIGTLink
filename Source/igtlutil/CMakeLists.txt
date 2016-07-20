@@ -3,7 +3,7 @@
 
 if(OpenIGTLink_BUILD_SHARED_LIBS)
   set(igtlutil_BUILD_SHARED_LIBS ${OpenIGTLink_BUILD_SHARED_LIBS})
-  
+
 endif(OpenIGTLink_BUILD_SHARED_LIBS)
 
 if(OpenIGTLink_BUILD_GENERATE_PIC)
@@ -28,7 +28,7 @@ SET(igtlutil_SOURCES
   igtl_transform.c
   igtl_util.c
   igtl_capability.c
-  )       
+  )
 
 
 if (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1")
@@ -79,17 +79,19 @@ if (${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
     )
 endif (${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
 
-IF( MSVC )
+IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
   ADD_LIBRARY(igtlutil
     ${igtlutil_SOURCES}
     ${igtlutil_HEADS}
     )
-
-  target_compile_options(igtlutil PRIVATE /MP)
 ELSE()
   ADD_LIBRARY(igtlutil
     ${igtlutil_SOURCES}
     )
+ENDIF()
+
+IF(MSVC)
+  target_compile_options(igtlutil PRIVATE /MP)
 ENDIF()
 
 SET_TARGET_PROPERTIES(igtlutil PROPERTIES
