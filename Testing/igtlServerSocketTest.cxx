@@ -215,6 +215,7 @@ TEST(ServerSocketTest, ConnectionAndSending)
   {
     mockServerSocket.getPointer()->CloseSocket();
   }
+  return 0;
   //delete mockServerSocket;
   //clientSocket::send
 }

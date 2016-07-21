@@ -37,6 +37,7 @@ TEST(StringMessageTest, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)stringSendMsg->GetPackBodyPointer(), (const void*)(test_string_message+IGTL_HEADER_SIZE),stringSendMsg->GetPackBodySize());
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 
@@ -54,7 +55,7 @@ TEST(StringMessageTest, Unpack)
   
   EXPECT_EQ(stringReceiveMsg->GetEncoding(),3);
   EXPECT_STREQ(stringReceiveMsg->GetString(),IGTL_STRING_TEST_STRING);
-  
+  return 0;
 }
 
 

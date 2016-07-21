@@ -39,6 +39,7 @@ TEST(ColorTableMessageTest, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)colorTableSendMsg->GetPackBodyPointer(), (const void*)(test_colortable_message+IGTL_HEADER_SIZE), IGTL_COLORTABLE_HEADER_SIZE+COLOR_TABLE_SIZE);
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 
@@ -60,7 +61,7 @@ TEST(ColorTableMessageTest, Unpack)
   {
     EXPECT_EQ(((unsigned char*)colorTableReceiveMsg->GetTablePointer())[i], i);
   }
-  
+  return 0;
 }
 
 

@@ -1,15 +1,15 @@
 /*=========================================================================
-
-  Program:   OpenIGTLink Library
-  Language:  C++
-
-  Copyright (c) Insight Software Consortium. All rights reserved.
-
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.  See the above copyright notices for more information.
-
-=========================================================================*/
+ 
+ Program:   OpenIGTLink Library
+ Language:  C++
+ 
+ Copyright (c) Insight Software Consortium. All rights reserved.
+ 
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the above copyright notices for more information.
+ 
+ =========================================================================*/
 
 #include "igtlMessageBase.h"
 #include "igtlMessageHeader.h"
@@ -23,6 +23,7 @@ TEST(MessageBaseTest, InitializationTest)
   EXPECT_STREQ(messageBaseTest->GetDeviceName(), "DeviceTest");
   messageBaseTest->InitPack();
   EXPECT_STREQ(messageBaseTest->GetDeviceName(),"");
+  return 0;
 }
 
 TEST(MessageBaseTest, SetDeviceNameTest)
@@ -32,6 +33,7 @@ TEST(MessageBaseTest, SetDeviceNameTest)
   EXPECT_STREQ(messageBaseTest->GetDeviceName(), "");
   messageBaseTest->SetDeviceName("DeviceTest");
   EXPECT_STREQ(messageBaseTest->GetDeviceName(), "DeviceTest");
+  return 0;
 }
 
 TEST(MessageBaseTest, GetDeviceNameTest)
@@ -39,6 +41,7 @@ TEST(MessageBaseTest, GetDeviceNameTest)
   igtl::MessageBase::Pointer messageBaseTest = igtl::MessageBase::New();
   messageBaseTest->SetDeviceName("DeviceTest");
   EXPECT_STREQ(messageBaseTest->GetDeviceName(), "DeviceTest");
+  return 0;
 }
 
 
@@ -57,13 +60,16 @@ TEST(MessageBaseTest, TimeStampTest)
   messageBaseTest->GetTimeStamp(&sec,&nanosec);
   EXPECT_EQ(sec, 123);
   EXPECT_EQ(nanosec, 2147483648);
+  return 0;
 }
 
 TEST(MessageBaseTest, UNPACKTEST)
 {
   igtl::MessageBase::Pointer messageBaseTest = igtl::MessageBase::New();
-  int status = messageBaseTest->Unpack(); // The m_packSize cannot be set, so the unpack cannot be tested
-  EXPECT_EQ(status, static_cast<int>(messageBaseTest->UNPACK_UNDEF));
+  messageBaseTest->AllocateBuffer();
+  int status = messageBaseTest->Unpack();
+  EXPECT_EQ(status, static_cast<int>(messageBaseTest->UNPACK_HEADER));
+  return 0;
 }
 
 
@@ -72,6 +78,5 @@ int main(int argc, char **argv)
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-
 
 
