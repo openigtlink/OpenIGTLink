@@ -65,6 +65,7 @@ TEST(ImageMessageTest, Pack)
   int r = memcmp((const void*)imageSendMsg->GetPackPointer(), (const void*)test_image_message,
                  (size_t)(IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE));
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 TEST(ImageMessageTest, Unpack)
@@ -109,6 +110,7 @@ TEST(ImageMessageTest, Unpack)
   //The imageHeader is byte-wized converted, so we skip the comparison of the image header.
   int r = memcmp((const char*)imageReceiveMsg->GetPackBodyPointer()+IGTL_IMAGE_HEADER_SIZE, (const void*)(test_image_message+IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE), (size_t)(TEST_IMAGE_MESSAGE_SIZE));
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 

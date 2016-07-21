@@ -96,6 +96,7 @@ TEST(SocketTest, GeneralTest)
   {
     igtl::Sleep(interval);
   };
+  return 0;
 }
 
 void* TestThreadFunction(void* ptr)

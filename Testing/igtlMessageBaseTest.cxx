@@ -23,6 +23,7 @@ TEST(MessageBaseTest, InitializationTest)
   EXPECT_STREQ(messageBaseTest->GetDeviceName(), "DeviceTest");
   messageBaseTest->InitPack();
   EXPECT_STREQ(messageBaseTest->GetDeviceName(),"");
+  return 0;
 }
 
 TEST(MessageBaseTest, SetDeviceNameTest)
@@ -32,6 +33,7 @@ TEST(MessageBaseTest, SetDeviceNameTest)
   EXPECT_STREQ(messageBaseTest->GetDeviceName(), "");
   messageBaseTest->SetDeviceName("DeviceTest");
   EXPECT_STREQ(messageBaseTest->GetDeviceName(), "DeviceTest");
+  return 0;
 }
 
 TEST(MessageBaseTest, GetDeviceNameTest)
@@ -39,6 +41,7 @@ TEST(MessageBaseTest, GetDeviceNameTest)
   igtl::MessageBase::Pointer messageBaseTest = igtl::MessageBase::New();
   messageBaseTest->SetDeviceName("DeviceTest");
   EXPECT_STREQ(messageBaseTest->GetDeviceName(), "DeviceTest");
+  return 0;
 }
 
 
@@ -57,6 +60,7 @@ TEST(MessageBaseTest, TimeStampTest)
   messageBaseTest->GetTimeStamp(&sec,&nanosec);
   EXPECT_EQ(sec, 123);
   EXPECT_EQ(nanosec, 2147483648);
+  return 0;
 }
 
 TEST(MessageBaseTest, UNPACKTEST)
@@ -65,6 +69,7 @@ TEST(MessageBaseTest, UNPACKTEST)
   messageBaseTest->AllocateBuffer();
   int status = messageBaseTest->Unpack();
   EXPECT_EQ(status, static_cast<int>(messageBaseTest->UNPACK_HEADER));
+  return 0;
 }
 
 

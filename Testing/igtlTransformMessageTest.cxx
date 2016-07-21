@@ -44,6 +44,7 @@ TEST(TransformMessageTest, PackFormatVersion1)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)transformSendMsg->GetPackBodyPointer(), (const void*)(test_transform_message+IGTL_HEADER_SIZE), IGTL_TRANSFORM_SIZE);
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 
@@ -72,7 +73,7 @@ TEST(TransformMessageTest, UnpackFormatVersion1)
     {0.0,0.0,0.0,0.0}};
   transformReceiveMsg->GetMatrix(outMatrix);
   EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
-  
+  return 0;
 }
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
@@ -94,6 +95,7 @@ TEST(TransformMessageTest, PackFormatVersion2)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)transformSendMsg->GetPackBodyPointer(), (const void*)(test_transform_message_Format2+IGTL_HEADER_SIZE), IGTL_TRANSFORM_SIZE + EXTENDED_CONTENT_SIZE);
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 TEST(TransformMessageTest, UnpackFormatVersion2)
@@ -123,6 +125,7 @@ TEST(TransformMessageTest, UnpackFormatVersion2)
   transformReceiveMsg->GetMatrix(outMatrix);
   EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
   igtlMetaDataComparisonMacro(transformReceiveMsg);
+  return 0;
 }
 
 #endif
