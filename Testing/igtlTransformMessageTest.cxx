@@ -17,7 +17,7 @@
 #include "igtl_transform.h"
 #include "igtl_header.h"
 #include "igtlTestConfig.h"
-
+#include "string.h"
 
 igtl::TransformMessage::Pointer transformSendMsg = igtl::TransformMessage::New();
 igtl::TransformMessage::Pointer transformReceiveMsg = igtl::TransformMessage::New();

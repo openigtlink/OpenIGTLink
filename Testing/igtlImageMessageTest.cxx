@@ -19,6 +19,7 @@
 #include "igtl_image.h"
 #include "igtl_util.h"
 #include "igtlTestConfig.h"
+#include "string.h"
 
 igtl::ImageMessage::Pointer imageSendMsg = igtl::ImageMessage::New();
 igtl::ImageMessage::Pointer imageReceiveMsg = igtl::ImageMessage::New();

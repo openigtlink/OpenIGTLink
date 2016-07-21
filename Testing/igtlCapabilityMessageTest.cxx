@@ -16,6 +16,7 @@
 #include "igtlMessageDebugFunction.h"
 #include "igtl_header.h"
 #include "igtlTestConfig.h"
+#include "string.h"
 
 #define CAPABILITY_MESSAGE_BODY_SIZE 48
 

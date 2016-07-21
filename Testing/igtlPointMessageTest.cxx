@@ -16,6 +16,7 @@
 #include "igtl_point.h"
 #include "igtl_header.h"
 #include "igtlTestConfig.h"
+#include "string.h"
 
 igtl::PointMessage::Pointer pointSendMsg = igtl::PointMessage::New();
 igtl::PointMessage::Pointer pointReceiveMsg = igtl::PointMessage::New();

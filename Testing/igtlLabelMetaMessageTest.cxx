@@ -16,6 +16,7 @@
 #include "igtlutil/igtl_lbmeta.h"
 #include "igtl_header.h"
 #include "igtlTestConfig.h"
+#include "string.h"
 
 igtl::LabelMetaElement::Pointer labelMetaElement0 = igtl::LabelMetaElement::New();
 igtl::LabelMetaElement::Pointer labelMetaElement1 = igtl::LabelMetaElement::New();

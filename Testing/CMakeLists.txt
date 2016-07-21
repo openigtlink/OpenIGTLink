@@ -1,6 +1,6 @@
 PROJECT( OpenIGTLinkTesting )
 
-cmake_minimum_required(VERSION 2.4)
+cmake_minimum_required(VERSION 2.9)
 
 set(CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/../build")
 find_package(OpenIGTLink REQUIRED)

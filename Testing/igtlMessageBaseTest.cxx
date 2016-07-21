@@ -14,6 +14,7 @@
 #include "igtlMessageBase.h"
 #include "igtlMessageHeader.h"
 #include "igtlTestConfig.h"
+#include "string.h"
 
 TEST(MessageBaseTest, InitializationTest)
 {

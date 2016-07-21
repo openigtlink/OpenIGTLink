@@ -13,9 +13,11 @@
 
 #include "igtlStatusMessage.h"
 #include "igtlutil/igtl_test_data_status.h"
+#include "string.h"
 #include "igtl_status.h"
 #include "igtl_header.h"
 #include "igtlTestConfig.h"
+#include "string.h"
 
 
 igtl::StatusMessage::Pointer statusSendMsg = igtl::StatusMessage::New();

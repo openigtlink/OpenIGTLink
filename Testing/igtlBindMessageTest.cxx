@@ -25,6 +25,7 @@
 #include "igtl_transform.h"
 #include "igtl_bind.h"
 #include "igtlTestConfig.h"
+#include "string.h"
 
 #define MESSAGE_BIND_HEADER_SIZE 98
 #define MESSAGE_BIND_BODY_SIZE 2678

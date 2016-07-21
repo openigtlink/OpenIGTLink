@@ -16,6 +16,7 @@
 #include "igtl_string.h"
 #include "igtl_header.h"
 #include "igtlTestConfig.h"
+#include "string.h"
 
 #define IGTL_STRING_TEST_STRING "Welcome to OpenIGTLink"
 #define IGTL_STRING_TEST_STRING_LEN 22
