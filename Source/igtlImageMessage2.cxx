@@ -366,9 +366,9 @@ void ImageMessage2::AllocateScalars()
   // Memory area to store image scalar is allocated with
   // message and image header, by using AllocatePack() implemented
   // in the parent class.
-
+  
 #ifdef FRAGMENTED_PACK
-
+  MessageBase::AllocateBuffer();
   if (!this->m_ImageHeader)
     {
     this->m_ImageHeader = new unsigned char [IGTL_IMAGE_HEADER_SIZE];
@@ -666,6 +666,7 @@ int ImageMessage2::UnpackContent()
 #ifdef FRAGMENTED_PACK  
 void ImageMessage2::AllocateBuffer(int contentSize)
 {
+  MessageBase::AllocateBuffer(contentSize);
   if (contentSize <= 0)
     {
     contentSize = 0;

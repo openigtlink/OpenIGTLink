@@ -12,7 +12,7 @@ ADD_SUBDIRECTORY( igtlutil )
 #-----------
 #download of GoogleTest
 if( MSVC ) # VS2012 doesn't support correctly the tuples yet
-	target_compile_definitions(gtest PUBLIC "-D_VARIADIC_MAX=10")
+	add_definitions("-D_VARIADIC_MAX=10")
 endif()
 
 # Download and unpack googletest at configure time
@@ -66,9 +66,9 @@ ADD_EXECUTABLE(igtlTrajectoryMessageTest   igtlTrajectoryMessageTest.cxx)
 ADD_EXECUTABLE(igtlTransformMessageTest   igtlTransformMessageTest.cxx)
 ADD_EXECUTABLE(igtlPositionMessageTest   igtlPositionMessageTest.cxx)
 
-ADD_EXECUTABLE(igtlSocketTest   igtlSocketTest.cxx)
-ADD_EXECUTABLE(igtlServerSocketTest   igtlServerSocketTest.cxx)
-ADD_EXECUTABLE(igtlClientSocketTest   igtlClientSocketTest.cxx)
+#ADD_EXECUTABLE(igtlSocketTest   igtlSocketTest.cxx)
+#ADD_EXECUTABLE(igtlServerSocketTest   igtlServerSocketTest.cxx)
+#ADD_EXECUTABLE(igtlClientSocketTest   igtlClientSocketTest.cxx)
 SET(GTEST_LINK OpenIGTLink gtest_main gtest gmock_main gmock)
 
 TARGET_LINK_LIBRARIES(igtlMultiThreaderTest1 OpenIGTLink)
@@ -95,9 +95,10 @@ TARGET_LINK_LIBRARIES(igtlTrackingDataMessageTest ${GTEST_LINK})
 TARGET_LINK_LIBRARIES(igtlTrajectoryMessageTest ${GTEST_LINK})
 TARGET_LINK_LIBRARIES(igtlTransformMessageTest ${GTEST_LINK})
 TARGET_LINK_LIBRARIES(igtlPositionMessageTest ${GTEST_LINK})
-TARGET_LINK_LIBRARIES(igtlSocketTest ${GTEST_LINK})
-TARGET_LINK_LIBRARIES(igtlClientSocketTest ${GTEST_LINK})
-TARGET_LINK_LIBRARIES(igtlServerSocketTest ${GTEST_LINK})
+
+#TARGET_LINK_LIBRARIES(igtlSocketTest ${GTEST_LINK})
+#TARGET_LINK_LIBRARIES(igtlClientSocketTest ${GTEST_LINK})
+#TARGET_LINK_LIBRARIES(igtlServerSocketTest ${GTEST_LINK})
 
 set(TestStringFormat1 "--gtest_filter=*.*FormatVersion1")
 

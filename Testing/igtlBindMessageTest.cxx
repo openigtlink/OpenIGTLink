@@ -80,11 +80,10 @@ void BuildUpElements()
   imageSendMsg2->SetMatrix(inMatrix);
   //imageSendMsg2->AllocateBuffer(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
   imageSendMsg2->AllocateScalars();
-  memcpy(imageSendMsg2->GetPackBodyPointer(), (const void*)test_image_message,
-         (size_t)(IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE));//here m_Body is set.
+  memcpy(imageSendMsg2->GetPackBodyPointer(), (const void*)(test_image_message+IGTL_HEADER_SIZE),
+         (size_t)(IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE));//here m_Body is set.
   //imageSendMsg2->SetScalarPointer((void*)test_image);
   imageSendMsg2->Pack();
-  TestDebugCharArrayCmp( (void* )bindSendMsg->GetPackPointer(), test_bind_message_header, IGTL_HEADER_SIZE);
   igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
   headerMsg->AllocatePack();
   memcpy(headerMsg->GetPackPointer(), (const void*)imageSendMsg2->GetPackPointer(), IGTL_HEADER_SIZE);
@@ -120,8 +119,8 @@ void BuildUpElements()
   transformSendMsg->Pack();
   
   transformReceiveMsg->AllocatePack();
-  
   bindSendMsg->Init();
+  bindSendMsg->SetHeaderVersion(IGTL_HEADER_VERSION_1);
   bindSendMsg->SetTimeStamp(0, 1234567892);
   bindSendMsg->SetDeviceName("DeviceName");
   bindSendMsg->AppendChildMessage(transformSendMsg);
@@ -133,15 +132,14 @@ void BuildUpElements()
 TEST(BindMessageTest, Pack)
 {
   BuildUpElements();
-  //TestDebugCharArrayCmp( (void* )bindSendMsg->GetPackPointer(), test_bind_message_header, IGTL_HEADER_SIZE);
+  char * messageBody = (char*)bindSendMsg->GetPackBodyPointer() + MESSAGE_BIND_HEADER_SIZE;
   int r = memcmp((const void*)bindSendMsg->GetPackPointer(), (const void*)test_bind_message_header,
                  (size_t)(IGTL_HEADER_SIZE));
   EXPECT_EQ(r, 0);
   
   r = memcmp((const void*)bindSendMsg->GetPackBodyPointer(), (const void*)test_bind_message_bind_header,  MESSAGE_BIND_HEADER_SIZE);  
   EXPECT_EQ(r, 0);
-  char * messageBody = (char*)bindSendMsg->GetPackBodyPointer() + MESSAGE_BIND_HEADER_SIZE;
-  TestDebugCharArrayCmp((void*)messageBody,test_bind_message_bind_body,MESSAGE_BIND_BODY_SIZE);
+  messageBody = (char*)bindSendMsg->GetPackBodyPointer() + MESSAGE_BIND_HEADER_SIZE;
   r = memcmp((const void*)(messageBody), (const void*)test_bind_message_bind_body,  MESSAGE_BIND_BODY_SIZE);
   EXPECT_EQ(r, 0);
 }
@@ -155,7 +153,7 @@ TEST(BindMessageTest, Unpack)
   bindReceiveMsg->SetMessageHeader(headerMsg);
   bindReceiveMsg->AllocatePack();
   memcpy(bindReceiveMsg->GetPackBodyPointer(), bindSendMsg->GetPackBodyPointer(),MESSAGE_BIND_HEADER_SIZE + MESSAGE_BIND_BODY_SIZE);
-  bindReceiveMsg->Unpack();
+  bindReceiveMsg->Unpack(1);
   
   bindReceiveMsg->GetChildMessage(0, transformReceiveMsg);
   bindReceiveMsg->GetChildMessage(1, imageReceiveMsg2);

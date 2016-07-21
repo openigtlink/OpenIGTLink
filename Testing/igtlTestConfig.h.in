@@ -20,7 +20,7 @@
 // we will switch entirely to the GTest. 
 //
 
-#cmakedefine OpenIGTLink_USE_GTEST
+/* #undef OpenIGTLink_USE_GTEST */
 
 #ifdef OpenIGTLink_USE_GTEST
   #include "gtest/gtest.h"
@@ -67,7 +67,7 @@ namespace testing {
     typename ::std::vector<T>::iterator iterB = b.begin();
     while( iterA!=arrayA.end() && iterB!=b.end())
       {
-      if (*iterA != *iterB)
+      if (fabs(*iterA-*iterB)>1e-6)
         {
         return 0;
         }
@@ -83,7 +83,7 @@ namespace testing {
     int N = arrayA;
     for (int i = 0; i < N; i ++)
       {
-      if (arrayA[i] != b[i])
+      if (fabs(arrayA[i] - b[i])>1e-6)
         {
         return 0;
         }
@@ -173,7 +173,7 @@ namespace testing {
   if (fabs(a-b) >= err) return TEST_FAILURE;
 
 #define EXPECT_FLOAT_EQ(a, b)                    \
-  if (fabs(a-b) < 1.0e-6) return TEST_FAILURE;
+  if (fabs(a-b) > 1e-6) return TEST_FAILURE;
 
 #define EXPECT_STREQ(a, b)                      \
   if (strcmp(a, b) != 0) return TEST_FAILURE;

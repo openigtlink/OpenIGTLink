@@ -148,9 +148,12 @@ int BindMessage::GetChildMessage(unsigned int i, igtl::MessageBase * child)
 
     // Convert to network byte order
     igtl_header_convert_byte_order(header);
-
+    igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
+    headerMsg->AllocatePack();
+    memcpy(headerMsg->GetPackPointer(), header, IGTL_HEADER_SIZE);
+    headerMsg->Unpack();
+    child->SetMessageHeader(headerMsg);
     child->AllocateBuffer();
-
     // TODO: Is there any way to avoid this memory copy?
     memcpy(child->GetBufferBodyPointer(),
            this->m_ChildMessages[i].ptr, this->m_ChildMessages[i].size);
