@@ -17,6 +17,7 @@
 #include "igtl_tdata.h"
 #include "igtl_header.h"
 #include "igtlTestConfig.h"
+#include "string.h"
 
 igtl::TrackingDataMessage::Pointer trackingSendMsg = igtl::TrackingDataMessage::New();
 igtl::TrackingDataMessage::Pointer trackingReceiveMsg = igtl::TrackingDataMessage::New();

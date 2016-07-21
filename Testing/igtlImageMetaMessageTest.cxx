@@ -17,6 +17,7 @@
 #include "igtl_imgmeta.h"
 #include "igtl_header.h"
 #include "igtlTestConfig.h"
+#include "string.h"
 
 igtl::ImageMetaElement::Pointer imageMetaElement0 = igtl::ImageMetaElement::New();
 igtl::ImageMetaElement::Pointer imageMetaElement1 = igtl::ImageMetaElement::New();

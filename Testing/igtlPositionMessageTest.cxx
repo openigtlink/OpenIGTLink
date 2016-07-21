@@ -17,6 +17,8 @@
 #include "igtl_position.h"
 #include "igtl_header.h"
 #include "igtlTestConfig.h"
+#include "string.h"
+
 #define PositionBodySize 28
 
 igtl::PositionMessage::Pointer positionSendMsg = igtl::PositionMessage::New();

@@ -16,6 +16,7 @@
 #include "igtl_ndarray.h"
 #include "igtl_header.h"
 #include "igtlTestConfig.h"
+#include "string.h"
 
 #define NDARRAY_MESSAGE_BODY_SIZE 488
 
