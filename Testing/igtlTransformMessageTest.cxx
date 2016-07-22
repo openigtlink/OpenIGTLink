@@ -32,7 +32,6 @@ igtl::Matrix4x4 inMatrix = {{inT[0],inS[0],inN[0],inOrigin[0]},
 
 TEST(TransformMessageTest, PackFormatVersion1)
 {
-  transformSendMsg->SetHeaderVersion(IGTL_HEADER_VERSION_1);
   transformSendMsg->AllocatePack();
   transformSendMsg->SetTimeStamp(0, 1234567892);
   transformSendMsg->SetDeviceName("DeviceName");
@@ -63,7 +62,6 @@ TEST(TransformMessageTest, UnpackFormatVersion1)
   igtl_header *messageHeader = (igtl_header *)transformReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "TRANSFORM");
-  EXPECT_EQ(messageHeader->header_version, 1);
   EXPECT_EQ(messageHeader->timestamp, 1234567892);
   EXPECT_EQ(messageHeader->body_size, IGTL_TRANSFORM_SIZE);
   

@@ -177,20 +177,6 @@ IF (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1" )
     )
 ENDIF ( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "1")
 
-# Add support for OpenIGTLink version 3
-IF ( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
-  SET(OpenIGTLink_SOURCES
-    ${OpenIGTLink_SOURCES}
-    igtlCommandMessage.cxx
-    igtlutil/igtl_command.c
-    )
-  SET(OpenIGTLink_INCLUDE_FILES
-    ${OpenIGTLink_INCLUDE_FILES}
-    igtlCommandMessage.h
-    igtlutil/igtl_command.h
-    )
-ENDIF ( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
-
 IF( ${CMAKE_GENERATOR} MATCHES "Visual Studio" )
 ADD_LIBRARY(OpenIGTLink
   ${OpenIGTLink_SOURCES}
