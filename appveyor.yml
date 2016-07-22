@@ -22,9 +22,8 @@ build:
 branches:
   #whitelist
   only:
+    - openigtlink/master
     - master
-    - Version3-Development
-    - Test
       
 clone_depth: 1
 skip_tags: true
