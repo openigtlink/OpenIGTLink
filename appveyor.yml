@@ -1,0 +1,75 @@
+version: 1.0.{build}
+
+os: Visual Studio 2015
+
+#Google Test is not build correctly for v120 and v110, but the TestConfigure.h file is a workaround solution for the testing 
+environment:
+  matrix:
+  - Toolset: v140
+  - Toolset: v120  
+  - Toolset: v110
+  
+#Test on the x86 platform was not successul. the first Test was hanged forever
+platform:
+  - x64
+  
+configuration:
+  - Debug  
+
+build:
+  verbosity: minimal
+  
+branches:
+  #whitelist
+  only:
+    - openigtlink/master
+    - master
+      
+clone_depth: 1
+skip_tags: true
+clone_folder: c:\projects\openigtlink
+      
+before_build:
+- ps: |
+    Write-Output "Configuration: $env:CONFIGURATION"
+    Write-Output "Platform: $env:PLATFORM"
+    $generator = switch ($env:TOOLSET)
+    {
+        "v140" {"Visual Studio 14 2015"}
+        "v120" {"Visual Studio 12 2013"}
+        "v110" {"Visual Studio 11 2012"}
+    }
+    $generator = "$generator Win64"
+
+build_script:
+- ps: |
+    mkdir build -Force | Out-Null
+    cd build
+    & cmake -G "$generator" ..
+    if ($LastExitCode -ne 0) {
+        throw "Exec: $ErrorMessage"
+    }
+    & cmake --build . --config $env:CONFIGURATION
+    if ($LastExitCode -ne 0) {
+        throw "Exec: $ErrorMessage"
+    }
+    mkdir build -Force | Out-Null
+    cd ..
+    mkdir TestBuild
+    cd TestBuild
+    & cmake -G "$generator" ..\Testing
+    if ($LastExitCode -ne 0) {
+        throw "Exec: $ErrorMessage"
+    }
+    & cmake --build . --config $env:CONFIGURATION
+    if ($LastExitCode -ne 0) {
+        throw "Exec: $ErrorMessage"
+    }
+
+test_script:
+- ps: |
+    & ctest -C $env:CONFIGURATION --output-on-failure
+    if ($LastExitCode -ne 0) {
+        throw "Exec: $ErrorMessage"
+    }
+  

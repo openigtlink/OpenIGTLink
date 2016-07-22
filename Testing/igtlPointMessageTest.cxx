@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -16,10 +15,8 @@
 #include "igtlutil/igtl_test_data_point.h"
 #include "igtl_point.h"
 #include "igtl_header.h"
-
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
-
+#include "igtlTestConfig.h"
+#include "string.h"
 
 igtl::PointMessage::Pointer pointSendMsg = igtl::PointMessage::New();
 igtl::PointMessage::Pointer pointReceiveMsg = igtl::PointMessage::New();
@@ -65,6 +62,7 @@ TEST(PointMessageTest, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)pointSendMsg->GetPackBodyPointer(), (const void*)(test_point_message+(size_t)(IGTL_HEADER_SIZE)), IGTL_POINT_ELEMENT_SIZE*3 );
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 
@@ -125,6 +123,7 @@ TEST(PointMessageTest, Unpack)
     EXPECT_EQ(elem->GetRadius(), groundTruthRadius[i]);
     EXPECT_EQ(strncmp((char*)elem->GetOwner(), "IMAGE_0", 7),0);
   }
+  return 0;
 }
 
 

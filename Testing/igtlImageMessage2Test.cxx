@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -19,10 +18,8 @@
 #include "igtl_types.h"
 #include "igtl_header.h"
 #include "igtl_util.h"
-
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
-
+#include "igtlTestConfig.h"
+#include "string.h"
 
 igtl::ImageMessage2::Pointer imageSendMsg2 = igtl::ImageMessage2::New();
 igtl::ImageMessage2::Pointer imageReceiveMsg2 = igtl::ImageMessage2::New();
@@ -71,6 +68,7 @@ TEST(ImageMessage2Test, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)imageSendMsg2->GetPackFragmentPointer(1), (const void*)(test_image_message+IGTL_HEADER_SIZE), (size_t)(IGTL_IMAGE_HEADER_SIZE));
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 TEST(ImageMessage2Test, Unpack)
@@ -112,6 +110,7 @@ TEST(ImageMessage2Test, Unpack)
   EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
   int r = memcmp(imageReceiveMsg2->GetPackFragmentPointer(2), (unsigned char*)test_image, TEST_IMAGE_MESSAGE_SIZE);
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 TEST(ImageMessage2Test, FragmentImageTest)
@@ -128,6 +127,7 @@ TEST(ImageMessage2Test, FragmentImageTest)
   EXPECT_NE(strcmp((const char *)charwholeImagePointer, (const char *)fragmentImagePointer),0);
   EXPECT_EQ(strcmp((const char *)fragmentImagePointer, (const char *)(test_image_message+IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE+TEST_FRAGMENTIMAGE_MESSAGE_SIZE)),0);
    */
+  return 0;
 }
 
 int main(int argc, char **argv)

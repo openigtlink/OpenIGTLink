@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -17,9 +16,8 @@
 #include "igtlMessageDebugFunction.h"
 #include "igtl_polydata.h"
 #include "igtl_header.h"
-
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
+#include "igtlTestConfig.h"
+#include "string.h"
 
 #include <list>
 
@@ -76,6 +74,7 @@ TEST(PolyDataMessageTest, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)polyDataSendMsg->GetPackBodyPointer(), (const void*)test_polydata_message_body, POLY_BODY_SIZE);
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 
@@ -121,6 +120,7 @@ TEST(PolyDataMessageTest, Unpack)
     attrUnpacked->GetNthData(i, attributeValue);
     EXPECT_EQ(attributeValue[0], attribute[i]);
   }
+  return 0;
 }
 
 

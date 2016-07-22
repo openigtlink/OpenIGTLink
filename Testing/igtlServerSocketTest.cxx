@@ -1,10 +1,7 @@
 /*=========================================================================
 
   Program:   OpenIGTLink Library
-  Module:    $RCSfile: itkImage.h,v $
   Language:  C++
-  Date:      $Date: 2008/01/13 19:48:38 $
-  Version:   $Revision: 1.142 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -24,10 +21,8 @@
 #include "igtl_image.h"
 #include "igtl_util.h"
 #include "igtlOSUtil.h"
-
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
-
+#include "igtlTestConfig.h"
+#include "string.h"
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -220,6 +215,7 @@ TEST(ServerSocketTest, ConnectionAndSending)
   {
     mockServerSocket.getPointer()->CloseSocket();
   }
+  return 0;
   //delete mockServerSocket;
   //clientSocket::send
 }

@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -16,9 +15,8 @@
 #include "igtlutil/igtl_test_data_string.h"
 #include "igtl_string.h"
 #include "igtl_header.h"
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
-
+#include "igtlTestConfig.h"
+#include "string.h"
 
 #define IGTL_STRING_TEST_STRING "Welcome to OpenIGTLink"
 #define IGTL_STRING_TEST_STRING_LEN 22
@@ -39,6 +37,7 @@ TEST(StringMessageTest, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)stringSendMsg->GetPackBodyPointer(), (const void*)(test_string_message+IGTL_HEADER_SIZE),stringSendMsg->GetPackBodySize());
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 
@@ -56,7 +55,7 @@ TEST(StringMessageTest, Unpack)
   
   EXPECT_EQ(stringReceiveMsg->GetEncoding(),3);
   EXPECT_STREQ(stringReceiveMsg->GetString(),IGTL_STRING_TEST_STRING);
-  
+  return 0;
 }
 
 

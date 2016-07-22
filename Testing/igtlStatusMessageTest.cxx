@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -14,12 +13,11 @@
 
 #include "igtlStatusMessage.h"
 #include "igtlutil/igtl_test_data_status.h"
+#include "string.h"
 #include "igtl_status.h"
 #include "igtl_header.h"
-
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
-
+#include "igtlTestConfig.h"
+#include "string.h"
 
 
 igtl::StatusMessage::Pointer statusSendMsg = igtl::StatusMessage::New();
@@ -45,6 +43,7 @@ TEST(StatusMessageTest, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)statusSendMsg->GetPackBodyPointer(), (const void*)(test_status_message+IGTL_HEADER_SIZE),statusSendMsg->GetPackBodySize());
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 
@@ -63,6 +62,7 @@ TEST(StatusMessageTest, Unpack)
   EXPECT_EQ(statusReceiveMsg->GetSubCode(),(igtlInt64)0x0A);
   EXPECT_STREQ(statusReceiveMsg->GetErrorName(),STR_ERROR_NAME);
   EXPECT_STREQ(statusReceiveMsg->GetStatusString(),STR_ERROR_MESSAGE);
+  return 0;
 }
 
 

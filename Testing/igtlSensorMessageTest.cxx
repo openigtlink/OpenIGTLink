@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -18,11 +17,8 @@
 #include "igtl_sensor.h"
 #include "igtl_unit.h"
 #include "igtl_header.h"
-
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
-
-
+#include "igtlTestConfig.h"
+#include "string.h"
 
 igtl::SensorMessage::Pointer sensorDataSendMsg = igtl::SensorMessage::New();
 igtl::SensorMessage::Pointer sensorDataReceiveMsg = igtl::SensorMessage::New();
@@ -58,6 +54,7 @@ TEST(SensorMessageTest, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)sensorDataSendMsg->GetPackBodyPointer(), (const void*)(test_sensor_message+IGTL_HEADER_SIZE),sensorDataSendMsg->GetPackBodySize());
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 
@@ -83,6 +80,7 @@ TEST(SensorMessageTest, Unpack)
   EXPECT_EQ(sensorDataReceiveMsg->GetValue(3),123.45678);
   EXPECT_EQ(sensorDataReceiveMsg->GetValue(4),12.345678);
   EXPECT_EQ(sensorDataReceiveMsg->GetValue(5),1.2345678);
+  return 0;
 }
 
 

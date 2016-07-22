@@ -14,11 +14,12 @@ SET(OpenIGTLink_VERSION_PATCH "0")
 
 option(OpenIGTLink_PROTOCOL_VERSION_2 "Build Library for Protocol Version 2" ON)
 
+SET(OpenIGTLink_HEADER_VERSION "1")
 IF(OpenIGTLink_PROTOCOL_VERSION_2)
   SET(OpenIGTLink_PROTOCOL_VERSION "2")
-ELSE(OpenIGTLink_PROTOCOL_VERSION_2)
+ELSE()
   SET(OpenIGTLink_PROTOCOL_VERSION "1")
-ENDIF(OpenIGTLink_PROTOCOL_VERSION_2)
+ENDIF()
 
 
 #-----------------------------------------------------------------------------
@@ -34,13 +35,6 @@ endif(NOT OpenIGTLink_BUILD_SHARED_LIBS)
 
 OPTION(BUILD_EXAMPLES "Build OpenIGTLink example programs." OFF)
 SET(OpenIGTLink_BUILD_EXAMPLES ${BUILD_EXAMPLES})
-
-OPTION(BUILD_TESTING "Build the testing tree." ON)
-SET(OpenIGTLink_BUILD_TESTING ${BUILD_TESTING})
-IF(OpenIGTLink_BUILD_TESTING)
-  ENABLE_TESTING()
-  INCLUDE (${CMAKE_ROOT}/Modules/Dart.cmake)
-ENDIF()
 
 #-----------------------------------------------------------------------------
 # Output directories.
@@ -58,9 +52,6 @@ SET(OpenIGTLink_EXECUTABLE_PATH "${EXECUTABLE_OUTPUT_PATH}")
 
 SET(OpenIGTLink_CMAKE_DIR "${OpenIGTLink_SOURCE_DIR}/CMake")
 SET(CMAKE_MODULE_PATH "${OpenIGTLink_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
-
-
-
 
 #-----------------------------------------------------------------------------
 # Installation vars.
@@ -113,22 +104,15 @@ INCLUDE_DIRECTORIES(
   ${OpenIGTLink_INCLUDE_DIRS_BUILD_TREE}
   )
 
-#SET(OpenIGTLink_LIBRARY_PATH  ${OpenIGTLink_LIBRARY_PATH}
-#  ${OpenIGTLink_BINARY_DIR}/Source
-#  ${OpenIGTLink_BINARY_DIR}/Source/igtlutil
-#  )
-
 #-----------------------------------------------------------------------------
 # OpenIGTLink requires special compiler flags on some platforms.
-
 
 INCLUDE (FindThreads)
 
 IF(CMAKE_COMPILER_IS_GNUCXX)
-
   # '-fno-tree-vectorize' option is added to avoid segmentation fault that occurs in
   # igtl_image_convert_byte_order() (Source/igtlutil/igtl_image.c) built with 'Release'
-  # option on 64-bit Linux. 
+  # option on 64-bit Linux.
   INCLUDE (CheckCXXCompilerFlag)
   CHECK_CXX_COMPILER_FLAG("-fno-tree-vectorize" OpenIGTLink_GNUCXX_TREE_VECTORIZE_SUPPORT)
   IF (OpenIGTLink_GNUCXX_TREE_VECTORIZE_SUPPORT)
@@ -146,29 +130,6 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
   IF(CMAKE_HAVE_THREADS_LIBRARY)
     SET(OpenIGTLink_REQUIRED_LINK_FLAGS "${OpenIGTLink_REQUIRED_LINK_FLAGS} ${CMAKE_THREAD_LIBS_INIT}")
   ENDIF(CMAKE_HAVE_THREADS_LIBRARY)
-
-
-#  IF(APPLE)
-#    # -no-cpp-precomp and -Wno-long-double were compiler flags present
-#    # only in Apple's gcc and not in the FSF gcc. The flags are obsolete
-#    # and totally removed in gcc 4.2 and later. I believe they are only
-#    # needed with gcc 3.3 and earlier.
-#    INCLUDE(${OpenIGTLink_SOURCE_DIR}/CMake/itkCheckCXXAcceptsFlags.cmake)
-#    itkCHECK_CXX_ACCEPTS_FLAGS("-no-cpp-precomp" CXX_HAS_CPP_PRECOMP_FLAG)
-#    IF(CXX_HAS_CPP_PRECOMP_FLAG)    
-#      SET(OpenIGTLink_REQUIRED_C_FLAGS "${OpenIGTLink_REQUIRED_C_FLAGS} -no-cpp-precomp")
-#      SET(OpenIGTLink_REQUIRED_CXX_FLAGS "${OpenIGTLink_REQUIRED_CXX_FLAGS} -no-cpp-precomp")
-#    ENDIF(CXX_HAS_CPP_PRECOMP_FLAG)    
-#    itkCHECK_CXX_ACCEPTS_FLAGS("-Wno-long-double" CXX_HAS_LONGDOUBLE_FLAG)
-#    IF(CXX_HAS_LONGDOUBLE_FLAG)    
-#      SET(OpenIGTLink_REQUIRED_C_FLAGS "${OpenIGTLink_REQUIRED_C_FLAGS} -Wno-long-double")
-#      SET(OpenIGTLink_REQUIRED_CXX_FLAGS "${OpenIGTLink_REQUIRED_CXX_FLAGS} -Wno-long-double")
-#    ENDIF(CXX_HAS_LONGDOUBLE_FLAG)    
-#
-#    OPTION(OpenIGTLink_USE_64BITS_APPLE_TRUNCATION_WARNING "Turn on warnings on 64bits to 32bits truncations." OFF)
-#    MARK_AS_ADVANCED(OpenIGTLink_USE_64BITS_APPLE_TRUNCATION_WARNING)
-#
-#  ENDIF(APPLE)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 
@@ -192,22 +153,21 @@ ENDIF(CMAKE_USE_PTHREADS)
 # Socket tests etc.
 INCLUDE(${OpenIGTLink_CMAKE_DIR}/OpenIGTLinkCMakeTests.cmake)
 
-
+SET(OpenIGTLink_LIBRARY_TARGETS_FILE "${CMAKE_BINARY_DIR}/OpenIGTLinkTargets.cmake")
 
 #-----------------------------------------------------------------------------
 # Generate Configuration Header files.
 
 include (${OpenIGTLink_SOURCE_DIR}/OpenIGTLinkConfigPlatform.cmake)
 
-CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtlConfigure.h.in 
+CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtlConfigure.h.in
   ${OpenIGTLink_BINARY_DIR}/igtlConfigure.h)
 
-CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtl_typeconfig.h.in 
+CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtl_typeconfig.h.in
   ${OpenIGTLink_BINARY_DIR}/igtl_typeconfig.h)
 
-CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtlTypeConfig.h.in 
+CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtlTypeConfig.h.in
   ${OpenIGTLink_BINARY_DIR}/igtlTypeConfig.h)
-
 
 #-----------------------------------------------------------------------------
 # Help other projects use OpenIGTLink.
@@ -228,9 +188,9 @@ CMAKE_EXPORT_BUILD_SETTINGS(${OpenIGTLink_BINARY_DIR}/OpenIGTLinkBuildSettings.c
 
 INSTALL(FILES
   ${OpenIGTLink_BINARY_DIR}/OpenIGTLinkBuildSettings.cmake
-#  ${OpenIGTLink_BINARY_DIR}/OpenIGTLinkLibraryDepends.cmake
+  ${OpenIGTLink_LIBRARY_TARGETS_FILE}
   ${OpenIGTLink_BINARY_DIR}/UseOpenIGTLink.cmake
-  ${OpenIGTLink_BINARY_DIR}/Utilities/OpenIGTLinkConfig.cmake
+  ${OpenIGTLink_BINARY_DIR}/OpenIGTLinkConfig.cmake
   DESTINATION ${OpenIGTLink_INSTALL_PACKAGE_DIR}
   COMPONENT Development
   )
@@ -267,28 +227,25 @@ SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${OpenIGTLink_REQUIR
 #-----------------------------------------------------------------------------
 # Configure Subdirectories
 
-ADD_SUBDIRECTORY( Source    )
-ADD_SUBDIRECTORY( Tools     )
-
-IF(OpenIGTLink_BUILD_TESTING)
-  ADD_SUBDIRECTORY( Testing )
-ENDIF(OpenIGTLink_BUILD_TESTING)
+ADD_SUBDIRECTORY(Source)
+ADD_SUBDIRECTORY(Tools)
 
 IF(OpenIGTLink_BUILD_EXAMPLES)
- ADD_SUBDIRECTORY( Examples )
+ ADD_SUBDIRECTORY(Examples)
 ENDIF(OpenIGTLink_BUILD_EXAMPLES)
 
-
+#-----------------------------------------------------------------------------
+# Export targets
+export(TARGETS
+  OpenIGTLink
+  FILE "${OpenIGTLink_LIBRARY_TARGETS_FILE}"
+  )
 
 #-----------------------------------------------------------------------------
-# Doxygen 
+# Doxygen
 
 OPTION(BUILD_DOCUMENTATION "Build OpenIGTLink Documentation" OFF)
 
 IF(BUILD_DOCUMENTATION)
-
   ADD_SUBDIRECTORY( Documents/Doxygen )
-               
 ENDIF(BUILD_DOCUMENTATION)
-
-

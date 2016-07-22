@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -16,9 +15,8 @@
 #include "igtlutil/igtl_test_data_lbmeta.h"
 #include "igtlutil/igtl_lbmeta.h"
 #include "igtl_header.h"
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
-
+#include "igtlTestConfig.h"
+#include "string.h"
 
 igtl::LabelMetaElement::Pointer labelMetaElement0 = igtl::LabelMetaElement::New();
 igtl::LabelMetaElement::Pointer labelMetaElement1 = igtl::LabelMetaElement::New();
@@ -64,6 +62,7 @@ TEST(LabelMetaMessageTest, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)labelMetaSendMsg->GetPackBodyPointer(), (const void*)(test_lbmeta_message+(size_t)(IGTL_HEADER_SIZE)), IGTL_LBMETA_ELEMENT_SIZE*3 );
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 
@@ -116,6 +115,7 @@ TEST(LabelMetaMessageTest, Unpack)
     EXPECT_THAT(returnedSize, testing::ElementsAreArray(groundTruthSize));
     EXPECT_EQ(strncmp((char*)elem->GetOwner(), "IMAGE_0", 7),0);
   }
+  return 0;
 }
 
 

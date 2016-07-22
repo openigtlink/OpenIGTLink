@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -17,8 +16,8 @@
 #include "igtlMessageDebugFunction.h"
 #include "igtl_imgmeta.h"
 #include "igtl_header.h"
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
+#include "igtlTestConfig.h"
+#include "string.h"
 
 igtl::ImageMetaElement::Pointer imageMetaElement0 = igtl::ImageMetaElement::New();
 igtl::ImageMetaElement::Pointer imageMetaElement1 = igtl::ImageMetaElement::New();
@@ -104,6 +103,7 @@ TEST(ImageMetaMessageTest, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)imageMetaSendMsg->GetPackBodyPointer(), (const void*)(test_imgmeta_message+(size_t)(IGTL_HEADER_SIZE)), IGTL_IMGMETA_ELEMENT_SIZE*3 );
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 
@@ -181,6 +181,7 @@ TEST(ImageMetaMessageTest, Unpack)
     EXPECT_THAT(returnedSize, testing::ElementsAreArray(groundTruthSize[i]));
     EXPECT_EQ(elem->GetScalarType(), (int)IGTL_IMAGE_STYPE_TYPE_UINT16);
   }
+  return 0;
 }
 
 

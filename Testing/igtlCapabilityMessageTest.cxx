@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -16,9 +15,8 @@
 #include "igtlutil/igtl_test_data_capability.h"
 #include "igtlMessageDebugFunction.h"
 #include "igtl_header.h"
-
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
+#include "igtlTestConfig.h"
+#include "string.h"
 
 #define CAPABILITY_MESSAGE_BODY_SIZE 48
 
@@ -41,6 +39,7 @@ TEST(ColorTableMessageTest, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)capabilitySendMsg->GetPackBodyPointer(), (const void*)(test_capability_message+IGTL_HEADER_SIZE), CAPABILITY_MESSAGE_BODY_SIZE);
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 
@@ -67,6 +66,7 @@ TEST(ColorTableMessageTest, Unpack)
   EXPECT_STREQ(typeStrings[1].c_str(),"GET_IMAGE");
   EXPECT_STREQ(typeStrings[2].c_str(),"TRANSFORM");
   EXPECT_STREQ(typeStrings[3].c_str(),"GET_TRANS");
+  return 0;
 }
 
 int main(int argc, char **argv)

@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -16,8 +15,8 @@
 #include "igtlutil/igtl_test_data_ndarray.h"
 #include "igtl_ndarray.h"
 #include "igtl_header.h"
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
+#include "igtlTestConfig.h"
+#include "string.h"
 
 #define NDARRAY_MESSAGE_BODY_SIZE 488
 
@@ -60,6 +59,7 @@ TEST(NDArrayMessageTest, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)NDArraySendMsg->GetPackBodyPointer(), (const void*)(test_ndarray_message_body), NDArraySendMsg->GetPackSize()-IGTL_HEADER_SIZE);
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 TEST(NDArrayMessageTest, Unpack)
@@ -90,7 +90,7 @@ TEST(NDArrayMessageTest, Unpack)
       }
     }
   }
-  
+  return 0;
 }
 
 TEST(NDArrayMessageTest, 64BitConversion)
@@ -112,6 +112,7 @@ TEST(NDArrayMessageTest, 64BitConversion)
   igtl_ndarray_unpack(IGTL_TYPE_PREFIX_NONE, dataArray, &info_return, 488);
   int r = memcmp(info.array, info_return.array,480);
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 

@@ -2,7 +2,6 @@
  
  Program:   OpenIGTLink Library
  Language:  C++
- Date:      $Date: 2016/02/12 19:53:38 $
  
  Copyright (c) Insight Software Consortium. All rights reserved.
  
@@ -17,9 +16,8 @@
 #include "igtlMessageDebugFunction.h"
 #include "igtl_colortable.h"
 #include "igtl_header.h"
-
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
+#include "igtlTestConfig.h"
+#include "string.h"
 
 #define COLOR_TABLE_SIZE 256
 
@@ -41,6 +39,7 @@ TEST(ColorTableMessageTest, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)colorTableSendMsg->GetPackBodyPointer(), (const void*)(test_colortable_message+IGTL_HEADER_SIZE), IGTL_COLORTABLE_HEADER_SIZE+COLOR_TABLE_SIZE);
   EXPECT_EQ(r, 0);
+  return 0;
 }
 
 
@@ -62,7 +61,7 @@ TEST(ColorTableMessageTest, Unpack)
   {
     EXPECT_EQ(((unsigned char*)colorTableReceiveMsg->GetTablePointer())[i], i);
   }
-  
+  return 0;
 }
 
 
