@@ -40,9 +40,6 @@ endif(NOT OpenIGTLink_BUILD_SHARED_LIBS)
 OPTION(BUILD_EXAMPLES "Build OpenIGTLink example programs." OFF)
 SET(OpenIGTLink_BUILD_EXAMPLES ${BUILD_EXAMPLES})
 
-OPTION(BUILD_TESTING "Build the testing tree." ON)
-SET(OpenIGTLink_BUILD_TESTING ${BUILD_TESTING})
-
 #-----------------------------------------------------------------------------
 # Output directories.
 
@@ -175,9 +172,6 @@ CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtl_typeconfig.h.in
 
 CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtlTypeConfig.h.in
   ${OpenIGTLink_BINARY_DIR}/igtlTypeConfig.h)
-
-CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/Testing/igtlTestConfig.h.in
-  ${OpenIGTLink_BINARY_DIR}/igtlTestConfig.h)
 
 #-----------------------------------------------------------------------------
 # Help other projects use OpenIGTLink.

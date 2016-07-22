@@ -203,7 +203,7 @@ ELSE ()
     )
 ENDIF()
 
-target_include_directories(OpenIGTLink ${OpenIGTLink_INCLUDE_DIRS})
+include_directories(OpenIGTLink ${OpenIGTLink_INCLUDE_DIRS})
 TARGET_LINK_LIBRARIES(OpenIGTLink
   ${LINK_LIBS}
   )

@@ -7,6 +7,7 @@ find_package(OpenIGTLink REQUIRED)
 include(${OpenIGTLink_USE_FILE})
 include_directories(${OpenIGTLink_INCLUDE_DIRS})
 link_directories(${OpenIGTLink_LIBRARY_DIRS})
+link_directories(${CMAKE_BINARY_DIR})
 ENABLE_TESTING()
 ADD_SUBDIRECTORY( igtlutil )
 #-----------
@@ -14,7 +15,7 @@ ADD_SUBDIRECTORY( igtlutil )
 if( MSVC ) # VS2012 doesn't support correctly the tuples yet
 	add_definitions("-D_VARIADIC_MAX=10")
 endif()
-
+configure_file(${CMAKE_SOURCE_DIR}/igtlTestConfig.h.in ${CMAKE_BINARY_DIR}/igtlTestConfig.h)
 # Download and unpack googletest at configure time
 configure_file(CMakeLists.txt.in
 							 googletest-download/CMakeLists.txt)

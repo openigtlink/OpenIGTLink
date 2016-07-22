@@ -67,7 +67,7 @@ namespace testing {
     typename ::std::vector<T>::iterator iterB = b.begin();
     while( iterA!=arrayA.end() && iterB!=b.end())
       {
-      if (fabs(*iterA-*iterB)>1e-6)
+      if ((*iterA-*iterB)>1e-6 || (*iterA-*iterB)<-1e-6)
         {
         return 0;
         }
@@ -83,7 +83,7 @@ namespace testing {
     int N = arrayA;
     for (int i = 0; i < N; i ++)
       {
-      if (fabs(arrayA[i] - b[i])>1e-6)
+      if ((arrayA[i] - b[i])>1e-6 || (arrayA[i] - b[i])<-1e-6)
         {
         return 0;
         }
@@ -170,10 +170,10 @@ namespace testing {
   if (a >= b) return TEST_FAILURE;
 
 #define EXPECT_NEAR(a, b, err)                  \
-  if (fabs(a-b) >= err) return TEST_FAILURE;
+  if ((a-b) >= err || (a-b) <= -err) return TEST_FAILURE;
 
 #define EXPECT_FLOAT_EQ(a, b)                    \
-  if (fabs(a-b) > 1e-6) return TEST_FAILURE;
+  if ((a-b) > 1e-6 || (a-b) < -1e-6) return TEST_FAILURE;
 
 #define EXPECT_STREQ(a, b)                      \
   if (strcmp(a, b) != 0) return TEST_FAILURE;
