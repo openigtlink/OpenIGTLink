@@ -13,7 +13,7 @@ SET(OpenIGTLink_VERSION_MINOR "11")
 SET(OpenIGTLink_VERSION_PATCH "0")
 
 option(OpenIGTLink_PROTOCOL_VERSION_2 "Build Library for Protocol Version 2" ON)
-option(OpenIGTLink_PROTOCOL_VERSION_3 "Build Library for Protocol Version 3" OFF)
+option(OpenIGTLink_PROTOCOL_VERSION_3 "Build Library for Protocol Version 3" ON)
 
 SET(OpenIGTLink_HEADER_VERSION "1")
 IF(OpenIGTLink_PROTOCOL_VERSION_3)
@@ -39,9 +39,6 @@ endif(NOT OpenIGTLink_BUILD_SHARED_LIBS)
 
 OPTION(BUILD_EXAMPLES "Build OpenIGTLink example programs." OFF)
 SET(OpenIGTLink_BUILD_EXAMPLES ${BUILD_EXAMPLES})
-
-OPTION(BUILD_TESTING "Build the testing tree." ON)
-SET(OpenIGTLink_BUILD_TESTING ${BUILD_TESTING})
 
 #-----------------------------------------------------------------------------
 # Output directories.
@@ -119,7 +116,7 @@ INCLUDE (FindThreads)
 IF(CMAKE_COMPILER_IS_GNUCXX)
   # '-fno-tree-vectorize' option is added to avoid segmentation fault that occurs in
   # igtl_image_convert_byte_order() (Source/igtlutil/igtl_image.c) built with 'Release'
-  # option on 64-bit Linux. 
+  # option on 64-bit Linux.
   INCLUDE (CheckCXXCompilerFlag)
   CHECK_CXX_COMPILER_FLAG("-fno-tree-vectorize" OpenIGTLink_GNUCXX_TREE_VECTORIZE_SUPPORT)
   IF (OpenIGTLink_GNUCXX_TREE_VECTORIZE_SUPPORT)
@@ -167,17 +164,14 @@ SET(OpenIGTLink_LIBRARY_TARGETS_FILE "${CMAKE_BINARY_DIR}/OpenIGTLinkTargets.cma
 
 include (${OpenIGTLink_SOURCE_DIR}/OpenIGTLinkConfigPlatform.cmake)
 
-CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtlConfigure.h.in 
+CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtlConfigure.h.in
   ${OpenIGTLink_BINARY_DIR}/igtlConfigure.h)
 
-CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtl_typeconfig.h.in 
+CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtl_typeconfig.h.in
   ${OpenIGTLink_BINARY_DIR}/igtl_typeconfig.h)
 
-CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtlTypeConfig.h.in 
+CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtlTypeConfig.h.in
   ${OpenIGTLink_BINARY_DIR}/igtlTypeConfig.h)
-
-CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/Testing/igtlTestConfig.h.in 
-  ${OpenIGTLink_BINARY_DIR}/igtlTestConfig.h)
 
 #-----------------------------------------------------------------------------
 # Help other projects use OpenIGTLink.
@@ -246,14 +240,14 @@ ENDIF(OpenIGTLink_BUILD_EXAMPLES)
 
 #-----------------------------------------------------------------------------
 # Export targets
-export(TARGETS 
+export(TARGETS
   OpenIGTLink
   FILE "${OpenIGTLink_LIBRARY_TARGETS_FILE}"
   )
 
 #-----------------------------------------------------------------------------
-
 # Doxygen
+
 OPTION(BUILD_DOCUMENTATION "Build OpenIGTLink Documentation" OFF)
 
 IF(BUILD_DOCUMENTATION)

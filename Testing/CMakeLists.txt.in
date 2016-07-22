@@ -13,7 +13,6 @@ ExternalProject_Add(googletest
   INSTALL_COMMAND   ""
   TEST_COMMAND      ""
 )
-message("in googletest download cmakelist")
 
 ExternalProject_Add(googlemock
   URL https://github.com/google/googlemock/archive/release-1.7.0.zip
