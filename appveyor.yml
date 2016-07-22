@@ -2,10 +2,11 @@ version: 1.0.{build}
 
 os: Visual Studio 2015
 
+#Google Test is not build correctly for v120 and v110, but the TestConfigure.h file is a workaround solution for the testing 
 environment:
   matrix:
   - Toolset: v140
-  - Toolset: v120  Google Test is not build correctly
+  - Toolset: v120  
   - Toolset: v110
   
 #Test on the x86 platform was not successul. the first Test was hanged forever
