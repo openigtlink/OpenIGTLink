@@ -7,7 +7,7 @@ find_package(OpenIGTLink REQUIRED)
 include(${OpenIGTLink_USE_FILE})
 include_directories(${OpenIGTLink_INCLUDE_DIRS})
 link_directories(${OpenIGTLink_LIBRARY_DIRS})
-link_directories(${CMAKE_BINARY_DIR})
+include_directories(${CMAKE_BINARY_DIR})
 ENABLE_TESTING()
 ADD_SUBDIRECTORY( igtlutil )
 #-----------

@@ -36,6 +36,8 @@ before_build:
     $generator = switch ($env:TOOLSET)
     {
         "v140" {"Visual Studio 14 2015"}
+        "v120" {"Visual Studio 12 2013"}
+        "v110" {"Visual Studio 11 2012"}
     }
     $generator = "$generator Win64"
 
