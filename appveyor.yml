@@ -57,7 +57,7 @@ build_script:
     cd ..
     mkdir TestBuild
     cd TestBuild
-    & cmake -G "$generator" ..\Testing
+    & cmake -G "$generator" -DCMAKE_PREFIX_PATH:PATH=..\build ..\Testing
     if ($LastExitCode -ne 0) {
         throw "Exec: $ErrorMessage"
     }

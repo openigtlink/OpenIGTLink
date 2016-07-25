@@ -1,13 +1,11 @@
 PROJECT( OpenIGTLinkTesting )
 
 cmake_minimum_required(VERSION 2.9)
-
-set(CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/../build")
 find_package(OpenIGTLink REQUIRED)
 include(${OpenIGTLink_USE_FILE})
 include_directories(${OpenIGTLink_INCLUDE_DIRS})
 link_directories(${OpenIGTLink_LIBRARY_DIRS})
-include_directories(${CMAKE_BINARY_DIR})
+include_directories(${PROJECT_BINARY_DIR})
 ENABLE_TESTING()
 ADD_SUBDIRECTORY( igtlutil )
 #-----------
@@ -15,15 +13,15 @@ ADD_SUBDIRECTORY( igtlutil )
 if( MSVC ) # VS2012 doesn't support correctly the tuples yet
 	add_definitions("-D_VARIADIC_MAX=10")
 endif()
-configure_file(${CMAKE_SOURCE_DIR}/igtlTestConfig.h.in ${CMAKE_BINARY_DIR}/igtlTestConfig.h)
+configure_file(${PROJECT_SOURCE_DIR}/igtlTestConfig.h.in ${PROJECT_BINARY_DIR}/igtlTestConfig.h)
 # Download and unpack googletest at configure time
 configure_file(CMakeLists.txt.in
 							 googletest-download/CMakeLists.txt)
 execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" . 
-	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download" )
+	WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/googletest-download" )
 
 execute_process(COMMAND "${CMAKE_COMMAND}" --build . 
-	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download" )
+	WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/googletest-download" )
 
 # Prevent GoogleTest from overriding our compiler/linker options
 # when building with Visual Studio
@@ -32,8 +30,8 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 # Add googletest directly to our build. This adds
 # the following targets: gtest, gtest_main, gmock
 # and gmock_main
-add_subdirectory("${CMAKE_BINARY_DIR}/gmock"
-								 "${CMAKE_BINARY_DIR}/gmock-build" )
+add_subdirectory("${PROJECT_BINARY_DIR}/gmock"
+								 "${PROJECT_BINARY_DIR}/gmock-build" )
 
 # The gtest/gmock targets carry header search path
 # dependencies automatically when using CMake 2.8.11 or

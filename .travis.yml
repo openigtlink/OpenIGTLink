@@ -34,7 +34,7 @@ script:
   - cd ..
   - mkdir TestBuild
   - cd TestBuild
-  - cmake ../Testing
+  - cmake -DCMAKE_PREFIX_PATH:PATH=../build ../Testing
   - make 
   - make test
 
