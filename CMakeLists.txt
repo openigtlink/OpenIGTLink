@@ -241,6 +241,17 @@ export(TARGETS
   FILE "${OpenIGTLink_LIBRARY_TARGETS_FILE}"
   )
 
+
+#-----------------------------------------------------------------------------
+# Tests
+OPTION(BUILD_TESTING "Build the testing tree." ON)
+SET(OpenIGTLink_BUILD_TESTING ${BUILD_TESTING})
+IF(OpenIGTLink_BUILD_TESTING)
+  ENABLE_TESTING()
+  ADD_SUBDIRECTORY(Testing)
+  INCLUDE (${CMAKE_ROOT}/Modules/Dart.cmake)
+ENDIF()
+
 #-----------------------------------------------------------------------------
 # Doxygen
 

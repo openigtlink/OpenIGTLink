@@ -70,7 +70,6 @@ TEST(ClientSocketTest, ConnectToServerTest)
   igtl::Sleep(1000);
   EXPECT_EQ(clientSocketMock.ConnectToServer("localhost", port,1), 0);
   clientSocketMock.getPointer()->CloseSocket();
-  return 0;
 }
 
 void* ThreadFunction(void* ptr)
