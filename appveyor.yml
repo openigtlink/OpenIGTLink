@@ -9,12 +9,15 @@ environment:
   - Toolset: v120  
   - Toolset: v110
   
-#Test on the x86 platform was not successul. the first Test was hanged forever
-platform:
+platform: 
+  - x86
   - x64
-  
-configuration:
-  - Debug  
+  - ARM
+
+configuration: 
+  - Debug
+  - Release
+    
 
 build:
   verbosity: minimal
