@@ -63,7 +63,6 @@ TEST(LabelMetaMessageTest, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)labelMetaSendMsg->GetPackBodyPointer(), (const void*)(test_lbmeta_message+(size_t)(IGTL_HEADER_SIZE)), IGTL_LBMETA_ELEMENT_SIZE*3 );
   EXPECT_EQ(r, 0);
-  return 0;
 }
 
 
@@ -116,7 +115,6 @@ TEST(LabelMetaMessageTest, Unpack)
     EXPECT_THAT(returnedSize, testing::ElementsAreArray(groundTruthSize));
     EXPECT_EQ(strncmp((char*)elem->GetOwner(), "IMAGE_0", 7),0);
   }
-  return 0;
 }
 
 

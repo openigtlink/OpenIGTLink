@@ -143,7 +143,6 @@ TEST(BindMessageTest, Pack)
   messageBody = (char*)bindSendMsg->GetPackBodyPointer() + MESSAGE_BIND_HEADER_SIZE;
   r = memcmp((const void*)(messageBody), (const void*)test_bind_message_bind_body,  MESSAGE_BIND_BODY_SIZE);
   EXPECT_EQ(r, 0);
-  return 0;
 }
 
 TEST(BindMessageTest, Unpack)
@@ -224,7 +223,6 @@ TEST(BindMessageTest, Unpack)
   EXPECT_FLOAT_EQ(sensorDataReceiveMsg->GetValue(3),123.45678);
   EXPECT_FLOAT_EQ(sensorDataReceiveMsg->GetValue(4),12.345678);
   EXPECT_FLOAT_EQ(sensorDataReceiveMsg->GetValue(5),1.2345678);
-  return 0;
 }
 
 int main(int argc, char **argv)

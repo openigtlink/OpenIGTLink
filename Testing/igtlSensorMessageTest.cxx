@@ -55,7 +55,6 @@ TEST(SensorMessageTest, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)sensorDataSendMsg->GetPackBodyPointer(), (const void*)(test_sensor_message+IGTL_HEADER_SIZE),sensorDataSendMsg->GetPackBodySize());
   EXPECT_EQ(r, 0);
-  return 0;
 }
 
 
@@ -81,7 +80,6 @@ TEST(SensorMessageTest, Unpack)
   EXPECT_EQ(sensorDataReceiveMsg->GetValue(3),123.45678);
   EXPECT_EQ(sensorDataReceiveMsg->GetValue(4),12.345678);
   EXPECT_EQ(sensorDataReceiveMsg->GetValue(5),1.2345678);
-  return 0;
 }
 
 

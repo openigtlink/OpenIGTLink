@@ -72,7 +72,6 @@ TEST(TrajectoryMessageTest, PackFormatVersion1)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)trajectorySendMsg->GetPackBodyPointer(), (const void*)(test_trajectory_message+(size_t)(IGTL_HEADER_SIZE)), IGTL_TRAJECTORY_ELEMENT_SIZE*3 );
   EXPECT_EQ(r, 0);
-  return 0;
 }
 
 
@@ -134,7 +133,6 @@ TEST(TrajectoryMessageTest, UnpackFormatVersion1)
     EXPECT_EQ(elem->GetRadius(), groundTruthRadius[i]);
     EXPECT_EQ(strncmp((char*)elem->GetOwner(), "IMAGE_0", 7),0);
   }
-  return 0;
 }
 
 
@@ -153,7 +151,6 @@ TEST(TrajectoryMessageTest, PackFormatVersion2)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)trajectorySendMsg->GetPackBodyPointer(), (const void*)(test_trajectory_message_Format2+(size_t)(IGTL_HEADER_SIZE)), IGTL_TRAJECTORY_ELEMENT_SIZE*3 + EXTENDED_CONTENT_SIZE);
   EXPECT_EQ(r, 0);
-  return 0;
 }
 
 TEST(TrajectoryMessageTest, UnpackFormatVersion2)
@@ -215,7 +212,6 @@ TEST(TrajectoryMessageTest, UnpackFormatVersion2)
     EXPECT_EQ(strncmp((char*)elem->GetOwner(), "IMAGE_0", 7),0);
   }
   igtlMetaDataComparisonMacro(trajectoryReceiveMsg);
-  return 0;
 }
 
 #endif

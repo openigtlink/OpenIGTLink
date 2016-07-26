@@ -38,7 +38,6 @@ TEST(PositionMessageTest, PackFormateVersion1)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)positionSendMsg->GetPackBodyPointer(), (const void*)(test_position_message+IGTL_HEADER_SIZE), PositionBodySize);
   EXPECT_EQ(r, 0);
-  return 0;
 }
 
 
@@ -63,7 +62,6 @@ TEST(PositionMessageTest, UnpackFormateVersion1)
   igtl_float32 quaternion[4] = {0.0,0.0,0.0,0.0};
   positionReceiveMsg->GetQuaternion(quaternion);
   EXPECT_THAT(quaternion, ::testing::ElementsAreArray(quaternion_Truth));
-  return 0;
 }
 
 
@@ -91,7 +89,6 @@ TEST(PositionMessageTest, PackFormatVersion2)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)positionSendMsg->GetPackBodyPointer(), (const void*)(test_position_messageFormat2+IGTL_HEADER_SIZE),PositionBodySize + EXTENDED_CONTENT_SIZE);
   EXPECT_EQ(r, 0);
-  return 0;
 }
 
 TEST(PositionMessageTest, UnpackFormatVersion2)
@@ -119,7 +116,6 @@ TEST(PositionMessageTest, UnpackFormatVersion2)
   for(int i = 0; i<4 ; i++)
     EXPECT_FLOAT_EQ(quaternion_Truth[i], quaternion[i]);
   igtlMetaDataComparisonMacro(positionReceiveMsg);
-  return 0;
 }
 
 #endif

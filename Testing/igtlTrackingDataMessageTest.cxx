@@ -67,7 +67,6 @@ TEST(TrackingMessageTest, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)trackingSendMsg->GetPackBodyPointer(), (const void*)(test_tdata_message+(size_t)(IGTL_HEADER_SIZE)), IGTL_TDATA_ELEMENT_SIZE*3 );
   EXPECT_EQ(r, 0);
-  return 0;
 }
 
 
@@ -107,7 +106,6 @@ TEST(TrackingMessageTest, Unpack)
     elem->GetMatrix(outMatrix);
     EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
   }
-  return 0;
 }
 
 
@@ -129,7 +127,6 @@ TEST(TrackingMessageTest, PackFormatVersion2)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)trackingSendMsg->GetPackBodyPointer(), (const void*)(test_tdata_messageFormat2+(size_t)(IGTL_HEADER_SIZE)), IGTL_TDATA_ELEMENT_SIZE*3+EXTENDED_CONTENT_SIZE);
   EXPECT_EQ(r, 0);
-  return 0;
 }
 
 TEST(TrackingMessageTest, UnpackFormatVersion2)
@@ -171,7 +168,6 @@ TEST(TrackingMessageTest, UnpackFormatVersion2)
   }
   
   igtlMetaDataComparisonMacro(trackingReceiveMsg);
-  return 0;
 }
 
 #endif

@@ -52,7 +52,6 @@ TEST(ConditionVariableTest, SingleChildThreadTest)
     igtl::Sleep(20);
   std::cerr<<"The child thread is released";
   EXPECT_EQ(td.iFinalCount, 10);
-  return 0;
 }
 
 TEST(ConditionVariableTest, MultiChildThreadTest)
@@ -76,7 +75,6 @@ TEST(ConditionVariableTest, MultiChildThreadTest)
     igtl::Sleep(20);
   EXPECT_EQ(td.iFinalCount, 20);
   std::cerr<<"The child threads are released";
-  return 0;
 }
 
 TEST(ConditionVariableTest, Broadcast)
@@ -100,7 +98,6 @@ TEST(ConditionVariableTest, Broadcast)
     igtl::Sleep(20);
   EXPECT_LT(td.iFinalCount, 20);
   std::cerr<<"The child threads are released";
-  return 0;
 }
 
 void* TestThreadWaiting1(void* ptr)

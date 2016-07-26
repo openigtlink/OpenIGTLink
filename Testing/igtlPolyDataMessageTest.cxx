@@ -75,7 +75,6 @@ TEST(PolyDataMessageTest, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)polyDataSendMsg->GetPackBodyPointer(), (const void*)test_polydata_message_body, POLY_BODY_SIZE);
   EXPECT_EQ(r, 0);
-  return 0;
 }
 
 
@@ -121,7 +120,6 @@ TEST(PolyDataMessageTest, Unpack)
     attrUnpacked->GetNthData(i, attributeValue);
     EXPECT_EQ(attributeValue[0], attribute[i]);
   }
-  return 0;
 }
 
 
