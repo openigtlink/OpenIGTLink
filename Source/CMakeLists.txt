@@ -5,6 +5,9 @@ IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
     ws2_32
     wsock32
   )
+  #For debug under win32 system, the run time check mode should be set to /RTCu for multithreading purpose
+  string(REPLACE "/RTC1" "/RTCu" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+  SET(OpenIGTLink_REQUIRED_CXX_FLAGS ${OpenIGTLink_REQUIRED_CXX_FLAGS})
 ELSE(OpenIGTLink_PLATFORM_WIN32) # for POSIX-compatible OSs
   SET(LINK_LIBS
     m
