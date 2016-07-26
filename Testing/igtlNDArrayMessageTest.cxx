@@ -59,7 +59,6 @@ TEST(NDArrayMessageTest, Pack)
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)NDArraySendMsg->GetPackBodyPointer(), (const void*)(test_ndarray_message_body), NDArraySendMsg->GetPackSize()-IGTL_HEADER_SIZE);
   EXPECT_EQ(r, 0);
-  return 0;
 }
 
 TEST(NDArrayMessageTest, Unpack)
@@ -90,7 +89,7 @@ TEST(NDArrayMessageTest, Unpack)
       }
     }
   }
-  return 0;
+  
 }
 
 TEST(NDArrayMessageTest, 64BitConversion)
@@ -112,7 +111,6 @@ TEST(NDArrayMessageTest, 64BitConversion)
   igtl_ndarray_unpack(IGTL_TYPE_PREFIX_NONE, dataArray, &info_return, 488);
   int r = memcmp(info.array, info_return.array,480);
   EXPECT_EQ(r, 0);
-  return 0;
 }
 
 
