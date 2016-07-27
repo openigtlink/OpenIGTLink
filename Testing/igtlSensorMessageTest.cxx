@@ -18,6 +18,7 @@
 #include "igtl_unit.h"
 #include "igtl_header.h"
 #include "igtlTestConfig.h"
+#include "string.h"
 
 igtl::SensorMessage::Pointer sensorDataSendMsg = igtl::SensorMessage::New();
 igtl::SensorMessage::Pointer sensorDataReceiveMsg = igtl::SensorMessage::New();

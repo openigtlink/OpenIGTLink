@@ -22,6 +22,7 @@
 #include "igtl_util.h"
 #include "igtlOSUtil.h"
 #include "igtlTestConfig.h"
+#include "string.h"
 
 using ::testing::_;
 using ::testing::AtLeast;

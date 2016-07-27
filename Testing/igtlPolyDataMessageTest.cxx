@@ -17,6 +17,7 @@
 #include "igtl_polydata.h"
 #include "igtl_header.h"
 #include "igtlTestConfig.h"
+#include "string.h"
 
 #include <list>
 

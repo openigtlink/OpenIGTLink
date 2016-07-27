@@ -613,6 +613,8 @@ void MessageBase::InitBuffer()
   {
     m_Content = m_Body;
   }
+#else
+  m_Content = m_Body;
 #endif
   m_MessageSize = message_size;
 }

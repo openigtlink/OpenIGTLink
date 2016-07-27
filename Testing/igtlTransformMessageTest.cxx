@@ -17,7 +17,7 @@
 #include "igtl_transform.h"
 #include "igtl_header.h"
 #include "igtlTestConfig.h"
-
+#include "string.h"
 
 igtl::TransformMessage::Pointer transformSendMsg = igtl::TransformMessage::New();
 igtl::TransformMessage::Pointer transformReceiveMsg = igtl::TransformMessage::New();
@@ -80,6 +80,7 @@ TEST(TransformMessageTest, UnpackFormatVersion1)
 #include "igtlMessageFormat2TestMarco.h"
 TEST(TransformMessageTest, PackFormatVersion2)
 {
+  transformSendMsg = igtl::TransformMessage::New();
   transformSendMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
   transformSendMsg->AllocatePack();
   transformSendMsg->SetTimeStamp(0, 1234567892);
@@ -89,6 +90,7 @@ TEST(TransformMessageTest, PackFormatVersion2)
   transformSendMsg->Pack();
   int r = memcmp((const void*)transformSendMsg->GetPackPointer(), (const void*)test_transform_message_Format2,
                  (size_t)(IGTL_HEADER_SIZE));
+  TestDebugCharArrayCmp(transformSendMsg->GetPackPointer(), test_transform_message_Format2, IGTL_HEADER_SIZE);
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)transformSendMsg->GetPackBodyPointer(), (const void*)(test_transform_message_Format2+IGTL_HEADER_SIZE), IGTL_TRANSFORM_SIZE + EXTENDED_CONTENT_SIZE);
   EXPECT_EQ(r, 0);
@@ -100,11 +102,12 @@ TEST(TransformMessageTest, UnpackFormatVersion2)
   headerMsg->AllocatePack();
   memcpy(headerMsg->GetPackPointer(), (const void*)test_transform_message_Format2, IGTL_HEADER_SIZE);
   headerMsg->Unpack();
+  transformReceiveMsg = igtl::TransformMessage::New();
   transformReceiveMsg->SetMessageHeader(headerMsg);
   transformReceiveMsg->AllocatePack();
   
   memcpy(transformReceiveMsg->GetPackBodyPointer(), transformSendMsg->GetPackBodyPointer(), transformReceiveMsg->GetPackBodySize());
-  transformReceiveMsg->Unpack();
+  transformReceiveMsg->Unpack(1);
   
   igtl_header *messageHeader = (igtl_header *)transformReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");

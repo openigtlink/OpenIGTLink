@@ -15,6 +15,7 @@
 #include "igtlMultiThreader.h"
 #include "igtlOSUtil.h"
 #include "igtlTestConfig.h"
+#include "string.h"
 
 void* TestThreadCounter(void* ptr);
 void* TestThreadWaiting1(void* ptr);

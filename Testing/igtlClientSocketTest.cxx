@@ -23,6 +23,7 @@
 #include "igtlQuaternionTrackingDataMessage.h"
 
 #include "igtlTestConfig.h"
+#include "string.h"
 
 using ::testing::_;
 using ::testing::AtLeast;

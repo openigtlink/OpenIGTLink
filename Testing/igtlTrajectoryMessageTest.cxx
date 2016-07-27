@@ -17,6 +17,7 @@
 #include "igtl_trajectory.h"
 #include "igtl_header.h"
 #include "igtlTestConfig.h"
+#include "string.h"
 
 
 igtl::TrajectoryMessage::Pointer trajectorySendMsg = igtl::TrajectoryMessage::New();

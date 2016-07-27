@@ -1,24 +1,79 @@
-version: 0.0.{build}
-os:
-  - Visual Studio 2015
+version: 1.0.{build}
+
+os: Visual Studio 2015
+
+#Google Test is not build correctly for v120 and v110, but the TestConfigure.h file is a workaround solution for the testing 
+environment:
+  matrix:
+  - Toolset: v140
+  - Toolset: v120  
+  - Toolset: v110
+  
+platform: 
+  - x86
+  - x64
+  - ARM
+
+configuration: 
+  - Debug
+  - Release
+    
+
+build:
+  verbosity: minimal
+  
+branches:
+  #whitelist
+  only:
+    - master
+    - Version3-Development
+    - Test
+      
 clone_depth: 1
 skip_tags: true
 clone_folder: c:\projects\openigtlink
-configuration:
-  - Release
-platform:
-  - x64
+      
 before_build:
-  - cmd: cd c:\projects
-  - cmd: mkdir OpenIGTLink-Build
-  - cmd: cd OpenIGTLink-Build
-  - cmd: echo Running cmake...
-  - cmd: SET PATH=C:\Program Files (x86)\MSBuild\14.0\bin\;%PATH%
-  - cmd: SET P=c:\projects\openigtlink
-  - cmd: set TBB_INSTALL_DIR=%P%/tbb
-  - cmd: set TBB_ARCH_PLATFORM=intel64/vc14
-  - cmd: cmake -G"Visual Studio 14 2015 Win64" ..\openigtlink
+- ps: |
+    Write-Output "Configuration: $env:CONFIGURATION"
+    Write-Output "Platform: $env:PLATFORM"
+    $generator = switch ($env:TOOLSET)
+    {
+        "v140" {"Visual Studio 14 2015"}
+        "v120" {"Visual Studio 12 2013"}
+        "v110" {"Visual Studio 11 2012"}
+    }
+    $generator = "$generator Win64"
+
 build_script:
-  - cmd: msbuild /clp:Verbosity=minimal /nologo OpenIGTLink.sln
-after_build:
-  - cmd: msbuild RUN_TESTS.vcxproj
+- ps: |
+    mkdir build -Force | Out-Null
+    cd build
+    & cmake -G "$generator" ..
+    if ($LastExitCode -ne 0) {
+        throw "Exec: $ErrorMessage"
+    }
+    & cmake --build . --config $env:CONFIGURATION
+    if ($LastExitCode -ne 0) {
+        throw "Exec: $ErrorMessage"
+    }
+    mkdir build -Force | Out-Null
+    cd ..
+    mkdir TestBuild
+    cd TestBuild
+    & cmake -G "$generator" -DCMAKE_PREFIX_PATH:PATH=..\build ..\Testing
+    if ($LastExitCode -ne 0) {
+        throw "Exec: $ErrorMessage"
+    }
+    & cmake --build . --config $env:CONFIGURATION
+    if ($LastExitCode -ne 0) {
+        throw "Exec: $ErrorMessage"
+    }
+
+test_script:
+- ps: |
+    & ctest -C $env:CONFIGURATION --output-on-failure
+    if ($LastExitCode -ne 0) {
+        throw "Exec: $ErrorMessage"
+    }
+  

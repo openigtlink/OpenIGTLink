@@ -17,6 +17,7 @@
 #include "igtl_colortable.h"
 #include "igtl_header.h"
 #include "igtlTestConfig.h"
+#include "string.h"
 
 #define COLOR_TABLE_SIZE 256
 
