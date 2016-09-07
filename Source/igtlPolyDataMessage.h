@@ -60,7 +60,7 @@ public:
   igtlNewMacro(igtl::StopPolyDataMessage);
   
 protected:
-  StopPolyDataMessage() : MessageBase() { this->m_DefaultBodyType  = "STP_POLYDATA"; };
+  StopPolyDataMessage() : MessageBase() { this->m_SendMessageType = "STP_POLYDATA"; };
   ~StopPolyDataMessage() {};
 protected:
   virtual int  GetBodyPackSize() { return 0; };
