@@ -1,7 +1,7 @@
 [hooks]
-	url = https://github.com/tokjun/OpenIGTLink.git
+	url = https://github.com/openigtlink/OpenIGTLink.git
 [upstream]
-	url = https://github.com/tokjun/OpenIGTLink.git
+	url = https://github.com/openigtlink/OpenIGTLink.git
 [github]
 	host = github.com
 	group-path = tokjun
