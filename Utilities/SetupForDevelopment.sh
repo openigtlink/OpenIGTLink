@@ -3,7 +3,7 @@
 cd "${BASH_SOURCE%/*}/.." &&
 Utilities/GitSetup/setup-user && echo &&
 Utilities/GitSetup/setup-hooks && echo &&
-Utilities/SetupGitAliases.sh && echo &&
+Utilities/Scripts/SetupGitAliases.sh && echo &&
 (Utilities/GitSetup/setup-upstream ||
  echo 'Failed to setup origin.  Run this again to retry.') && echo &&
 (Utilities/GitSetup/setup-github||
