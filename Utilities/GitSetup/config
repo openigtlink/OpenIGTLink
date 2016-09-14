@@ -1,0 +1,10 @@
+[hooks]
+	url = https://github.com/openigtlink/OpenIGTLink.git
+[upstream]
+	url = https://github.com/openigtlink/OpenIGTLink.git
+[github]
+	host = github.com
+	group-path = openigtlink
+	group-name = OpenIGTLink
+	project-path = openigtlink
+	project-name = OpenIGTLink
