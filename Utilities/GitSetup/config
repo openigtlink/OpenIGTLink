@@ -1,10 +1,12 @@
 [hooks]
-	url = https://github.com/openigtlink/OpenIGTLink.git
+	url = https://github.com/tokjun/OpenIGTLink.git
 [upstream]
-	url = https://github.com/openigtlink/OpenIGTLink.git
+	url = https://github.com/tokjun/OpenIGTLink.git
 [github]
 	host = github.com
-	group-path = openigtlink
-	group-name = OpenIGTLink
-	project-path = openigtlink
+	group-path = tokjun
+	group-name = tokjun
+	project-path = OpenIGTLink
 	project-name = OpenIGTLink
+	url = https://github.com/$username/OpenIGTLink.git
+	pushurl = https://github.com/$username/OpenIGTLink.git

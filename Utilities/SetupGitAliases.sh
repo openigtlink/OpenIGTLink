@@ -13,10 +13,6 @@ git config alias.stage-push '!sh -c "echo '"${stage_disabled}"'"' &&
 git config alias.stage-branch '!sh -c "echo '"${stage_disabled}"'"' &&
 git config alias.stage-merge '!sh -c "echo '"${stage_disabled}"'"' &&
 
-# Gerrit aliases
-gerrit_disabled="VTK no longer uses Gerrit. Please use GitHub." &&
-git config alias.gerrit-push '!sh -c "echo '"${gerrit_disabled}"'"' &&
-
 # Alias to push the current topic branch to GitHub
 git config alias.github-push '!bash Utilities/GitSetup/git-github-push' &&
 
