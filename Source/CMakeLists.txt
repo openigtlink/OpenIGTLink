@@ -147,6 +147,7 @@ IF (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1" )
     igtlSensorMessage.cxx
     igtlBindMessage.cxx
     igtlNDArrayMessage.cxx
+    igtlVideoMessage.cxx
     )
   SET(OpenIGTLink_INCLUDE_FILES
     ${OpenIGTLink_INCLUDE_FILES}
@@ -177,6 +178,7 @@ IF (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1" )
     igtlSensorMessage.h
     igtlBindMessage.h
     igtlNDArrayMessage.h
+    igtlVideoMessage.h
     )
 ENDIF ( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "1")
 

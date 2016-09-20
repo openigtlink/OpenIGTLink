@@ -48,6 +48,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtl_bind.h
     igtl_qtrans.h
     igtl_polydata.h
+    igtl_video.h
     )
   SET(igtlutil_SOURCES
     ${igtlutil_SOURCES}
@@ -65,6 +66,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
     igtl_bind.c
     igtl_qtrans.c
     igtl_polydata.c
+    igtl_video.c
     )
 endif (${OpenIGTLink_PROTOCOL_VERSION} STREQUAL "2")
 
