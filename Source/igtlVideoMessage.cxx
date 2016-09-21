@@ -181,34 +181,6 @@ int VideoMessage::GetBodyPackSize()
   return GetBitStreamSize()+IGTL_VIDEO_HEADER_SIZE;
 }
 
-
-int VideoMessage::Pack()
-{
-  PackBody();
-  m_IsBodyUnpacked   = 0;
-  
-  // pack header
-  igtl_header* h = (igtl_header*) m_Header;
-
-  h->crc = 0;
-  
-  igtl_uint64 ts  =  m_TimeStampSec & 0xFFFFFFFF;
-  ts = (ts << 32) | (m_TimeStampSecFraction & 0xFFFFFFFF);
-
-  h->timestamp = ts;
-  h->body_size = GetBitStreamSize() + IGTL_VIDEO_HEADER_SIZE;
-  strncpy(h->name, m_DefaultBodyType.c_str(), 12);
-  // TODO: this does not allow creating pack with MessageBase class...
-
-  strncpy(h->device_name, m_DeviceName.c_str(), 20);
-
-  igtl_header_convert_byte_order(h);
-
-  m_IsHeaderUnpacked = 0;
-
-  return 1;
-}
-
 int VideoMessage::PackBody()
 {
   igtl_frame_header* frame_header = (igtl_frame_header*)this->m_FrameHeader;
