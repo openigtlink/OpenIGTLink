@@ -134,6 +134,7 @@ IF (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1" )
     igtlutil/igtl_bind.c
     igtlutil/igtl_qtrans.c
     igtlutil/igtl_polydata.c
+    igtlutil/igtl_video.c
     igtlColorTableMessage.cxx
     igtlImageMetaMessage.cxx
     igtlLabelMetaMessage.cxx
@@ -165,6 +166,7 @@ IF (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1" )
     igtlutil/igtl_bind.h
     igtlutil/igtl_qtrans.h
     igtlutil/igtl_polydata.h
+    igtlutil/igtl_video.h
     igtlColorTableMessage.h
     igtlImageMetaMessage.h
     igtlLabelMetaMessage.h

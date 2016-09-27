@@ -77,7 +77,7 @@ public:
   igtlTypeMacro(igtl::VideoMessageHeader, igtl::MessageBase);
   igtlNewMacro(igtl::VideoMessageHeader);
   virtual int  GetBodyPackSize() { return m_BodySizeToRead; };
-  
+
 protected:
   VideoMessageHeader() : MessageBase() { this->m_DefaultBodyType  = "VIDEO_HEADER"; };
   ~VideoMessageHeader() {};
@@ -244,8 +244,6 @@ protected:
 public:  
   /// Pack() serializes the header and body based on the member variables.
   /// PackBody() must be implemented in the child class. (for fragmented pack support)
-  virtual int   Pack();
-public:
 
   virtual int  PackBody();
   virtual int  UnpackBody();

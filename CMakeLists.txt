@@ -244,7 +244,7 @@ export(TARGETS
 
 #-----------------------------------------------------------------------------
 # Tests
-OPTION(BUILD_TESTING "Build the testing tree." ON)
+OPTION(BUILD_TESTING "Build the testing tree." OFF)
 SET(OpenIGTLink_BUILD_TESTING ${BUILD_TESTING})
 IF(OpenIGTLink_BUILD_TESTING)
   ENABLE_TESTING()
