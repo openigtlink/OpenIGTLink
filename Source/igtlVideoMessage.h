@@ -40,10 +40,10 @@ public:
   
 public:
   /// Sets the time resolution for streaming of QTDATA messages
-  void         SetResolution(igtlInt32 res)  { this->m_Resolution = res; }; // ms
+  void         SetTimeInterval(igtlInt32 interval)  { this->m_TimeInterval = interval; }; // ms
   
   /// Gets the time resolution for streaming of QTDATA messages
-  igtlInt32    GetResolution()               { return this->m_Resolution; };
+  igtlInt32    GetTimeInterval()               { return this->m_TimeInterval; };
   
   void    SetUseCompress(bool useCompress) { this->m_UseCompress = useCompress; };
   igtlInt32    GetUseCompress()               { return this->m_UseCompress; };
@@ -60,7 +60,7 @@ protected:
 protected:
   
   /// Minimum time between two frames (ms). Use 0 for as fast as possible.
-  igtlInt32     m_Resolution;
+  igtlInt32     m_TimeInterval;
   bool m_UseCompress;
   
 };
@@ -141,8 +141,6 @@ public:
     TYPE_UINT16  = 5,
     TYPE_INT32   = 6,
     TYPE_UINT32  = 7,
-    TYPE_FLOAT32 = 10,
-    TYPE_FLOAT64 = 11
   };
 
 
@@ -270,6 +268,9 @@ public:
   
   /// A variable for the allocate the message body
   int    bitStreamSize;
+  
+  /// A variable for codec protocal
+  char   codec[IGTL_VIDEO_CODEC_NAME_SIZE];
   
   /// A pointer to the serialized image header.
   unsigned char*  m_FrameHeader;

@@ -35,7 +35,7 @@ int StartVideoDataMessage::PackBody()
   
   igtl_stt_video* stt_video = (igtl_stt_video*)this->m_Body;
   
-  stt_video->resolution = this->m_Resolution;
+  stt_video->time_interval = this->m_TimeInterval;
   stt_video->useCompress = this->m_UseCompress;
   
   igtl_stt_video_convert_byte_order(stt_video);
@@ -51,7 +51,7 @@ int StartVideoDataMessage::UnpackBody()
   
   igtl_stt_video_convert_byte_order(stt_video);
   
-  this->m_Resolution = stt_video->resolution;
+  this->m_TimeInterval = stt_video->time_interval;
   this->m_UseCompress = stt_video->useCompress;
   return 1;
 }
@@ -63,6 +63,7 @@ VideoMessage::VideoMessage():
 {
   endian        = ENDIAN_BIG;
   scalarType    = TYPE_UINT8;
+  strncpy(codec, "H264",IGTL_VIDEO_CODEC_NAME_SIZE);
   m_FrameHeader = NULL;
   m_Frame       = NULL;
 
@@ -78,8 +79,6 @@ VideoMessage::VideoMessage():
   ScalarSizeTable[7] = sizeof(igtlUint32);  // TYPE_UINT32
   ScalarSizeTable[8] = 0;                   // not defined
   ScalarSizeTable[9] = 0;                   // not defined
-  ScalarSizeTable[10]= sizeof(igtlFloat32); // TYPE_FLOAT32
-  ScalarSizeTable[11]= sizeof(igtlFloat64); // TYPE_FLOAT64
 
   this->m_Header = new unsigned char [IGTL_HEADER_SIZE];
   this->m_Body   = NULL;
@@ -218,7 +217,8 @@ int VideoMessage::PackBody()
   frame_header->endian            = this->endian;
   frame_header->width             = this->width;
   frame_header->height            = this->height;
-  for (int i = 0; i<60; i++)
+  strncpy(frame_header->codec, this->codec, IGTL_VIDEO_CODEC_NAME_SIZE);
+  for (int i = 0; i<56; i++)
     frame_header->researved[i] = 0;
   igtl_frame_convert_byte_order(frame_header);
 
@@ -250,6 +250,7 @@ int VideoMessage::UnpackBody()
       this->endian           = frame_header->endian;
       this->width            = frame_header->width;
       this->height           = frame_header->height;
+      strncpy(this->codec, frame_header->codec, IGTL_VIDEO_CODEC_NAME_SIZE);
       this->m_Frame = this->m_FrameHeader;
       this->m_Frame += IGTL_VIDEO_HEADER_SIZE;
       

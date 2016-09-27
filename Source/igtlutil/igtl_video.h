@@ -22,6 +22,7 @@
 #define  IGTL_STT_VIDEO_SIZE               5
 #define IGTL_VIDEO_HEADER_VERSION         1
 #define IGTL_VIDEO_HEADER_SIZE          72
+#define IGTL_VIDEO_CODEC_NAME_SIZE      4
 
 /* Data type */
 #define IGTL_VIDEO_DTYPE_SCALAR         1
@@ -34,8 +35,6 @@
 #define IGTL_VIDEO_STYPE_TYPE_UINT16    5
 #define IGTL_VIDEO_STYPE_TYPE_INT32     6
 #define IGTL_VIDEO_STYPE_TYPE_UINT32    7
-#define IGTL_VIDEO_STYPE_TYPE_FLOAT32   10
-#define IGTL_VIDEO_STYPE_TYPE_FLOAT64   11
 
 /* Endian */
 #define IGTL_VIDEO_ENDIAN_BIG           1
@@ -48,7 +47,7 @@ extern "C" {
 #pragma pack(1)     /* For 1-byte boundary in memroy */
 
 typedef struct {
-  igtl_int32   resolution;     /* Minimum time between two frames. Use 0 for as fast as possible. */
+  igtl_int32   time_interval;     /* Minimum time between two frames. Use 0 for as fast as possible. */
                                /* If e.g. 50 ms is specified, the maximum update rate will be 20 Hz. */
   igtl_int8 useCompress;
 } igtl_stt_video;
@@ -63,13 +62,14 @@ typedef struct {
    */
   typedef struct {
     igtl_uint16    version;          /* data format version number(1)   */
+    char           codec[IGTL_VIDEO_CODEC_NAME_SIZE];         /* codec protocal                  */
     igtl_uint8     scalar_type;      /* scalar type                     */
     /*2:int8 3:uint8 4:int16 5:uint16 6:int32 7:uint32 10:float32 11:float64) */
     igtl_uint8     endian;           /* endian type of image data       */
     /* (1:big, 2:little)               */
     igtl_uint32    width;
     igtl_uint32    height;
-    igtl_uint8 researved [60];
+    igtl_uint8 researved [56];
   } igtl_frame_header;
   
 #pragma pack()

@@ -24,7 +24,7 @@ void igtl_export igtl_stt_video_convert_byte_order(igtl_stt_video* stt_video)
 
   if (igtl_is_little_endian()) 
     {
-     tmp = (igtl_int32*)&(stt_video->resolution);
+     tmp = (igtl_int32*)&(stt_video->time_interval);
      *tmp = BYTE_SWAP_INT32(*tmp);
     }
 }
