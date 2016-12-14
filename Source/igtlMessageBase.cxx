@@ -200,7 +200,7 @@ void MessageBase::SetMessageID(igtlUint32 idValue)
   m_MessageId = idValue;
 }
 
-void MessageBase::AddMetaDataElement(std::string key, igtlUint16 encodingScheme, std::string value)
+void MessageBase::AddMetaDataElement(std::string key, IANA_ENCODING_TYPE encodingScheme, std::string value)
 {
   igtl_metadata_header_entry entry;
   entry.key_size = key.length();
