@@ -336,36 +336,36 @@ namespace igtl
     bool           m_IsHeaderUnpacked;
 
     /// Unpacking (deserialization) status for the body
-    bool            m_IsBodyUnpacked;
+    bool           m_IsBodyUnpacked;
 
     /// Packing (serialization) status for the body
-    bool            m_IsBodyPacked;
+    bool           m_IsBodyPacked;
 
 #if OpenIGTLink_HEADER_VERSION >= 2
   protected:
     /// A pointer to the serialized extended header.
-    unsigned char*  m_ExtendedHeader;
+    unsigned char* m_ExtendedHeader;
 
     /// A flag to record the unpacked state of the extended header
-    bool            m_IsExtendedHeaderUnpacked;
+    bool m_IsExtendedHeaderUnpacked;
 
     /// A pointer to the meta data.
-    unsigned char*  m_MetaData;
+    unsigned char* m_MetaData;
 
     /// A pointer to the meta data header.
-    unsigned char*  m_MetaDataHeader;
+    unsigned char* m_MetaDataHeader;
 
     /// Size of the meta data
-    igtlUint32      m_MetaDataSize;
+    igtlUint32 m_MetaDataSize;
 
     /// Size of the meta data header
-    igtlUint32      m_MetaDataHeaderSize;
+    igtlUint32 m_MetaDataHeaderSize;
 
     /// Message ID
-    igtlUint32      m_MessageId;
+    igtlUint32 m_MessageId;
 
     /// Vector storing the meta data header entries
-    MetaDataHeaderEntryList m_MetaDataHeaderEntries;
+    std::vector<igtl_metadata_header_entry> m_MetaDataHeaderEntries;
 
     /// Map storing the key value pairs
     MetaDataMap             m_MetaDataMap;
