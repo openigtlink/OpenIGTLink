@@ -106,14 +106,16 @@ namespace testing {
 
   class IGTLCommon_EXPORT TestBase {
   public:
-    virtual int Run() = 0;
+    virtual void Run() = 0;
 
     inline ::std::string GetCaseName() { return caseName; }
     inline ::std::string GetTestName() { return testName; }
+    inline int GetResult() { return result; }
     
   protected:
     ::std::string caseName;
     ::std::string testName;
+    int result;
   };
 
   class IGTLCommon_EXPORT TestInfo {
@@ -131,7 +133,7 @@ namespace testing {
   int TestInfo::Add( TestBase* test )
   {
     TestInfo::TestList.push_back(test);
-	return 1;
+    return 1;
   }
 
   int TestInfo::Run()
@@ -141,8 +143,8 @@ namespace testing {
     int result = TEST_SUCCESS;
     for (iter = TestInfo::TestList.begin(); iter != TestInfo::TestList.end(); iter ++)
       {
-      int r = (*iter)->Run();
-      if (r == TEST_FAILURE)
+      (*iter)->Run();
+      if ((*iter)->GetResult() == TEST_FAILURE)
         {
         std::cerr << "[ERROR] ";
         result = TEST_FAILURE;
@@ -163,50 +165,82 @@ namespace testing {
 
 
 #define EXPECT_EQ(a, b)                         \
-  if (a != b) return TEST_FAILURE;
+  if (a != b)                                   \
+    {                                           \
+    this->result = TEST_FAILURE;                \
+    return;                                     \
+    }
 
 #define EXPECT_LT(a, b)                         \
-  if (a >= b) return TEST_FAILURE;
+  if (a >= b)                                   \
+    {                                           \
+    this->result = TEST_FAILURE;                \
+    return;                                     \
+    }
 
 #define EXPECT_NEAR(a, b, err)                  \
-  if ((a-b) >= err || (a-b) <= -err) return TEST_FAILURE;
+  if ((a-b) >= err || (a-b) <= -err)            \
+    {                                           \
+    this->result = TEST_FAILURE;                \
+    return;                                     \
+    }
 
-#define EXPECT_FLOAT_EQ(a, b)                    \
-  if ((a-b) > 1e-6 || (a-b) < -1e-6) return TEST_FAILURE;
+#define EXPECT_FLOAT_EQ(a, b)                                           \
+  if ((a-b) > 1e-6 || (a-b) < -1e-6)                                    \
+    {                                                                   \
+    this->result = TEST_FAILURE;                                        \
+    return;                                                             \
+    }
 
-#define EXPECT_STREQ(a, b)                      \
-  if (strcmp(a, b) != 0) return TEST_FAILURE;
+#define EXPECT_STREQ(a, b)                              \
+  if (strcmp(a, b) != 0)                                \
+    {                                                   \
+    this->result = TEST_FAILURE;                        \
+    return;                                             \
+    }
 
 #ifdef _WIN32
 #define EXPECT_THAT(a, comp)                                            \
   {                                                                     \
     const int N = sizeof(a)/sizeof(a[0]);                               \
-    auto dataType = a[0];                                \
+    auto dataType = a[0];                                               \
     testing::ElementsAreArrayMatcher< decltype(dataType) > matcher = comp; \
-    ::std::vector< decltype(dataType) > vecA;                                 \
+    ::std::vector< decltype(dataType) > vecA;                           \
     for (int i = 0; i < N; i ++) vecA.push_back(a[i]);                  \
-    if (!matcher.Compare(vecA)) return TEST_FAILURE;                    \
+    if (!matcher.Compare(vecA))                                         \
+      {                                                                 \
+      this->result = TEST_FAILURE;                                      \
+      return;                                                           \
+      }                                                                 \
   }
 #else
 #define EXPECT_THAT(a, comp)                                            \
   {                                                                     \
     const int N = sizeof(a)/sizeof(a[0]);                               \
-    std::string dataType = typeid(a[0]).name();                                \
-    testing::ElementsAreArrayMatcher< typeof(a[0]) > matcher = comp; \
+    std::string dataType = typeid(a[0]).name();                         \
+    testing::ElementsAreArrayMatcher< typeof(a[0]) > matcher = comp;    \
     ::std::vector< typeof(a[0]) > vecA;                                 \
     for (int i = 0; i < N; i ++) vecA.push_back(a[i]);                  \
-    if (!matcher.Compare(vecA)) return TEST_FAILURE;                    \
+    if (!matcher.Compare(vecA))                                         \
+      {                                                                 \
+      this->result = TEST_FAILURE;                                      \
+      return;                                                           \
+      }                                                                 \
   }
 #endif
 
 #define EXPECT_TRUE(a)                          \
-  if (a != true) return TEST_FAILURE; 
+  if (a != true)                                \
+    {                                           \
+    this->result = TEST_FAILURE;                \
+    return;                                     \
+    }
   
 #define TEST(test_case_name, test_name) \
   class IGTLCommon_EXPORT test_case_name##_##test_name##_Test : ::testing::TestBase {     \
   public:                                                               \
     test_case_name##_##test_name##_Test();                              \
-    int Run();                                                          \
+    void Run();                                                         \
   };                                                                    \
   test_case_name##_##test_name##_Test instance_##test_case_name##_##test_name##_Test; \
   test_case_name##_##test_name##_Test::test_case_name##_##test_name##_Test() \
@@ -215,7 +249,7 @@ namespace testing {
     caseName = #test_case_name;                                         \
     testName = #test_name;                                              \
   }                                                                     \
-  int test_case_name##_##test_name##_Test::Run()
+  void test_case_name##_##test_name##_Test::Run()
 
 
 inline int RUN_ALL_TESTS() {
@@ -234,6 +268,5 @@ inline int RUN_ALL_TESTS() {
 
 
 #endif
-
 
 

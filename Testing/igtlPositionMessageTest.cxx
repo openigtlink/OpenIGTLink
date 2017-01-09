@@ -26,7 +26,6 @@ igtl::PositionMessage::Pointer positionReceiveMsg = igtl::PositionMessage::New()
 
 TEST(PositionMessageTest, PackFormateVersion1)
 {
-  positionSendMsg->SetHeaderVersion(IGTL_HEADER_VERSION_1);
   positionSendMsg->AllocatePack();
   positionSendMsg->SetTimeStamp(0, 1234567892);
   positionSendMsg->SetDeviceName("DeviceName");
@@ -81,9 +80,9 @@ TEST(PositionMessageTest, PackFormatVersion2)
   igtlMetaDataAddElementMacro(positionSendMsg);
   positionSendMsg->Pack();
   /*FILE *fp;
-  fp = fopen("position.bin", "w");
-  fwrite(positionSendMsg->GetPackPointer(), positionSendMsg->GetPackBodySize()+IGTL_HEADER_SIZE, 1, fp);
-  fclose(fp);*/
+   fp = fopen("position.bin", "w");
+   fwrite(positionSendMsg->GetPackPointer(), positionSendMsg->GetPackBodySize()+IGTL_HEADER_SIZE, 1, fp);
+   fclose(fp);*/
   int r = memcmp((const void*)positionSendMsg->GetPackPointer(), (const void*)test_position_messageFormat2,
                  (size_t)(IGTL_HEADER_SIZE));
   EXPECT_EQ(r, 0);
@@ -124,4 +123,3 @@ int main(int argc, char **argv)
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-

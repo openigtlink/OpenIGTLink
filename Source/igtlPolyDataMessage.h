@@ -70,6 +70,8 @@ protected:
 
   
   
+  
+  
 // A class to manage a point array.
 class IGTLCommon_EXPORT PolyDataPointArray : public Object {
 
