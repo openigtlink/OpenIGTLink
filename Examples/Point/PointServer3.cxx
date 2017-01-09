@@ -124,9 +124,8 @@ int main(int argc, char* argv[])
 #if OpenIGTLink_HEADER_VERSION >= 2
               if (headerMsg->GetHeaderVersion() == IGTL_HEADER_VERSION_2)
               {
-                unsigned short codingScheme = 3; // 3 corresponding to US-ASCII
-                pointMsg->AddMetaDataElement("First patient age", codingScheme, "22");
-                pointMsg->AddMetaDataElement("Second patient age",codingScheme, "25");
+                pointMsg->AddMetaDataElement("First patient age", IANA_TYPE_US_ASCII, "22");
+                pointMsg->AddMetaDataElement("Second patient age", IANA_TYPE_US_ASCII, "25");
                 pointMsg->SetMessageID(i);
               }
 #endif

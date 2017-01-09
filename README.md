@@ -47,11 +47,11 @@ If all went OK you will have the executable and the library:
 
 ## Other Platforms
  
-Please refer [Build Instruction](http://openigtlink.org/library/build.html).
+ Please refer [Build Instruction](http://openigtlink.org/library/build.html).
 
 ## Contributing your patch
 
-Please refer [How to Contribute](http://localhost:4000/library/contribute.html).
+Please refer [How to Contribute](http://openigtlink.org/library/contribute.html).
 
 License
 -------
