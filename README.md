@@ -46,7 +46,7 @@ If all went OK you will have the executable and the library:
 * C:\Devel\OpenIGT\OpenIGTLink-build\bin\debug\OpenIGTLink.lib
 
 ## Other Platforms
-
+ 
 Please refer [Build Instruction](http://openigtlink.org/library/build.html).
 
 ## Contributing your patch
