@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <string>
 #include <cstring>
+#include <limits>
 
 namespace
 {

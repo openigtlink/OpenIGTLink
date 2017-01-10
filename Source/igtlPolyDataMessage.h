@@ -73,7 +73,7 @@ protected:
 
 protected:
   /// Result of the previous GET_POLYDATA/POLYDATA message
-  uint8_t m_Status;
+  igtl_uint8 m_Status;
 };
 
 /// A class for the STP_POLYDATA message type.

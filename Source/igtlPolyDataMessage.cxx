@@ -896,14 +896,14 @@ void RTSPolyDataMessage::SetStatus(bool status)
 
 int RTSPolyDataMessage::CalculateContentBufferSize()
 {
-  return sizeof(uint8_t);
+  return sizeof(igtl_uint8);
 }
 
 int RTSPolyDataMessage::PackContent()
 {
   AllocateBuffer();
 
-  uint8_t* content;
+  igtl_uint8* content;
   // Copy data
 #if OpenIGTLink_HEADER_VERSION >= 2
   content = this->m_Content;
@@ -918,7 +918,7 @@ int RTSPolyDataMessage::PackContent()
 
 int RTSPolyDataMessage::UnpackContent()
 {
-  uint8_t * content;
+  igtl_uint8* content;
 
 #if OpenIGTLink_HEADER_VERSION >= 2
   content = this->m_Content;
