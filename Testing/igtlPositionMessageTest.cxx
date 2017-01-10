@@ -26,7 +26,6 @@ igtl::PositionMessage::Pointer positionReceiveMsg = igtl::PositionMessage::New()
 
 TEST(PositionMessageTest, PackFormateVersion1)
 {
-  positionSendMsg->SetHeaderVersion(IGTL_HEADER_VERSION_1);
   positionSendMsg->AllocatePack();
   positionSendMsg->SetTimeStamp(0, 1234567892);
   positionSendMsg->SetDeviceName("DeviceName");

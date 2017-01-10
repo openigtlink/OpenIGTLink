@@ -15,12 +15,14 @@
 #ifndef __igltMessageFormat2TestMarco_h
 #define __igltMessageFormat2TestMarco_h
 
+#include <igtl_types.h>
+
 #define EXTENDED_CONTENT_SIZE 69 // the extended content size variable sums up the size of the Extended header, meta data header and meta data.
 
 
 #define igtlMetaDataAddElementMacro(object) \
   object->SetHeaderVersion(IGTL_HEADER_VERSION_2);\
-  unsigned short codingScheme = 3; /* 3 corresponding to US-ASCII */ \
+  IANA_ENCODING_TYPE codingScheme = IANA_TYPE_US_ASCII; /* 3 corresponding to US-ASCII */ \
   object->AddMetaDataElement("First patient age", codingScheme, "22");\
   object->AddMetaDataElement("Second patient age",codingScheme, "25");\
   object->SetMessageID(1);
