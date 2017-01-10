@@ -884,9 +884,51 @@ GetPolyDataMessage::GetPolyDataMessage()
   this->m_SendMessageType  = "GET_POLYDATA";
 }
 
+bool RTSPolyDataMessage::GetStatus() const
+{
+  return m_Status == 1;
+}
+
+void RTSPolyDataMessage::SetStatus(bool status)
+{
+  m_Status = status ? 1 : 0;
+}
+
+int RTSPolyDataMessage::CalculateContentBufferSize()
+{
+  return sizeof(uint8_t);
+}
+
+int RTSPolyDataMessage::PackContent()
+{
+  AllocateBuffer();
+
+  uint8_t* content;
+  // Copy data
+#if OpenIGTLink_HEADER_VERSION >= 2
+  content = this->m_Content;
+#else
+  content = this->m_Body;
+#endif
+
+  *content = m_Status;
+
+  return 1;
+}
+
+int RTSPolyDataMessage::UnpackContent()
+{
+  uint8_t * content;
+
+#if OpenIGTLink_HEADER_VERSION >= 2
+  content = this->m_Content;
+#else
+  content = this->m_Body;
+#endif
+
+  this->m_Status = *content;
+
+  return 1;
+}
+
 } // namespace igtl
-
-
-
-
-

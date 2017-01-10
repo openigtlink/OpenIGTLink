@@ -200,86 +200,102 @@ void MessageBase::SetMessageID(igtlUint32 idValue)
   m_MessageId = idValue;
 }
 
-void MessageBase::AddMetaDataElement(std::string key, IANA_ENCODING_TYPE encodingScheme, std::string value)
+bool MessageBase::SetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE encodingScheme, std::string value)
 {
   igtl_metadata_header_entry entry;
-  entry.key_size = key.length();
-  entry.value_encoding = encodingScheme;
+  if (key.length() > std::numeric_limits<igtl_uint16>::max())
+  {
+    return false;
+  }
+  entry.key_size = static_cast<igtl_uint16>(key.length());
+  entry.value_encoding = static_cast<igtlUint16>(encodingScheme);
   entry.value_size = value.length();
   m_MetaDataHeaderEntries.push_back(entry);
   m_MetaDataMap[key] = value;
   m_MetaDataSize += key.length() + value.length();
   m_MetaDataHeaderSize += sizeof(igtl_metadata_header_entry);
+  return true;
 }
 
-void MessageBase::AddMetaDataElement(std::string key, igtl_uint8 value)
+bool MessageBase::SetMetaDataElement(const std::string& key, igtl_uint8 value)
 {
   std::stringstream ss;
   ss << value;
-  AddMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
+  return SetMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
 }
 
-void MessageBase::AddMetaDataElement(std::string key, igtl_int8 value)
+bool MessageBase::SetMetaDataElement(const std::string& key, igtl_int8 value)
 {
   std::stringstream ss;
   ss << value;
-  AddMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
+  return SetMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
 }
 
-void MessageBase::AddMetaDataElement(std::string key, igtl_uint16 value)
+bool MessageBase::SetMetaDataElement(const std::string& key, igtl_uint16 value)
 {
   std::stringstream ss;
   ss << value;
-  AddMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
+  return SetMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
 }
 
-void MessageBase::AddMetaDataElement(std::string key, igtl_int16 value)
+bool MessageBase::SetMetaDataElement(const std::string& key, igtl_int16 value)
 {
   std::stringstream ss;
   ss << value;
-  AddMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
+  return SetMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
 }
 
-void MessageBase::AddMetaDataElement(std::string key, igtl_uint32 value)
+bool MessageBase::SetMetaDataElement(const std::string& key, igtl_uint32 value)
 {
   std::stringstream ss;
   ss << value;
-  AddMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
+  return SetMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
 }
 
-void MessageBase::AddMetaDataElement(std::string key, igtl_int32 value)
+bool MessageBase::SetMetaDataElement(const std::string& key, igtl_int32 value)
 {
   std::stringstream ss;
   ss << value;
-  AddMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
+  return SetMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
 }
 
-void MessageBase::AddMetaDataElement(std::string key, igtl_uint64 value)
+bool MessageBase::SetMetaDataElement(const std::string& key, igtl_uint64 value)
 {
   std::stringstream ss;
   ss << value;
-  AddMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
+  return SetMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
 }
 
-void MessageBase::AddMetaDataElement(std::string key, igtl_int64 value)
+bool MessageBase::SetMetaDataElement(const std::string& key, igtl_int64 value)
 {
   std::stringstream ss;
   ss << value;
-  AddMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
+  return SetMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
 }
 
-void MessageBase::AddMetaDataElement(std::string key, float value)
+bool MessageBase::SetMetaDataElement(const std::string& key, float value)
 {
   std::stringstream ss;
   ss << value;
-  AddMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
+  return SetMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
 }
 
-void MessageBase::AddMetaDataElement(std::string key, double value)
+bool MessageBase::SetMetaDataElement(const std::string& key, double value)
 {
   std::stringstream ss;
   ss << value;
-  AddMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
+  return SetMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
+}
+
+bool MessageBase::GetMetaDataElement(const std::string& key, std::string& value) const
+{
+  if (m_MetaDataMap.find(key) != m_MetaDataMap.end())
+  {
+    value = m_MetaDataMap.find(key)->second;
+    return true;
+  }
+
+  return false;
 }
 
 const MessageBase::MetaDataMap& MessageBase::GetMetaData() const
@@ -320,7 +336,11 @@ bool MessageBase::PackMetaData()
 {
   if( m_HeaderVersion == IGTL_HEADER_VERSION_2 )
   {
-    igtl_uint16 index_count = m_MetaDataMap.size(); // first two byte are the total number of meta data
+    if (m_MetaDataMap.size() > std::numeric_limits<igtl_uint16>::max())
+    {
+      return false;
+    }
+    igtl_uint16 index_count = static_cast<igtl_uint16>(m_MetaDataMap.size()); // first two byte are the total number of meta data
     if(igtl_is_little_endian())
     {
       index_count = BYTE_SWAP_INT16(index_count);
