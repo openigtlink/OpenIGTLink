@@ -926,6 +926,9 @@ int MessageBase::Copy(const MessageBase* mb)
   if ((m_SendMessageType.length() == 0 || m_SendMessageType == mb->m_ReceiveMessageType)
       && mb->m_MessageSize >= IGTL_HEADER_SIZE)
   {
+    // Set the header version before calling any functions, as it determines later behavior
+    m_HeaderVersion = mb->m_HeaderVersion;
+
     int bodySize = mb->m_MessageSize - IGTL_HEADER_SIZE;
     AllocateBuffer(bodySize);
     CopyHeader(mb);
