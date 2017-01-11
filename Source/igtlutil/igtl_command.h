@@ -21,7 +21,7 @@
 #include "igtl_win32header.h"
 
 #define IGTL_COMMAND_HEADER_SIZE    42
-#define IGTL_COMMAND_NAME_SIZE      32
+#define IGTL_COMMAND_NAME_SIZE      128
 
 #ifdef __cplusplus
 extern "C" {
