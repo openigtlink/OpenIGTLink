@@ -188,12 +188,16 @@ ENDIF()
 IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" )
   LIST(APPEND OpenIGTLink_SOURCES
     igtlCommandMessage.cxx
+    igtlQueryMessage.cxx
     igtlutil/igtl_command.c
+    igtlutil/igtl_query.c
     )
   IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
     LIST(APPEND OpenIGTLink_INCLUDE_FILES
       igtlCommandMessage.h
+      igtlQueryMessage.h
       igtlutil/igtl_command.h
+      igtlutil/igtl_query.h
       )
   ENDIF()
 ENDIF()

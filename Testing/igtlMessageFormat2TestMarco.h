@@ -23,8 +23,8 @@
 #define igtlMetaDataAddElementMacro(object) \
   object->SetHeaderVersion(IGTL_HEADER_VERSION_2);\
   IANA_ENCODING_TYPE codingScheme = IANA_TYPE_US_ASCII; /* 3 corresponding to US-ASCII */ \
-  object->AddMetaDataElement("First patient age", codingScheme, "22");\
-  object->AddMetaDataElement("Second patient age",codingScheme, "25");\
+  object->SetMetaDataElement("First patient age", codingScheme, "22");\
+  object->SetMetaDataElement("Second patient age",codingScheme, "25");\
   object->SetMessageID(1);
 
 #define igtlMetaDataComparisonMacro(object) \

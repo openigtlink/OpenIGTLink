@@ -35,14 +35,14 @@ extern "C" {
 #define IGTL_POLY_ATTR_TYPE_TENSOR 0x03
 #define IGTL_POLY_ATTR_TYPE_RGBA   0x04
 
-#pragma pack(1)     /* For 1-byte boundary in memroy */
+#pragma pack(1)     /* For 1-byte boundary in memory */
 
 /** POLYDATA Header */
 typedef struct {
   igtl_uint32      npoints;                  /* Number of points */
 
   igtl_uint32      nvertices;                /* Number of vertices */
-  igtl_uint32      size_vertices;            /* Size of vertice data (bytes) */
+  igtl_uint32      size_vertices;            /* Size of vertex data (bytes) */
 
   igtl_uint32      nlines;                   /* Number of lines */
   igtl_uint32      size_lines;               /* Size of line data (bytes) */
@@ -87,7 +87,7 @@ typedef struct {
 /** POLYDATA info */
 typedef struct {
   igtl_polydata_header   header;             /* Header */
-  igtl_float32*                 points;             /* Points */
+  igtl_float32*          points;             /* Points */
   igtl_uint32 *          vertices;           /* Vertices -- array of (N, i1, i2, i3 ...iN) */
   igtl_uint32 *          lines;              /* Lines -- array of (N, i1, i2, i3 ...iN) */
   igtl_uint32 *          polygons;           /* Polygons -- array of (N, i1, i2, i3 ...iN) */
@@ -140,5 +140,3 @@ igtl_uint64 igtl_export igtl_polydata_get_crc(igtl_polydata_info * info, int typ
 #endif
 
 #endif /* __IGTL_POLYDATA_H */
-
-
