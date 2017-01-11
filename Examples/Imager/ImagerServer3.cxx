@@ -111,7 +111,7 @@ int main(int argc, char* argv[])
 #if OpenIGTLink_HEADER_VERSION >= 2
               if (headerMsg->GetHeaderVersion() == IGTL_HEADER_VERSION_2)
               {
-                imgMsg->AddMetaDataElement("Patient age", IANA_TYPE_US_ASCII, "25");
+                imgMsg->SetMetaDataElement("Patient age", IANA_TYPE_US_ASCII, "25");
                 imgMsg->SetMessageID(i);
               }
 #endif

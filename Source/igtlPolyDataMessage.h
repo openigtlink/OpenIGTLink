@@ -47,7 +47,36 @@ protected:
   virtual int  UnpackContent()      { return 1; };
 };
 
-/// A class for the GET_POLYDATA message type.
+/// A class for the RTS_POLYDATA message type.
+class IGTLCommon_EXPORT RTSPolyDataMessage : public MessageBase
+{
+public:
+  typedef RTSPolyDataMessage            Self;
+  typedef MessageBase                    Superclass;
+  typedef SmartPointer<Self>             Pointer;
+  typedef SmartPointer<const Self>       ConstPointer;
+
+  igtlTypeMacro(igtl::RTSPolyDataMessage, igtl::MessageBase);
+  igtlNewMacro(igtl::RTSPolyDataMessage);
+
+  bool GetStatus() const;
+  void SetStatus(bool status);
+
+protected:
+  RTSPolyDataMessage() : MessageBase() { this->m_SendMessageType = "RTS_POLYDATA"; };
+  ~RTSPolyDataMessage() {};
+
+protected:
+  virtual int  CalculateContentBufferSize();
+  virtual int  PackContent();
+  virtual int  UnpackContent();
+
+protected:
+  /// Result of the previous GET_POLYDATA/POLYDATA message
+  igtl_uint8 m_Status;
+};
+
+/// A class for the STP_POLYDATA message type.
 class IGTLCommon_EXPORT StopPolyDataMessage: public MessageBase
 {
 public:
@@ -68,7 +97,26 @@ protected:
   virtual int  UnpackBody()      { return 1; };
 };
 
-  
+/// A class for the STT_POLYDATA message type.
+class IGTLCommon_EXPORT StartPolyDataMessage : public MessageBase
+{
+public:
+  typedef StartPolyDataMessage            Self;
+  typedef MessageBase                    Superclass;
+  typedef SmartPointer<Self>             Pointer;
+  typedef SmartPointer<const Self>       ConstPointer;
+
+  igtlTypeMacro(igtl::StartPolyDataMessage, igtl::MessageBase);
+  igtlNewMacro(igtl::StartPolyDataMessage);
+
+protected:
+  StartPolyDataMessage() : MessageBase() { this->m_SendMessageType = "STT_POLYDATA"; };
+  ~StartPolyDataMessage() {};
+protected:
+  virtual int  GetBodyPackSize() { return 0; };
+  virtual int  PackBody() { AllocatePack(); return 1; };
+  virtual int  UnpackBody() { return 1; };
+};
   
   
   

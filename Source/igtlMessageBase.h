@@ -141,17 +141,20 @@ namespace igtl
     void SetMessageID(igtlUint32 idValue);
 
     /// Add Meta data element
-    void AddMetaDataElement(std::string key, IANA_ENCODING_TYPE encodingScheme, std::string value);
-    void AddMetaDataElement(std::string key, igtl_uint8);
-    void AddMetaDataElement(std::string key, igtl_int8);
-    void AddMetaDataElement(std::string key, igtl_uint16);
-    void AddMetaDataElement(std::string key, igtl_int16);
-    void AddMetaDataElement(std::string key, igtl_uint32);
-    void AddMetaDataElement(std::string key, igtl_int32);
-    void AddMetaDataElement(std::string key, igtl_uint64);
-    void AddMetaDataElement(std::string key, igtl_int64);
-    void AddMetaDataElement(std::string key, float);
-    void AddMetaDataElement(std::string key, double);
+    bool SetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE encodingScheme, std::string value);
+    bool SetMetaDataElement(const std::string& key, igtl_uint8);
+    bool SetMetaDataElement(const std::string& key, igtl_int8);
+    bool SetMetaDataElement(const std::string& key, igtl_uint16);
+    bool SetMetaDataElement(const std::string& key, igtl_int16);
+    bool SetMetaDataElement(const std::string& key, igtl_uint32);
+    bool SetMetaDataElement(const std::string& key, igtl_int32);
+    bool SetMetaDataElement(const std::string& key, igtl_uint64);
+    bool SetMetaDataElement(const std::string& key, igtl_int64);
+    bool SetMetaDataElement(const std::string& key, float);
+    bool SetMetaDataElement(const std::string& key, double);
+
+    /// Get meta data element
+    bool GetMetaDataElement(const std::string& key, std::string& value) const;
 
     /// Get meta data map
     const std::map<std::string, std::string>& GetMetaData() const;
