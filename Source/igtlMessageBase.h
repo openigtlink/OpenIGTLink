@@ -78,9 +78,6 @@ namespace igtl
   class IGTLCommon_EXPORT MessageBase: public Object
   {
   public:
-    typedef std::vector<igtl_metadata_header_entry> MetaDataHeaderEntryList;
-    typedef std::map<std::string, std::string>      MetaDataMap;
-
     typedef MessageBase               Self;
     typedef Object                    Superclass;
     typedef SmartPointer<Self>        Pointer;
@@ -346,6 +343,11 @@ namespace igtl
 
 #if OpenIGTLink_HEADER_VERSION >= 2
   protected:
+
+    // Types for managing meta data
+    typedef std::vector<igtl_metadata_header_entry> MetaDataHeaderEntryList;
+    typedef std::map<std::string, std::string>      MetaDataMap;
+
     /// A pointer to the serialized extended header.
     unsigned char* m_ExtendedHeader;
 
@@ -368,11 +370,13 @@ namespace igtl
     igtlUint32 m_MessageId;
 
     /// Vector storing the meta data header entries
-    std::vector<igtl_metadata_header_entry> m_MetaDataHeaderEntries;
+    MetaDataHeaderEntryList m_MetaDataHeaderEntries;
 
     /// Map storing the key value pairs
     MetaDataMap             m_MetaDataMap;
-#endif
+
+#endif // if OpenIGTLink_HEADER_VERSION >= 2
+
   };
 
   /// A class for header-only message types, which are used for querying.

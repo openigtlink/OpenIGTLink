@@ -19,6 +19,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "igtlImageMessage.h"
 #include "igtlClientSocket.h"
 #include "igtlStatusMessage.h"
+#include "igtlCapabilityMessage.h"
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 2
 #include "igtlPointMessage.h"
@@ -26,7 +27,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include "igtlStringMessage.h"
 #include "igtlTrackingDataMessage.h"
 #include "igtlQuaternionTrackingDataMessage.h"
-#include "igtlCapabilityMessage.h"
 #endif // OpenIGTLink_PROTOCOL_VERSION >= 2
 
 #if OpenIGTLink_HEADER_VERSION >= 2
