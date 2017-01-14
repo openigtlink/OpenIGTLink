@@ -438,7 +438,7 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
       n = 4 * info->attributes[i].n;
       s = n * sizeof(igtl_float32);
     }
-    else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_8BIT_RGBA)
+    else if (info->attributes[i].type > 0x80)
     {
       n = 4 * info->attributes[i].n;
       s = n * sizeof(igtl_int8);
@@ -448,7 +448,7 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
       n = 9 * info->attributes[i].n;
       s = n * sizeof(igtl_float32);
       }
-    if (igtl_is_little_endian() && info->attributes[i].type != IGTL_POLY_ATTR_TYPE_8BIT_RGBA)
+    if (igtl_is_little_endian() && info->attributes[i].type <= 0x80)
     {
       info->attributes[i].data = (igtl_float32*)malloc((size_t)s);
       ptr32_dst = (igtl_uint32*)info->attributes[i].data;
@@ -666,7 +666,7 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
       n = 9 * info->attributes[i].n;
       size = n * sizeof(igtl_float32);
       }
-    if (igtl_is_little_endian()&& info->attributes[i].type != IGTL_POLY_ATTR_TYPE_8BIT_RGBA)
+    if (igtl_is_little_endian()&& info->attributes[i].type <= 0x80)
       {
       ptr32_dst = (igtl_uint32*)ptr;
       ptr32_src = (igtl_uint32*)info->attributes[i].data;

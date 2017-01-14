@@ -146,7 +146,7 @@ unsigned char test_polydata_message_headerWithRGBA[] = {
   0x00, 0x00, 0x00, 0x00,                         /* Device name */
   0x00, 0x00, 0x00, 0x00, 0x49, 0x96, 0x02, 0xd4, /* Time stamp */
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x5A, /* Body size */
-  0xEE, 0x5E, 0xDB, 0xF1, 0x97, 0xA6, 0x38, 0xB6, /* CRC */
+  0x5C, 0x0E, 0xA7, 0xD8, 0x76, 0x95, 0xA5, 0xB6, /* CRC */
 };
 
 unsigned char test_polydata_message_bodyWithRGBA[] =
@@ -241,7 +241,7 @@ unsigned char test_polydata_message_bodyWithRGBA[] =
   0x01,                                           /* Attribute #0 Type (lower 8bit) - number of components */
   0x00, 0x00, 0x00, 0x08,                         /* Attribute #0 Size */
   
-  0x05,                                           /* Attribute #0 Type (upper 8bit) - type */
+  0x85,                                           /* Attribute #0 Type (upper 8bit) - type */
   0x04,                                           /* Attribute #0 Type (lower 8bit) - number of components */
   0x00, 0x00, 0x00, 0x08,                         /* Attribute #0 Size */
   

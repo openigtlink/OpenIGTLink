@@ -35,7 +35,8 @@ extern "C" {
 #define IGTL_POLY_ATTR_TYPE_TENSOR 0x03
 #define IGTL_POLY_ATTR_TYPE_RGBA   0x04  /* For backword compatibility , will be obsoleted*/
 #define IGTL_POLY_ATTR_TYPE_FLOAT_RGBA  0x04
-#define IGTL_POLY_ATTR_TYPE_8BIT_RGBA   0x05
+#define IGTL_POLY_ATTR_TYPE_8BIT_RGBA   0x85
+  
 
 #pragma pack(1)     /* For 1-byte boundary in memory */
 

@@ -252,15 +252,18 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
     POINT_TENSOR = 0x03,
     POINT_RGBA   = 0x04,
     POINT_FLOATRGBA   = 0x04,
-    POINT_8BITRGBA   = 0x05,
     CELL_SCALAR  = 0x10,
     CELL_VECTOR  = 0x11,
     CELL_NORMAL  = 0x12,
     CELL_TENSOR  = 0x13,
     CELL_RGBA    = 0x14,
     CELL_FLOATRGBA    = 0x14,
-    CELL_8BITRGBA    = 0x15,
 
+  };
+  
+  enum {
+    POINT_8BITRGBA   = 0x85,
+    CELL_8BITRGBA    = 0x95,
   };
 
  public:

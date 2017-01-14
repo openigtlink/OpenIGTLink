@@ -653,7 +653,7 @@ void IGTLCommon_EXPORT SetPolyDataInfoAttribute(igtl_polydata_info * info, PolyD
       {
         free(attr->data);
       }
-      if (attr->type != IGTL_POLY_ATTR_TYPE_8BIT_RGBA)
+      if (attr->type <= 0x80)
       {
         attr->ncomponents = src->GetNumberOfComponents();
         attr->n = src->GetSize();
@@ -960,7 +960,7 @@ int PolyDataMessage::UnpackContent()
       {
       pda->Clear();
       pda->SetName(attr->name);
-      if((attr->type!=PolyDataAttribute::POINT_8BITRGBA) && (attr->type!=PolyDataAttribute::CELL_8BITRGBA))
+      if(attr->type<=0X80)
       {
         pda->SetType(attr->type, attr->ncomponents);
         pda->SetSize(attr->n);
