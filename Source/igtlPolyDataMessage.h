@@ -251,11 +251,16 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
     POINT_NORMAL = 0x02,
     POINT_TENSOR = 0x03,
     POINT_RGBA   = 0x04,
+    POINT_FLOATRGBA   = 0x04,
+    POINT_8BITRGBA   = 0x05,
     CELL_SCALAR  = 0x10,
     CELL_VECTOR  = 0x11,
     CELL_NORMAL  = 0x12,
     CELL_TENSOR  = 0x13,
     CELL_RGBA    = 0x14,
+    CELL_FLOATRGBA    = 0x14,
+    CELL_8BITRGBA    = 0x15,
+
   };
 
  public:
@@ -276,7 +281,7 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
   /// Clears the attributes
   void        Clear();
 
-  /// SetType() is used to set the attribute type. If the attribute is set properly,
+  /// SetFloatType() is used to set the attribute type. If the attribute is set properly,
   /// the function returns the type value (POINT_* or CELL_*). Otherwise
   /// the function returns negative value. The second argument will be ignored
   /// if 't' is neither POINT_SCALAR nor CELL_SCALAR.
@@ -287,7 +292,17 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
 
   /// Gets the attribute type.
   igtlUint8   GetType() { return this->m_Type; };
+  
+  /// SetFloatType() is used to set the attribute type. If the attribute is set properly,
+  /// the function returns the type value (POINT_* or CELL_*). Otherwise
+  /// the function returns negative value. The second argument will be ignored
+  /// if 't' is neither POINT_SCALAR nor CELL_SCALAR.
+  /// If the POINT_SCALAR and CELL_SCALAR is specified as 't', the number of
+  /// components can be specified as the second argument. The number of
+  /// components must be 0 < n < 128.
+  int         SetIntType(int t, int n=1);
 
+  
   /// Gets the number of components. The number depends on the type of the points/cells e.g. 
   /// 3 in case of POINT_VECTOR.
   igtlUint32  GetNumberOfComponents();
@@ -297,6 +312,15 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
 
   /// Gets the size of the attribute.
   igtlUint32  GetSize();
+  
+  /// Gets the number of interger typed components.
+  igtlUint32  GetNumberOfIntComponents();
+  
+  /// Sets the size of the int type attribute.
+  igtlUint32  SetIntSize(igtlUint32 size);
+  
+  /// Gets the size of the int type attribute.
+  igtlUint32  GetIntSize();
 
   /// Sets the name of the attribute.
   void        SetName(const char * name);
@@ -309,12 +333,25 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
 
   /// Gets the attribute as a byte array.
   int         GetData(igtlFloat32 * data);
+  
+  /// Sets the attribute by byte array.
+  int         SetIntData(igtlInt8 * data);
+  
+  /// Gets the attribute as a byte array.
+  int         GetIntData(igtlInt8 * data);
 
   /// Sets the Nth data.
   int         SetNthData(unsigned int n, igtlFloat32 * data);
 
   /// Gets the Nth data.
   int         GetNthData(unsigned int n, igtlFloat32 * data);
+  
+  
+  /// Sets the Nth Int data.
+  int         SetNthIntData(unsigned int n, igtlInt8 * data);
+  
+  /// Gets the Nth data.
+  int         GetNthIntData(unsigned int n, igtlInt8 * data);
 
  private:
 
@@ -323,15 +360,24 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
 
   /// The number of components.
   igtlUint8                m_NComponents;
+  
+  /// The number of components.
+  igtlUint8                m_NIntComponents;
 
   /// The size of the attribute.
   igtlUint32               m_Size;
+  
+  /// The size of the int type attribute.
+  igtlUint32               m_IntSize;
 
   /// The name of the attribute.
   std::string              m_Name;
 
   /// The list of attributes.
   std::vector<igtlFloat32> m_Data;
+  
+  /// The list of Int type attributes.
+  std::vector<igtlInt8> m_IntData;
 
 };
 

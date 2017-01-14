@@ -433,23 +433,41 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
       n = 3 * info->attributes[i].n;
       s = n * sizeof(igtl_float32);
       }
+    else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_FLOAT_RGBA)
+    {
+      n = 4 * info->attributes[i].n;
+      s = n * sizeof(igtl_float32);
+    }
+    else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_8BIT_RGBA)
+    {
+      n = 4 * info->attributes[i].n;
+      s = n * sizeof(igtl_int8);
+    }
     else /* TENSOR */
       {
       n = 9 * info->attributes[i].n;
       s = n * sizeof(igtl_float32);
       }
-    info->attributes[i].data = (igtl_float32*)malloc((size_t)s);
-    ptr32_dst = (igtl_uint32*)info->attributes[i].data;
-    ptr32_src = (igtl_uint32*)ptr;
-    ptr32_src_end = ptr32_src + n;
-    while (ptr32_src < ptr32_src_end)
-      {
-      *ptr32_dst = BYTE_SWAP_INT32(*ptr32_src);
-      ptr32_dst ++;
-      ptr32_src ++;
-      }
-    ptr += s;
+    if (igtl_is_little_endian() && info->attributes[i].type != IGTL_POLY_ATTR_TYPE_8BIT_RGBA)
+    {
+      info->attributes[i].data = (igtl_float32*)malloc((size_t)s);
+      ptr32_dst = (igtl_uint32*)info->attributes[i].data;
+      ptr32_src = (igtl_uint32*)ptr;
+      ptr32_src_end = ptr32_src + n;
+      while (ptr32_src < ptr32_src_end)
+        {
+        *ptr32_dst = BYTE_SWAP_INT32(*ptr32_src);
+        ptr32_dst ++;
+        ptr32_src ++;
+        }
     }
+    else
+    {
+      info->attributes[i].data = malloc((size_t)s);
+      memcpy(info->attributes[i].data, ptr,s);
+    }
+    ptr += s;
+  }
 
   return 1;
 }
@@ -570,6 +588,14 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
       {
       att_header->ncomponents = 3;
       }
+    else if (att->type == IGTL_POLY_ATTR_TYPE_8BIT_RGBA)
+    {
+      att_header->ncomponents = 4;
+    }
+    else if (att->type == IGTL_POLY_ATTR_TYPE_FLOAT_RGBA)
+    {
+      att_header->ncomponents = 4;
+    }
     else /* att->type == IGTL_POLY_ATTR_TYPE_TENSOR */
       {
       att_header->ncomponents = 9;
@@ -625,12 +651,22 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
       n = 3 * info->attributes[i].n;
       size = n * sizeof(igtl_float32);
       }
+    else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_8BIT_RGBA)
+    {
+      n = 4 * info->attributes[i].n;
+      size = n * sizeof(igtl_int8);
+    }
+    else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_FLOAT_RGBA)
+    {
+      n = 4 * info->attributes[i].n;
+      size = n * sizeof(igtl_float32);
+    }
     else /* TENSOR */
       {
       n = 9 * info->attributes[i].n;
       size = n * sizeof(igtl_float32);
       }
-    if (igtl_is_little_endian())
+    if (igtl_is_little_endian()&& info->attributes[i].type != IGTL_POLY_ATTR_TYPE_8BIT_RGBA)
       {
       ptr32_dst = (igtl_uint32*)ptr;
       ptr32_src = (igtl_uint32*)info->attributes[i].data;
@@ -711,6 +747,17 @@ igtl_uint64 igtl_export igtl_polydata_get_size(igtl_polydata_info * info, int ty
       n = 3 * info->attributes[i].n;
       size = n * sizeof(igtl_float32);
       }
+    else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_FLOAT_RGBA)
+    {
+      n = 4 * info->attributes[i].n;
+      size = n * sizeof(igtl_float32);
+    }
+    else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_8BIT_RGBA)
+    {
+      n = 4 * info->attributes[i].n;
+      size = n * sizeof(igtl_int8);
+    }
+      
     else /* TENSOR */
       {
       n = 9 * info->attributes[i].n;

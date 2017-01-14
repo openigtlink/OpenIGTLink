@@ -255,9 +255,12 @@ void PolyDataAttribute::Clear()
 {
   this->m_Type        = POINT_SCALAR;
   this->m_NComponents = 1;
+  this->m_NIntComponents = 1;
   this->m_Name        = "";
   this->m_Data.clear();
   this->m_Size        = 0;
+  this->m_IntData.clear();
+  this->m_IntSize        = 0;
 }
 
 int PolyDataAttribute::SetType(int t, int n)
@@ -316,12 +319,52 @@ int PolyDataAttribute::SetType(int t, int n)
     }
 }
 
+  
+int PolyDataAttribute::SetIntType(int t, int n)
+{
+  int valid = 0;
+  
+  switch(t)
+  {
+    case POINT_8BITRGBA:
+    case CELL_8BITRGBA:
+      valid = 1;
+      this->m_NIntComponents = 4;
+      break;
+    default:
+      break;
+  }
+  if (valid)
+  {
+    this->m_Type = t;
+    unsigned int n = this->m_IntSize * this->m_NIntComponents;
+    if (n != this->m_IntData.size())
+    {
+      // TODO: this may cause unnecesasry memory allocation,
+      // unless m_Size == 0.
+      // Memory should be reallocate just before use.
+      this->m_IntData.resize(n);
+    }
+    return t;
+  }
+  else
+  {
+    return -1;
+  }
+}
+
 
 igtlUint32 PolyDataAttribute::GetNumberOfComponents()
 {
   return this->m_NComponents;
 }
 
+igtlUint32 PolyDataAttribute::GetNumberOfIntComponents()
+{
+  return this->m_NIntComponents;
+}
+  
+  
 igtlUint32 PolyDataAttribute::SetSize(igtlUint32 size)
 {
   this->m_Size = size;
@@ -338,11 +381,32 @@ igtlUint32 PolyDataAttribute::SetSize(igtlUint32 size)
   return this->m_Size;
 }
 
+igtlUint32 PolyDataAttribute::SetIntSize(igtlUint32 size)
+{
+  this->m_IntSize = size;
+  
+  unsigned int n = this->m_IntSize * this->m_NIntComponents;
+  if (n != this->m_IntData.size())
+  {
+    // TODO: this may cause unnecesasry memory allocation.
+    // Memory should be reallocate just before use.
+    this->m_IntData.resize(n);
+  }
+  
+  this->m_IntData.resize(size*this->m_NIntComponents);
+  return this->m_IntSize;
+}
+
 igtlUint32 PolyDataAttribute::GetSize() 
 {
   return this->m_Size;
 }
-
+  
+igtlUint32 PolyDataAttribute::GetIntSize()
+{
+  return this->m_IntSize;
+}
+  
 void PolyDataAttribute::SetName(const char * name)
 {
   this->m_Name = name;
@@ -364,6 +428,23 @@ int PolyDataAttribute::SetData(igtlFloat32 * data)
 
   return 1;
 }
+  
+int PolyDataAttribute::SetIntData(igtlInt8 * data)
+{
+  if (!data)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlInt8>::iterator iter;
+  for (iter = this->m_IntData.begin(); iter != this->m_IntData.end(); iter ++)
+  {
+    *iter = *data;
+    data ++;
+  }
+  
+  return 1;
+}
 
 int PolyDataAttribute::GetData(igtlFloat32 * data)
 {
@@ -378,6 +459,22 @@ int PolyDataAttribute::GetData(igtlFloat32 * data)
     *data = *iter;
     data ++;
     }
+  return 1;
+}
+  
+int PolyDataAttribute::GetIntData(igtlInt8 * data)
+{
+  if (!data)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlInt8>::iterator iter;
+  for (iter = this->m_IntData.begin(); iter != this->m_IntData.end(); iter ++)
+  {
+    *data = *iter;
+    data ++;
+  }
   return 1;
 }
 
@@ -415,6 +512,44 @@ int PolyDataAttribute::GetNthData(unsigned int n, igtlFloat32 * data)
     data ++;
     }
 
+  return 1;
+}
+  
+  
+int PolyDataAttribute::SetNthIntData(unsigned int n, igtlInt8 * data)
+{
+  if (n >= this->m_IntSize)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlInt8>::iterator iter;
+  iter = this->m_IntData.begin() + n*this->m_NIntComponents;
+  for (unsigned int i = 0; i < this->m_NIntComponents; i ++)
+  {
+    *iter = *data;
+    iter ++;
+    data ++;
+  }
+  return 1;
+}
+
+int PolyDataAttribute::GetNthIntData(unsigned int n, igtlInt8 * data)
+{
+  if (n >= this->m_IntSize)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlInt8>::iterator iter;
+  iter = this->m_IntData.begin() + n*this->m_NIntComponents;
+  for (unsigned int i = 0; i < this->m_NIntComponents; i ++)
+  {
+    *data = *iter;
+    iter ++;
+    data ++;
+  }
+  
   return 1;
 }
 
@@ -503,34 +638,55 @@ void IGTLCommon_EXPORT SetPolyDataInfoAttribute(igtl_polydata_info * info, PolyD
     {
     PolyDataAttribute * src =  pdm->GetAttribute(i);
     if (src)
-      {
+    {
       attr->type = src->GetType();
-      attr->ncomponents = src->GetNumberOfComponents();
-      attr->n = src->GetSize();
-      //attr->name = const_cast<char*>(src->GetName());
-      // TODO: aloways allocating memory isn't a good approach...
       if (attr->name)
-        {
+      {
         free(attr->name);
-        }
+      }
       attr->name =  (char *) malloc(strlen(src->GetName())+1);
       if (attr->name)
-        {
+      {
         strcpy(attr->name, src->GetName());
-        }
+      }
       if (attr->data)
-        {
+      {
         free(attr->data);
-        }
-      igtlUint32 size = attr->ncomponents * attr->n;
-      attr->data = (igtlFloat32*)malloc((size_t)size*sizeof(igtlFloat32));
-      if (attr->data)
+      }
+      if (attr->type != IGTL_POLY_ATTR_TYPE_8BIT_RGBA)
+      {
+        attr->ncomponents = src->GetNumberOfComponents();
+        attr->n = src->GetSize();
+        //attr->name = const_cast<char*>(src->GetName());
+        // TODO: aloways allocating memory isn't a good approach...
+        
+        igtlUint32 size = attr->ncomponents * attr->n;
+        
+        attr->data = (igtlFloat32*)malloc((size_t)size*sizeof(igtlFloat32));
+        
+        if (attr->data)
         {
-        src->GetData(attr->data);
+          src->GetData((igtlFloat32*)attr->data);
         }
-      attr ++;
+        attr ++;
+      }
+      else
+      {
+        attr->ncomponents = src->GetNumberOfIntComponents();
+        attr->n = src->GetIntSize();
+        //attr->name = const_cast<char*>(src->GetName());
+        // TODO: aloways allocating memory isn't a good approach...
+        igtlUint32 size = attr->ncomponents * attr->n;
+        
+        attr->data = malloc((size_t)size*sizeof(igtlInt8));
+        if (attr->data)
+        {
+          src->GetIntData((igtlInt8*)attr->data);
+        }
+        attr ++;
       }
     }
+  }
 }
 
 
@@ -803,10 +959,19 @@ int PolyDataMessage::UnpackContent()
     if (pda.IsNotNull())
       {
       pda->Clear();
-      pda->SetType(attr->type, attr->ncomponents);
-      pda->SetSize(attr->n);
       pda->SetName(attr->name);
-      pda->SetData(attr->data);
+      if((attr->type!=PolyDataAttribute::POINT_8BITRGBA) && (attr->type!=PolyDataAttribute::CELL_8BITRGBA))
+      {
+        pda->SetType(attr->type, attr->ncomponents);
+        pda->SetSize(attr->n);
+        pda->SetData((igtlFloat32*)attr->data);
+      }
+      else
+      {
+        pda->SetIntType(attr->type, attr->ncomponents);
+        pda->SetIntSize(attr->n);
+        pda->SetIntData((igtlInt8*)attr->data);
+      }
       attr ++;
       this->m_Attributes.push_back(pda);
       }

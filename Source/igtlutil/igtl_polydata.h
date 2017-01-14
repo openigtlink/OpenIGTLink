@@ -33,7 +33,9 @@ extern "C" {
 #define IGTL_POLY_ATTR_TYPE_VECTOR 0x01
 #define IGTL_POLY_ATTR_TYPE_NORMAL 0x02
 #define IGTL_POLY_ATTR_TYPE_TENSOR 0x03
-#define IGTL_POLY_ATTR_TYPE_RGBA   0x04
+#define IGTL_POLY_ATTR_TYPE_RGBA   0x04  /* For backword compatibility , will be obsoleted*/
+#define IGTL_POLY_ATTR_TYPE_FLOAT_RGBA  0x04
+#define IGTL_POLY_ATTR_TYPE_8BIT_RGBA   0x05
 
 #pragma pack(1)     /* For 1-byte boundary in memory */
 
@@ -81,7 +83,7 @@ typedef struct {
   igtl_uint8       ncomponents;
   igtl_uint32      n;
   char *           name;
-  igtl_float32 *   data;
+  void *   data;
 } igtl_polydata_attribute;
 
 /** POLYDATA info */
