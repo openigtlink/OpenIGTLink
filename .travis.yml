@@ -27,16 +27,24 @@ install:
 before_script:
   - mkdir build
   - cd    build
-  - cmake ..
 
 script:
+  - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=ON ..
   - make
   - cd ..
   - mkdir TestBuild
   - cd TestBuild
   - cmake -DCMAKE_PREFIX_PATH:PATH=../build ../Testing
   - make 
+  - make test 
+  #########################
+  # Test for version2 build
+  - cd ../build
+  - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=OFF ..
+  - make
+  - cd ../TestBuild
+  - cmake -DCMAKE_PREFIX_PATH:PATH=../build ../Testing
+  - make 
   - make test
-
 
 
