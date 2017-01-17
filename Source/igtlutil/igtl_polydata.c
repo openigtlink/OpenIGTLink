@@ -279,6 +279,13 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
   igtl_uint32 * ptr32_src;
   igtl_uint32 * ptr32_src_end;
   igtl_uint32 * ptr32_dst;
+  igtl_uint16 * ptr16_src;
+  igtl_uint16 * ptr16_src_end;
+  igtl_uint16 * ptr16_dst;
+  igtl_uint64 * ptr64_src;
+  igtl_uint64 * ptr64_src_end;
+  igtl_uint64 * ptr64_dst;
+  
   igtl_uint32   s;
 
   igtl_polydata_attribute_header * att_header;
@@ -414,52 +421,106 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
     /* add padding */
     ptr ++;
     }
-
+  
   /* Attributes */
   for (i = 0; i < info->header.nattributes; i ++)
     {
+      int dataTypeSize = sizeof(igtl_float32); // by default a float32 data
+      int dataType = info->attributes[i].type>>5; // upper 4 bit of the attribute type is use to specifye the data type of the attribute.
+      if(dataType == IGTL_POLY_ATTR_DATA_TYPE_FLOAT64)
+      {
+        dataTypeSize = sizeof(igtl_float64);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_INT8)
+      {
+        dataTypeSize = sizeof(igtl_int8);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_UINT8)
+      {
+        dataTypeSize = sizeof(igtl_uint8);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_INT16)
+      {
+        dataTypeSize = sizeof(igtl_int16);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_UINT16)
+      {
+        dataTypeSize = sizeof(igtl_uint16);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_INT32)
+      {
+        dataTypeSize = sizeof(igtl_int32);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_UINT32)
+      {
+        dataTypeSize = sizeof(igtl_uint32);
+      }
     if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_SCALAR)
       {
       n = info->attributes[i].ncomponents * info->attributes[i].n;
-      s = n * sizeof(igtl_float32);
+      s = n * dataTypeSize;
       }
     else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_NORMAL)
       {
       n = 3 * info->attributes[i].n;
-      s = n * sizeof(igtl_float32);
+      s = n * dataTypeSize;
       }
     else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_VECTOR)
       {
       n = 3 * info->attributes[i].n;
-      s = n * sizeof(igtl_float32);
+      s = n * dataTypeSize;
       }
-    else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_FLOAT_RGBA)
-    {
-      n = 4 * info->attributes[i].n;
-      s = n * sizeof(igtl_float32);
-    }
-    else if (info->attributes[i].type > 0x80)
-    {
-      n = 4 * info->attributes[i].n;
-      s = n * sizeof(igtl_int8);
-    }
     else /* TENSOR */
       {
       n = 9 * info->attributes[i].n;
-      s = n * sizeof(igtl_float32);
+      s = n * dataTypeSize;
       }
-    if (igtl_is_little_endian() && info->attributes[i].type <= 0x80)
+    if (igtl_is_little_endian())
     {
-      info->attributes[i].data = (igtl_float32*)malloc((size_t)s);
-      ptr32_dst = (igtl_uint32*)info->attributes[i].data;
-      ptr32_src = (igtl_uint32*)ptr;
-      ptr32_src_end = ptr32_src + n;
-      while (ptr32_src < ptr32_src_end)
+      if(dataType == IGTL_POLY_ATTR_DATA_TYPE_FLOAT32 || dataType == IGTL_POLY_ATTR_DATA_TYPE_UINT32 || dataType == IGTL_POLY_ATTR_DATA_TYPE_INT32)
+      {
+        info->attributes[i].data = (igtl_float32*)malloc((size_t)s);
+        ptr32_dst = (igtl_uint32*)info->attributes[i].data;
+        ptr32_src = (igtl_uint32*)ptr;
+        ptr32_src_end = ptr32_src + n;
+        while (ptr32_src < ptr32_src_end)
         {
-        *ptr32_dst = BYTE_SWAP_INT32(*ptr32_src);
-        ptr32_dst ++;
-        ptr32_src ++;
+          *ptr32_dst = BYTE_SWAP_INT32(*ptr32_src);
+          ptr32_dst ++;
+          ptr32_src ++;
         }
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_UINT16 || dataType == IGTL_POLY_ATTR_DATA_TYPE_INT16 )
+      {
+        info->attributes[i].data = (igtl_uint16*)malloc((size_t)s);
+        ptr16_dst = (igtl_uint16*)info->attributes[i].data;
+        ptr16_src = (igtl_uint16*)ptr;
+        ptr16_src_end = ptr16_src + n;
+        while (ptr16_src < ptr16_src_end)
+        {
+          *ptr16_dst = BYTE_SWAP_INT32(*ptr16_src);
+          ptr16_dst ++;
+          ptr16_src ++;
+        }
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_FLOAT64)
+      {
+        info->attributes[i].data = (igtl_uint64*)malloc((size_t)s);
+        ptr64_dst = (igtl_uint64*)info->attributes[i].data;
+        ptr64_src = (igtl_uint64*)ptr;
+        ptr64_src_end = ptr64_src + n;
+        while (ptr64_src < ptr64_src_end)
+        {
+          *ptr64_dst = BYTE_SWAP_INT64(*ptr64_src);
+          ptr64_dst ++;
+          ptr64_src ++;
+        }
+      }
+      else
+      {
+        info->attributes[i].data = malloc((size_t)s);
+        memcpy(info->attributes[i].data, ptr,s);
+      }
     }
     else
     {
@@ -483,6 +544,12 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
   igtl_uint32 * ptr32_src;
   igtl_uint32 * ptr32_src_end;
   igtl_uint32 * ptr32_dst;
+  igtl_uint16 * ptr16_src;
+  igtl_uint16 * ptr16_src_end;
+  igtl_uint16 * ptr16_dst;
+  igtl_uint64 * ptr64_src;
+  igtl_uint64 * ptr64_src_end;
+  igtl_uint64 * ptr64_dst;
 
   igtl_polydata_attribute_header * att_header;
   igtl_polydata_attribute * att;
@@ -576,23 +643,20 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
     att = &(info->attributes[i]);
     att_header = (igtl_polydata_attribute_header *) ptr;
     att_header->type = att->type;
-    if (att->type == IGTL_POLY_ATTR_TYPE_SCALAR)
+    int attrType= (att->type & 0x1F);
+    if (attrType == IGTL_POLY_ATTR_TYPE_SCALAR)
       {
       att_header->ncomponents = att->ncomponents;
       }
-    else if (att->type == IGTL_POLY_ATTR_TYPE_VECTOR)
+    else if (attrType == IGTL_POLY_ATTR_TYPE_VECTOR)
       {
       att_header->ncomponents = 3;
       }
-    else if (att->type == IGTL_POLY_ATTR_TYPE_NORMAL)
+    else if (attrType == IGTL_POLY_ATTR_TYPE_NORMAL)
       {
       att_header->ncomponents = 3;
       }
-    else if (att->type == IGTL_POLY_ATTR_TYPE_8BIT_RGBA)
-    {
-      att_header->ncomponents = 4;
-    }
-    else if (att->type == IGTL_POLY_ATTR_TYPE_FLOAT_RGBA)
+    else if (attrType == IGTL_POLY_ATTR_TYPE_RGBA)
     {
       att_header->ncomponents = 4;
     }
@@ -634,57 +698,115 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
     }
 
   /* Attributes */
+  
   for (i = 0; i < info->header.nattributes; i ++)
     {
-    if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_SCALAR)
+      int dataTypeSize = sizeof(igtl_float32); // by default a float32 data
+      int dataType = info->attributes[i].type>>5; // upper 3 bit of the attribute type is use to specifye the data type of the attribute.
+      int attrType= (info->attributes[i].type & 0x1F);
+      if(dataType == IGTL_POLY_ATTR_DATA_TYPE_FLOAT64)
+      {
+        dataTypeSize = sizeof(igtl_float64);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_INT8)
+      {
+        dataTypeSize = sizeof(igtl_int8);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_UINT8)
+      {
+        dataTypeSize = sizeof(igtl_uint8);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_INT16)
+      {
+        dataTypeSize = sizeof(igtl_int16);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_UINT16)
+      {
+        dataTypeSize = sizeof(igtl_uint16);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_INT32)
+      {
+        dataTypeSize = sizeof(igtl_int32);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_UINT32)
+      {
+        dataTypeSize = sizeof(igtl_uint32);
+      }
+    if ( attrType == IGTL_POLY_ATTR_TYPE_SCALAR)
       {
       n = info->attributes[i].ncomponents * info->attributes[i].n;
-      size = n * sizeof(igtl_float32);
+      size = n * dataTypeSize;
       }
-    else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_NORMAL)
+    else if (attrType == IGTL_POLY_ATTR_TYPE_NORMAL)
       {
       n = 3 * info->attributes[i].n;
-      size = n * sizeof(igtl_float32);
+      size = n * dataTypeSize;
       }
-    else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_VECTOR)
+    else if (attrType == IGTL_POLY_ATTR_TYPE_VECTOR)
       {
       n = 3 * info->attributes[i].n;
-      size = n * sizeof(igtl_float32);
+      size = n * dataTypeSize;
       }
-    else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_8BIT_RGBA)
+    else if (attrType == IGTL_POLY_ATTR_TYPE_RGBA)
     {
       n = 4 * info->attributes[i].n;
-      size = n * sizeof(igtl_int8);
-    }
-    else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_FLOAT_RGBA)
-    {
-      n = 4 * info->attributes[i].n;
-      size = n * sizeof(igtl_float32);
+      size = n * dataTypeSize;
     }
     else /* TENSOR */
       {
       n = 9 * info->attributes[i].n;
-      size = n * sizeof(igtl_float32);
+      size = n * dataTypeSize;
       }
-    if (igtl_is_little_endian()&& info->attributes[i].type <= 0x80)
+    if (igtl_is_little_endian())
+    {
+      if(dataType == IGTL_POLY_ATTR_DATA_TYPE_FLOAT32 || dataType == IGTL_POLY_ATTR_DATA_TYPE_UINT32 || dataType == IGTL_POLY_ATTR_DATA_TYPE_INT32)
       {
-      ptr32_dst = (igtl_uint32*)ptr;
-      ptr32_src = (igtl_uint32*)info->attributes[i].data;
-      ptr32_src_end = ptr32_src + n;
-      while (ptr32_src < ptr32_src_end)
+        ptr32_dst = (igtl_uint32*)ptr;
+        ptr32_src = (igtl_uint32*)info->attributes[i].data;
+        ptr32_src_end = ptr32_src + n;
+        while (ptr32_src < ptr32_src_end)
         {
-        *ptr32_dst = BYTE_SWAP_INT32(*ptr32_src);
-        ptr32_dst ++;
-        ptr32_src ++;
+          *ptr32_dst = BYTE_SWAP_INT32(*ptr32_src);
+          ptr32_dst ++;
+          ptr32_src ++;
         }
       }
-    else
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_UINT16 || dataType == IGTL_POLY_ATTR_DATA_TYPE_INT16 )
       {
-      memcpy(ptr, info->attributes[i].data, size);
+        ptr16_dst = (igtl_uint16*)ptr;
+        ptr16_src = (igtl_uint16*)info->attributes[i].data;
+        ptr16_src_end = ptr16_src + n;
+        while (ptr16_src < ptr16_src_end)
+        {
+          *ptr16_dst = BYTE_SWAP_INT16(*ptr16_src);
+          ptr16_dst ++;
+          ptr16_src ++;
+        }
       }
-    ptr += size;
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_FLOAT64)
+      {
+        ptr64_dst = (igtl_uint64*)ptr;
+        ptr64_src = (igtl_uint64*)info->attributes[i].data;
+        ptr64_src_end = ptr64_src + n;
+        while (ptr64_src < ptr64_src_end)
+        {
+          *ptr64_dst = BYTE_SWAP_INT64(*ptr64_src);
+          ptr64_dst ++;
+          ptr64_src ++;
+        }
+      }
+      else
+      {
+        memcpy(ptr, info->attributes[i].data, size);
+      }
     }
-
+    else
+    {
+      memcpy(ptr, info->attributes[i].data, size);
+    }
+    ptr += size;
+  }
+  
   return 1;
 }
 
@@ -728,40 +850,65 @@ igtl_uint64 igtl_export igtl_polydata_get_size(igtl_polydata_info * info, int ty
     {
     data_size ++;
     }
-
-  /* Attributes */
+  
+    /* Attributes */
   for (i = 0; i < info->header.nattributes; i ++)
     {
-    if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_SCALAR)
+      int dataTypeSize = sizeof(igtl_float32); // by default a float32 data
+      int dataType = info->attributes[i].type>>5; // upper 3 bit of the attribute type is use to specifye the data type of the attribute.
+      int attrType = (info->attributes[i].type & 0x1F); // upper 3 bit of the attribute type is use to specifye the data type of the attribute.
+      if(dataType == IGTL_POLY_ATTR_DATA_TYPE_FLOAT64)
+      {
+        dataTypeSize = sizeof(igtl_float64);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_INT8)
+      {
+        dataTypeSize = sizeof(igtl_int8);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_UINT8)
+      {
+        dataTypeSize = sizeof(igtl_uint8);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_INT16)
+      {
+        dataTypeSize = sizeof(igtl_int16);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_UINT16)
+      {
+        dataTypeSize = sizeof(igtl_uint16);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_INT32)
+      {
+        dataTypeSize = sizeof(igtl_int32);
+      }
+      else if(dataType == IGTL_POLY_ATTR_DATA_TYPE_UINT32)
+      {
+        dataTypeSize = sizeof(igtl_uint32);
+      }
+    if (attrType == IGTL_POLY_ATTR_TYPE_SCALAR)
       {
       n = info->attributes[i].ncomponents * info->attributes[i].n;
-      size = n * sizeof(igtl_float32);
+      size = n * dataTypeSize;
       }
-    else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_NORMAL)
+    else if (attrType == IGTL_POLY_ATTR_TYPE_NORMAL)
       {
       n = 3 * info->attributes[i].n;
-      size = n * sizeof(igtl_float32);
+      size = n * dataTypeSize;
       }
-    else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_VECTOR)
+    else if (attrType == IGTL_POLY_ATTR_TYPE_VECTOR)
       {
       n = 3 * info->attributes[i].n;
-      size = n * sizeof(igtl_float32);
+      size = n * dataTypeSize;
       }
-    else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_FLOAT_RGBA)
+    else if (attrType == IGTL_POLY_ATTR_TYPE_RGBA)
     {
       n = 4 * info->attributes[i].n;
-      size = n * sizeof(igtl_float32);
+      size = n * dataTypeSize;
     }
-    else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_8BIT_RGBA)
-    {
-      n = 4 * info->attributes[i].n;
-      size = n * sizeof(igtl_int8);
-    }
-      
     else /* TENSOR */
       {
       n = 9 * info->attributes[i].n;
-      size = n * sizeof(igtl_float32);
+        size = n * dataTypeSize;
       }
     data_size += size;
     }

@@ -254,20 +254,26 @@ PolyDataAttribute::~PolyDataAttribute()
 void PolyDataAttribute::Clear()
 {
   this->m_Type        = POINT_SCALAR;
+  this->m_DataType    = DATA_TYPE_FLOAT32;
   this->m_NComponents = 1;
-  this->m_NIntComponents = 1;
   this->m_Name        = "";
   this->m_Data.clear();
   this->m_Size        = 0;
-  this->m_IntData.clear();
-  this->m_IntSize        = 0;
+  this->m_Int8Data.clear();
+  this->m_Int16Data.clear();
+  this->m_Int32Data.clear();
+  this->m_Uint8Data.clear();
+  this->m_Uint16Data.clear();
+  this->m_Uint32Data.clear();
+  this->m_Float64Data.clear();
 }
 
 int PolyDataAttribute::SetType(int t, int n)
 {
   int valid = 0;
-
-  switch(t)
+  int attributType = 0x1F & ((igtl_uint8)t);
+  this->m_DataType = ((igtl_uint8)t)>>5; // upper 5 bit of the attribute type is use to specifye the data type of the attribute.
+  switch(attributType)
     {
     case POINT_SCALAR:
     case CELL_SCALAR:
@@ -301,51 +307,65 @@ int PolyDataAttribute::SetType(int t, int n)
       break;
     }
   if (valid)
-    {
-    this->m_Type = t;
+  {
+    this->m_Type = attributType;
     unsigned int n = this->m_Size * this->m_NComponents;
-    if (n != this->m_Data.size())
-      {
-      // TODO: this may cause unnecesasry memory allocation,
-      // unless m_Size == 0.
-      // Memory should be reallocate just before use.
-      this->m_Data.resize(n);
-      }
-    return t;
+    switch (m_DataType) {
+      case DATA_TYPE_FLOAT32:
+        if (n != this->m_Data.size())
+        {
+          // TODO: this may cause unnecesasry memory allocation,
+          // unless m_Size == 0.
+          // Memory should be reallocate just before use.
+          this->m_Data.resize(n);
+        }
+        break;
+      case DATA_TYPE_FLOAT64:
+        if (n != this->m_Float64Data.size())
+        {
+          this->m_Float64Data.resize(n);
+        }
+        break;
+      case DATA_TYPE_INT8:
+        if (n != this->m_Float64Data.size())
+        {
+          this->m_Int8Data.resize(n);
+        }
+        break;
+      case DATA_TYPE_UINT8:
+        if (n != this->m_Uint8Data.size())
+        {
+          this->m_Uint8Data.resize(n);
+          break;
+        }
+      case DATA_TYPE_INT16:
+        if (n != this->m_Int16Data.size())
+        {
+          this->m_Int16Data.resize(n);
+        }
+        break;
+      case DATA_TYPE_UINT16:
+        if (n != this->m_Uint16Data.size())
+        {
+          this->m_Uint16Data.resize(n);
+        }
+        break;
+      case DATA_TYPE_INT32:
+        if (n != this->m_Int32Data.size())
+        {
+          this->m_Int32Data.resize(n);
+        }
+        break;
+      case DATA_TYPE_UINT32:
+        if (n != this->m_Uint32Data.size())
+        {
+          this->m_Uint32Data.resize(n);
+        }
+        break;
+      default:
+        return -1;
     }
-  else
-    {
-    return -1;
-    }
-}
-
-  
-int PolyDataAttribute::SetIntType(int t, int n)
-{
-  int valid = 0;
-  
-  switch(t)
-  {
-    case POINT_8BITRGBA:
-    case CELL_8BITRGBA:
-      valid = 1;
-      this->m_NIntComponents = 4;
-      break;
-    default:
-      break;
-  }
-  if (valid)
-  {
-    this->m_Type = t;
-    unsigned int n = this->m_IntSize * this->m_NIntComponents;
-    if (n != this->m_IntData.size())
-    {
-      // TODO: this may cause unnecesasry memory allocation,
-      // unless m_Size == 0.
-      // Memory should be reallocate just before use.
-      this->m_IntData.resize(n);
-    }
-    return t;
+    return attributType;
   }
   else
   {
@@ -359,53 +379,80 @@ igtlUint32 PolyDataAttribute::GetNumberOfComponents()
   return this->m_NComponents;
 }
 
-igtlUint32 PolyDataAttribute::GetNumberOfIntComponents()
-{
-  return this->m_NIntComponents;
-}
-  
   
 igtlUint32 PolyDataAttribute::SetSize(igtlUint32 size)
 {
   this->m_Size = size;
+  return SetTypedSize(size);
+}
 
+igtlUint32 PolyDataAttribute::SetTypedSize(igtlUint32 size)
+{
+  this->m_Size = size;
   unsigned int n = this->m_Size * this->m_NComponents;
-  if (n != this->m_Data.size())
-    {
-    // TODO: this may cause unnecesasry memory allocation.
-    // Memory should be reallocate just before use.
-    this->m_Data.resize(n);
-    }
-
-  this->m_Data.resize(size*this->m_NComponents);
-  return this->m_Size;
-}
-
-igtlUint32 PolyDataAttribute::SetIntSize(igtlUint32 size)
-{
-  this->m_IntSize = size;
-  
-  unsigned int n = this->m_IntSize * this->m_NIntComponents;
-  if (n != this->m_IntData.size())
-  {
-    // TODO: this may cause unnecesasry memory allocation.
-    // Memory should be reallocate just before use.
-    this->m_IntData.resize(n);
+  switch (this->m_DataType) {
+    case DATA_TYPE_FLOAT32:
+      if (n != this->m_Data.size())
+      {
+        // TODO: this may cause unnecesasry memory allocation,
+        // unless m_Size == 0.
+        // Memory should be reallocate just before use.
+        this->m_Data.resize(n);
+      }
+      break;
+    case DATA_TYPE_FLOAT64:
+      if (n != this->m_Float64Data.size())
+      {
+        this->m_Float64Data.resize(n);
+      }
+      break;
+    case DATA_TYPE_INT8:
+      if (n != this->m_Float64Data.size())
+      {
+        this->m_Int8Data.resize(n);
+      }
+      break;
+    case DATA_TYPE_UINT8:
+      if (n != this->m_Uint8Data.size())
+      {
+        this->m_Uint8Data.resize(n);
+        break;
+      }
+    case DATA_TYPE_INT16:
+      if (n != this->m_Int16Data.size())
+      {
+        this->m_Int16Data.resize(n);
+      }
+      break;
+    case DATA_TYPE_UINT16:
+      if (n != this->m_Uint16Data.size())
+      {
+        this->m_Uint16Data.resize(n);
+      }
+      break;
+    case DATA_TYPE_INT32:
+      if (n != this->m_Int32Data.size())
+      {
+        this->m_Int32Data.resize(n);
+      }
+      break;
+    case DATA_TYPE_UINT32:
+      if (n != this->m_Uint32Data.size())
+      {
+        this->m_Uint32Data.resize(n);
+      }
+      break;
+    default:
+      return -1;
   }
-  
-  this->m_IntData.resize(size*this->m_NIntComponents);
-  return this->m_IntSize;
+  return this->m_Size;
 }
 
-igtlUint32 PolyDataAttribute::GetSize() 
+igtlUint32 PolyDataAttribute::GetSize()
 {
   return this->m_Size;
 }
   
-igtlUint32 PolyDataAttribute::GetIntSize()
-{
-  return this->m_IntSize;
-}
   
 void PolyDataAttribute::SetName(const char * name)
 {
@@ -429,7 +476,7 @@ int PolyDataAttribute::SetData(igtlFloat32 * data)
   return 1;
 }
   
-int PolyDataAttribute::SetIntData(igtlInt8 * data)
+int PolyDataAttribute::SetInt8Data(igtlInt8 * data)
 {
   if (!data)
   {
@@ -437,7 +484,7 @@ int PolyDataAttribute::SetIntData(igtlInt8 * data)
   }
   
   std::vector<igtlInt8>::iterator iter;
-  for (iter = this->m_IntData.begin(); iter != this->m_IntData.end(); iter ++)
+  for (iter = this->m_Int8Data.begin(); iter != this->m_Int8Data.end(); iter ++)
   {
     *iter = *data;
     data ++;
@@ -446,6 +493,109 @@ int PolyDataAttribute::SetIntData(igtlInt8 * data)
   return 1;
 }
 
+int PolyDataAttribute::SetUint8Data(igtlUint8 * data)
+{
+  if (!data)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlUint8>::iterator iter;
+  for (iter = this->m_Uint8Data.begin(); iter != this->m_Uint8Data.end(); iter ++)
+  {
+    *iter = *data;
+    data ++;
+  }
+  
+  return 1;
+}
+
+int PolyDataAttribute::SetInt16Data(igtlInt16 * data)
+{
+  if (!data)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlInt16>::iterator iter;
+  for (iter = this->m_Int16Data.begin(); iter != this->m_Int16Data.end(); iter ++)
+  {
+    *iter = *data;
+    data ++;
+  }
+  
+  return 1;
+}
+
+int PolyDataAttribute::SetUint16Data(igtlUint16 * data)
+{
+  if (!data)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlUint16>::iterator iter;
+  for (iter = this->m_Uint16Data.begin(); iter != this->m_Uint16Data.end(); iter ++)
+  {
+    *iter = *data;
+    data ++;
+  }
+  
+  return 1;
+}
+
+int PolyDataAttribute::SetInt32Data(igtlInt32 * data)
+{
+  if (!data)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlInt32>::iterator iter;
+  for (iter = this->m_Int32Data.begin(); iter != this->m_Int32Data.end(); iter ++)
+  {
+    *iter = *data;
+    data ++;
+  }
+  
+  return 1;
+}
+
+int PolyDataAttribute::SetUint32Data(igtlUint32 * data)
+{
+  if (!data)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlUint32>::iterator iter;
+  for (iter = this->m_Uint32Data.begin(); iter != this->m_Uint32Data.end(); iter ++)
+  {
+    *iter = *data;
+    data ++;
+  }
+  
+  return 1;
+}
+
+int PolyDataAttribute::SetFloat64Data(igtlFloat64 *data)
+{
+  if (!data)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlFloat64>::iterator iter;
+  for (iter = this->m_Float64Data.begin(); iter != this->m_Float64Data.end(); iter ++)
+  {
+    *iter = *data;
+    data ++;
+  }
+  
+  return 1;
+}
+
+  
 int PolyDataAttribute::GetData(igtlFloat32 * data)
 {
   if (!data)
@@ -462,7 +612,7 @@ int PolyDataAttribute::GetData(igtlFloat32 * data)
   return 1;
 }
   
-int PolyDataAttribute::GetIntData(igtlInt8 * data)
+int PolyDataAttribute::GetInt8Data(igtlInt8 * data)
 {
   if (!data)
   {
@@ -470,13 +620,112 @@ int PolyDataAttribute::GetIntData(igtlInt8 * data)
   }
   
   std::vector<igtlInt8>::iterator iter;
-  for (iter = this->m_IntData.begin(); iter != this->m_IntData.end(); iter ++)
+  for (iter = this->m_Int8Data.begin(); iter != this->m_Int8Data.end(); iter ++)
   {
     *data = *iter;
     data ++;
   }
   return 1;
 }
+  
+  
+int PolyDataAttribute::GetInt16Data(igtlInt16 * data)
+{
+  if (!data)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlInt16>::iterator iter;
+  for (iter = this->m_Int16Data.begin(); iter != this->m_Int16Data.end(); iter ++)
+  {
+    *data = *iter;
+    data ++;
+  }
+  return 1;
+}
+
+int PolyDataAttribute::GetInt32Data(igtlInt32 * data)
+{
+  if (!data)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlInt32>::iterator iter;
+  for (iter = this->m_Int32Data.begin(); iter != this->m_Int32Data.end(); iter ++)
+  {
+    *data = *iter;
+    data ++;
+  }
+  return 1;
+}
+
+int PolyDataAttribute::GetUint8Data(igtlUint8 * data)
+{
+  if (!data)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlUint8>::iterator iter;
+  for (iter = this->m_Uint8Data.begin(); iter != this->m_Uint8Data.end(); iter ++)
+  {
+    *data = *iter;
+    data ++;
+  }
+  return 1;
+}
+
+
+int PolyDataAttribute::GetUint16Data(igtlUint16 * data)
+{
+  if (!data)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlUint16>::iterator iter;
+  for (iter = this->m_Uint16Data.begin(); iter != this->m_Uint16Data.end(); iter ++)
+  {
+    *data = *iter;
+    data ++;
+  }
+  return 1;
+}
+
+int PolyDataAttribute::GetUint32Data(igtlUint32 * data)
+{
+  if (!data)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlUint32>::iterator iter;
+  for (iter = this->m_Uint32Data.begin(); iter != this->m_Uint32Data.end(); iter ++)
+  {
+    *data = *iter;
+    data ++;
+  }
+  return 1;
+}
+  
+int PolyDataAttribute::GetFloat64Data(igtlFloat64 * data)
+{
+  if (!data)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlFloat64>::iterator iter;
+  for (iter = this->m_Float64Data.begin(); iter != this->m_Float64Data.end(); iter ++)
+  {
+    *data = *iter;
+    data ++;
+  }
+  return 1;
+}
+
 
 int PolyDataAttribute::SetNthData(unsigned int n, igtlFloat32 * data)
 {
@@ -516,16 +765,16 @@ int PolyDataAttribute::GetNthData(unsigned int n, igtlFloat32 * data)
 }
   
   
-int PolyDataAttribute::SetNthIntData(unsigned int n, igtlInt8 * data)
+int PolyDataAttribute::SetNthInt8Data(unsigned int n, igtlInt8 * data)
 {
-  if (n >= this->m_IntSize)
+  if (n >= this->m_Size)
   {
     return 0;
   }
   
   std::vector<igtlInt8>::iterator iter;
-  iter = this->m_IntData.begin() + n*this->m_NIntComponents;
-  for (unsigned int i = 0; i < this->m_NIntComponents; i ++)
+  iter = this->m_Int8Data.begin() + n*this->m_NComponents;
+  for (unsigned int i = 0; i < this->m_NComponents; i ++)
   {
     *iter = *data;
     iter ++;
@@ -534,16 +783,16 @@ int PolyDataAttribute::SetNthIntData(unsigned int n, igtlInt8 * data)
   return 1;
 }
 
-int PolyDataAttribute::GetNthIntData(unsigned int n, igtlInt8 * data)
+int PolyDataAttribute::GetNthInt8Data(unsigned int n, igtlInt8 * data)
 {
-  if (n >= this->m_IntSize)
+  if (n >= this->m_Size)
   {
     return 0;
   }
   
   std::vector<igtlInt8>::iterator iter;
-  iter = this->m_IntData.begin() + n*this->m_NIntComponents;
-  for (unsigned int i = 0; i < this->m_NIntComponents; i ++)
+  iter = this->m_Int8Data.begin() + n*this->m_NComponents;
+  for (unsigned int i = 0; i < this->m_NComponents; i ++)
   {
     *data = *iter;
     iter ++;
@@ -553,6 +802,228 @@ int PolyDataAttribute::GetNthIntData(unsigned int n, igtlInt8 * data)
   return 1;
 }
 
+int PolyDataAttribute::GetNthUint8Data(unsigned int n, igtlUint8 * data)
+{
+  if (n >= this->m_Size)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlUint8>::iterator iter;
+  iter = this->m_Uint8Data.begin() + n*this->m_NComponents;
+  for (unsigned int i = 0; i < this->m_NComponents; i ++)
+  {
+    *data = *iter;
+    iter ++;
+    data ++;
+  }
+  
+  return 1;
+}
+  
+int PolyDataAttribute::SetNthUint8Data(unsigned int n, igtlUint8 * data)
+{
+  if (n >= this->m_Size)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlUint8>::iterator iter;
+  iter = this->m_Uint8Data.begin() + n*this->m_NComponents;
+  for (unsigned int i = 0; i < this->m_NComponents; i ++)
+  {
+    *iter = *data;
+    iter ++;
+    data ++;
+  }
+  return 1;
+}
+  
+int PolyDataAttribute::GetNthInt16Data(unsigned int n, igtlInt16 * data)
+{
+  if (n >= this->m_Size)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlInt16>::iterator iter;
+  iter = this->m_Int16Data.begin() + n*this->m_NComponents;
+  for (unsigned int i = 0; i < this->m_NComponents; i ++)
+  {
+    *data = *iter;
+    iter ++;
+    data ++;
+  }
+  
+  return 1;
+}
+
+int PolyDataAttribute::SetNthInt16Data(unsigned int n, igtlInt16 * data)
+{
+  if (n >= this->m_Size)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlInt16>::iterator iter;
+  iter = this->m_Int16Data.begin() + n*this->m_NComponents;
+  for (unsigned int i = 0; i < this->m_NComponents; i ++)
+  {
+    *iter = *data;
+    iter ++;
+    data ++;
+  }
+  return 1;
+}
+
+int PolyDataAttribute::GetNthUint16Data(unsigned int n, igtlUint16 * data)
+{
+  if (n >= this->m_Size)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlUint16>::iterator iter;
+  iter = this->m_Uint16Data.begin() + n*this->m_NComponents;
+  for (unsigned int i = 0; i < this->m_NComponents; i ++)
+  {
+    *data = *iter;
+    iter ++;
+    data ++;
+  }
+  
+  return 1;
+}
+
+int PolyDataAttribute::SetNthUint16Data(unsigned int n, igtlUint16 * data)
+{
+  if (n >= this->m_Size)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlUint16>::iterator iter;
+  iter = this->m_Uint16Data.begin() + n*this->m_NComponents;
+  for (unsigned int i = 0; i < this->m_NComponents; i ++)
+  {
+    *iter = *data;
+    iter ++;
+    data ++;
+  }
+  return 1;
+}
+
+  int PolyDataAttribute::GetNthInt32Data(unsigned int n, igtlInt32 * data)
+  {
+    if (n >= this->m_Size)
+    {
+      return 0;
+    }
+    
+    std::vector<igtlInt32>::iterator iter;
+    iter = this->m_Int32Data.begin() + n*this->m_NComponents;
+    for (unsigned int i = 0; i < this->m_NComponents; i ++)
+    {
+      *data = *iter;
+      iter ++;
+      data ++;
+    }
+    
+    return 1;
+  }
+  
+  int PolyDataAttribute::SetNthInt32Data(unsigned int n, igtlInt32 * data)
+  {
+    if (n >= this->m_Size)
+    {
+      return 0;
+    }
+    
+    std::vector<igtlInt32>::iterator iter;
+    iter = this->m_Int32Data.begin() + n*this->m_NComponents;
+    for (unsigned int i = 0; i < this->m_NComponents; i ++)
+    {
+      *iter = *data;
+      iter ++;
+      data ++;
+    }
+    return 1;
+  }
+  
+  int PolyDataAttribute::GetNthUint32Data(unsigned int n, igtlUint32 * data)
+  {
+    if (n >= this->m_Size)
+    {
+      return 0;
+    }
+    
+    std::vector<igtlUint32>::iterator iter;
+    iter = this->m_Uint32Data.begin() + n*this->m_NComponents;
+    for (unsigned int i = 0; i < this->m_NComponents; i ++)
+    {
+      *data = *iter;
+      iter ++;
+      data ++;
+    }
+    
+    return 1;
+  }
+  
+  int PolyDataAttribute::SetNthUint32Data(unsigned int n, igtlUint32 * data)
+  {
+    if (n >= this->m_Size)
+    {
+      return 0;
+    }
+    
+    std::vector<igtlUint32>::iterator iter;
+    iter = this->m_Uint32Data.begin() + n*this->m_NComponents;
+    for (unsigned int i = 0; i < this->m_NComponents; i ++)
+    {
+      *iter = *data;
+      iter ++;
+      data ++;
+    }
+    return 1;
+  }
+  
+int PolyDataAttribute::GetNthFloat64Data(unsigned int n, igtlFloat64 *data)
+{
+  if (n >= this->m_Size)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlFloat64>::iterator iter;
+  iter = this->m_Float64Data.begin() + n*this->m_NComponents;
+  for (unsigned int i = 0; i < this->m_NComponents; i ++)
+  {
+    *data = *iter;
+    iter ++;
+    data ++;
+  }
+  
+  return 1;
+}
+
+int PolyDataAttribute::SetNthFloat64Data(unsigned int n, igtlFloat64 * data)
+{
+  if (n >= this->m_Size)
+  {
+    return 0;
+  }
+  
+  std::vector<igtlFloat64>::iterator iter;
+  iter = this->m_Float64Data.begin() + n*this->m_NComponents;
+  for (unsigned int i = 0; i < this->m_NComponents; i ++)
+  {
+    *iter = *data;
+    iter ++;
+    data ++;
+  }
+  return 1;
+}
+  
 // Description:
 // PolyDataMessage class implementation
 PolyDataMessage::PolyDataMessage()
@@ -639,7 +1110,8 @@ void IGTLCommon_EXPORT SetPolyDataInfoAttribute(igtl_polydata_info * info, PolyD
     PolyDataAttribute * src =  pdm->GetAttribute(i);
     if (src)
     {
-      attr->type = src->GetType();
+      attr->type = src->GetType() + (src->GetDataType()<<5);
+      
       if (attr->name)
       {
         free(attr->name);
@@ -653,15 +1125,11 @@ void IGTLCommon_EXPORT SetPolyDataInfoAttribute(igtl_polydata_info * info, PolyD
       {
         free(attr->data);
       }
-      if (attr->type <= 0x80)
+      attr->ncomponents = src->GetNumberOfComponents();
+      attr->n = src->GetSize();
+      igtlUint32 size = attr->ncomponents * attr->n;
+      if (src->GetDataType() == PolyDataAttribute::DATA_TYPE_FLOAT32)
       {
-        attr->ncomponents = src->GetNumberOfComponents();
-        attr->n = src->GetSize();
-        //attr->name = const_cast<char*>(src->GetName());
-        // TODO: aloways allocating memory isn't a good approach...
-        
-        igtlUint32 size = attr->ncomponents * attr->n;
-        
         attr->data = (igtlFloat32*)malloc((size_t)size*sizeof(igtlFloat32));
         
         if (attr->data)
@@ -670,18 +1138,77 @@ void IGTLCommon_EXPORT SetPolyDataInfoAttribute(igtl_polydata_info * info, PolyD
         }
         attr ++;
       }
-      else
+      if (src->GetDataType() == PolyDataAttribute::DATA_TYPE_INT16)
       {
-        attr->ncomponents = src->GetNumberOfIntComponents();
-        attr->n = src->GetIntSize();
+        attr->data = (igtlInt16*)malloc((size_t)size*sizeof(igtlInt16));
+        
+        if (attr->data)
+        {
+          src->GetInt16Data((igtlInt16*)attr->data);
+        }
+        attr ++;
+      }
+      if (src->GetDataType() == PolyDataAttribute::DATA_TYPE_UINT16)
+      {
+        attr->data = (igtlUint16*)malloc((size_t)size*sizeof(igtlUint16));
+        
+        if (attr->data)
+        {
+          src->GetUint16Data((igtlUint16*)attr->data);
+        }
+        attr ++;
+      }
+      else if(src->GetDataType() == PolyDataAttribute::DATA_TYPE_INT32)
+      {
+        attr->data = (igtlInt32*)malloc((size_t)size*sizeof(igtlInt32));
+        
+        if (attr->data)
+        {
+          src->GetInt32Data((igtlInt32*)attr->data);
+        }
+        attr ++;
+      }
+      else if(src->GetDataType() == PolyDataAttribute::DATA_TYPE_UINT32)
+      {
+        attr->data = (igtlUint32*)malloc((size_t)size*sizeof(igtlUint32));
+        
+        if (attr->data)
+        {
+          src->GetUint32Data((igtlUint32*)attr->data);
+        }
+        attr ++;
+      }
+      else if (src->GetDataType() == PolyDataAttribute::DATA_TYPE_FLOAT64)
+      {
+        attr->data = (igtlFloat64*)malloc((size_t)size*sizeof(igtlFloat64));
+        
+        if (attr->data)
+        {
+          src->GetFloat64Data((igtlFloat64*)attr->data);
+        }
+        attr ++;
+      }
+      else if (src->GetDataType() == PolyDataAttribute::DATA_TYPE_INT8)
+      {
         //attr->name = const_cast<char*>(src->GetName());
         // TODO: aloways allocating memory isn't a good approach...
-        igtlUint32 size = attr->ncomponents * attr->n;
-        
+
         attr->data = malloc((size_t)size*sizeof(igtlInt8));
         if (attr->data)
         {
-          src->GetIntData((igtlInt8*)attr->data);
+          src->GetInt8Data((igtlInt8*)attr->data);
+        }
+        attr ++;
+      }
+      else if (src->GetDataType() == PolyDataAttribute::DATA_TYPE_UINT8)
+      {
+        //attr->name = const_cast<char*>(src->GetName());
+        // TODO: aloways allocating memory isn't a good approach...
+        
+        attr->data = malloc((size_t)size*sizeof(igtlUint8));
+        if (attr->data)
+        {
+          src->GetUint8Data((igtlUint8*)attr->data);
         }
         attr ++;
       }
@@ -952,30 +1479,51 @@ int PolyDataMessage::UnpackContent()
   this->m_Attributes.clear();
   igtl_polydata_attribute * attr = info.attributes;
   for (unsigned int i = 0; i < info.header.nattributes; i ++)
-    {
-    
-
+  {
     PolyDataAttribute::Pointer pda = PolyDataAttribute::New();
     if (pda.IsNotNull())
       {
       pda->Clear();
       pda->SetName(attr->name);
-      if(attr->type<=0X80)
+      pda->SetType(attr->type, attr->ncomponents);
+      pda->SetSize(attr->n);
+      
+      if(pda->GetDataType()==PolyDataAttribute::DATA_TYPE_FLOAT32)
       {
-        pda->SetType(attr->type, attr->ncomponents);
-        pda->SetSize(attr->n);
         pda->SetData((igtlFloat32*)attr->data);
       }
-      else
+      else if(pda->GetDataType()==PolyDataAttribute::DATA_TYPE_FLOAT64)
       {
-        pda->SetIntType(attr->type, attr->ncomponents);
-        pda->SetIntSize(attr->n);
-        pda->SetIntData((igtlInt8*)attr->data);
+        pda->SetFloat64Data((igtlFloat64*) attr->data);
+      }
+      else if(pda->GetDataType()==PolyDataAttribute::DATA_TYPE_INT32)
+      {
+        pda->SetInt32Data((igtlInt32*) attr->data);
+      }
+      else if(pda->GetDataType()==PolyDataAttribute::DATA_TYPE_UINT32)
+      {
+        pda->SetUint32Data((igtlUint32*) attr->data);
+      }
+      else if(pda->GetDataType()==PolyDataAttribute::DATA_TYPE_INT16)
+      {
+        pda->SetInt16Data((igtlInt16*) attr->data);
+      }
+      else if(pda->GetDataType()==PolyDataAttribute::DATA_TYPE_UINT16)
+      {
+        pda->SetUint16Data((igtlUint16*) attr->data);
+      }
+      else if(pda->GetDataType()==PolyDataAttribute::DATA_TYPE_INT8)
+      {
+        pda->SetInt8Data((igtlInt8*) attr->data);
+      }
+      else if(pda->GetDataType()==PolyDataAttribute::DATA_TYPE_UINT8)
+      {
+        pda->SetUint8Data((igtlUint8*) attr->data);
       }
       attr ++;
       this->m_Attributes.push_back(pda);
       }
-    }
+  }
 
 
   return 1;

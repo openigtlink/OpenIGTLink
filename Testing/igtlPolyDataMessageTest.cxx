@@ -36,7 +36,7 @@ static igtl_float32 points[8][3]={{0,0,0}, {1,0,0}, {1,1,0}, {0,1,0},
   {0,0,1}, {1,0,1}, {1,1,1}, {0,1,1}};
 static igtl_uint32 polyArray[6][4]={{0,1,2,3}, {4,5,6,7}, {0,1,5,4},
   {1,2,6,5}, {2,3,7,6}, {3,0,4,7}};
-static igtlInt8 attributeRGBA[8][4]={{10,10,20,1}, {15,20,30,1}, {18,122,1,1}, {0,1,0,1},
+static igtlUint8 attributeRGBA[8][4]={{10,10,20,1}, {15,20,30,1}, {18,122,1,1}, {0,1,0,1},
   {10,10,100,1}, {221,20,61,1}, {7,81,1,1}, {90,10,18,1}};
 static igtl_float32 attribute[8]={0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0};
 std::vector<std::list<igtl_uint32> >poly(6, std::list<igtl_uint32>(4));
@@ -146,10 +146,11 @@ void BuildUpElementsWithIntAttribute()
   polyAttr->SetSize(8);
   polyAttr->SetName("attr");
   polyAttr->SetData(attribute);
-  polyAttrRGB->SetIntType(IGTL_POLY_ATTR_TYPE_8BIT_RGBA, 4);
-  polyAttrRGB->SetIntSize(8);
+  int attrType = IGTL_POLY_ATTR_TYPE_RGBA+(IGTL_POLY_ATTR_DATA_TYPE_UINT8<<5);
+  polyAttrRGB->SetType(attrType, 4);
+  polyAttrRGB->SetSize(8);
   polyAttrRGB->SetName("attrRGB");
-  polyAttrRGB->SetIntData(*attributeRGBA);
+  polyAttrRGB->SetUint8Data(*attributeRGBA);
   polyDataSendMsg = igtl::PolyDataMessage::New();
   polyDataSendMsg->SetHeaderVersion(IGTL_HEADER_VERSION_1);
   polyDataSendMsg->SetPoints(polyPoint.GetPointer());
@@ -216,10 +217,10 @@ TEST(PolyDataMessageTest, UnpackWithIntAttributeFormatVersion1)
     attrUnpacked->GetNthData(i, attributeValue);
     EXPECT_EQ(attributeValue[0], attribute[i]);
   }
-  igtlInt8 attributeRGBAValue[4];
+  igtlUint8 attributeRGBAValue[4];
   for (int i = 0; i<8; i++)
   {
-    attrRGBAUnpacked->GetNthIntData(i, attributeRGBAValue);
+    attrRGBAUnpacked->GetNthUint8Data(i, attributeRGBAValue);
     EXPECT_THAT(attributeRGBAValue, ::testing::ElementsAreArray(attributeRGBA[i]));
   }
 }
