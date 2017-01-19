@@ -553,10 +553,13 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
 
   igtl_polydata_attribute_header * att_header;
   igtl_polydata_attribute * att;
-
+  
+  int dataTypeSize;
+  int dataType;
+  int attrType;
   int total_name_length;
   int name_length;
-
+  
   unsigned int i;
   int n;
   int size;
@@ -643,7 +646,7 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
     att = &(info->attributes[i]);
     att_header = (igtl_polydata_attribute_header *) ptr;
     att_header->type = att->type;
-    int attrType= (att->type & 0x1F);
+    attrType = (att->type & 0x1F);
     if (attrType == IGTL_POLY_ATTR_TYPE_SCALAR)
       {
       att_header->ncomponents = att->ncomponents;
@@ -701,9 +704,9 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
   
   for (i = 0; i < info->header.nattributes; i ++)
     {
-      int dataTypeSize = sizeof(igtl_float32); // by default a float32 data
-      int dataType = info->attributes[i].type>>5; // upper 3 bit of the attribute type is use to specifye the data type of the attribute.
-      int attrType= (info->attributes[i].type & 0x1F);
+      dataTypeSize = sizeof(igtl_float32); // by default a float32 data
+      dataType = info->attributes[i].type>>5; // upper 3 bit of the attribute type is use to specifye the data type of the attribute.
+      attrType= (info->attributes[i].type & 0x1F);
       if(dataType == IGTL_POLY_ATTR_DATA_TYPE_FLOAT64)
       {
         dataTypeSize = sizeof(igtl_float64);
@@ -818,6 +821,9 @@ igtl_uint64 igtl_export igtl_polydata_get_size(igtl_polydata_info * info, int ty
   unsigned int i;
   int n;
   int size;
+  int dataTypeSize;
+  int dataType;
+  int attrType;
 
   /* Header */
   data_size = sizeof(igtl_polydata_header);
@@ -854,9 +860,9 @@ igtl_uint64 igtl_export igtl_polydata_get_size(igtl_polydata_info * info, int ty
     /* Attributes */
   for (i = 0; i < info->header.nattributes; i ++)
     {
-      int dataTypeSize = sizeof(igtl_float32); // by default a float32 data
-      int dataType = info->attributes[i].type>>5; // upper 3 bit of the attribute type is use to specifye the data type of the attribute.
-      int attrType = (info->attributes[i].type & 0x1F); // upper 3 bit of the attribute type is use to specifye the data type of the attribute.
+      dataTypeSize = sizeof(igtl_float32); // by default a float32 data
+      dataType = info->attributes[i].type>>5; // upper 3 bit of the attribute type is use to specifye the data type of the attribute.
+      attrType = (info->attributes[i].type & 0x1F); // upper 3 bit of the attribute type is use to specifye the data type of the attribute.
       if(dataType == IGTL_POLY_ATTR_DATA_TYPE_FLOAT64)
       {
         dataTypeSize = sizeof(igtl_float64);
