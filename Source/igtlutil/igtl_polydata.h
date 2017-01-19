@@ -35,17 +35,6 @@ extern "C" {
 #define IGTL_POLY_ATTR_TYPE_TENSOR 0x03
 #define IGTL_POLY_ATTR_TYPE_RGBA   0x04
 
-#define IGTL_POLY_ATTR_DATA_TYPE_FLOAT32 0x00
-#define IGTL_POLY_ATTR_DATA_TYPE_FLOAT64 0x01
-#define IGTL_POLY_ATTR_DATA_TYPE_INT8    0x02
-#define IGTL_POLY_ATTR_DATA_TYPE_UINT8   0x03
-#define IGTL_POLY_ATTR_DATA_TYPE_INT16   0x04
-#define IGTL_POLY_ATTR_DATA_TYPE_UINT16  0x05
-#define IGTL_POLY_ATTR_DATA_TYPE_INT32   0x06
-#define IGTL_POLY_ATTR_DATA_TYPE_UINT32  0x07
-  
-  
-
 #pragma pack(1)     /* For 1-byte boundary in memory */
 
 /** POLYDATA Header */
@@ -92,7 +81,7 @@ typedef struct {
   igtl_uint8       ncomponents;
   igtl_uint32      n;
   char *           name;
-  void *   data;
+  igtl_float32 *   data;
 } igtl_polydata_attribute;
 
 /** POLYDATA info */
