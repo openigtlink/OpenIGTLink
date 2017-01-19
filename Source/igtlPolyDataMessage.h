@@ -257,6 +257,17 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
     CELL_TENSOR  = 0x13,
     CELL_RGBA    = 0x14,
   };
+  
+  enum {
+    DATA_TYPE_FLOAT32 = 0x00,
+    DATA_TYPE_FLOAT64 = 0x01,
+    DATA_TYPE_INT8    = 0x02,
+    DATA_TYPE_UINT8   = 0x03,
+    DATA_TYPE_INT16   = 0x04,
+    DATA_TYPE_UINT16  = 0x05,
+    DATA_TYPE_INT32   = 0x06,
+    DATA_TYPE_UINT32  = 0x07,
+  };
 
  public:
   typedef PolyDataAttribute         Self;
@@ -276,7 +287,7 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
   /// Clears the attributes
   void        Clear();
 
-  /// SetType() is used to set the attribute type. If the attribute is set properly,
+  /// SetFloatType() is used to set the attribute type. If the attribute is set properly,
   /// the function returns the type value (POINT_* or CELL_*). Otherwise
   /// the function returns negative value. The second argument will be ignored
   /// if 't' is neither POINT_SCALAR nor CELL_SCALAR.
@@ -287,7 +298,20 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
 
   /// Gets the attribute type.
   igtlUint8   GetType() { return this->m_Type; };
+  
+  /// Gets the attribute type.
+  igtlUint8   GetDataType() { return this->m_DataType; };
+  
+  /// SetFloatType() is used to set the attribute type. If the attribute is set properly,
+  /// the function returns the type value (POINT_* or CELL_*). Otherwise
+  /// the function returns negative value. The second argument will be ignored
+  /// if 't' is neither POINT_SCALAR nor CELL_SCALAR.
+  /// If the POINT_SCALAR and CELL_SCALAR is specified as 't', the number of
+  /// components can be specified as the second argument. The number of
+  /// components must be 0 < n < 128.
+  int         SetIntType(int t, int n=1);
 
+  
   /// Gets the number of components. The number depends on the type of the points/cells e.g. 
   /// 3 in case of POINT_VECTOR.
   igtlUint32  GetNumberOfComponents();
@@ -297,6 +321,12 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
 
   /// Gets the size of the attribute.
   igtlUint32  GetSize();
+  
+  /// Sets the size of the typed attribute.
+  igtlUint32  SetTypedSize(igtlUint32 size);
+  
+  /// Gets the size of the int type attribute.
+  igtlUint32  GetTypedSize();
 
   /// Sets the name of the attribute.
   void        SetName(const char * name);
@@ -309,17 +339,107 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
 
   /// Gets the attribute as a byte array.
   int         GetData(igtlFloat32 * data);
+  
+  /// Sets the attribute by byte array.
+  int         SetInt8Data(igtlInt8 * data);
+  
+  /// Gets the attribute as a byte array.
+  int         GetInt8Data(igtlInt8 * data);
+  
+  /// Sets the attribute by byte array.
+  int         SetUint8Data(igtlUint8 * data);
+  
+  /// Gets the attribute as a byte array.
+  int         GetUint8Data(igtlUint8 * data);
+  
+  /// Sets the attribute by byte array.
+  int         SetInt16Data(igtlInt16 * data);
+  
+  /// Gets the attribute as a byte array.
+  int         GetInt16Data(igtlInt16 * data);
+  
+  /// Sets the attribute by byte array.
+  int         SetUint16Data(igtlUint16 * data);
+  
+  /// Gets the attribute as a byte array.
+  int         GetUint16Data(igtlUint16 * data);
+  
+  /// Sets the attribute by byte array.
+  int         SetInt32Data(igtlInt32 * data);
+  
+  /// Gets the attribute as a byte array.
+  int         GetInt32Data(igtlInt32 * data);
+  
+  /// Sets the attribute by byte array.
+  int         SetUint32Data(igtlUint32 * data);
+  
+  /// Gets the attribute as a byte array.
+  int         GetUint32Data(igtlUint32 * data);
+  
+  /// Sets the attribute by byte array.
+  int         SetFloat64Data(igtlFloat64 * data);
+  
+  /// Gets the attribute as a byte array.
+  int         GetFloat64Data(igtlFloat64 * data);
 
   /// Sets the Nth data.
   int         SetNthData(unsigned int n, igtlFloat32 * data);
 
   /// Gets the Nth data.
   int         GetNthData(unsigned int n, igtlFloat32 * data);
+  
+  /// Sets the Nth Int data.
+  int         SetNthInt8Data(unsigned int n, igtlInt8 * data);
+  
+  /// Gets the Nth data.
+  int         GetNthInt8Data(unsigned int n, igtlInt8 * data);
+  
+  /// Sets the Nth Int data.
+  int         SetNthUint8Data(unsigned int n, igtlUint8 * data);
+  
+  /// Gets the Nth data.
+  int         GetNthUint8Data(unsigned int n, igtlUint8 * data);
+  
+  
+  /// Sets the Nth Int data.
+  int         SetNthInt16Data(unsigned int n, igtlInt16 * data);
+  
+  /// Gets the Nth data.
+  int         GetNthInt16Data(unsigned int n, igtlInt16 * data);
+  
+  /// Sets the Nth Int data.
+  int         SetNthUint16Data(unsigned int n, igtlUint16 * data);
+  
+  /// Gets the Nth data.
+  int         GetNthUint16Data(unsigned int n, igtlUint16 * data);
+  
+  
+  /// Sets the Nth Int data.
+  int         SetNthInt32Data(unsigned int n, igtlInt32 * data);
+  
+  /// Gets the Nth data.
+  int         GetNthInt32Data(unsigned int n, igtlInt32 * data);
+  
+  /// Sets the Nth Int data.
+  int         SetNthUint32Data(unsigned int n, igtlUint32 * data);
+  
+  /// Gets the Nth data.
+  int         GetNthUint32Data(unsigned int n, igtlUint32 * data);
+  
+  
+  /// Sets the Nth Int data.
+  int         SetNthFloat64Data(unsigned int n, igtlFloat64 * data);
+  
+  /// Gets the Nth data.
+  int         GetNthFloat64Data(unsigned int n, igtlFloat64 * data);
 
  private:
 
   /// The attribute type.
   igtlUint8                m_Type;
+  
+  /// The attribute data type.
+  igtlUint8                m_DataType;
 
   /// The number of components.
   igtlUint8                m_NComponents;
@@ -332,6 +452,27 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
 
   /// The list of attributes.
   std::vector<igtlFloat32> m_Data;
+  
+  /// The list of attributes.
+  std::vector<igtlFloat64> m_Float64Data;
+  
+  /// The list of attributes.
+  std::vector<igtlUint8> m_Uint8Data;
+  
+  /// The list of Int type attributes.
+  std::vector<igtlInt8> m_Int8Data;
+  
+  /// The list of attributes.
+  std::vector<igtlUint16> m_Uint16Data;
+  
+  /// The list of Int type attributes.
+  std::vector<igtlInt16> m_Int16Data;
+  
+  /// The list of attributes.
+  std::vector<igtlUint32> m_Uint32Data;
+  
+  /// The list of Int type attributes.
+  std::vector<igtlInt32> m_Int32Data;
 
 };
 
