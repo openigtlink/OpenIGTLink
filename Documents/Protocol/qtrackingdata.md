@@ -1,9 +1,9 @@
----
-layout: page
-title: Specification > QTrackingData
-header: Pages
----
-{% include JB/setup %}
+
+QuaternionTrackingData Message
+==============================
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
 
 ## Summary
 

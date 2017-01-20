@@ -1,17 +1,9 @@
----
-layout: page
-title: Specification
-header: Pages
-weight: 2
-group: navigation
----
-{% include JB/setup %}
 
-## OpenIGTLink Version 2 Summary
-* The header format will not be changed. 
-* Simple querying mechanism is defined. See [querying mechanism in version 2](protocols/v2_query.html).
-* The protocol version 2 continues to focus on message formats. Supporting tools (simulators and interfaces for specific applications e.g. 3D Slicer, Matlab) and transportation layer (use of UDP or other network communication middleware) should be discussed separately.
-* More information is available in [Version 2 Summary page](protocols/v2_summary.html).
+OpenIGTLink Protocol Description
+================================
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
 
 ## OpenIGTLink Protocol Rules
 * The OpenIGTLink protocol is a network communication protocol works in the Application Layer in the OSI model.
@@ -20,37 +12,37 @@ group: navigation
 * The OpenIGTLink protocol is stateless.
 
 ## Architecture and Header 
-* [OpenIGTLink Header](protocols/v2_header.html)
+* [OpenIGTLink Header](header.md)
 
 ## Proposed Message Types
 
 ### Message types inherited from version 1
 
-* [TRANSFORM](protocols/v2_transform.html)
-* [QTRANS](protocols/v2_qtransform.html) (formerly POSITION)
-* [POSITION](protocols/v2_position.html) (alias of QTRANS)
-* [IMAGE](protocols/v2_image.html)
-* [STATUS](protocols/v2_status.html)
-* [CAPABILITY](protocols/v2_capability.html)
+* [TRANSFORM](/Documents/Protocol/transform.md)
+* [QTRANS](/Documents/Protocol/qtransform.md) (formerly POSITION)
+* [POSITION](/Documents/Protocol/position.md) (alias of QTRANS)
+* [IMAGE](/Documents/Protocol/image.md)
+* [STATUS](/Documents/Protocol/status.md)
+* [CAPABILITY](/Documents/Protocol/capability.md)
 
 ### New message types for image-guided surgery (IGS) systems
-* [IMGMETA](protocols/v2_imagemeta.html)
-* [LBMETA](protocols/v2_labelmeta.html)
-* [COLORT](protocols/v2_colortable.html)
-* [POINT](protocols/v2_point.html)
-* [TRAJ](protocols/v2_trajectory.html)
-* [TDATA](protocols/v2_trackingdata.html)
-* [QTDATA](protocols/v2_qtrackingdata.html)
+* [IMGMETA](/Documents/Protocol/imagemeta.md)
+* [LBMETA](/Documents/Protocol/labelmeta.md)
+* [COLORT](/Documents/Protocol/colortable.md)
+* [POINT](/Documents/Protocol/point.md)
+* [TRAJ](/Documents/Protocol/trajectory.md)
+* [TDATA](/Documents/Protocol/trackingdata.md)
+* [QTDATA](/Documents/Protocol/qtrackingdata.md)
 
 ### New message types for other applications
-* [SENSOR](protocols/v2_sensordata.html)
-* [STRING](protocols/v2_string.html)
-* [NDARRAY](protocols/v2_ndarray.html)
-* [BIND](protocols/v2_bind.html)
-* [POLYDATA](protocols/v2_polydata.html)
+* [SENSOR](/Documents/Protocol/sensordata.md)
+* [STRING](/Documents/Protocol/string.md)
+* [NDARRAY](/Documents/Protocol/ndarray.md)
+* [BIND](/Documents/Protocol/bind.md)
+* [POLYDATA](/Documents/Protocol/polydata.md)
 
 ### Other Information
-* [64-bit UNIT field in OpenIGTLink](protocols/v2_unit.html)
+* [64-bit UNIT field in OpenIGTLink](/Documents/Protocol/unit.md)
 
 
 

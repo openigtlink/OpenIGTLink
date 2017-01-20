@@ -1,9 +1,9 @@
----
-layout: page
-title: Specification > Image
-header: Pages
----
-{% include JB/setup %}
+
+Image Message
+=============
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
 
 
 ## Summary

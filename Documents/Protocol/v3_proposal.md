@@ -1,9 +1,10 @@
----
-layout: page
-title: Specification > Version 3 Proposal
-header: Pages
----
-{% include JB/setup %}
+
+Overview of Version 3 Protocol
+==============================
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
+
 
 ## Background
 

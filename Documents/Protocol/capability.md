@@ -1,9 +1,9 @@
----
-layout: page
-title: Specification > Capability
-header: Pages
----
-{% include JB/setup %}
+
+Capability Message
+==================
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
 
 ## Summary
 

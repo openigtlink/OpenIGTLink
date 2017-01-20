@@ -1,9 +1,10 @@
----
-layout: page
-title: Specification > ImageMeta
-header: Pages
----
-{% include JB/setup %}
+
+ImageMeta Message
+=================
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
+
 
 ## Summary
 

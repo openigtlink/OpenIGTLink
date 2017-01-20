@@ -1,9 +1,9 @@
----
-layout: page
-title: Specification > Query
-header: Pages
----
-{% include JB/setup %}
+
+Query Message
+=============
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
 
 ## Simple Querying Mechanism in OpenIGTLink Protocol version 2
 

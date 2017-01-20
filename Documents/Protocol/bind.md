@@ -1,9 +1,9 @@
----
-layout: page
-title: Specification > Bind
-header: Pages
----
-{% include JB/setup %}
+
+Bind Message
+============
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
 
 ## Summary
 

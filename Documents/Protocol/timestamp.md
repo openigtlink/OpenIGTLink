@@ -1,9 +1,9 @@
----
-layout: page
-title: Specification > Timestamp
----
-{% include JB/setup %}
-Back to [Header](v2_header.html)
+
+Time Stamp Field in Header
+==========================
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
 
 
 ## Timestamp field summary

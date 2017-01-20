@@ -1,9 +1,8 @@
----
-layout: page
-title: Specification > QTransform
-header: Pages
----
-{% include JB/setup %}
+QuaternionTransform Message
+===========================
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
 
 ## Summary
 The QTRANS data type is used to transfer position and orientation information. The data are a combination of 3-dimensional vector for the position and quaternion for the orientation. Although equivalent position and orientation can be described with the TRANSFORM data type, the QTRANS data type has the advantage of smaller data size (19%). It is therefore more suitable for pushing high frame-rate data from tracking devices.

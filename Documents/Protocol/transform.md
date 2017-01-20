@@ -1,11 +1,9 @@
----
-layout: page
-title: Specification > Transform
-header: Pages
----
-{% include JB/setup %}
 
-Back to [Specification](../spec.html)
+Transform Message
+=================
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
 
 ## Summary
 The TRANSFORM data type is used to transfer a homogeneous linear transformation in 4-by-4 matrix form. One such matrix was shown earlier in equation (1).  Note that if a device is sending only translation and rotation, then TRANSFORM is equivalent to POSITION. But TRANSFORM can also be used to transfer affine transformations or simple scaling. Like IMAGE and POSITION, TRANSFORM carries information about the coordinate system used.

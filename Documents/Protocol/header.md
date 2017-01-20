@@ -1,9 +1,9 @@
----
-layout: page
-title: Specification > Header
----
-{% include JB/setup %}
-Back to [Specification](../spec.html)
+
+Message Header
+==============
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
 
 ## Header Structure
 
