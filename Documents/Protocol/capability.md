@@ -79,8 +79,8 @@ N/A
 Implementations
 ===================
 
-* [igtlCapabilityMessage.h](Source/igtlCapabilityMessage.h)
-* [igtlCapabilityMessage.cxx](Source/igtlCapabilityMessage.cxx)
+* [igtlCapabilityMessage.h](/Source/igtlCapabilityMessage.h)
+* [igtlCapabilityMessage.cxx](/Source/igtlCapabilityMessage.cxx)
 
 
 Contributors
