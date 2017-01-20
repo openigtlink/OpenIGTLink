@@ -1,17 +1,21 @@
----
-layout: page
-title: Specification > QTrackingData
-header: Pages
----
-{% include JB/setup %}
+[Back to Index](/Documents/Protocol/index.md)
 
-## Summary
+QuaternionTrackingData Message
+==============================
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
+
+Summary
+===================
 
 The QTDATA message type is intended for transferring 3D positions of surgical tools, markers etc. Its role is almost identical to TDATA, except that QTDATA describes orientation by using quaternion.
 
-## Message Types
+Message Types
+===================
 
-### QTDATA
+QTDATA
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -77,7 +81,8 @@ The QTDATA message type is intended for transferring 3D positions of surgical to
 
 * Feb 2, 2011: The length of the coordinate system field was corrected. (It should be the same as TDATA.)
 
-### GET_QTDATA
+GET_QTDATA
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -88,7 +93,8 @@ The QTDATA message type is intended for transferring 3D positions of surgical to
 </td></tr>
 </tbody></table>
 
-### STT_QTDATA
+STT_QTDATA
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -110,7 +116,8 @@ The QTDATA message type is intended for transferring 3D positions of surgical to
 </tbody></table>
 
 
-### STP_QTDATA
+STP_QTDATA
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -123,7 +130,8 @@ The QTDATA message type is intended for transferring 3D positions of surgical to
 
 
 
-### RTS_QDATA
+RTS_QDATA
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -139,12 +147,14 @@ The QTDATA message type is intended for transferring 3D positions of surgical to
 </td></tr>
 </tbody></table>
 
-## Implementations
+Implementations
+===================
 
 * [igtlQuaternionTrackingDataMessage.h](/Source/igtlQuaternionTrackingDataMessage.h)
 * [igtlQuaternionTrackingDataMessage.cxx](/Source/igtlQuaternionTrackingDataMessage.cxx)
 
-## Contributors
+Contributors
+===================
 
 * Alexander Schaal
 

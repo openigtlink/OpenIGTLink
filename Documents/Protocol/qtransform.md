@@ -1,15 +1,19 @@
----
-layout: page
-title: Specification > QTransform
-header: Pages
----
-{% include JB/setup %}
+[Back to Index](/Documents/Protocol/index.md)
 
-## Summary
+QuaternionTransform Message
+===========================
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
+
+Summary
+===================
 The QTRANS data type is used to transfer position and orientation information. The data are a combination of 3-dimensional vector for the position and quaternion for the orientation. Although equivalent position and orientation can be described with the TRANSFORM data type, the QTRANS data type has the advantage of smaller data size (19%). It is therefore more suitable for pushing high frame-rate data from tracking devices.
 
-## Message Types
-### TRANSFORM
+Message Types
+===================
+TRANSFORM
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" >
 <tr>
@@ -57,7 +61,8 @@ The QTRANS data type is used to transfer position and orientation information. T
 </p>
 
 
-### GET_QTRANS
+GET_QTRANS
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" >
 <tr>
@@ -68,7 +73,8 @@ The QTRANS data type is used to transfer position and orientation information. T
 </table>
 
 
-### STT_QTRANS
+STT_QTRANS
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" >
 <tr>
@@ -78,7 +84,8 @@ The QTRANS data type is used to transfer position and orientation information. T
 </td></tr>
 </table>
 
-### STP_QTRANS
+STP_QTRANS
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" >
 <tr>
@@ -88,7 +95,8 @@ The QTRANS data type is used to transfer position and orientation information. T
 </td></tr>
 </table>
 
-### RTS_QTRANS
+RTS_QTRANS
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" >
 <tr>
@@ -103,12 +111,14 @@ The QTRANS data type is used to transfer position and orientation information. T
 </td></tr>
 </table>
 
-## Implementations
+Implementations
+===================
 QTRANS type is implemented in the following files:
 * [igtlPositionMessage.h](/Source/igtlPositionMessage.h)
 * [igtlPositionMessage.cxx](/Source/igtlPositionMessage.cxx)
 
 
-## Contributors
+Contributors
+===================
 Junichi Tokuda
 

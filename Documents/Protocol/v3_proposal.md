@@ -1,18 +1,22 @@
----
-layout: page
-title: Specification > Version 3 Proposal
-header: Pages
----
-{% include JB/setup %}
+[Back to Index](/Documents/Protocol/index.md)
 
-## Background
+Overview of Version 3 Protocol
+==============================
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
+
+
+Background
+===================
 
 Since the release of version 2 protocol, we have learned that the protocol has several limitations:
 
 * While the naming convention for querying (i.e. GET_, STT_, STP_, and RTS_ prefixes) in version 2 provides a standardized way to identify query and response messages, there is still no standard way to manage multiple queries simaltaneously. This is mainly due to the lack of mechanism to reference the original query message from the response message. One workaround is to embed a unique message ID in the device names of query and response messages (e.g. "GET_STATUS_1234" and "RTS_STATUS_1234"). This approach requires the receiver process to parse the device name every time it receives a message, and reduces the actual length of device name. 
 * When developers design new message exchange schemes for specific applications, they often need to attach some application-specific information to the existing data types. While it can be achieved by bundling the data message with string messages using a BIND message, it is not ideal from the performance aspect. It would make more sense to have a way to add custom 'tags' to any messages.
 
-## Overview of Version 3 Proposal
+Overview of Version 3 Proposal
+===================
 
 At [Winter Project Week 2016](http://wiki.na-mic.org/Wiki/index.php/2016_Winter_Project_Week/Projects/TrackedUltrasoundStandardization) (January 5-9, 2016, Cambridge, MA), we discussed the limitations above, and potential extension to the existing protocols _with backward compatibility_. The following changes were proposed:
 
@@ -33,9 +37,11 @@ At [Winter Project Week 2016](http://wiki.na-mic.org/Wiki/index.php/2016_Winter_
   * The size of content can be computed as: BODY_SIZZE - (EXT_HEADER_SIZE + METADAT_SIZE)
 * The _metadata_ section contains pairs of 'key' and 'value' strings. Keys are ASCII string, while values can be stored using different encodings.
 
-## Messaging Format
+Messaging Format
+===================
 
-### Overall Message Format
+Overall Message Format
+-------------------
 
     Bytes
     0         58            72 
@@ -44,7 +50,8 @@ At [Winter Project Week 2016](http://wiki.na-mic.org/Wiki/index.php/2016_Winter_
     +----------+-------------+-------------------+-----------+
 
 
-### Header + Extended Header
+Header + Extended Header
+-------------------
 
     Bytes
     0   2                       14                                      34              42              50              58
@@ -58,12 +65,14 @@ At [Winter Project Week 2016](http://wiki.na-mic.org/Wiki/index.php/2016_Winter_
     +-----------------+---------------+---------+-----------+
 
 
-### Content
+Content
+-------------------
 
 The format of contenst section is type-dependent. Please see individual type definition page. 
 
 
-### Metadata
+Metadata
+-------------------
 
 The metadata section consists of metadata header and metadata body.
 
@@ -91,9 +100,11 @@ Metadata body:
     |<-- Metadata 0 -->|<-- Metadata 1 --->|            |<-- Metadata N-1 -->|
 
 
-## Available Message Types
+Available Message Types
+===================
 
-### New Messages Proposed for V3
+New Messages Proposed for V3
+-------------------
 
 <table border="1" cellpadding="1">
 <tr>
@@ -114,7 +125,8 @@ Metadata body:
 </td></tr>
 </table>
 
-### Messages from version 1 and 2
+Messages from version 1 and 2
+-------------------
 <table border="1" cellpadding="1">
 <tr>
 <td style="width:10%; background:#88A8FF">Type name
@@ -215,7 +227,8 @@ Metadata body:
 </table>
 
 
-## Acknowledgement
+Acknowledgement
+===================
 
 The version 3 propsal is drafted by the following members:
 

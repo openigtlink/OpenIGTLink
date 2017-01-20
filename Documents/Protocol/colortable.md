@@ -1,17 +1,20 @@
----
-layout: page
-title: Specification > ColorTable
-header: Pages
----
-{% include JB/setup %}
 
-## Summary
+ColorTable Message
+==================
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
+
+Summary
+===================
 
 COLORT is used to transfer a color table.
 
-## Message Types
+Message Types
+===================
 
-### COLORT
+COLORT
+-------------------
 
 To get the COLORT, GET_COLORT is used with the Id in the device name field.
 
@@ -40,7 +43,8 @@ To get the COLORT, GET_COLORT is used with the Id in the device name field.
 </tbody></table>
 
 
-### GET_COLORT
+GET_COLORT
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -51,26 +55,31 @@ To get the COLORT, GET_COLORT is used with the Id in the device name field.
 </td></tr>
 </tbody></table>
 
-### STT_COLORT
+STT_COLORT
+-------------------
 
 N/A
 
-### STP_COLORT
+STP_COLORT
+-------------------
 
 N/A
 
-### RTS_COLORT
+RTS_COLORT
+-------------------
 
 N/A
 
-## Implementations
+Implementations
+===================
 
 IMGMETA message type is implemented in the following source code.
 
 * [igtlLabelMetaMessage.h](/Source/igtlLabelMetaMessage.h)
 * [igtlLabelMetaMessage.cxx](/Source/igtlLabelMetaMessage.cxx)
 
-## Contributors
+Contributors
+===================
 
 * Alexander Schaal
 

@@ -1,9 +1,11 @@
----
-layout: page
-title: Specification > Unit
-header: Pages
----
-{% include JB/setup %}
+[Back to Index](/Documents/Protocol/index.md)
+
+Sensor Message
+==============
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
+
 
 SENSOR message can handle a part of unites defined in The International System of Unites (SI) in its 8-byte (or 64-bit) field. The field is designed to specifiy a unit consisting of SI-prefix (e.g. milli, micro, kilo etc...) and combination of SI-base and/or SI-derived unites. The bites in the field are assigned as follows:
 
@@ -18,7 +20,8 @@ SENSOR message can handle a part of unites defined in The International System o
             4               5               6               7
 
 
-### PREFIX (4bit)
+PREFIX (4bit)
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -79,7 +82,8 @@ SENSOR message can handle a part of unites defined in The International System o
 </tbody></table>
 
 
-### UNIT(6bit)
+UNIT(6bit)
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -116,7 +120,8 @@ SENSOR message can handle a part of unites defined in The International System o
 </tbody></table>
 
 
-### UNIT(6bit)
+UNIT(6bit)
+-------------------
 
 SI base units
 

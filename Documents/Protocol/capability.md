@@ -1,18 +1,22 @@
----
-layout: page
-title: Specification > Capability
-header: Pages
----
-{% include JB/setup %}
+[Back to Index](/Documents/Protocol/index.md)
 
-## Summary
+Capability Message
+==================
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
+
+Summary
+===================
 
 The CAPABILITY data type lists the names of message types that the receiver can interpret. Although the OpenIGTLink protocol guarantees that any receiver can at least skip messages with unknown type and continue to interpret the following messages, it is a good idea to get the capability information at system startup to ensure application-level compatibility of various devices. In a CAPABILITY message type, each message type name comes with format version number. If the receiver can interpret multiple versions for a certain message type, they should be listed as independent types.
 
 
-## Message Types
+Message Types
+===================
 
-### CAPABILITY
+CAPABILITY
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0">
 <tr>
@@ -44,7 +48,8 @@ The CAPABILITY data type lists the names of message types that the receiver can 
 
 * Number of type names <b>N</b> is calculated by (Body size) / 12.
 
-### GET_CAPABIL
+GET_CAPABIL
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -56,25 +61,30 @@ The CAPABILITY data type lists the names of message types that the receiver can 
 </table>
 
 
-### STT_CAPABIL
+STT_CAPABIL
+-------------------
 
 N/A
 
-### STP_CAPABIL
+STP_CAPABIL
+-------------------
 
 N/A
 
-### RTS_CAPABIL
+RTS_CAPABIL
+-------------------
 
 N/A
 
-## Implementations
+Implementations
+===================
 
-* [igtlCapabilityMessage.h](Source/igtlCapabilityMessage.h)
-* [igtlCapabilityMessage.cxx](Source/igtlCapabilityMessage.cxx)
+* [igtlCapabilityMessage.h](/Source/igtlCapabilityMessage.h)
+* [igtlCapabilityMessage.cxx](/Source/igtlCapabilityMessage.cxx)
 
 
-## Contributors
+Contributors
+===================
 
 Junichi Tokuda
 

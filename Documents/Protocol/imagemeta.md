@@ -1,17 +1,22 @@
----
-layout: page
-title: Specification > ImageMeta
-header: Pages
----
-{% include JB/setup %}
+[Back to Index](/Documents/Protocol/index.md)
 
-## Summary
+ImageMeta Message
+=================
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
+
+
+Summary
+===================
 
 The IMGMETA message is used to transfer image meta information which are not available in IMAGE message type, such as patient name, medical record number, modality etc. An IMGMETA message can contain meta data for multiple images. This message type may be used to obtain a list of images available in the remote system, such as image database or commercial image-guided surgery (IGS) system.
 
-## Message Types
+Message Types
+===================
 
-### IMGMETA
+IMGMETA
+-------------------
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 <tr>
 <td style="background:#e0e0e0;"> Data
@@ -72,7 +77,8 @@ The IMGMETA message is used to transfer image meta information which are not ava
 
 
 
-### GET_IMGMETA
+GET_IMGMETA
+-------------------
 
 GET_IMGMETA is used to query for meta data of image sets. If DEVICE_NAME in the header is empty, a list of meta data for all available images is returned.
 
@@ -85,23 +91,27 @@ GET_IMGMETA is used to query for meta data of image sets. If DEVICE_NAME in the 
 </table>
 
 
-### STT_IMGMETA
+STT_IMGMETA
+-------------------
 
 N/A
 
-### STP_IMGMETA
+STP_IMGMETA
+-------------------
 
 N/A
 
 
-## Implementations
+Implementations
+===================
 
 IMGMETA message type is implemented in the following source code.
 
 * [igtlImageMetaMessage.h](/Source/igtlImageMetaMessage.h)
 * [igtlImageMetaMessage.cxx](/Source/igtlImageMetaMessage.cxx)
 
-## Contributors
+Contributors
+===================
 
 * Alexander Schaal
 

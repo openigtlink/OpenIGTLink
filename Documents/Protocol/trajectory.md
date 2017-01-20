@@ -1,17 +1,21 @@
----
-layout: page
-title: Specification > Trajectory
-header: Pages
----
-{% include JB/setup %}
+[Back to Index](/Documents/Protocol/index.md)
 
-## Summary
+Trajectory Message
+==================
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
+
+Summary
+===================
 
 The TRAJECTORY message type support to transfer information about 3D trajectory, which is often used in surgical planning and guidance in image-guided therapy.
 
-## Message Types
+Message Types
+===================
 
-### TRAJ
+TRAJ
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -68,7 +72,8 @@ The TRAJECTORY message type support to transfer information about 3D trajectory,
 </tbody></table>
 
 
-### GET_TRAJ
+GET_TRAJ
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -79,16 +84,19 @@ The TRAJECTORY message type support to transfer information about 3D trajectory,
 </td></tr>
 </tbody></table>
 
-### STT_TRAJ
+STT_TRAJ
+-------------------
 
 N/A
 
-### STP_TRAJ
+STP_TRAJ
+-------------------
 
 N/A
 
 
-## Implementations
+Implementations
+===================
 
 TRAJECTORY message type is implemented in the following source code.
 
@@ -97,7 +105,8 @@ TRAJECTORY message type is implemented in the following source code.
 * [igtlTrajectoryMessage.cxx](/Source/igtlTrajectoryMessage.cxx)
 
 
-## Contributors
+Contributors
+===================
 
 * Alexander Schaal
 

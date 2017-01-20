@@ -1,18 +1,22 @@
----
-layout: page
-title: Specification > LabelMeta
-header: Pages
----
-{% include JB/setup %}
+[Back to Index](/Documents/Protocol/index.md)
 
-## Summary
+LabelMeta Message
+=================
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
+
+Summary
+===================
 
 The LBMETA is used to transfer meta information for lable maps, which are not available in the IMAGE message type.
 To retreive voxel objects or a label map, GET_IMAGE / IMAGE can be used. But the client should be able to get a list of available structures.
 
-## Message Types
+Message Types
+===================
 
-### LBMETA
+LBMETA
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 <tbody><tr>
@@ -59,7 +63,8 @@ To retreive voxel objects or a label map, GET_IMAGE / IMAGE can be used. But the
 
 
 
-### GET_LBMETA
+GET_LBMETA
+-------------------
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
 <tbody><tr>
@@ -69,20 +74,24 @@ To retreive voxel objects or a label map, GET_IMAGE / IMAGE can be used. But the
 </td></tr>
 </tbody></table>
 
-### STT_LBMETA
+STT_LBMETA
+-------------------
 
 N/A
 
-### STP_LBMETA
+STP_LBMETA
+-------------------
 
 N/A
 
-## Implementations
+Implementations
+===================
 
 IMGMETA message type is implemented in the following source code.
 
 * [igtlLabelMetaMessage.h](/Source/igtlLabelMetaMessage.h)
 * [igtlLabelMetaMessage.cxx](/Source/igtlLabelMetaMessage.cxx)
 
-## Contributors
+Contributors
+===================
 * Alexander Schaal

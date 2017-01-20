@@ -1,35 +1,43 @@
----
-layout: page
-title: Specification > Version 2 Summary
-header: Pages
----
-{% include JB/setup %}
+[Back to Index](/Documents/Protocol/index.md)
 
-## Overview
+OpenIGTLink Protocol Summary
+============================
+
+- Protocol Version: 3.0
+- Release Date: January 20, 2017
+
+
+Overview
+===================
 
 The OpenIGTLink Protocol is ideal for building a research prototype system, because of its simple and standardized specification that requires less effort on design and development of communication mechanism for systems integration. By using OpenIGTLink, developers can save their time for more essential part of research. The OpenIGTLink's simple specification has been well accepted by the community, resulting a number of applications in the IGT research community, since it's initial release in early 2008.
 
 While we keep the protocol as simple as possible, it is also important to support as many IGT devices as possible to maximize the connectivity among software and devices, which potentially frees the developers from tedious coding just for system integration. There have been a number of feature requests that would benefit many IGT research projects, such as connectivity with commercial products, and connectivity with other major research tools, such as MATLAB. To respond to those request, and to increase the number of potential applications, we decided review the requests and release version 2 protocol during NA-MIC Summer Project Week 2010. The new protocol defines a set of new message types with new querying scheme, while maintaining a backward compatibility with version 1. This page summarizes the features in version 2.
 
-## Simple Query Scheme
+Simple Query Scheme
+===================
 
 OpenIGTLink V.2 defines a simple querying scheme on top of the existing message format, by introducing a few prefix to the device type field.
 
-## Request a single message
+Request a single message
+===================
 
 A client can request to send data contained in a single message, by issuing a query message with a device type string starting with "GET_". If specified data is not available, a message with a device type string starting with "RTS_" is returned. For example, when a client requests an IMAGE message to a server, it sends GET_IMAGE message to the server as a query. If the image exist, an IMAGE message is returned from the server to the client. Otherwise, a RTS_IMAGE message with error code is returned.
 
-## Request a stream of messages (introduced in version 2)
+Request a stream of messages (introduced in version 2)
+===================
 
 A client can start and stop data streaming (sent as a series of messages) from a server, by issuing a query message with a device type starting with "STT_" and "STP_" respectively. If data requested by a "STT_" message is not available, the server returns a message with a device type string starting with "RTS_" prefix. A STP_ message is also acknowledged by a "RTS_" message.
 
 This is useful to start and stop position tracking or real-time imaging remotely from the client. For example, once the server receives "STT_TDATA" message from the client, it start sending "TDATA" messages to the client. The server keep sending "TDATA" messages until it receives "STP_TDATA" from the client.
 
-## New message types
+New message types
+===================
 
 The following tables show lists of message types available in version 2.
 
-### New Messages for image-guided systems
+New Messages for image-guided systems
+-------------------
 
 <table border="1" cellpadding="1">
 <tr>
@@ -83,7 +91,8 @@ The following tables show lists of message types available in version 2.
 </table>
 
 
-### New Messages for general applications
+New Messages for general applications
+-------------------
 <table border="1" cellpadding="1">
 <tr>
 <td style="width:10%; background:#88A8FF">Type name
@@ -104,7 +113,8 @@ The following tables show lists of message types available in version 2.
 </table>
 
 
-### Messages from version 1
+Messages from version 1
+-------------------
 <table border="1" cellpadding="1">
 <tr>
 <td style="width:10%; background:#88A8FF">Type name
