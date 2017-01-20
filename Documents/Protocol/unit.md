@@ -20,7 +20,8 @@ SENSOR message can handle a part of unites defined in The International System o
             4               5               6               7
 
 
-### PREFIX (4bit)
+PREFIX (4bit)
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -81,7 +82,8 @@ SENSOR message can handle a part of unites defined in The International System o
 </tbody></table>
 
 
-### UNIT(6bit)
+UNIT(6bit)
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -118,7 +120,8 @@ SENSOR message can handle a part of unites defined in The International System o
 </tbody></table>
 
 
-### UNIT(6bit)
+UNIT(6bit)
+-------------------
 
 SI base units
 

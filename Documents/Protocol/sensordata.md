@@ -6,13 +6,16 @@ SensorData Message
 - Protocol Version: 3.0
 - Release Date: January 20, 2017
 
-## Summary
+Summary
+===================
 
 SENSOR is a message type, which is used to transfer sensor reading, 3-axis position, velocity, acceleration, angle, angle velocity and angle acceleration. The message format is intended for manipulator control and various types of sensors.
 
-## Message Types
+Message Types
+===================
 
-### SENSOR
+SENSOR
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -44,7 +47,8 @@ SENSOR is a message type, which is used to transfer sensor reading, 3-axis posit
 </tbody></table>
 
 
-### GET_SENSOR
+GET_SENSOR
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -56,7 +60,8 @@ SENSOR is a message type, which is used to transfer sensor reading, 3-axis posit
 </tbody></table>
 
 
-### STT_SENSOR
+STT_SENSOR
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -83,7 +88,8 @@ or
 </td></tr>
 </tbody></table>
 
-### STP_SENSOR
+STP_SENSOR
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -95,7 +101,8 @@ or
 </tbody></table>
 
 
-### RTS_SENSOR
+RTS_SENSOR
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -112,21 +119,25 @@ or
 </tbody></table>
 
 
-## Implementations
+Implementations
+===================
 
 The TDATA message type is implemented in the following source code.
 
 * [igtlSensorMessage.h](/Source/igtlSensorMessage.h)
 * [igtlSensorMessage.cxx](/Source/igtlSensorMessage.cxx)
 
-## Contributors
+Contributors
+===================
 
 * Junichi Tokuda
 * Yuichiro Hayashi
 
-## Examples
+Examples
+===================
 
-### Sending 3-axis troque
+Sending 3-axis troque
+-------------------
 
 A device with 3-axis torque (N\*m) sensor is sending data to a data logger program. The following table shows example data format to send 3-axis torque:
 
@@ -159,7 +170,8 @@ A device with 3-axis torque (N\*m) sensor is sending data to a data logger progr
 </td></tr>
 </tbody></table>
 
-### Sending 3-axis force, troque and acceleration
+Sending 3-axis force, troque and acceleration
+-------------------
 By binding SENSOR data using BIND type, values from multiple types of sensors can be transferred simultaneously. See [BIND](v2_bind.html) message description page for detail.
 
 

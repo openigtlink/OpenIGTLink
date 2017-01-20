@@ -6,7 +6,8 @@ Status Message
 - Protocol Version: 3.0
 - Release Date: January 20, 2017
 
-## Summary
+Summary
+===================
 
 The STATUS data type is used to notify the receiver about the current status of the sender.
 The data consist of status code in a 16-bit unsigned integer, sub code in a 64-bit integer,
@@ -18,9 +19,11 @@ developers can build their own error name/code into the status message and addit
 optional description in the following data field.
 
 
-## Message Types
+Message Types
+===================
 
-### STATUS
+STATUS
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0">
 <tr>
@@ -50,7 +53,8 @@ optional description in the following data field.
 </td></tr>
 </table>
 
-### Status codes:
+Status codes:
+-------------------
 
 (7/6/2013: The list was updated due to the discrepancy between this document and the actual specification.)
 
@@ -77,7 +81,8 @@ optional description in the following data field.
 
 
 
-### GET_STATUS
+GET_STATUS
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 <tr>
@@ -87,25 +92,30 @@ optional description in the following data field.
 </td></tr>
 </table>
 
-### STT_STATUS
+STT_STATUS
+-------------------
 
 N/A
 
-### STP_STATUS
+STP_STATUS
+-------------------
 
 N/A
 
-### RTS_STATUS
+RTS_STATUS
+-------------------
 
 N/A
 
-## Implementations
+Implementations
+===================
 
 POSITION type is implemented in the following files:
 
 * [igtlStatusMessage.h](/Source/igtlStatusMessage.h)
 * [igtlStatusMessage.cxx](/Source/igtlStatusMessage.cxx)
 
-## Contributors
+Contributors
+===================
 
 * Junichi Tokuda

@@ -7,7 +7,8 @@ Image Message
 - Release Date: January 20, 2017
 
 
-## Summary
+Summary
+===================
 
 The IMAGE format supports 2D or 3D images with metric information including image matrix size,
 voxel size, coordinate system type, position, and orientation. The body section of the IMAGE
@@ -23,8 +24,10 @@ defined by 6 parameters consisting of the indices for the corner voxel of the su
 and matrix size of the sub-volume.
 
 
-## Message Types
-### IMAGE
+Message Types
+===================
+IMAGE
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 <tr>
@@ -102,7 +105,8 @@ and matrix size of the sub-volume.
 <font color="red"> * NOTE 1/10/11: There was a discrepancy between the protocol document and the library. Since the library has been used by most of OpenIGTLink software, the protocol document was modified to be consistent with the library. </font>
 
 
-### GET_IMAGE
+GET_IMAGE
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 <tr>
@@ -113,7 +117,8 @@ and matrix size of the sub-volume.
 </table>
 
 
-### STT_IMAGE
+STT_IMAGE
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 <tr>
@@ -123,7 +128,8 @@ and matrix size of the sub-volume.
 </td></tr>
 </table>
 
-### STP_IMAGE
+STP_IMAGE
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 <tr>
@@ -133,7 +139,8 @@ and matrix size of the sub-volume.
 </td></tr>
 </table>
 
-### RTS_IMAGE
+RTS_IMAGE
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 <tr>
@@ -148,7 +155,8 @@ and matrix size of the sub-volume.
 </td></tr>
 </table>
 
-## Notes
+Notes
+===================
 
 The example application of vector type is:
 * Vector field
@@ -156,12 +164,14 @@ The example application of vector type is:
 * Color image
 * Vector data is stored fully interleaved. For example, if you are storing RGB color image, the order should be RGBRGBRGB... (not RRR....GGG...BBB...)
 
-## Implementations
+Implementations
+===================
 
 IMAGE type is implemented in the following files:
 
 * [igtlImageMessage.h](/Source/igtlImageMessage.h)
 * [igtlImageMessage.cxx](/Source/igtlImageMessage.cxx)
 
-## Contributors
+Contributors
+===================
 * Junichi Tokuda

@@ -7,13 +7,16 @@ String Message
 - Release Date: January 20, 2017
 
 
-## Summary
+Summary
+===================
 
 STRING message type is used for transferring a character string. It supports character strings up to 65535 bytes.
 
-## Message Types
+Message Types
+===================
 
-### STRING
+STRING
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -41,7 +44,8 @@ STRING message type is used for transferring a character string. It supports cha
 
 * For character encoding, please refer [IANA Character Sets](http://www.iana.org/assignments/character-sets). US-ASCII (ANSI-X3.4-1968; MIBenum = 3) is strongly recommended.
 
-### GET_STRING
+GET_STRING
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -52,27 +56,32 @@ STRING message type is used for transferring a character string. It supports cha
 </td></tr>
 </tbody></table>
 
-### STT_STRING
+STT_STRING
+-------------------
 
 N/A
 
-### STP_STRING
+STP_STRING
+-------------------
 
 N/A
 
 
-### RTS_STRING
+RTS_STRING
+-------------------
 
 N/A
 
-## Implementations
+Implementations
+===================
 
 The TDATA message type is implemented in the following source code.
 
 * [igtlStringMessage.h](/Source/igtlStringMessage.h)
 * [igtlStringMessage.cxx](/Source/igtlStringMessage.cxx)
 
-## Contributors
+Contributors
+===================
 
 * Junichi Tokuda
 

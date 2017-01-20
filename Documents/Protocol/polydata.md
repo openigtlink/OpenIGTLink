@@ -6,13 +6,16 @@ PolyData Message
 - Protocol Version: 3.0
 - Release Date: January 20, 2017
 
-## Summary
+Summary
+===================
 
 POLYDATA is used to transfer 3D polygonal data. The message format is designed based on the [POLY DATA format](http://www.vtk.org/VTK/img/file-formats.pdf) defined in VTK file format and equivalent to [VTK's vtkPolyData class](http://noodle.med.yale.edu/vtk5/classvtkPolyData.html). The message also supports dataset attribute field in VTK, including scalars, calar_scalars, vectors, vectors, normals, texture coordinates and tensor, but not lookup table.
 
-## Message Types
+Message Types
+===================
 
-### POLYDATA
+POLYDATA
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -211,7 +214,8 @@ POLYDATA is used to transfer 3D polygonal data. The message format is designed b
 * If there are a pair of scalar and RGBA data with the same name and type (either POINT or CELL), those are used as scalar values and a look up table.
   * elements in RGBA data must be in the rage of \[0.0, 1.0\]
 
-### GET_POLYDATA
+GET_POLYDATA
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -222,7 +226,8 @@ POLYDATA is used to transfer 3D polygonal data. The message format is designed b
 </td></tr>
 </tbody></table>
 
-### STT_POLYDATA
+STT_POLYDATA
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -249,7 +254,8 @@ or
 </td></tr>
 </tbody></table>
 
-### STP_POLYDATA
+STP_POLYDATA
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -261,7 +267,8 @@ or
 </tbody></table>
 
 
-### RTS_POLYDATA
+RTS_POLYDATA
+-------------------
 
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
@@ -278,7 +285,8 @@ or
 </td></tr>
 </tbody></table>
 
-## Implementations
+Implementations
+===================
 
 The POLYDATA message type is implemented in the following source code.
 
@@ -287,7 +295,8 @@ The POLYDATA message type is implemented in the following source code.
 
 
 
-## Contributors
+Contributors
+===================
 
 * Junichi Tokuda
 

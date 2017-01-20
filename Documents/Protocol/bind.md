@@ -6,13 +6,16 @@ Bind Message
 - Protocol Version: 3.0
 - Release Date: January 20, 2017
 
-## Summary
+Summary
+=======
 
 Bind message format is designed to bind any OpenIGTLink messages into a single message. Messages bound in a BIND message are called 'child messages.' The BIND message format is useful, when one needs to care about synchronization of multiple messages (e.g. multi-channel sensors), or sending associative array (pairs of key string and value). The bind message format consists of the bind header section, which contains types and sizes of child messages, the child message name table section, and the child message body section.
 
-## Message Types
+Message Types
+=============
 
-### BIND
+BIND
+----
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -129,7 +132,8 @@ Bind message format is designed to bind any OpenIGTLink messages into a single m
 * Padding field is inserted only if the previous field does not aligned with WORD border.
 
 
-### GET_BIND
+GET_BIND
+-------------------
 
 GET_BIND is used to request the receiver for associative array data. If a GET_BIND message does not have a body, it requests all data.
 
@@ -195,7 +199,8 @@ GET_BIND is used to request the receiver for associative array data. If a GET_BI
 </tbody></table>
 
 
-### STT_BIND
+STT_BIND
+-------------------
 
 GET_BIND is used to request the receiver for associative array data. If a GET_BIND message does not have a body, it requests all data.
 
@@ -282,7 +287,8 @@ or
 </tbody></table>
 
 
-### STP_BIND
+STP_BIND
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -294,7 +300,8 @@ or
 </tbody></table>
 
 
-### RTS_BIND
+RTS_BIND
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -311,13 +318,15 @@ or
 </tbody></table>
 
 
-## Implementations
+Implementations
+===================
 
 * [igtlBindMessage.h](/Source/igtlBindMessage.h)
 * [igtlBindMessage.cxx](/Source/igtlBindMessage.cxx) 
 
 
-## Contributors
+Contributors
+===================
 
 * Junichi Tokuda
 

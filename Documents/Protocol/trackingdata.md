@@ -7,14 +7,17 @@ TrackingData Message
 - Release Date: January 20, 2017
 
 
-## Summary
+Summary
+===================
 
 The TDATA message type is intended for transferring 3D positions of surgical tools, markers etc. Those positions are often measured by optical, electromagnetic or other type of 3D position sensor continuously and transferred as series of messages. Since it is important for software that receives TDATA to control data flow, STT_TDATA query data type has interval field to control the frame rate of consecutive messages.
 
 
-## Message Types
+Message Types
+===================
 
-### TDATA
+TDATA
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -68,7 +71,8 @@ The TDATA message type is intended for transferring 3D positions of surgical too
 </td></tr>
 </tbody></table>
 
-### GET_TDATA
+GET_TDATA
+-------------------
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 <tbody><tr>
 <td style="background:#e0e0e0;"> Data
@@ -77,7 +81,8 @@ The TDATA message type is intended for transferring 3D positions of surgical too
 </td></tr>
 </tbody></table>
 
-### STT_TDATA
+STT_TDATA
+-------------------
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
 <tbody><tr>
@@ -101,7 +106,8 @@ The TDATA message type is intended for transferring 3D positions of surgical too
 * Easy to develop. Sample pseudo code: while(true) { recv(trackingdata); updateView(trackingdata); }
 * Usually the tracking data will be sent using the standard coordinate system, which is also used for POINT, IMAGE, ... But this does only work after patient registration. Therefore the body of START_PUSH has an optional field for specifing the coordinate system "CAMERA". To switch back to the standard coordinate system, one has to send STOP_PUSH and afterwards START_PUSH without explicitly specifing the camera coordinate system.
 
-### STP_TDATA
+STP_TDATA
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -112,7 +118,8 @@ The TDATA message type is intended for transferring 3D positions of surgical too
 </td></tr>
 </tbody></table>
 
-### RTS_TDATA
+RTS_TDATA
+-------------------
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
 <tbody><tr>
@@ -128,14 +135,16 @@ The TDATA message type is intended for transferring 3D positions of surgical too
 </tbody></table>
 
 
-## Implementations
+Implementations
+===================
 
 The TDATA message type is implemented in the following source code.
 
 * [igtlTrackingDataMessage.h](/Source/igtlTrackingDataMessage.h)
 * [igtlTrackingDataMessage.cxx](/Source/igtlTrackingDataMessage.cxx)
 
-## Contributors
+Contributors
+===================
 
 * Alexander Schaal
 

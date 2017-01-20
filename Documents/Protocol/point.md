@@ -6,13 +6,16 @@ Point Message
 - Protocol Version: 3.0
 - Release Date: January 20, 2017
 
-## Summary
+Summary
+===================
 
 The POINT message type is designed to transfer information about fiducials, which are often used in surgical planning and navigation in the image-guided therapy.
 
-## Message Types
+Message Types
+===================
 
-### POINT
+POINT
+-------------------
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
 <tbody><tr>
@@ -92,7 +95,8 @@ The POINT message type is designed to transfer information about fiducials, whic
 </tbody></table>
 
 
-### GET_POINT
+GET_POINT
+-------------------
 
 GET_POINT is used to query for meta data of label data. If the DEVICE_NAME field in the header is empty, a list of all available point data is returned.
 
@@ -106,27 +110,32 @@ GET_POINT is used to query for meta data of label data. If the DEVICE_NAME field
 </tbody></table>
 
 
-### STT_POINT
+STT_POINT
+-------------------
 
 N / A
 
-### STP_POINT
+STP_POINT
+-------------------
 
 N/A
 
 
-### RTS_POINT
+RTS_POINT
+-------------------
 
 N/A
 
-## Implementations
+Implementations
+===================
 
 IMGMETA message type is implemented in the following source code.
 
 * [igtlPointMessage.h](/Source/igtlPointMessage.h)
 * [igtlPointMessage.cxx](/Source/igtlPointMessage.cxx)
 
-## Contributors
+Contributors
+===================
 
 * Alexander Schaal
 

@@ -6,14 +6,17 @@ NDArray Message
 - Protocol Version: 3.0
 - Release Date: January 20, 2017
 
-## Summary
+Summary
+===================
 
 NDARRAY is a data type, which is designed to transfer N-dimensional numerical array.
 
 
-## Message Types
+Message Types
+===================
 
-### NDARRAY
+NDARRAY
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -46,7 +49,8 @@ NDARRAY is a data type, which is designed to transfer N-dimensional numerical ar
 
 * Complex is a 128-bit variable consisting of a real part in the first 64-bit and an imaginal part in the last 64-bit.
 
-### GET_NDARRAY
+GET_NDARRAY
+-------------------
 
 <table border="1" cellpadding="5" cellspacing="0" align="center">
 
@@ -57,21 +61,26 @@ NDARRAY is a data type, which is designed to transfer N-dimensional numerical ar
 </td></tr>
 </tbody></table>
 
-### STT_NDARRAY
+STT_NDARRAY
+-------------------
 
 N/A
 
-### STP_NDARRAY
+STP_NDARRAY
+-------------------
 
 N/A
 
-### RTS_NDARRAY
+RTS_NDARRAY
+-------------------
 
 N / A
 
 
-## Notes
-### Memory layout of DATA field
+Notes
+===================
+Memory layout of DATA field
+-------------------
 Like multi-dimensional array in C/C++, DATA field is laid out in sequentially in a byte stream. For example, if the value of DATA is defined by:
 
     char data[3][3] = { {1, 2, 3},
@@ -85,7 +94,8 @@ The layout in the byte stream can be visualized as follows:
       |1|2|3|4|5|6|7|8|9|
       +-+-+-+-+-+-+-+-+-+
 
-## Implementations
+Implementations
+===================
 
 The NDARRAY message type is implemented in the following source code.
 
@@ -93,7 +103,8 @@ The NDARRAY message type is implemented in the following source code.
 * [igtlNDArrayMessage.cxx](/Source/igtlNDArrayMessage.cxx)
 
 
-## Contributors
+Contributors
+===================
 
 * Junichi Tokuda
 * Yuichiro Hayashi
