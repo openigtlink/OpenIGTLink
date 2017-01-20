@@ -212,6 +212,13 @@ ENDIF()
 # Create the link to the VideoStreaming libraries
 ADD_SUBDIRECTORY(VideoStreaming)
 #-----------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------
+# Configure WebSocket
+# Create the link to the WebSocket libraries
+ADD_SUBDIRECTORY(WebSocket)
+#-----------------------------------------------------------------------------
+
 ADD_LIBRARY(OpenIGTLink ${OpenIGTLink_SOURCES} ${OpenIGTLink_INCLUDE_FILES})
 foreach(p IN LISTS OpenIGTLink_INCLUDE_DIRS)
   target_include_directories(OpenIGTLink PUBLIC 

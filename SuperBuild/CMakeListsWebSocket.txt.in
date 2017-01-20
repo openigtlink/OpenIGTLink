@@ -1,0 +1,15 @@
+
+cmake_minimum_required(VERSION 2.8.2)
+ 
+project(WebSocket-download NONE)
+include(ExternalProject)
+
+ExternalProject_Add(WebSocketpp
+  GIT_REPOSITORY https://github.com/leochan2009/websocketpp.git
+  GIT_TAG 378437aecdcb1dfe62096ffd5d944bf1f640ccc3
+  SOURCE_DIR        "${PROJECT_BINARY_DIR}/Source"
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND     ""
+  INSTALL_COMMAND   ""
+  TEST_COMMAND      ""
+)

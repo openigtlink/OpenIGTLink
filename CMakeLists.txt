@@ -52,6 +52,15 @@ IF(LINK_OPENHEVC)
   SET(OpenIGTLink_LINK_OPENHEVC "1")
 ENDIF()
 #-----------------------------------------------------------------------------
+
+#Configure WebSocket
+OPTION(BUILD_WEBSOCKET "Build the Websocket." OFF)
+SET(OpenIGTLink_BUILD_WEBSOCKET "0")
+IF(BUILD_WEBSOCKET)
+  SET(OpenIGTLink_BUILD_WEBSOCKET "1")  
+ENDIF()
+#-----------------------------------------------------------------------------
+
 # OpenIGTLink build configuration options.
 
 OPTION(BUILD_SHARED_LIBS "Build OpenIGTLink with shared libraries." OFF)
