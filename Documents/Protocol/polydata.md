@@ -295,11 +295,6 @@ The POLYDATA message type is implemented in the following source code.
 
 
 
-Contributors
-===================
-
-* Junichi Tokuda
-
 
 
 

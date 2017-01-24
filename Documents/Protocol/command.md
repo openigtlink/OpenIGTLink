@@ -45,5 +45,3 @@ Implementations
 * [igtlCommandMessage.cxx](/Source/igtlCommandMessage.cxx)
 
 
-Contributors
-============
