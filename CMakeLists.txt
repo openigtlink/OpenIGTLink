@@ -192,7 +192,6 @@ CMAKE_EXPORT_BUILD_SETTINGS(${OpenIGTLink_BINARY_DIR}/OpenIGTLinkBuildSettings.c
 
 INSTALL(FILES
   ${OpenIGTLink_BINARY_DIR}/OpenIGTLinkBuildSettings.cmake
-  ${OpenIGTLink_LIBRARY_TARGETS_INSTALL_FILE}
   ${OpenIGTLink_BINARY_DIR}/UseOpenIGTLink.cmake
   ${OpenIGTLink_BINARY_DIR}/Utilities/OpenIGTLinkConfig.cmake
   DESTINATION ${OpenIGTLink_INSTALL_PACKAGE_DIR}

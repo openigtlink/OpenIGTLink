@@ -41,6 +41,9 @@ CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/OpenIGTLinkConfig.cmake.in
 #-----------------------------------------------------------------------------
 # Settings specific to the install tree.
 
+# store old OpenIGTLink_LIBRARY_TARGETS_FILE
+SET(OpenIGTLink_LIBRARY_TARGETS_FILE_BUILDTREE ${OpenIGTLink_LIBRARY_TARGETS_FILE})
+
 # The library dependencies file.
 SET(OpenIGTLink_LIBRARY_TARGETS_FILE "\${OpenIGTLink_INSTALL_PREFIX}/${OpenIGTLink_INSTALL_PACKAGE_DIR}/OpenIGTLinkTargets.cmake")
 
@@ -81,4 +84,7 @@ ENDFOREACH(p)
 
 CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/OpenIGTLinkConfig.cmake.in
                ${OpenIGTLink_BINARY_DIR}/Utilities/OpenIGTLinkConfig.cmake @ONLY IMMEDIATE)
+
+# restore old OpenIGTLink_LIBRARY_TARGETS_FILE
+SET(OpenIGTLink_LIBRARY_TARGETS_FILE ${OpenIGTLink_LIBRARY_TARGETS_FILE_BUILDTREE})
 
