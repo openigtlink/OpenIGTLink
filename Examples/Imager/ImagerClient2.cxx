@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   Open IGT Link -- Example for Imager Client Program
-  Module:    $RCSfile: $
+  Program:   OpenIGTLink -- Example for Imager Client Program
   Language:  C++
-  Date:      $Date: $
-  Version:   $Revision: $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 

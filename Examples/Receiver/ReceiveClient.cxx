@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   Open IGT Link -- Example for Data Receiving Client Program
-  Module:    $RCSfile: $
+  Program:   OpenIGTLink -- Example for Data Receiving Client Program
   Language:  C++
-  Date:      $Date: $
-  Version:   $Revision: $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
