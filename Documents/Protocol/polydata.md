@@ -7,194 +7,117 @@ PolyData Message
 - Release Date: January 20, 2017
 
 Summary
-===================
+=======
 
-POLYDATA is used to transfer 3D polygonal data. The message format is designed based on the [POLY DATA format](http://www.vtk.org/VTK/img/file-formats.pdf) defined in VTK file format and equivalent to [VTK's vtkPolyData class](http://noodle.med.yale.edu/vtk5/classvtkPolyData.html). The message also supports dataset attribute field in VTK, including scalars, calar_scalars, vectors, vectors, normals, texture coordinates and tensor, but not lookup table.
+POLYDATA is used to transfer 3D polygonal data. The message format is designed
+based on the [POLY DATA format](http://www.vtk.org/VTK/img/file-formats.pdf)
+defined in VTK file format and equivalent to
+[VTK's vtkPolyData class](http://noodle.med.yale.edu/vtk5/classvtkPolyData.html).
+The message also supports dataset attribute field in VTK, including scalars,
+calar_scalars, vectors, vectors, normals, texture coordinates and tensor, but
+not lookup table.
+
 
 Message Types
-===================
+=============
 
 POLYDATA
--------------------
+--------
 
-<table border="1" cellpadding="5" cellspacing="0" align="center">
+ Data                 | Type         | Description
+----------------------|--------------|------------------------------------------
+ NPOINTS              | uint32       | Number of points
+ NVERTICES            | uint32       | Number of vertices
+ SIZE_VERTICES        | uint32       | Total size of vertices data
+ NLINES               | uint32       | Number of lines
+ SIZE_LINES           | uint32       | Total size of line data
+ NPOLYGONS            | uint32       | Number of polygons
+ SIZE_POLYGONS        | uint32       | Total size of polygon data
+ NTRIANGLE_STRIPS     | uint32       | Number of triangle strips
+ SIZE_TRIANGLE_STRIPS | uint32       | Total size of triangle strips data
+ NATTRIBUTES          | uint32       | Number of dataset attributes
+ POINTS               | POINTS       | Coordinates of point 0 - (NPOINTS-1)
+ VERTICES             | STRUCT_ARRAY | Array of vertices
+ LINES                | STRUCT_ARRAY | Array of lines
+ POLYGONS             | STRUCT_ARRAY | Array of polygons
+ TRIANGLE_STRIPS      | STRUCT_ARRAY | Array of triangle strips
+ ATTRIBUTES           | ATTRIBUTES   | Attributes
 
-<tbody><tr>
-<td style="background:#e0e0e0;"> Data
-</td><td style="background:#e0e0e0;"> Type
-</td><td style="background:#e0e0e0;"> Description
-</td></tr>
-<tr>
-<td align="left"> NPOINTS
-</td><td align="left"> uint32
-</td><td align="left"> Number of points
-</td></tr>
-<tr>
-<td align="left"> NVERTICES
-</td><td align="left"> uint32
-</td><td align="left"> Number of vertices
-</td></tr>
-<tr>
-<td align="left"> SIZE_VERTICES
-</td><td align="left"> uint32
-</td><td align="left"> Total size of vertices data
-</td></tr>
-<tr>
-<td align="left"> NLINES
-</td><td align="left"> uint32
-</td><td align="left"> Number of lines
-</td></tr>
-<tr>
-<td align="left"> SIZE_LINES
-</td><td align="left"> uint32
-</td><td align="left"> Total size of line data
-</td></tr>
-<tr>
-<td align="left"> NPOLYGONS
-</td><td align="left"> uint32
-</td><td align="left"> Number of polygons
-</td></tr>
-<tr>
-<td align="left"> SIZE_POLYGONS
-</td><td align="left"> uint32
-</td><td align="left"> Total size of polygon data
-</td></tr>
-<tr>
-<td align="left"> NTRIANGLE_STRIPS
-</td><td align="left"> uint32
-</td><td align="left"> Number of triangle strips
-</td></tr>
-<tr>
-<td align="left"> SIZE_TRIANGLE_STRIPS
-</td><td align="left"> uint32
-</td><td align="left"> Total size of triangle strips data
-</td></tr>
-<tr>
-<td align="left"> NATTRIBUTES
-</td><td align="left"> uint32
-</td><td align="left"> Number of dataset attributes
-</td></tr>
-<tr>
-<td align="left"> POINTS
-</td><td align="left"> float32 * NPOINTS * 3
-</td><td align="left"> Coordinates of points (P0x, P0y, P0z, P1x, P1y, P1z, ... P(n-1)x, P(n-1)y, P(n-1)z
-</td></tr>
-<tr>
-<td align="left"> VERTICES
-</td><td align="left"> uint32 * ((NPOINTS_0+1) + (NPOINTS_1+1) + (NPOINTS_(N-1)+1))
-</td><td align="left"> array of vertices ((NPOINTS_0, index_0_0, index_0_1, ....), (NPOINTS_1, index_1_0, index_1_1, ....), ..., (NPOINTS_(N-1), index_(N-1)_0, index_(N-1)_1, ....))
-</td></tr>
-<tr>
-<td align="left"> LINES
-</td><td align="left"> uint32 * ((NPOINTS_0+1) + (NPOINTS_1+1) + (NPOINTS_(N-1)+1))
-</td><td align="left"> array of vertices ((NPOINTS_0, index_0_0, index_0_1, ....), (NPOINTS_1, index_1_0, index_1_1, ....), ..., (NPOINTS_(N-1), index_(N-1)_0, index_(N-1)_1, ....))
-</td></tr>
-<tr>
-<td align="left"> POLYGONS
-</td><td align="left"> uint32 * ((NPOINTS_0+1) + (NPOINTS_1+1) + (NPOINTS_(N-1)+1))
-</td><td align="left"> array of vertices ((NPOINTS_0, index_0_0, index_0_1, ....), (NPOINTS_1, index_1_0, index_1_1, ....), ..., (NPOINTS_(N-1), index_(N-1)_0, index_(N-1)_1, ....))
-</td></tr>
-<tr>
-<td align="left"> TRIANGLE_STRIPS
-</td><td align="left"> uint32 * ((NPOINTS_0+1) + (NPOINTS_1+1) + (NPOINTS_(N-1)+1))
-</td><td align="left"> array of vertices ((NPOINTS_0, index_0_0, index_0_1, ....), (NPOINTS_1, index_1_0, index_1_1, ....), ..., (NPOINTS_(N-1), index_(N-1)_0, index_(N-1)_1, ....))
-</td></tr>
-<tr>
-<td align="left"> TYPE_ATTRIBUTE0
-</td><td align="left"> uint16
-</td><td align="left"> Type of dataset attribute 0 (including number of components for scalar type)
-</td></tr>
-<tr>
-<td align="left"> NATTRIBUTE0
-</td><td align="left"> uint32
-</td><td align="left"> Number of data for attribute 0
-</td></tr>
-<tr>
-<td align="left"> TYPE_ATTRIBUTE1
-</td><td align="left"> uint16
-</td><td align="left"> Type of dataset attribute 1 (including number of components for scalar type)
-</td></tr>
-<tr>
-<td align="left"> NATTRIBUTE1
-</td><td align="left"> uint32
-</td><td align="left"> Number of data for attribute1
-</td></tr>
-<tr>
-<td align="left"> ...
-</td><td align="left"> ...
-</td><td align="left"> ...
-</td></tr>
-<tr>
-<td align="left"> TYPE_ATTRIBUTE(NATTRIBUTES-1)
-</td><td align="left"> uint16
-</td><td align="left"> Type of dataset attribute 1 (including number of components for scalar type)
-</td></tr>
-<tr>
-<td align="left"> NATTRIBUTE(NATTRIBUTES-1)
-</td><td align="left"> uint32
-</td><td align="left"> Number of data for attribute2
-</td></tr>
-<tr>
-<td align="left"> NAME_ATTRIBUTE0
-</td><td align="left"> char * (name length)
-</td><td align="left"> Name of attribute 0
-</td></tr>
-<tr>
-<td align="left"> (null)
-</td><td align="left"> char
-</td><td align="left"> (null)
-</td></tr>
-<tr>
-<td align="left"> NAME_ATTRIBUTE1
-</td><td align="left"> char * (name length)
-</td><td align="left"> Name of attribute 1
-</td></tr>
-<tr>
-<td align="left"> (null)
-</td><td align="left"> char
-</td><td align="left"> (null)
-</td></tr>
-<tr>
-<td align="left"> ...
-</td><td align="left"> ...
-</td><td align="left"> ...
-</td></tr>
-<tr>
-<td align="left"> NAME_ATTRIBUTE(NATTRIBUTES-1)
-</td><td align="left"> char * (name length)
-</td><td align="left"> Name of attribute (NATTRIBUTES-1)
-</td></tr>
-<tr>
-<td align="left"> (null)
-</td><td align="left"> char
-</td><td align="left"> (null)
-</td></tr>
-<tr>
-<td align="left"> (Padding)
-</td><td align="left"> char or 0
-</td><td align="left"> Padding (inserted if (NAMESIZE_ATTRIBUTE0+1+NAMESIZE_ATTRIBUTE1+1+...NAMESIZE_ATTRIBUTE(NATTRIBUTES-1)+1)&nbsp;% 2 == 1)
-</td></tr>
-<tr>
-<td align="left"> ATTRIBUTE0
-</td><td align="left"> SIZE_ATTRIBUTE0 * (number of components) * (float32)
-</td><td align="left"> Actual attribute data
-</td></tr>
-<tr>
-<td align="left"> ATTRIBUTE1
-</td><td align="left"> NATTRIBUTE0 * (number of components) * (float32)
-</td><td align="left"> Actual attribute data
-</td></tr>
-<tr>
-<td align="left"> ...
-</td><td align="left"> ...
-</td><td align="left"> ...
-</td></tr>
-<tr>
-<td align="left"> ATTRIBUTE(NATTRIBUTES-1)
-</td><td align="left"> NATTRIBUTE(NATTRIBUTES-1) * (number of components) * (float32)
-</td><td align="left"> Actual attribute data
-</td></tr>
-</tbody></table>
+
+- POINTS
+
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+ P0X,P0Y,P0Z  | float32[3]    | Coordinates for point 0
+ ...          | ...           | ...
+ P(NPOINTS-1)X,P(NPOINTS-1)Y,P(NPOINTS-1)Z  | float32[3]    | Coordinates for point (NPOINTS-1)
+
+
+- STRUCT_ARRAY
+
+STRUCT_ARRAY contains an array of point indices that represent a geometric
+structure, including vertices, lines, polygons, and triangle strips.
+The number of structures (N_STRUCT) are specified by either NVERTICES, NLINES,
+NPOLYGONS, or NTRIANGLE_STRIPS (see the table above).
+
+ Data                     | Type         | Description
+--------------------------|--------------|---------------------------------------
+ STRUCT_0                 | POINT_INDICES| Point indices for 0th structure
+ ...                      | ...          | ...
+ STRUCT_(N_STRUCT-1)      | POINT_INDICES| Point indices for N_STRUCT-1 th structure
+
+- POINT_INDICES
+
+ Data                     | Type        | Description
+--------------------------|-------------|---------------------------------------
+ NINDICES                 | uint32      | Number of point indices
+ POINT_INDEX_0            | uint32      | Index for point #0
+ ...                      | ...         |
+ POINT_INDEX_(NINDICES-1) | uint32      | Index for point # (NINDICES - 1)
+
+
+- ATTRIBUTES
+
+ Data                    | Type           | Description
+-------------------------|----------------|----------------------------------------
+ ATTRIBUTE_HEADER        |ATTRIBUTE_HEADER| Attribute header
+ ATTRIBUTE_NAMES         | ATTRIBUTE_NAMES| List of attribute names
+ ATTRIBUTE_0             | ATTRIBUTE_DATA | Data for attribute #0
+ ...                     | ...            | ...
+ ATTRIBUTE_(NATTRIBUTE-1)| ATTRIBUTE_DATA | Data for attribute #(NATTRIBUTE-1)
+
+
+- ATTRIBUTE_HEADER
+
+ Data                 | Type          | Description
+----------------------|---------------|------------------------------------------
+ TYPE_ATTRIBUTE_0     | uint16        | Type of dataset attribute #0 (including number of components for scalar type)
+ NATTRIBUTE_0         | uint32        | Number of data for attribute #0
+ ...                  | ...           | ...
+ ...                  | ...           | ...
+ TYPE_ATTRIBUTE(NATTRIBUTES-1)| uint16| Type of dataset attribute #(NATTRIBUTES-1)
+ NATTRIBUTE(NATTRIBUTES-1)| uint32    | Number of data for attribute #(NATTRIBUTES-1)
+
+
+- ATTRIBUTE_NAMES
+
+ Data                 | Type          | Description
+----------------------|---------------|------------------------------------------
+ NAME_ATTRIBUTE_0     | char[]	      | Name of attribute 0
+ (null)               | char          | (null)
+ ...                  | ...           | ...
+ ...                  | ...           | ...
+ NAME_ATTRIBUTE_(NATTRIBUTES-1)| char[] | Name of attribute (NATTRIBUTES-1)
+ (null)               | char          | (null)
+ Padding              | (int8) NULL   | Padding (inserted to make the size of ATTRIBUTE_NAMES even)
+
+
+- ATTRIBUTE_DATA
+ Data | Type                          | Description
+------|-------------------------------|------------------------------------------
+ DATA | float32[NATTRIBUTE_0][NCOMP]  | Attribute data
+ ...  | ...                           |
+ DATA | float32[NATTRIBUTE_(NATTRIBUTES-1)][NCOMP] | Attribute data
 
 
 * Values for TYPE_ATTRIBUTE (16-bit)
@@ -217,78 +140,45 @@ POLYDATA
 GET_POLYDATA
 -------------------
 
-<table border="1" cellpadding="5" cellspacing="0" align="center">
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+              |               |
 
-<tbody><tr>
-<td style="background:#e0e0e0;"> Data
-</td><td style="background:#e0e0e0;"> Type
-</td><td style="background:#e0e0e0;"> Description
-</td></tr>
-</tbody></table>
 
 STT_POLYDATA
 -------------------
 
-<table border="1" cellpadding="5" cellspacing="0" align="center">
-
-<tbody><tr>
-<td align="left" style="background:#e0e0e0;"> Data
-</td><td align="left" style="background:#e0e0e0;"> Type
-</td><td align="left" style="background:#e0e0e0;"> Description
-</td></tr>
-</tbody></table>
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+              |               |
 
 or 
 
-<table border="1" cellpadding="5" cellspacing="0" align="center">
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+ RESOL        | uint64        | Minimum interval between message (ns)*
 
-<tbody><tr>
-<td align="left" style="background:#e0e0e0;"> Data
-</td><td align="left" style="background:#e0e0e0;"> Type
-</td><td align="left" style="background:#e0e0e0;"> Description
-</td></tr>
-<tr>
-<td align="left"> RESOL
-</td><td align="left"> uint64
-</td><td align="left"> Minimum interval between message (ns). Same format as <a href="/Wiki/index.php/OpenIGTLink/Timestamp" title="OpenIGTLink/Timestamp">TimeStamp</a>
-</td></tr>
-</tbody></table>
+See [Time Stamp](timestamp.md)
+
 
 STP_POLYDATA
 -------------------
 
-<table border="1" cellpadding="5" cellspacing="0" align="center">
-
-<tbody><tr>
-<td style="background:#e0e0e0;"> Data
-</td><td style="background:#e0e0e0;"> Type
-</td><td style="background:#e0e0e0;"> Description
-</td></tr>
-</tbody></table>
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+              |               |
 
 
 RTS_POLYDATA
 -------------------
 
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+ STATUS       | uint8         | 0: Success; 1: Error
 
-<table border="1" cellpadding="5" cellspacing="0" align="center">
-
-<tbody><tr>
-<td style="background:#e0e0e0;"> Data
-</td><td style="background:#e0e0e0;"> Type
-</td><td style="background:#e0e0e0;"> Description
-</td></tr>
-<tr>
-<td align="left"> Status
-</td><td align="left"> 8 bit unsigned
-</td><td align="left"> 0: Success 1: Error
-</td></tr>
-</tbody></table>
 
 Implementations
 ===================
-
-The POLYDATA message type is implemented in the following source code.
 
 * [igtlPolyDataMessage.h](/Source/igtlPolyDataMessage.h)
 * [igtlPolyDataMessage.cxx](/Source/igtlPolyDataMessage.cxx)

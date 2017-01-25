@@ -7,59 +7,34 @@ NDArray Message
 - Release Date: January 20, 2017
 
 Summary
-===================
+=======
 
-NDARRAY is a data type, which is designed to transfer N-dimensional numerical array.
+NDARRAY is a data type, which is designed to transfer N-dimensional numerical
+array.
 
 
 Message Types
-===================
+=============
 
 NDARRAY
--------------------
+-------
 
-<table border="1" cellpadding="5" cellspacing="0" align="center">
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+ SCALAR_TYPE  | uint8         | Scalar type (2:int8 3:uint8 4:int16 5:uint16 6:int32 7:uint32 10:float32 11:float64 13:complex float 64*)
+ DIM          | uint8         | Dimension of array
+ SIZE         | uint16[DIM]   | Size of array
+ DATA         | ARRAY         | Array data. (Must be in the network byte order.)
 
-<tbody><tr>
-<td style="background:#e0e0e0;"> Data
-</td><td style="background:#e0e0e0;"> Type
-</td><td style="background:#e0e0e0;"> Description
-</td></tr>
-<tr>
-<td align="left"> TYPE
-</td><td align="left"> UINT8
-</td><td align="left"> Scalar type (2:int8 3:uint8 4:int16 5:uint16 6:int32 7:uint32 10:float32 11:float64 13:complex float 64*)
-</td></tr>
-<tr>
-<td align="left"> DIM
-</td><td align="left"> UINT8
-</td><td align="left"> Dimension of array
-</td></tr>
-<tr>
-<td align="left"> SIZE
-</td><td align="left"> UINT16[DIM]
-</td><td align="left"> Size of array
-</td></tr>
-<tr>
-<td align="left"> DATA
-</td><td align="left"> TYPE[SIZE[0]][SIZE[1]]....[[SIZE[DIM-1]]]
-</td><td align="left"> Array data. (Must be in network byte order.)
-</td></tr>
-</tbody></table>
-
+* ARRAY is a byte array SCALAR_TYPE[SIZE[0]][SIZE[1]]....[[SIZE[DIM-1]]]
 * Complex is a 128-bit variable consisting of a real part in the first 64-bit and an imaginal part in the last 64-bit.
 
 GET_NDARRAY
 -------------------
 
-<table border="1" cellpadding="5" cellspacing="0" align="center">
-
-<tbody><tr>
-<td style="background:#e0e0e0;"> Data
-</td><td style="background:#e0e0e0;"> Type
-</td><td style="background:#e0e0e0;"> Description
-</td></tr>
-</tbody></table>
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+              |               |
 
 STT_NDARRAY
 -------------------

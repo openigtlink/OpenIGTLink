@@ -18,8 +18,8 @@ COLORT
 
  Data         | Type          | Description
 --------------|---------------|-------------------------------------------------
- ITYPE        | uint8         | Index type  (3:uint8  5:uint16)
- MTYPE        | uint8         | Map type (3:uint8 5:uint16 19:RGB color)
+ INDEX_TYPE   | uint8         | Index type  (3:uint8  5:uint16)
+ MAP_TYPE     | uint8         | Map type (3:uint8 5:uint16 19:RGB color)
  TABLE        | uint8[]       | Color index table
 
 GET_COLORT
