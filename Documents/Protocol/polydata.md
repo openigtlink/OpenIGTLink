@@ -113,6 +113,7 @@ NPOLYGONS, or NTRIANGLE_STRIPS (see the table above).
 
 
 - ATTRIBUTE_DATA
+
  Data | Type                          | Description
 ------|-------------------------------|------------------------------------------
  DATA | float32[NATTRIBUTE_0][NCOMP]  | Attribute data

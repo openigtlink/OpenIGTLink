@@ -44,7 +44,7 @@ GET_QTDATA
 
  Data         | Type          | Description
 --------------|---------------|-------------------------------------------------
- STATUS       | uint8         | 0: Success; 1: Error
+              |               |
 
 STT_QTDATA
 -------------------
