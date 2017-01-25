@@ -317,6 +317,9 @@ int SendImage(igtl::Socket::Pointer& socket, const char* name, const char* filed
     imgMsg->SetSubVolume(svsize, svoffset);
     imgMsg->AllocateScalars();
     
+    // Following line may be called in case of 16-, 32-, and 64-bit scalar types.
+    // imgMsg->SetEndian(igtl::ImageMessage::ENDIAN_BIG);
+
     //------------------------------------------------------------
     // Set image data (See GetTestImage() bellow for the details)
     GetTestImage(imgMsg, filedir, index);

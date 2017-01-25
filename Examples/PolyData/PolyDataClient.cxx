@@ -21,7 +21,6 @@
 #include <cstring>
 
 #include "igtlOSUtil.h"
-#include "igtlImageMessage.h"
 #include "igtlPolyDataMessage.h"
 #include "igtlClientSocket.h"
 

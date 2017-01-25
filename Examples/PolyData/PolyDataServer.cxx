@@ -22,7 +22,6 @@
 
 #include "igtlOSUtil.h"
 #include "igtlMessageHeader.h"
-#include "igtlImageMessage.h"
 #include "igtlServerSocket.h"
 #include "igtlPolyDataMessage.h"
 
