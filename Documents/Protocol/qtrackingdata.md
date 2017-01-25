@@ -21,13 +21,13 @@ QTDATA
 
  Data          | Type          | Description
 ---------------|---------------|-------------------------------------------------
- NAME_0        | char[32]      | Name (=Id) of the instrument/tracker # 0
+ NAME_0        | char[20]      | Name (=Id) of the instrument/tracker # 0
  TYPE_0        | uint8         | Type of instrument for #0
  (--)          | uint8         | Researved
  POSITION_0    | float32[3]    | (X, Y, Z)
  QUATERNION_0  | float32[4]    |Quaternion (QX, QY, QZ, W)
  ...           | ...           | ...
- NAME_(N-1)    | char[32]      | Name (=Id) of the instrument/tracker
+ NAME_(N-1)    | char[20]      | Name (=Id) of the instrument/tracker
  TYPE_(N-1)    | uint8         | Type of instrument for #0
  (--)          | uint8         | Reserved
  POSITION_(N-1)| float32[3]    | (X, Y, Z)

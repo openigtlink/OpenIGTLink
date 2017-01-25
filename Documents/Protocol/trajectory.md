@@ -7,82 +7,35 @@ Trajectory Message
 - Release Date: January 20, 2017
 
 Summary
-===================
+=======
 
-The TRAJECTORY message type support to transfer information about 3D trajectory, which is often used in surgical planning and guidance in image-guided therapy.
+The TRAJECTORY message type support to transfer information about 3D trajectory,
+which is often used in surgical planning and guidance in image-guided therapy.
 
 Message Types
-===================
+=============
 
 TRAJ
--------------------
+----
 
-<table border="1" cellpadding="5" cellspacing="0" align="center">
-
-<tbody><tr>
-<td style="background:#e0e0e0;"> Data
-</td><td style="background:#e0e0e0;"> Type
-</td><td style="background:#e0e0e0;"> Description
-</td></tr>
-<tr>
-<td align="left"> Name
-</td><td align="left"> char[64]
-</td><td align="left"> Name or description of the trajectory.
-</td></tr>
-<tr>
-<td align="left"> Group name
-</td><td align="left"> char[32]
-</td><td align="left"> Can be "Trajectory", ...
-</td></tr>
-<tr>
-<td align="left"> Type
-</td><td align="left"> 8 bit unsigned
-</td><td align="left"> 1: trajectory with only entry point, 2: trajectory with only target point, 3: trajectory with entry and target point
-</td></tr>
-<tr>
-<td align="left"> --
-</td><td align="left"> 8 bit unsigned
-</td><td align="left"> Reserved
-</td></tr>
-<tr>
-<td align="left"> R,G,B,A
-</td><td align="left"> 8 bit unsigned
-</td><td align="left"> Color in RGBA
-</td></tr>
-<tr>
-<td align="left"> X1,Y1,Z1
-</td><td align="left"> 32 bit float
-</td><td align="left"> Entry point of the trajectory
-</td></tr>
-<tr>
-<td align="left"> X2,Y2,Z2
-</td><td align="left"> 32 bit float
-</td><td align="left"> Target point of a trajectory
-</td></tr>
-<tr>
-<td align="left"> Diameter
-</td><td align="left"> 32 bit float
-</td><td align="left"> Diameter of trajectory, can be 0
-</td></tr>
-<tr>
-<td align="left"> Owner image
-</td><td align="left"> char[20]
-</td><td align="left"> Id of the owner image/sliceset. Trajectories  from different slicesets can be sent if slicesets are fused.
-</td></tr>
-</tbody></table>
-
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+ NAME         | char[64]	  | Name or description of the trajectory.
+ GROUP_NAME	  | char[32]	  | Can be "Trajectory", ...
+ TYPE	      | uint8	      | 1: trajectory with only entry point, 2: trajectory with only target point, 3: trajectory with entry and target point
+ Reserved     | uint8         | Reserved
+ R,G,B,A      | uint8[4]      | Color in RGBA
+ X1,Y1,Z1     | float32[3]	  | Entry point of the trajectory
+ X2,Y2,Z2     | float32[3]	  | Target point of a trajectory
+ DIAMETER     | float32  	  | Diameter of trajectory, can be 0
+ OWNER_IMAGE  | char[20]	  | Id of the owner image/sliceset. Trajectories from different slicesets can be sent if slicesets are fused.
 
 GET_TRAJ
 -------------------
 
-<table border="1" cellpadding="5" cellspacing="0" align="center">
-
-<tbody><tr>
-<td style="background:#e0e0e0;"> Data
-</td><td style="background:#e0e0e0;"> Type
-</td><td style="background:#e0e0e0;"> Description
-</td></tr>
-</tbody></table>
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+              |               |
 
 STT_TRAJ
 -------------------
@@ -97,9 +50,6 @@ N/A
 
 Implementations
 ===================
-
-TRAJECTORY message type is implemented in the following source code.
-
 
 * [igtlTrajectoryMessage.h](/Source/igtlTrajectoryMessage.h)
 * [igtlTrajectoryMessage.cxx](/Source/igtlTrajectoryMessage.cxx)

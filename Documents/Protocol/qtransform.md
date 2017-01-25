@@ -17,7 +17,7 @@ advantage of smaller data size (19%). It is therefore more suitable for pushing
 high frame-rate data from tracking devices.
 
 Message Types
-===================
+=============
 
 QTRANS
 ------
