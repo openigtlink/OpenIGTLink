@@ -113,6 +113,7 @@ Extended Header, and Meta-Data sections.
 * [Extended Header / Meta Data](eheader.md)
 
 
+
 Message Types
 =============
 
@@ -147,9 +148,33 @@ Message types introduced in version 3
 -------------------------------------
 * [COMMAND](/Documents/Protocol/command.md)
 
-Other Information
--------------------
-* [64-bit UNIT field in OpenIGTLink](/Documents/Protocol/unit.md)
 
+Query Mechanism
+===============
+
+See [Query Mechanism](query.md) for detail.
+
+
+Differences Between Version 2 and 3
+===================================
+
+At [Winter Project Week 2016](http://wiki.na-mic.org/Wiki/index.php/2016_Winter_Project_Week/Projects/TrackedUltrasoundStandardization) (January 5-9, 2016, Cambridge, MA), we discussed the limitations above, and potential extension to the existing protocols _with backward compatibility_. The following changes were proposed:
+
+* A new message structure. The body in the former protocol was splitted into extended header, content, and metadata. The message now consists of the following sections:
+  * Header (58 bytes)
+  * Extended Header (variable length)
+  * Content (variable length)
+  * Metadata (variable length)
+* The _header_ section has the same format as version 2 protocol, and should contain the following information:
+  * The header version (the first two bytes) will be incremented to '0x0002'
+  * The Body size is the total byte size for the extended header, content, and Metadata. This will allow old clients to skip the entire message and read the sucessive message properly.
+  * The other fields are filled in the same as the previous version.
+* The _extended header_ section contains the following fields:
+  * Extended header size (EXT_HEADER_SIZE) (2 bytes)
+  * Metadata size (METADATA_SIZE) (2 bytes)
+  * Message ID (MSG_ID) (4 bytes)
+* The _content_ section is equivalent to the body section in the previous version.
+  * The size of content can be computed as: BODY_SIZZE - (EXT_HEADER_SIZE + METADAT_SIZE)
+* The _metadata_ section contains pairs of 'key' and 'value' strings. Keys are ASCII string, while values can be stored using different encodings.
 
 
