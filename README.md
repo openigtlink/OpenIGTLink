@@ -1,7 +1,21 @@
 The OpenIGTLink Library
 =======================
 
-* This project provides a C/C++ implementation of the OpenIGTLink protocol defined in [OpenIGTLink Web Page](http://openigtlink.org/). 
+This project provides a C/C++ implementation of the OpenIGTLink protocol.
+
+OpenIGTLink is an open-source network communication interface specifically
+designed for image-guided interventions. It aims to provide a plug-and-play
+unified real-time communications (URTC) in operating rooms (ORs) for image-guided
+interventions, where imagers, sensors, surgical robots,and computers from
+different vendors work cooperatively. This URTC will ensure the seamless data
+flow among those components and enable a closed-loop process of planning, control,
+delivery, and feedback. The specification of OpenIGTLink is open, and can be
+used without any license fee; hence OpenIGTLink is suitable for both industrial
+and academic developers.
+
+The detail and latest information of the protocol are available at [OpenIGTLink Web Page](http://openigtlink.org/).
+The definition of the protocol used in the current version (one in this git repository)
+can be found in [Protocol Documentation](Documents/Protocol/index.md)
 
 Build Status
 ------------
