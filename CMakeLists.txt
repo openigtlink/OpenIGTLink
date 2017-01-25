@@ -85,7 +85,7 @@ IF(NOT OpenIGTLink_INSTALL_INCLUDE_DIR)
 ENDIF(NOT OpenIGTLink_INSTALL_INCLUDE_DIR)
 
 IF(NOT OpenIGTLink_INSTALL_PACKAGE_DIR)
-  SET(OpenIGTLink_INSTALL_PACKAGE_DIR ${OpenIGTLink_INSTALL_LIB_DIR}
+  SET(OpenIGTLink_INSTALL_PACKAGE_DIR "${OpenIGTLink_INSTALL_LIB_DIR}/cmake/igtl-${OpenIGTLink_VERSION_MAJOR}.${OpenIGTLink_VERSION_MINOR}"
     CACHE INTERNAL "")
 ENDIF(NOT OpenIGTLink_INSTALL_PACKAGE_DIR)
 
@@ -192,9 +192,8 @@ CMAKE_EXPORT_BUILD_SETTINGS(${OpenIGTLink_BINARY_DIR}/OpenIGTLinkBuildSettings.c
 
 INSTALL(FILES
   ${OpenIGTLink_BINARY_DIR}/OpenIGTLinkBuildSettings.cmake
-  ${OpenIGTLink_LIBRARY_TARGETS_FILE}
   ${OpenIGTLink_BINARY_DIR}/UseOpenIGTLink.cmake
-  ${OpenIGTLink_BINARY_DIR}/OpenIGTLinkConfig.cmake
+  ${OpenIGTLink_BINARY_DIR}/Utilities/OpenIGTLinkConfig.cmake
   DESTINATION ${OpenIGTLink_INSTALL_PACKAGE_DIR}
   COMPONENT Development
   )
@@ -240,11 +239,15 @@ ENDIF(OpenIGTLink_BUILD_EXAMPLES)
 
 #-----------------------------------------------------------------------------
 # Export targets
-export(TARGETS
-  OpenIGTLink
+export(TARGETS OpenIGTLink
   FILE "${OpenIGTLink_LIBRARY_TARGETS_FILE}"
   )
 
+# Export targets for install
+INSTALL(EXPORT OpenIGTLink
+  DESTINATION "${OpenIGTLink_INSTALL_PACKAGE_DIR}"
+  FILE "OpenIGTLinkTargets.cmake"
+  )
 
 #-----------------------------------------------------------------------------
 # Tests
