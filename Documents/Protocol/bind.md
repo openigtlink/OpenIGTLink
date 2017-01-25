@@ -80,7 +80,7 @@ If a GET_BIND message does not have a body, it requests all data.
 --------------|---------------|-------------------------------------------------
  N_CHLID      | uint16	      | Number of child messages
  BIND_HEADER_2| BIND HEADER 2 | Types and sizes of child messages
- NAME_TABLE_2 | NAME TABLE 2  | Name tables for child messages
+ NAME_TABLE   | NAME TABLE    | Name tables for child messages
 
 - BIND HEADER 2 Section
 
@@ -90,17 +90,7 @@ If a GET_BIND message does not have a body, it requests all data.
  ...              | ...       |
  CTYPE_(N_CHILD-1)| char[12]  | Device type string for child message (N_CHILD-1)
 
-- NAME TABLE Section (Same as one in the BIND message)
-
- Data           | Type          | Description
-----------------|---------------|-----------------------------------------------
- NTABLE_SIZE    | uint16        | Size of name table (including the padding)
- NAME_0         | char[*]       | Name for child message 0
- (null)         | uint8         | separator
- ...            | ...           |
- NAME_(N_CM-1)  | char[*]       | Name for child message (N_CHILD-1)
- (null)	        | uint8         | Separator
- (Padding*)     | uint8 or none | Padding to align with WORD
+- NAME_TABLE (see BIND message)
 
 
 STT_BIND
@@ -122,8 +112,10 @@ or
 --------------|---------------|-------------------------------------------------
  N_CHLID      | uint16	      | Number of child messages
  BIND_HEADER_2| BIND HEADER 2 | Types and sizes of child messages
- NAME_TABLE_2 | NAME TABLE 2  | Name tables for child messages
+ NAME_TABLE   | NAME TABLE    | Name tables for child messages
 
+- BIND HEADER 2 Section  (see BIND message)
+- NAME_TABLE Section (see BIND message)
 
 
 STP_BIND
