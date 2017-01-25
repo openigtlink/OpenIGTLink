@@ -35,6 +35,5 @@ Please refer [How to Contribute](http://openigtlink.org/library/contribute.html)
 
 License
 -------
-The code is distributed as open source under [the new BSD liccense](http://www.opensource.org/licenses/bsd-license.php).
-
+The code is distributed as open source under [The 3-Clause BSD License](https://opensource.org/licenses/BSD-3-Clause).
 
