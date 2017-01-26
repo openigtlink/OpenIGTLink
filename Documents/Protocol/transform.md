@@ -26,18 +26,18 @@ The message contains the elements for the upper 3 rows of 4x4 linear transform m
 
  Data         | Type          | Description
 --------------|---------------|-------------------------------------------------
- R11	      | float32	      | Element (1, 1)
- R21	      | float32	      | Element (2, 1)
- R31	      | float32	      | Element (3, 1)
- R12	      | float32	      | Element (1, 2)
- R22	      | float32	      | Element (2, 2)
- R32	      | float32	      | Element (3, 2)
- R13	      | float32	      | Element (1, 3)
- R23	      | float32	      | Element (2, 3)
- R33	      | float32	      | Element (3, 3)
- TX	          | float32	      | Element (1, 4) (translation along x-axis in millimeter)
- TY	          | float32	      | Element (2, 4) (translation along y-axis in millimeter)
- TZ	          | float32	      | Element (3, 4) (translation along z-axisin millimeter)
+ R11          | float32       | Element (1, 1)
+ R21          | float32       | Element (2, 1)
+ R31          | float32       | Element (3, 1)
+ R12          | float32       | Element (1, 2)
+ R22          | float32       | Element (2, 2)
+ R32          | float32       | Element (3, 2)
+ R13          | float32       | Element (1, 3)
+ R23          | float32       | Element (2, 3)
+ R33          | float32       | Element (3, 3)
+ TX           | float32       | Element (1, 4) (translation along x-axis in millimeter)
+ TY           | float32       | Element (2, 4) (translation along y-axis in millimeter)
+ TZ           | float32       | Element (3, 4) (translation along z-axisin millimeter)
 
 
 GET_TRANS

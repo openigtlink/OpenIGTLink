@@ -48,44 +48,56 @@ protocol has a mechanism to skip a message, if the receiver does not know its
 format. 
 
 In OpenIGTLink Version 3, each OpenIGTLink message consists of the following
-three sections:
+four sections:
 
 
-    Bytes
-    0         58            72 
-    +----------+-------------+-------------------+-----------+
-    |  HEADER  | EXT_HEADER  |      CONTENT      | META_DATA | 
-    +----------+-------------+-------------------+-----------+
-
+  Bytes
+  0         58            72 
+  +----------+-------------+-------------------+-----------+
+  |  HEADER  | EXT_HEADER  |      CONTENT      | META_DATA | 
+  +----------+-------------+-------------------+-----------+
+             |<----------------- Body -------------------->|
 
 * Header (58 bytes)
 * Extended Header (variable length) (New in Version 3)
 * Content (variable length)
 * Metadata (variable length) (New in Version 3)
 
+The last three sections is called "Body" for the sake of convention. Since
+there were no Extended Header and Metadata in the older versions prior to 
+Version 3, the Body section was solely used by the message content.
+Therefore, the Body Size in the Header represented the size of the message 
+content as well as the size of the rest of the message.
+As a result, many old applications assume that the Body Size in the Header
+equals the size of the message content. 
 
-Header + Extended Header
-------------------------
+When the message structure was revised for Version 3, we redefined the Body
+Size as the total size of Extended Header, Content, and Metadata, because
+this new definition allows the old OpenIGTLink programs can still tell the
+size of the rest of the message, and skip reading the byte stream until the
+begining of the next message. The size of the content can be computed as:
+BODY_SIZE - (EXT_HEADER_SIZE + METADAT_SIZE).
+
 
 Header + Extended Header
 -------------------
 
-    Bytes
-    0   2                       14                                      34
-    +---+-----------------------+---------------------------------------+
-    | V | TYPE                  | DEVICE_NAME                           | 
-    +---+-----------------------+---------------------------------------+
+  Bytes
+  0   2                       14                                      34
+  +---+-----------------------+---------------------------------------+
+  | V | TYPE                  | DEVICE_NAME                           | 
+  +---+-----------------------+---------------------------------------+
 
-    34              42              50              58
-    +---------------+---------------+---------------+
-    | TIME_STAMP    | BODY_SIZE     | CRC64         |
-    +---------------+---------------+---------------+
-    
-    
-    58                60              64        68         72    
-    +-----------------+---------------+---------+-----------+
-    | EXT_HEADER_SIZE | METADATA_SIZE | MSG_ID  | RESERVED  |
-    +-----------------+---------------+---------+-----------+
+  34              42              50              58
+  +---------------+---------------+---------------+
+  | TIME_STAMP    | BODY_SIZE     | CRC64         |
+  +---------------+---------------+---------------+
+  
+  
+  58                60              64        68         72    
+  +-----------------+---------------+---------+-----------+
+  | EXT_HEADER_SIZE | METADATA_SIZE | MSG_ID  | RESERVED  |
+  +-----------------+---------------+---------+-----------+
 
 The formats of the Header and Extended Header sections are consistent among
 all message types, and can be interpreted by any software that has an
@@ -106,12 +118,42 @@ Meta-data are given in the form of an associative array (i.e. pairs of "key" and
 the Content section is defined
 for each data type.
 
+
+Metadata header:
+
+  Bytes
+  0             2             4                   6               10
+  +-------------+-------------+-------------------+---------------+----
+  | INDEX_COUNT | KEY_SIZE_0  | VALUE_ENCODING_0  | VALUE_SIZE_0  | ...
+  +-------------+-------------+-------------------+---------------+----
+                |<-------------- Metadata 0 --------------------->|
+
+
+      10            12                  14              18	 
+  ----+-------------+-------------------+---------------+----
+  ... | KEY_SIZE_1  | VALUE_ENCODING_1  | VALUE_SIZE_1  | ...
+  ----+-------------+-------------------+---------------+----
+      |<--------------- Metadata 1 -------------------->|    
+  
+                                                  INDEX_COUNT*8+2
+  ----+-------------+-------------------+---------------+
+  ... |KEY_SIZE_N-1 |VALUE_ENCODING_N-1 |VALUE_SIZE_N-1 |
+  ----+-------------+-------------------+---------------+
+      |<----------Metadata N-1 (=INDEX_COUNT-1)-------->|
+
+Metadata body:
+
+  Bytes
+  +--------+---------+--------+----------+----    ----+--------+-----------+
+  | KEY_0  | VALUE_0 | KEY_1  | VALUE_1  |    ...     |KEY_N-1 | VALUE_N-1 |
+  +--------+---------+--------+----------+----    ----+--------+-----------+
+  |<-- Metadata 0 -->|<-- Metadata 1 --->|            |<-- Metadata N-1 -->|
+
+
 Please refer the following pages for the detailed format of the Header,
 Extended Header, and Meta-Data sections.
 
 * [Header](header.md)
-* [Extended Header / Meta Data](eheader.md)
-
 
 
 Message Types
@@ -155,26 +197,5 @@ Query Mechanism
 See [Query Mechanism](query.md) for detail.
 
 
-Differences Between Version 2 and 3
-===================================
-
-At [Winter Project Week 2016](http://wiki.na-mic.org/Wiki/index.php/2016_Winter_Project_Week/Projects/TrackedUltrasoundStandardization) (January 5-9, 2016, Cambridge, MA), we discussed the limitations above, and potential extension to the existing protocols _with backward compatibility_. The following changes were proposed:
-
-* A new message structure. The body in the former protocol was splitted into extended header, content, and metadata. The message now consists of the following sections:
-  * Header (58 bytes)
-  * Extended Header (variable length)
-  * Content (variable length)
-  * Metadata (variable length)
-* The _header_ section has the same format as version 2 protocol, and should contain the following information:
-  * The header version (the first two bytes) will be incremented to '0x0002'
-  * The Body size is the total byte size for the extended header, content, and Metadata. This will allow old clients to skip the entire message and read the sucessive message properly.
-  * The other fields are filled in the same as the previous version.
-* The _extended header_ section contains the following fields:
-  * Extended header size (EXT_HEADER_SIZE) (2 bytes)
-  * Metadata size (METADATA_SIZE) (2 bytes)
-  * Message ID (MSG_ID) (4 bytes)
-* The _content_ section is equivalent to the body section in the previous version.
-  * The size of content can be computed as: BODY_SIZZE - (EXT_HEADER_SIZE + METADAT_SIZE)
-* The _metadata_ section contains pairs of 'key' and 'value' strings. Keys are ASCII string, while values can be stored using different encodings.
 
 

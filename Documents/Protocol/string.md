@@ -21,9 +21,9 @@ STRING
 
  Data         | Type          | Description
 --------------|---------------|-------------------------------------------------
- ENCODING	  | uint16	      | Character encoding type as MIBenum value. Default=3.
- LENGTH	      | uint16	      | Length of string (bytes)
- STRING	      | uint8[LENGTH] | Byte array of the string
+ ENCODING     | uint16        | Character encoding type as MIBenum value. Default=3.
+ LENGTH       | uint16        | Length of string (bytes)
+ STRING       | uint8[LENGTH] | Byte array of the string
 
 * For MIBenum character encoding, please refer [IANA Character Sets](http://www.iana.org/assignments/character-sets). US-ASCII (ANSI-X3.4-1968; MIBenum = 3) is strongly recommended.
 
