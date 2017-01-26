@@ -19,6 +19,7 @@ SET(igtlutil_HEADS
   igtl_types.h
   igtl_util.h
   igtl_capability.h
+  igtl_video.h
   )
 
 SET(igtlutil_SOURCES
@@ -28,6 +29,7 @@ SET(igtlutil_SOURCES
   igtl_transform.c
   igtl_util.c
   igtl_capability.c
+  igtl_video.c
   )
 
 

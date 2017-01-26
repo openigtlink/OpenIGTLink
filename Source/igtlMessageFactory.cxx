@@ -21,6 +21,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "igtlStatusMessage.h"
 #include "igtlCapabilityMessage.h"
 
+
 #if OpenIGTLink_PROTOCOL_VERSION >= 2
 #include "igtlPointMessage.h"
 #include "igtlTrajectoryMessage.h"
@@ -32,6 +33,10 @@ PURPOSE.  See the above copyright notices for more information.
 #if OpenIGTLink_HEADER_VERSION >= 2
 #include "igtlCommandMessage.h"
 #endif // OpenIGTLink_PROTOCOL_VERSION >= 3
+
+#if OpenIGTLink_BUILD_H264 >=1
+  #include "igtlVideoMessage.h"
+#endif
 
 #include "igtl_header.h"
 
@@ -74,6 +79,9 @@ namespace igtl
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
     this->AddMessageType("COMMAND", (PointerToMessageBaseNew)&igtl::CommandMessage::New);
     this->AddMessageType("RTS_COMMAND", (PointerToMessageBaseNew)&igtl::RTSCommandMessage::New);
+#endif
+#if OpenIGTLink_BUILD_H264 >= 1
+    this->AddMessageType("VIDEO", (PointerToMessageBaseNew)&igtl::VideoMessage::New);
 #endif
   }
 

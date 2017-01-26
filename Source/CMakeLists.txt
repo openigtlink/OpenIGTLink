@@ -5,7 +5,12 @@ IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
     ws2_32
     wsock32
     )
-
+	IF(BUILD_H264)
+		SET(LINK_LIBS
+		${LINK_LIBS}
+		"${CMAKE_BINARY_DIR}/OpenH264/openH264.lib"
+		)
+	ENDIF()  
   #For debug under win32 system, the run time check mode should be set to /RTCu for multithreading purpose
   STRING(REPLACE "/RTC1" "/RTCu" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
   SET(OpenIGTLink_REQUIRED_CXX_FLAGS ${OpenIGTLink_REQUIRED_CXX_FLAGS})
@@ -20,7 +25,12 @@ ELSE() # for POSIX-compatible OSs
       socket
     )
   ENDIF()
-
+	IF(BUILD_H264)
+		SET(LINK_LIBS
+		${LINK_LIBS}
+		"${CMAKE_BINARY_DIR}/OpenH264/libopenh264.a"
+		)
+	ENDIF()  
   IF(OpenIGTLink_PLATFORM_SUNOS)
     LIST(APPEND LINK_LIBS
       ${OpenIGTLink_STD_LINK_LIBRARIES}
@@ -37,6 +47,21 @@ SET(OpenIGTLink_INCLUDE_DIRS
   ${CMAKE_CURRENT_SOURCE_DIR}/igtlutil
   ${CMAKE_CURRENT_BINARY_DIR}/igtlutil
   )
+  
+IF(BUILD_H264)
+	SET(OpenIGTLink_INCLUDE_DIRS
+	${OpenIGTLink_INCLUDE_DIRS}
+  "${CMAKE_BINARY_DIR}/OpenH264/codec"
+  "${CMAKE_BINARY_DIR}/OpenH264/codec/common/inc"
+  "${CMAKE_BINARY_DIR}/OpenH264/codec/console/common/src"
+	"${CMAKE_BINARY_DIR}/OpenH264/codec/console/common/inc"
+	"${CMAKE_BINARY_DIR}/OpenH264/codec/console/dec/inc"
+	"${CMAKE_BINARY_DIR}/OpenH264/codec/console/enc/src"
+	"${CMAKE_BINARY_DIR}/OpenH264/codec/api/svc"
+	"${CMAKE_BINARY_DIR}/OpenH264/codec/encoder/core/inc"
+	"${CMAKE_BINARY_DIR}/OpenH264/codec/processing/interface"
+	"${CMAKE_BINARY_DIR}/OpenH264/test")
+ENDIF()  
 
 SET(OpenIGTLink_SOURCES
   igtlutil/igtl_header.c
@@ -191,6 +216,35 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" )
     igtlutil/igtl_command.c
     igtlutil/igtl_query.c
     )
+  IF(BUILD_H264)
+  	LIST(APPEND OpenIGTLink_SOURCES
+			igtlVideoMessage.cxx
+			igtlMessageRTPWrapper.cxx
+			igtlGeneralSocket.cxx
+			igtlUDPClientSocket.cxx
+			igtlUDPServerSocket.cxx
+			VideoStreamIGTLinkServer.cxx 
+			VideoStreamIGTLinkReceiver.cxx
+			H264Decoder.cpp
+			igtlutil/igtl_video.c
+			${CMAKE_BINARY_DIR}/OpenH264/test/api/sha1.c
+			${CMAKE_BINARY_DIR}/OpenH264/codec/console/common/src/read_config.cpp  
+			)
+    LIST(APPEND OpenIGTLink_SOURCES
+      igtlVideoMessage.h
+      igtlMessageRTPWrapper.h
+      igtlGeneralSocket.h
+      igtlUDPClientSocket.h
+      igtlUDPServerSocket.h
+      VideoStreamIGTLinkServer.h
+      VideoStreamIGTLinkReceiver.h
+      H264Decoder.h
+      igtlutil/igtl_video.h
+      ${CMAKE_BINARY_DIR}/OpenH264/test/sha1.h
+      ${CMAKE_BINARY_DIR}/OpenH264/codec/console/common/inc/read_config.h
+    )
+
+	ENDIF()
   IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
     LIST(APPEND OpenIGTLink_INCLUDE_FILES
       igtlCommandMessage.h

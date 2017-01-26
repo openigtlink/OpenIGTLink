@@ -25,6 +25,24 @@ ELSE()
   SET(OpenIGTLink_PROTOCOL_VERSION "1")
 ENDIF()
 
+#-----------------------------------------------------------------------------
+# OpenH264
+OPTION(BUILD_H264 "Build the OpenH264 tree." OFF)
+SET(OpenIGTLink_BUILD_H264 "0")
+IF(BUILD_H264)
+	SET(OpenIGTLink_BUILD_H264 "1")
+  configure_file(SuperBuild/CMakeListsOpenH264.txt.in
+  OpenH264-download/CMakeLists.txt)
+	#Here the downloading project is triggered                                                               
+	execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" . 
+									WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/OpenH264-download" )
+	execute_process(COMMAND "${CMAKE_COMMAND}" --build . 
+									WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/OpenH264-download" )                   
+	if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")             
+					execute_process(COMMAND "make" WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/OpenH264" )                     
+	endif(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") 
+ENDIF()
+
 
 #-----------------------------------------------------------------------------
 # OpenIGTLink build configuration options.
@@ -226,7 +244,6 @@ SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenIGTLink_REQUIRED_LIN
 SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${OpenIGTLink_REQUIRED_LINK_FLAGS}")
 SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${OpenIGTLink_REQUIRED_LINK_FLAGS}")
 
-
 #-----------------------------------------------------------------------------
 # Configure Subdirectories
 
@@ -258,6 +275,7 @@ IF(OpenIGTLink_BUILD_TESTING)
   ADD_SUBDIRECTORY(Testing)
   INCLUDE (${CMAKE_ROOT}/Modules/Dart.cmake)
 ENDIF()
+
 
 #-----------------------------------------------------------------------------
 # Doxygen
