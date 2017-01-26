@@ -50,13 +50,14 @@ format.
 In OpenIGTLink Version 3, each OpenIGTLink message consists of the following
 four sections:
 
-
+~~~~
   Bytes
   0         58            72 
   +----------+-------------+-------------------+-----------+
   |  HEADER  | EXT_HEADER  |      CONTENT      | META_DATA | 
   +----------+-------------+-------------------+-----------+
              |<----------------- Body -------------------->|
+~~~~
 
 * Header (58 bytes)
 * Extended Header (variable length) (New in Version 3)
@@ -82,6 +83,7 @@ BODY_SIZE - (EXT_HEADER_SIZE + METADAT_SIZE).
 Header + Extended Header
 -------------------
 
+~~~~
   Bytes
   0   2                       14                                      34
   +---+-----------------------+---------------------------------------+
@@ -98,6 +100,7 @@ Header + Extended Header
   +-----------------+---------------+---------+-----------+
   | EXT_HEADER_SIZE | METADATA_SIZE | MSG_ID  | RESERVED  |
   +-----------------+---------------+---------+-----------+
+~~~~
 
 The formats of the Header and Extended Header sections are consistent among
 all message types, and can be interpreted by any software that has an
@@ -121,6 +124,7 @@ for each data type.
 
 Metadata header:
 
+~~~~
   Bytes
   0             2             4                   6               10
   +-------------+-------------+-------------------+---------------+----
@@ -140,15 +144,17 @@ Metadata header:
   ... |KEY_SIZE_N-1 |VALUE_ENCODING_N-1 |VALUE_SIZE_N-1 |
   ----+-------------+-------------------+---------------+
       |<----------Metadata N-1 (=INDEX_COUNT-1)-------->|
+~~~~
 
 Metadata body:
 
+~~~~
   Bytes
   +--------+---------+--------+----------+----    ----+--------+-----------+
   | KEY_0  | VALUE_0 | KEY_1  | VALUE_1  |    ...     |KEY_N-1 | VALUE_N-1 |
   +--------+---------+--------+----------+----    ----+--------+-----------+
   |<-- Metadata 0 -->|<-- Metadata 1 --->|            |<-- Metadata N-1 -->|
-
+~~~~
 
 Please refer the following pages for the detailed format of the Header,
 Extended Header, and Meta-Data sections.
