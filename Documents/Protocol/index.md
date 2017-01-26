@@ -64,8 +64,8 @@ four sections:
 * Content (variable length)
 * Metadata (variable length) (New in Version 3)
 
-The last three sections is called "Body" for the sake of convention. Since
-there were no Extended Header and Metadata in the older versions prior to 
+The last three sections are called "Body" for the sake of convention. Since
+there were no Extended Header and Metadata in the older versions before to 
 Version 3, the Body section was solely used by the message content.
 Therefore, the Body Size in the Header represented the size of the message 
 content as well as the size of the rest of the message.
@@ -76,7 +76,7 @@ When the message structure was revised for Version 3, we redefined the Body
 Size as the total size of Extended Header, Content, and Metadata, because
 this new definition allows the old OpenIGTLink programs can still tell the
 size of the rest of the message, and skip reading the byte stream until the
-begining of the next message. The size of the content can be computed as:
+beginning of the next message. The size of the content can be computed as:
 BODY_SIZE - (EXT_HEADER_SIZE + METADAT_SIZE).
 
 
