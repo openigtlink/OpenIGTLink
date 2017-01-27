@@ -9,8 +9,8 @@ LabelMeta Message
 Summary
 ===================
 
-The LBMETA is used to transfer meta information for lable maps, which are not
-available in the IMAGE message type. To retreive voxel objects or a label map,
+The LBMETA is used to transfer meta information for label maps, which are not
+available in the IMAGE message type. To retrieve voxel objects or a label map,
 GET_IMAGE / IMAGE can be used. But the client should be able to get a list of
 available structures.
 

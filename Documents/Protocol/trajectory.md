@@ -10,7 +10,7 @@ Summary
 =======
 
 The TRAJECTORY message type support to transfer information about 3D trajectory,
-which is often used in surgical planning and guidance in image-guided therapy.
+which is often used for surgical planning and guidance in image-guided therapy.
 
 Message Types
 =============

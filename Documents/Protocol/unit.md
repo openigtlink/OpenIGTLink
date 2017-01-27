@@ -9,10 +9,10 @@ UNIT Field for SENSOR Message
 Summary
 =======
 
-SENSOR message can handle a part of unites defined in The International System
+SENSOR message can handle a part of units defined in The International System
 of Unites (SI) in its 8-byte (or 64-bit) field. The field is designed to
-specifiy a unit consisting of SI-prefix (e.g. milli, micro, kilo etc...) and
-combination of SI-base and/or SI-derived unites. The bites in the field are
+specify a unit consisting of SI-prefix (e.g. milli, micro, kilo etc...) and
+a combination of SI-base and/or SI-derived units. The bites in the field are
 assigned as follows:
 
 ~~~~

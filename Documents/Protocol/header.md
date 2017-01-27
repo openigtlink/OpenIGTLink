@@ -24,7 +24,7 @@ Header version number
 
 The header version number field specifies the Header Version. Please note
 that the *Header Version* is not the same as the *Protocol Version*, as
-the Protocol Version reflects not only the format of the hearder but also
+the Protocol Version reflects not only the format of the header but also
 the available message types. Two header versions exist as of Protocol Version 3.x:
 
 - _Header Version 1_ is used in Protocol Version 1 and 2.

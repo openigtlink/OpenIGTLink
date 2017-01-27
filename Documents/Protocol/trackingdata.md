@@ -11,8 +11,8 @@ Summary
 =======
 
 The TDATA message type is intended for transferring 3D positions of surgical
-tools, markers etc. Those positions are often measured by optical,
-electromagnetic or other type of 3D position sensor continuously and transferred
+tools, markers etc. Those positions are often measured by the optical,
+electromagnetic, or other types of 3D position sensor continuously and transferred
 as series of messages. Since it is important for software that receives TDATA to
 control data flow, STT_TDATA query data type has interval field to control the
 frame rate of consecutive messages.

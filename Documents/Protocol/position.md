@@ -11,10 +11,10 @@ Summary
 =======
 
 The POSITION message type is used to transfer position and orientation
-information. The data are a combination of 3-dimensional vector for the position
+information. The data are a combination of three-dimensional vector for the position
 and quaternion for the orientation. Although equivalent position and orientation
 can be described with the TRANSFORM data type, the POSITION data type has the
-advantage of smaller data size (19%). It is therefore more suitable for pushing
+advantage of smaller data size (19%). It is, therefore, more suitable for pushing
 high frame-rate data from tracking devices.
 
 Message Types

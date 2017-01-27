@@ -10,9 +10,9 @@ ImageMeta Message
 Summary
 =======
 
-The IMGMETA message is used to transfer image meta information which are not
+The IMGMETA message is used to transfer image meta information which is not
 available in IMAGE message type, such as patient name, medical record number,
-modality etc. An IMGMETA message can contain meta data for multiple images.
+modality etc. An IMGMETA message can contain meta-data for multiple images.
 This message type may be used to obtain a list of images available in the remote
 system, such as image database or commercial image-guided surgery (IGS) system.
 

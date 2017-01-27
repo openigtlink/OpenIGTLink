@@ -14,7 +14,7 @@ based on the [POLY DATA format](http://www.vtk.org/VTK/img/file-formats.pdf)
 defined in VTK file format and equivalent to
 [VTK's vtkPolyData class](http://noodle.med.yale.edu/vtk5/classvtkPolyData.html).
 The message also supports dataset attribute field in VTK, including scalars,
-calar_scalars, vectors, vectors, normals, texture coordinates and tensor, but
+calar_scalars, vectors, vectors, normals, texture coordinates, and tensor, but
 not lookup table.
 
 
