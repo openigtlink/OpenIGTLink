@@ -5,10 +5,10 @@ IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
     ws2_32
     wsock32
     )
-	IF(BUILD_H264)
+	IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND BUILD_H264)
 		SET(LINK_LIBS
 		${LINK_LIBS}
-		"${CMAKE_BINARY_DIR}/OpenH264/openH264.lib"
+		"${CMAKE_BINARY_DIR}/OpenH264/openh264.lib"
 		)
 	ENDIF()  
   #For debug under win32 system, the run time check mode should be set to /RTCu for multithreading purpose
@@ -25,7 +25,7 @@ ELSE() # for POSIX-compatible OSs
       socket
     )
   ENDIF()
-	IF(BUILD_H264)
+	IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND BUILD_H264)
 		SET(LINK_LIBS
 		${LINK_LIBS}
 		"${CMAKE_BINARY_DIR}/OpenH264/libopenh264.a"
@@ -48,7 +48,7 @@ SET(OpenIGTLink_INCLUDE_DIRS
   ${CMAKE_CURRENT_BINARY_DIR}/igtlutil
   )
   
-IF(BUILD_H264)
+IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND BUILD_H264)
 	SET(OpenIGTLink_INCLUDE_DIRS
 	${OpenIGTLink_INCLUDE_DIRS}
   "${CMAKE_BINARY_DIR}/OpenH264/codec"

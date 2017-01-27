@@ -124,6 +124,10 @@ public:
   
   static bool CompareHash (const unsigned char* digest, const char* hashStr);
   
+  igtl::MultiThreader::Pointer threader;
+  
+  igtl::SimpleMutexLock* glockInFrame;
+  
   igtl::SimpleMutexLock* glock;
   
   igtl::Socket::Pointer socket;

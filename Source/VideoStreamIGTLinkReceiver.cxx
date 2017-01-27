@@ -148,11 +148,8 @@ int VideoStreamIGTLinkReceiver::RunOnTCPSocket()
     }
     if (rs != headerMsg->GetPackSize())
     {
-      std::cerr << "Message size information and actual data size don't match." << std::endl;
-      this->SendStopMessage();
-      socket->CloseSocket();
-      
-      exit(0);
+      std::cerr << rs <<"Message size information and actual data size don't match." <<headerMsg->GetPackSize()<< std::endl;
+      continue;
     }
     
     headerMsg->Unpack();
@@ -163,12 +160,11 @@ int VideoStreamIGTLinkReceiver::RunOnTCPSocket()
       
       igtl::VideoMessage::Pointer videoMsg;
       videoMsg = igtl::VideoMessage::New();
-      videoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_1);
+      videoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
       videoMsg->SetMessageHeader(headerMsg);
       videoMsg->AllocateBuffer();
       // Receive body from the socket
       socket->Receive(videoMsg->GetPackBodyPointer(), videoMsg->GetPackBodySize());
-      
       // Deserialize the transform data
       // If you want to skip CRC check, call Unpack() without argument.
       int c = videoMsg->Unpack(1);
@@ -206,6 +202,7 @@ int VideoStreamIGTLinkReceiver::RunOnTCPSocket()
       std::cerr << "Receiving : " << headerMsg->GetDeviceType() << std::endl;
       socket->Skip(headerMsg->GetBodySizeToRead(), 0);
     }
+    igtl::Sleep(20);
   }
   WelsDestroyDecoder(this->pSVCDecoder);
   return 1;
@@ -218,8 +215,8 @@ void VideoStreamIGTLinkReceiver::SendStopMessage()
   std::cerr << "Sending STP_VIDEO message....." << std::endl;
   igtl::StopVideoMessage::Pointer stopVideoMsg;
   stopVideoMsg = igtl::StopVideoMessage::New();
-  stopVideoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_1);
-  stopVideoMsg->SetDeviceName("TDataClient");
+  stopVideoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
+  stopVideoMsg->SetDeviceName("Video");
   stopVideoMsg->Pack();
   socket->Send(stopVideoMsg->GetPackPointer(), stopVideoMsg->GetPackSize());
 }
@@ -243,7 +240,10 @@ int VideoStreamIGTLinkReceiver::RunOnUDPSocket()
   threader->SpawnThread((igtl::ThreadFunctionType)&ThreadFunctionUnWrap, &infoWrapper);
   while(1)
   {
-    if(rtpWrapper->unWrappedMessages.size())// to do: glock this session
+    glock->Lock();
+    unsigned int messageNum = rtpWrapper->unWrappedMessages.size();
+    glock->Unlock();
+    if(messageNum)// to do: glock this session
     {
       igtl::VideoMessage::Pointer videoMultiPKTMSG = igtl::VideoMessage::New();
       glock->Lock();
@@ -253,7 +253,7 @@ int VideoStreamIGTLinkReceiver::RunOnUDPSocket()
       int MSGLength = it->second->messageDataLength;
       memcpy(message, it->second->messagePackPointer, it->second->messageDataLength);
       rtpWrapper->unWrappedMessages.erase(it);
-      //delete it->second;
+      delete it->second;
       glock->Unlock();
       igtl::MessageHeader::Pointer header = igtl::MessageHeader::New();
       header->InitPack();
@@ -264,7 +264,7 @@ int VideoStreamIGTLinkReceiver::RunOnUDPSocket()
       if (MSGLength == videoMultiPKTMSG->GetPackSize())
       {
         memcpy(videoMultiPKTMSG->GetPackPointer(), message, MSGLength);
-        videoMultiPKTMSG->Unpack(1);
+        videoMultiPKTMSG->Unpack(0);
         this->SetWidth(videoMultiPKTMSG->GetWidth());
         this->SetHeight(videoMultiPKTMSG->GetHeight());
         int streamLength = videoMultiPKTMSG->GetBitStreamSize();

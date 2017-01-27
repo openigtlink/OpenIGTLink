@@ -41,6 +41,7 @@ int main (int argc, char** argv)
   server.StartReadFrameThread(30);
   while(1)
   {
+    igtl::Sleep(10);
     if(server.transportMethod==server.UseTCP)
     {
       if(server.GetServerConnectStatus())

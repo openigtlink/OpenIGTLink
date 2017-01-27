@@ -14,7 +14,7 @@
 #include "VideoStreamIGTLinkServer.h"
 #include "welsencUtil.cpp"
 
-void* ThreadFunctionServer(void* ptr);
+static void* ThreadFunctionServer(void* ptr);
 
 void UpdateHashFromFrame (SFrameBSInfo& info, SHA1Context* ctx) {
   for (int i = 0; i < info.iLayerNum; ++i) {
@@ -55,6 +55,8 @@ VideoStreamIGTLinkServer::VideoStreamIGTLinkServer(char *argv[])
   this->socket = igtl::Socket::New();;
   this->conditionVar = igtl::ConditionVariable::New();
   this->glock = igtl::SimpleMutexLock::New();
+  this->glockInFrame = igtl::SimpleMutexLock::New();
+  this->threader = igtl::MultiThreader::New();
   this->rtpWrapper = igtl::MessageRTPWrapper::New();
   this->ServerTimer = igtl::TimeStamp::New();
   this->incommingFrames.clear();
@@ -72,12 +74,12 @@ int VideoStreamIGTLinkServer::StartTCPServer ()
     
     if(this->transportMethod==VideoStreamIGTLinkServer::UseTCP)
     {
-      igtl::MultiThreader::Pointer threader = igtl::MultiThreader::New();
       threader->SpawnThread((igtl::ThreadFunctionType)&ThreadFunctionServer, this);
       this->glock->Lock();
       while(!this->serverConnected)
       {
         this->conditionVar->Wait(this->glock);
+        igtl::Sleep(10);
       }
       this->glock->Unlock();
       return true;
@@ -213,7 +215,7 @@ int VideoStreamIGTLinkServer::ParseConfigForServer()
   return iRet;
 }
 
-void* ThreadFunctionServer(void* ptr)
+static void* ThreadFunctionServer(void* ptr)
 {
   //------------------------------------------------------------
   // Get thread information
@@ -232,8 +234,6 @@ void* ThreadFunctionServer(void* ptr)
     std::cerr << "Cannot create a server socket." << std::endl;
     exit(0);
   }
-  
-  igtl::MultiThreader::Pointer threader = igtl::MultiThreader::New();
   parentObj->socket = igtl::Socket::New();
   
   while (1)
@@ -297,12 +297,12 @@ void* ThreadFunctionServer(void* ptr)
           // Check data type and receive data body
           if (strcmp(headerMsg->GetDeviceType(), "STP_VIDEO") == 0)
           {
+            parentObj->glock->Lock();
             parentObj->socket->Skip(headerMsg->GetBodySizeToRead(), 0);
             std::cerr << "Received a STP_VIDEO message." << std::endl;
             std::cerr << "Disconnecting the client." << std::endl;
             parentObj->InitializationDone = false;
             parentObj->serverConnected = false;
-            parentObj->glock->Lock();
             if (parentObj->socket.IsNotNull())
             {
               parentObj->socket->CloseSocket();
@@ -319,8 +319,9 @@ void* ThreadFunctionServer(void* ptr)
             startVideoMsg = igtl::StartVideoDataMessage::New();
             startVideoMsg->SetMessageHeader(headerMsg);
             startVideoMsg->AllocatePack();
-            
+            parentObj->glock->Lock();
             parentObj->socket->Receive(startVideoMsg->GetPackBodyPointer(), startVideoMsg->GetPackBodySize());
+            parentObj->glock->Unlock();
             int c = startVideoMsg->Unpack(1);
             if (c & igtl::MessageHeader::UNPACK_BODY && strcmp(startVideoMsg->GetCodecType().c_str(), "H264")) // if CRC check is OK
             {
@@ -334,8 +335,11 @@ void* ThreadFunctionServer(void* ptr)
           else
           {
             std::cerr << "Receiving : " << headerMsg->GetDeviceType() << std::endl;
+            parentObj->glock->Lock();
             parentObj->socket->Skip(headerMsg->GetBodySizeToRead(), 0);
+            parentObj->glock->Unlock();
           }
+          igtl::Sleep(100);
         }
       }
     }
@@ -519,7 +523,7 @@ struct serverPointer
   VideoStreamIGTLinkServer* server;
 };
 
-void* ThreadFunctionReadFrame(void* ptr)
+static void* ThreadFunctionReadFrame(void* ptr)
 {
   // Get thread information
   igtl::MultiThreader::ThreadInfo* info =
@@ -574,7 +578,7 @@ void* ThreadFunctionReadFrame(void* ptr)
       bool bCanBeRead = false;
       uint8_t* pYUV = new uint8_t[kiPicResSize];
       bCanBeRead = (fread (pYUV, 1, kiPicResSize, pFileYUV) == kiPicResSize);
-      parentObj.server->glock->Lock();
+      parentObj.server->glockInFrame->Lock();
       if (parentObj.server->incommingFrames.size()>3)
       {
         std::map<igtlUint32, uint8_t*>::iterator it = parentObj.server->incommingFrames.begin();
@@ -583,7 +587,7 @@ void* ThreadFunctionReadFrame(void* ptr)
         it->second = NULL;
       }
       parentObj.server->incommingFrames.insert(std::pair<uint32_t, uint8_t*>(0, pYUV));
-      parentObj.server->glock->Unlock();
+      parentObj.server->glockInFrame->Unlock();
       parentObj.server->iTotalFrameToEncode = parentObj.server->iTotalFrameToEncode - 1; // excluding skipped frame time
       igtl::Sleep(parentObj.server->interval);
       if (!bCanBeRead)
@@ -599,7 +603,7 @@ void* ThreadFunctionReadFrame(void* ptr)
 }
 
 
-void* ThreadFunctionSendPacket(void* ptr)
+static void* ThreadFunctionSendPacket(void* ptr)
 {
   // Get thread information
   igtl::MultiThreader::ThreadInfo* info =
@@ -607,18 +611,19 @@ void* ThreadFunctionSendPacket(void* ptr)
   serverPointer parentObj = *(static_cast<serverPointer*>(info->UserData));
   while(1)
   {
-    int frameNumber = parentObj.server->encodedFrames.size();
-    if(frameNumber)
+    parentObj.server->glock->Lock();
+    unsigned int frameNum = parentObj.server->encodedFrames.size();
+    parentObj.server->glock->Unlock();
+    if(frameNum)
     {
-      VideoStreamIGTLinkServer::encodedFrame* frameCopy = new VideoStreamIGTLinkServer::encodedFrame();
       parentObj.server->glock->Lock();
+      VideoStreamIGTLinkServer::encodedFrame* frameCopy = new VideoStreamIGTLinkServer::encodedFrame();
       std::map<igtlUint32, VideoStreamIGTLinkServer::encodedFrame*>::iterator it = parentObj.server->encodedFrames.begin();
       frameCopy->messageDataLength = it->second->messageDataLength;
       memcpy(frameCopy->messagePackPointer,it->second->messagePackPointer,it->second->messageDataLength);
       parentObj.server->encodedFrames.erase(it);
       delete it->second;
       it->second = NULL;
-      parentObj.server->glock->Unlock();
       if (parentObj.server->transportMethod == VideoStreamIGTLinkServer::TransportMethod::UseUDP)
       {
         parentObj.server->rtpWrapper->WrapMessageAndSend(parentObj.server->serverUDPSocket, frameCopy->messagePackPointer, frameCopy->messageDataLength);
@@ -627,11 +632,13 @@ void* ThreadFunctionSendPacket(void* ptr)
       {
         if(parentObj.server->socket)
         {
-          parentObj.server->socket->Send(frameCopy->messagePackPointer, frameCopy->messageDataLength);
+         int success =  parentObj.server->socket->Send(frameCopy->messagePackPointer, frameCopy->messageDataLength);
         }
       }
+      parentObj.server->glock->Unlock();
       delete frameCopy;
     }
+    igtl::Sleep(1);
   }
 }
 
@@ -640,8 +647,8 @@ int VideoStreamIGTLinkServer::StartReadFrameThread(int frameRate)
   this->interval = 1000/frameRate;
   serverPointer ptr;
   ptr.server = this;
-  igtl::MultiThreader::Pointer threader = igtl::MultiThreader::New();
   int threadID = threader->SpawnThread((igtl::ThreadFunctionType)&ThreadFunctionReadFrame, &ptr);
+  igtl::Sleep(10);
   return threadID;
 }
 
@@ -649,8 +656,8 @@ int VideoStreamIGTLinkServer::StartSendPacketThread()
 {
   serverPointer ptr;
   ptr.server = this;
-  igtl::MultiThreader::Pointer threader = igtl::MultiThreader::New();
   int threadID = threader->SpawnThread((igtl::ThreadFunctionType)&ThreadFunctionSendPacket, &ptr);
+  igtl::Sleep(10);
   return threadID;
 }
 
@@ -674,19 +681,23 @@ void VideoStreamIGTLinkServer::SendOriginalData()
     static int messageID = -1;
     while(this->iTotalFrameToEncode)
     {
-      while(this->incommingFrames.size())
+      this->glockInFrame->Lock();
+      int frameNum = this->incommingFrames.size();
+      this->glockInFrame->Unlock();
+      while(frameNum)
       {
-        this->glock->Lock();
+        this->glockInFrame->Lock();
         std::map<igtlUint32, uint8_t*>::iterator it = this->incommingFrames.begin();
         memcpy(pYUV,it->second,kiPicResSize);
         this->incommingFrames.erase(it);
         delete it->second;
         it->second = NULL;
-        this->glock->Unlock();
+        frameNum = this->incommingFrames.size();
+        this->glockInFrame->Unlock();
         messageID ++;
         igtl::VideoMessage::Pointer videoMsg;
         videoMsg = igtl::VideoMessage::New();
-        videoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_1);
+        videoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
         videoMsg->SetDeviceName(this->deviceName.c_str());
         videoMsg->SetBitStreamSize(kiPicResSize);
         videoMsg->AllocateBuffer();
@@ -719,7 +730,7 @@ void VideoStreamIGTLinkServer::SendCompressedData()
   {
     igtl::VideoMessage::Pointer videoMsg;
     videoMsg = igtl::VideoMessage::New();
-    videoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_1);
+    videoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
     videoMsg->SetDeviceName(this->deviceName.c_str());
     ServerTimer->SetTime(this->encodeEndTime);
     videoMsg->SetTimeStamp(ServerTimer);
@@ -780,16 +791,20 @@ void* VideoStreamIGTLinkServer::EncodeFile(void)
   int iActualFrameEncodedCount = 0;
   while(this->iTotalFrameToEncode)
   {
-    while(this->incommingFrames.size())
+    this->glockInFrame->Lock();
+    int frameNum = this->incommingFrames.size();
+    this->glockInFrame->Unlock();
+    while(frameNum)
     {
-        // To encoder this frame
-      this->glock->Lock();
+      // To encoder this frame
+      this->glockInFrame->Lock();
       std::map<igtlUint32, uint8_t*>::iterator it = this->incommingFrames.begin();
       memcpy(pYUV,it->second,kiPicResSize);
       this->incommingFrames.erase(it);
       delete it->second;
       it->second = NULL;
-      this->glock->Unlock();
+      frameNum = this->incommingFrames.size();
+      this->glockInFrame->Unlock();
       iStart = WelsTime();
       this->pSrcPic->uiTimeStamp = WELS_ROUND (iFrameIdx * (1000 / sSvcParam.fMaxFrameRate));
       this->ServerTimer->GetTime();
@@ -805,6 +820,7 @@ void* VideoStreamIGTLinkServer::EncodeFile(void)
       
       if (iEncFrames == cmResultSuccess ) {
         SendCompressedData();
+        igtl::Sleep(1);
   #if defined (STICK_STREAM_SIZE)
         if (fTrackStream) {
           fwrite (&iFrameSize, 1, sizeof (int), fTrackStream);
@@ -814,7 +830,7 @@ void* VideoStreamIGTLinkServer::EncodeFile(void)
       } else {
         fprintf (stderr, "EncodeFrame(), ret: %d, frame index: %d.\n", iEncFrames, iFrameIdx);
       }
-      if (iActualFrameEncodedCount/10 == 0) {
+      if (iActualFrameEncodedCount%10 == 0) {
         double dElapsed = iTotal / 1e6;
         printf ("Width:\t\t%d\nHeight:\t\t%d\nFrames:\t\t%d\nencode time:\t%f sec\nFPS:\t\t%f fps\nCompressionRate:\t\t%f\n",
                 sSvcParam.iPicWidth, sSvcParam.iPicHeight,
