@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   Open IGT Link -- Example for Label Meta Data Server
-  Module:    $RCSfile: $
+  Program:   OpenIGTLink -- Example for Label Meta Data Server
   Language:  C++
-  Date:      $Date: $
-  Version:   $Revision: $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 

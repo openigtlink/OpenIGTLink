@@ -32,9 +32,9 @@ namespace igtl
 {
 
   /// The MessageBase class is the base class of all message type classes
-  /// used in the Open IGT Link Library. The message classes can be used
-  /// both for serializing (packing) Open IGT Link message byte streams.
-  /// The class can also deserializing (unpacking) Open IGT Link.
+  /// used in the OpenIGTLink Library. The message classes can be used
+  /// both for serializing (packing) OpenIGTLink message byte streams.
+  /// The class can also deserializing (unpacking) OpenIGTLink.
   /// For the deserialization example, please refer igtlMessageHeader.h.
   ///
   /// The typical packing procedures using sub-classes of

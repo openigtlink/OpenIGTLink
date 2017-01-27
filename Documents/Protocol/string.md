@@ -8,53 +8,31 @@ String Message
 
 
 Summary
-===================
+=======
 
-STRING message type is used for transferring a character string. It supports character strings up to 65535 bytes.
+The STRING message type is used for transferring a character string. It supports
+character strings up to 65535 bytes.
 
 Message Types
-===================
+=============
 
 STRING
--------------------
+------
 
-<table border="1" cellpadding="5" cellspacing="0" align="center">
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+ ENCODING     | uint16        | Character encoding type as MIBenum value. Default=3.
+ LENGTH       | uint16        | Length of string (bytes)
+ STRING       | uint8[LENGTH] | Byte array of the string
 
-<tbody><tr>
-<td align="left" style="background:#e0e0e0;"> Data
-</td><td align="left" style="background:#e0e0e0;"> Type
-</td><td align="left" style="background:#e0e0e0;"> Description
-</td></tr>
-<tr>
-<td align="left"> ENCODING
-</td><td align="left"> uint16
-</td><td align="left"> Character encoding type as MIBenum value (defined by IANA). Default=3.
-</td></tr>
-<tr>
-<td align="left"> LENGTH
-</td><td align="left"> uint16
-</td><td align="left"> Length of string (bytes)
-</td></tr>
-<tr>
-<td align="left"> STRING
-</td><td align="left"> uint8[LENGTH]
-</td><td align="left"> Byte array of the string
-</td></tr>
-</tbody></table>
-
-* For character encoding, please refer [IANA Character Sets](http://www.iana.org/assignments/character-sets). US-ASCII (ANSI-X3.4-1968; MIBenum = 3) is strongly recommended.
+* For MIBenum character encoding, please refer [IANA Character Sets](http://www.iana.org/assignments/character-sets). US-ASCII (ANSI-X3.4-1968; MIBenum = 3) is strongly recommended.
 
 GET_STRING
 -------------------
 
-<table border="1" cellpadding="5" cellspacing="0" align="center">
-
-<tbody><tr>
-<td style="background:#e0e0e0;"> Data
-</td><td style="background:#e0e0e0;"> Type
-</td><td style="background:#e0e0e0;"> Description
-</td></tr>
-</tbody></table>
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+              |               |
 
 STT_STRING
 -------------------

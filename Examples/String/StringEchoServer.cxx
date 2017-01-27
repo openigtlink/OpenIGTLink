@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   Open IGT Link -- Example for String Echo Server Program
-  Module:    $RCSfile: $
+  Program:   OpenIGTLink -- Example for String Echo Server Program
   Language:  C++
-  Date:      $Date: $
-  Version:   $Revision: $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 

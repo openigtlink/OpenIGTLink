@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   Open IGT Link -- Example for Image Meta Data Server
-  Module:    $RCSfile: $
+  Program:   OpenIGTLink -- Example for Image Meta Data Server
   Language:  C++
-  Date:      $Date: $
-  Version:   $Revision: $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -22,7 +19,6 @@
 
 #include "igtlOSUtil.h"
 #include "igtlMessageHeader.h"
-#include "igtlImageMessage.h"
 #include "igtlServerSocket.h"
 #include "igtlPolyDataMessage.h"
 

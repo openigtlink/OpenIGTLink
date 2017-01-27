@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   Open IGT Link -- Example for Image Meta Data Server
-  Module:    $RCSfile: $
+  Program:   OpenIGTLink -- Example for Image Meta Data Server
   Language:  C++
-  Date:      $Date: $
-  Version:   $Revision: $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -317,6 +314,9 @@ int SendImage(igtl::Socket::Pointer& socket, const char* name, const char* filed
     imgMsg->SetSubVolume(svsize, svoffset);
     imgMsg->AllocateScalars();
     
+    // Following line may be called in case of 16-, 32-, and 64-bit scalar types.
+    // imgMsg->SetEndian(igtl::ImageMessage::ENDIAN_BIG);
+
     //------------------------------------------------------------
     // Set image data (See GetTestImage() bellow for the details)
     GetTestImage(imgMsg, filedir, index);

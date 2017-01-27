@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   Open IGT Link -- Example for Tracker Client Program
-  Module:    $RCSfile: $
+  Program:   OpenIGTLink -- Example for Tracker Client Program
   Language:  C++
-  Date:      $Date: $
-  Version:   $Revision: $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
