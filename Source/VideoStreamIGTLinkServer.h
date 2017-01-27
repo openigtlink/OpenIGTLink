@@ -68,7 +68,7 @@ public:
   /**
    Set the input frame pointer , the encoder will read the frame from the pointer
    */
-  void SetInputFramePointer(uint8_t* picPointer);
+  void SetInputFramePointer(igtl_uint8* picPointer);
   
   /**
    Encode a frame, for performance issue, before encode the frame, make sure the frame pointer is updated with a new frame.
@@ -196,10 +196,10 @@ public:
     encodedFrame(encodedFrame const &anotherFrame){};
     ~encodedFrame(){};
     unsigned char messagePackPointer[RTP_PAYLOAD_LENGTH*(16384-2)];  // we use 14 bits for fragment number, 2^14 = 16384. maximum
-    uint32_t messageDataLength;
+    igtl_uint32 messageDataLength;
   };
   
-  std::map<igtlUint32, uint8_t*> incommingFrames;
+  std::map<igtlUint32, igtl_uint8*> incommingFrames;
   
   std::map<igtlUint32, encodedFrame*> encodedFrames;
   

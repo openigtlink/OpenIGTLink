@@ -182,7 +182,7 @@ int VideoStreamIGTLinkReceiver::RunOnTCPSocket()
       {
         delete[] this->videoMessageBuffer;
       }
-      this->videoMessageBuffer = new uint8_t[streamLength];
+      this->videoMessageBuffer = new igtl_uint8[streamLength];
       memcpy(this->videoMessageBuffer, videoMsg->GetPackFragmentPointer(2), streamLength);
       static int frameNum = 0;
       int status = this->ProcessVideoStream(this->videoMessageBuffer);
@@ -273,7 +273,7 @@ int VideoStreamIGTLinkReceiver::RunOnUDPSocket()
         {
           delete[] this->videoMessageBuffer;
         }
-        this->videoMessageBuffer = new uint8_t[streamLength];
+        this->videoMessageBuffer = new igtl_uint8[streamLength];
         memcpy(this->videoMessageBuffer, videoMultiPKTMSG->GetPackFragmentPointer(2), streamLength);
         
         int status = this->ProcessVideoStream(this->videoMessageBuffer);
@@ -417,10 +417,10 @@ void VideoStreamIGTLinkReceiver::SetDecodedNal()
   this->decodedNal = new unsigned char[this->Width*this->Height*3>>1];
 }
 
-int VideoStreamIGTLinkReceiver::ProcessVideoStream(uint8_t* bitStream)
+int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream)
 {
   //std::cerr << "Receiving Video data type." << std::endl;
-  //this->videoMessageBuffer = new uint8_t[StreamLength];
+  //this->videoMessageBuffer = new igtl_uint8[StreamLength];
   //memcpy(this->videoMessageBuffer, bitStream, StreamLength);// copy slow down the process, however, the videoMsg is a smart pointer, it gets deleted unpredictable.
   
   if (useCompress)
@@ -449,16 +449,16 @@ int VideoStreamIGTLinkReceiver::ProcessVideoStream(uint8_t* bitStream)
 }
 
 
-int VideoStreamIGTLinkReceiver::YUV420ToRGBConversion(uint8_t *RGBFrame, uint8_t * YUV420Frame, int iHeight, int iWidth)
+int VideoStreamIGTLinkReceiver::YUV420ToRGBConversion(igtl_uint8 *RGBFrame, igtl_uint8 * YUV420Frame, int iHeight, int iWidth)
 {
   int componentLength = iHeight*iWidth;
-  const uint8_t *srcY = YUV420Frame;
-  const uint8_t *srcU = YUV420Frame+componentLength;
-  const uint8_t *srcV = YUV420Frame+componentLength*5/4;
-  uint8_t * YUV444 = new uint8_t[componentLength * 3];
-  uint8_t *dstY = YUV444;
-  uint8_t *dstU = dstY + componentLength;
-  uint8_t *dstV = dstU + componentLength;
+  const igtl_uint8 *srcY = YUV420Frame;
+  const igtl_uint8 *srcU = YUV420Frame+componentLength;
+  const igtl_uint8 *srcV = YUV420Frame+componentLength*5/4;
+  igtl_uint8 * YUV444 = new igtl_uint8[componentLength * 3];
+  igtl_uint8 *dstY = YUV444;
+  igtl_uint8 *dstU = dstY + componentLength;
+  igtl_uint8 *dstV = dstU + componentLength;
   
   memcpy(dstY, srcY, componentLength);
   const int halfHeight = iHeight/2;

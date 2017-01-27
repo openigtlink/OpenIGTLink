@@ -59,10 +59,10 @@ namespace igtl
     unsigned char buffer[RTP_PAYLOAD_LENGTH*(16384-2)];  // we use 14 bits for fragment number, 2^14 = 16384. maximum
     unsigned char firstFragBuffer[RTP_PAYLOAD_LENGTH];
     unsigned char lastFragBuffer[RTP_PAYLOAD_LENGTH];
-    uint32_t firstPacketLen;
-    uint32_t lastPacketLen;
-    uint32_t filledPacketNum;
-    uint32_t totFragNumber;
+    igtl_uint32 firstPacketLen;
+    igtl_uint32 lastPacketLen;
+    igtl_uint32 filledPacketNum;
+    igtl_uint32 totFragNumber;
     bool receivedLastFrag;
     bool receivedFirstFrag;
   };
@@ -80,7 +80,7 @@ namespace igtl
       }
     };
     unsigned char* messagePackPointer;  // we use 14 bits for fragment number, 2^14 = 16384. maximum
-    uint32_t messageDataLength;
+    igtl_uint32 messageDataLength;
   };
   
   class IGTLCommon_EXPORT MessageRTPWrapper: public Object

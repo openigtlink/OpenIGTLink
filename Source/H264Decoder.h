@@ -12,6 +12,7 @@
 
 #include "api/svc/codec_api.h"
 #include "api/svc/codec_app_def.h"
+#include "igtl_types.h"
 
 #define NO_DELAY_DECODING
 class H264Decode
@@ -22,8 +23,8 @@ public:
 
   int Process (void* pDst[3], SBufferInfo* pInfo, FILE* pFp);
   
-  void ComposeByteSteam(uint8_t** inputData, SBufferInfo bufInfo, uint8_t *outputByteStream,  int iWidth, int iHeight);
+  void ComposeByteSteam(igtl_uint8** inputData, SBufferInfo bufInfo, igtl_uint8 *outputByteStream,  int iWidth, int iHeight);
   
-  int DecodeSingleNal (ISVCDecoder* pDecoder, unsigned char* kpH264BitStream,uint8_t* outputByteStream, const char* kpOuputFileName,
-                                            int32_t& iWidth, int32_t& iHeight, int32_t& iStreamSize, const char* pOptionFileName);
+  int DecodeSingleNal (ISVCDecoder* pDecoder, unsigned char* kpH264BitStream,igtl_uint8* outputByteStream, const char* kpOuputFileName,
+                                            igtl_int32& iWidth, igtl_int32& iHeight, igtl_int32& iStreamSize, const char* pOptionFileName);
 };

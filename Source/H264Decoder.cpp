@@ -45,7 +45,7 @@ int H264Decode::Process (void* pDst[3], SBufferInfo* pInfo, FILE* pFp) {
   return iRet;
 }
 
-int64_t getCurrentTime()
+igtl_int64 getCurrentTime()
 {
 #if defined(_WIN32)
   SYSTEMTIME sysTime = {0};
@@ -54,23 +54,23 @@ int64_t getCurrentTime()
 #else
   struct timeval tv_date;
   gettimeofday(&tv_date, NULL);
-  return ((int64_t)tv_date.tv_sec * 1000000 + (int64_t)tv_date.tv_usec);
+  return ((igtl_int64)tv_date.tv_sec * 1000000 + (igtl_int64)tv_date.tv_usec);
 #endif
   
   
 }
 
-int32_t iFrameCountTotal = 0;
+igtl_int32 iFrameCountTotal = 0;
 
 
 
-void H264Decode::ComposeByteSteam(uint8_t** inputData, SBufferInfo bufInfo, uint8_t *outputByteStream,  int iWidth, int iHeight)
+void H264Decode::ComposeByteSteam(igtl_uint8** inputData, SBufferInfo bufInfo, igtl_uint8 *outputByteStream,  int iWidth, int iHeight)
 {
   int iStride [2] = {bufInfo.UsrData.sSystemBuffer.iStride[0],bufInfo.UsrData.sSystemBuffer.iStride[1]};
 #pragma omp parallel for default(none) shared(outputByteStream,inputData, iStride, iHeight, iWidth)
   for (int i = 0; i < iHeight; i++)
   {
-    uint8_t* pPtr = inputData[0]+i*iStride[0];
+    igtl_uint8* pPtr = inputData[0]+i*iStride[0];
     for (int j = 0; j < iWidth; j++)
     {
       outputByteStream[i*iWidth + j] = pPtr[j];
@@ -79,7 +79,7 @@ void H264Decode::ComposeByteSteam(uint8_t** inputData, SBufferInfo bufInfo, uint
 #pragma omp parallel for default(none) shared(outputByteStream,inputData, iStride, iHeight, iWidth)
   for (int i = 0; i < iHeight/2; i++)
   {
-    uint8_t* pPtr = inputData[1]+i*iStride[1];
+    igtl_uint8* pPtr = inputData[1]+i*iStride[1];
     for (int j = 0; j < iWidth/2; j++)
     {
       outputByteStream[i*iWidth/2 + j + iHeight*iWidth] = pPtr[j];
@@ -88,7 +88,7 @@ void H264Decode::ComposeByteSteam(uint8_t** inputData, SBufferInfo bufInfo, uint
 #pragma omp parallel for default(none) shared(outputByteStream, inputData, iStride, iHeight, iWidth)
   for (int i = 0; i < iHeight/2; i++)
   {
-    uint8_t* pPtr = inputData[2]+i*iStride[1];
+    igtl_uint8* pPtr = inputData[2]+i*iStride[1];
     for (int j = 0; j < iWidth/2; j++)
     {
       outputByteStream[i*iWidth/2 + j + iHeight*iWidth*5/4] = pPtr[j];
@@ -97,14 +97,14 @@ void H264Decode::ComposeByteSteam(uint8_t** inputData, SBufferInfo bufInfo, uint
   
 }
 
-int H264Decode::DecodeSingleNal (ISVCDecoder* pDecoder, unsigned char* kpH264BitStream,uint8_t* outputByteStream, const char* kpOuputFileName,
-                         int32_t& iWidth, int32_t& iHeight, int32_t& iStreamSize, const char* pOptionFileName) {
+int H264Decode::DecodeSingleNal (ISVCDecoder* pDecoder, unsigned char* kpH264BitStream,igtl_uint8* outputByteStream, const char* kpOuputFileName,
+                         igtl_int32& iWidth, igtl_int32& iHeight, igtl_int32& iStreamSize, const char* pOptionFileName) {
   
   
   unsigned long long uiTimeStamp = 0;
-  int64_t iStart = 0, iEnd = 0, iTotal = 0;
-  int32_t iSliceSize;
-  int32_t iSliceIndex = 0;
+  igtl_int64 iStart = 0, iEnd = 0, iTotal = 0;
+  igtl_int32 iSliceSize;
+  igtl_int32 iSliceIndex = 0;
   unsigned char* pBuf = NULL;
   unsigned char uiStartCode[4] = {0, 0, 0, 1};
   
@@ -112,13 +112,13 @@ int H264Decode::DecodeSingleNal (ISVCDecoder* pDecoder, unsigned char* kpH264Bit
   //unsigned char* pDst[3] = {NULL};
   SBufferInfo sDstBufInfo;
   
-  int32_t iBufPos = 0;
-  int32_t i = 0;
-  int32_t iLastWidth = 0, iLastHeight = 0;
-  int32_t iFrameCount = 0;
-  int32_t iEndOfStreamFlag = 0;
+  igtl_int32 iBufPos = 0;
+  igtl_int32 i = 0;
+  igtl_int32 iLastWidth = 0, iLastHeight = 0;
+  igtl_int32 iFrameCount = 0;
+  igtl_int32 iEndOfStreamFlag = 0;
   //for coverage test purpose
-  int32_t iErrorConMethod = (int32_t) ERROR_CON_SLICE_MV_COPY_CROSS_IDR_FREEZE_RES_CHANGE;
+  igtl_int32 iErrorConMethod = (igtl_int32) ERROR_CON_SLICE_MV_COPY_CROSS_IDR_FREEZE_RES_CHANGE;
   pDecoder->SetOption (DECODER_OPTION_ERROR_CON_IDC, &iErrorConMethod);
   //~end for
   double dElapsed = 0;

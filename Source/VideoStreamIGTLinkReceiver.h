@@ -45,7 +45,7 @@ public:
   VideoStreamIGTLinkReceiver(char *argv[]);
   ~VideoStreamIGTLinkReceiver(){};
   
-  int ProcessVideoStream(uint8_t* bitStream);
+  int ProcessVideoStream(igtl_uint8* bitStream);
   
   bool InitializeClient();
   
@@ -73,7 +73,7 @@ public:
   
   igtl::UDPClientSocket::Pointer UDPSocket;
   
-  uint8_t * videoMessageBuffer;
+  igtl_uint8 * videoMessageBuffer;
   
   int   interval;
   
@@ -115,7 +115,7 @@ public:
   
   H264Decode* H264DecodeInstance;
   
-  int YUV420ToRGBConversion(uint8_t *RGBFrame, uint8_t * YUV420Frame, int iHeight, int iWidth);
+  int YUV420ToRGBConversion(igtl_uint8 *RGBFrame, igtl_uint8 * YUV420Frame, int iHeight, int iWidth);
   
   bool flipAtX;
 
