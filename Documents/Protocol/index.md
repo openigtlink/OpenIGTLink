@@ -81,7 +81,7 @@ BODY_SIZE - (EXT_HEADER_SIZE + METADAT_SIZE).
 
 
 Header + Extended Header
--------------------
+------------------------
 
 ~~~~
   Bytes
@@ -96,7 +96,7 @@ Header + Extended Header
   +---------------+---------------+---------------+
   
   
-  58                60              64        68         72    
+  58                60              64        68         72
   +-----------------+---------------+---------+-----------+
   | EXT_HEADER_SIZE | METADATA_SIZE | MSG_ID  | RESERVED  |
   +-----------------+---------------+---------+-----------+
@@ -111,11 +111,13 @@ along with the Metadata section.
 
 Content
 -------
-The format of contenst section is type-dependent. Please see individual
-type definition page linked below.
+
+The format of contenst section is type-dependent. Please see below for the
+detail.
 
 Meta-Data
 ---------
+
 Meta-data are given in the form of an associative array (i.e. pairs of "key" and
 "value") in the protocol. The Content section contains the data. The format of
 the Content section is defined
@@ -156,16 +158,24 @@ Metadata body:
   |<-- Metadata 0 -->|<-- Metadata 1 --->|            |<-- Metadata N-1 -->|
 ~~~~
 
-Please refer the following pages for the detailed format of the Header,
-Extended Header, and Meta-Data sections.
-
-* [Header](header.md)
+Please refer to the [Header](header.md) pages for the detailed format of
+the Header, Extended Header, and Meta-Data sections.
 
 
-Message Types
-=============
+Content
+=======
 
-Following types are supported.
+The Content section contains the actual message data such as transforms,
+images, strings, etc. The format of the Content section depends on the
+type of the message, and it is specified in the TYPE section in the message
+header.
+
+Whlie the OpenIGTLink protocol allows application developers to define
+and use their own data types, it also provides a number of standard message
+types listed below. Application developers should not use the type names of
+these standard types for their own message types, because the receiver
+programs are expected to de-serialize the Content section according to the
+standard format.
 
 Message types inherited from version 1
 --------------------------------------
@@ -201,6 +211,57 @@ Query Mechanism
 ===============
 
 See [Query Mechanism](query.md) for detail.
+
+
+Protocol Compatibility
+======================
+
+The protocol has been revised several times since the OpenIGTLink protocol was
+originally proposed. The current protocol version is Version 3. The differences
+among versions 1, 2, and 3 are as follows:
+
+- Difference between Version 1 and 2
+  - [Querying mechanism](query.md) was introduced in Version 2.
+  - More message types are supported in Version 2.
+  - The formats of the message types available in both Version 1 and 2 remained unchanged.
+- Difference between Version 2 and 3.0
+  - The header format was extended in Version 3.
+  - Version 3 messages consist of 4 sections (Header, Extended Header, Content,
+    and Metadata), while Version 2 messages consist of 2 sections (Header and Body).
+  - The formats of the message content remained unchanged.
+
+All OpenIGTLink interfaces are expected to be backward-compatible, and must be able
+to handle older message formats. Older interfaces might not interpret a message
+in a newer format, but they are expected to skip the content and continue to
+read the following messages.
+
+
+Version Numbers
+===============
+
+Protocol Version
+----------------
+
+Starting at Protocol/Library Version 3, we changed the versioning rule
+for the protocol version as follows to make it easier to revise the protocol:
+
+- The protocol version may have a minor version number.
+- The major version reflects a major change to the protocol such as:
+  - Change to the header format
+  - Major change to the message format
+  - Adding new rules in the message exchange scheme (e.g. querying)
+- The minor version reflects a minior change to the format such as:
+  - Fixing minor issues of minor format in the prior versions.
+  - Adding new message types.
+
+Library Version
+---------------
+
+The Library's version number consists of major, minor, and patch versions
+(e.g. 3.0.1 means major version 3, minor version 0, and revision 1).
+Both major and minor versions match the protocol version after the
+protocol/library version 3.0. In ealier protocol/header versions (i.e. 1
+and 2), Only the major versions should match the protocol version.
 
 
 

@@ -3,20 +3,30 @@ The OpenIGTLink Library Build Instruction
 
 Linux / Mac OS X
 ----------------
-First, obtain the source code from the repository using Git. To simply download the code, run the following command from a terminal:
 
+First, obtain the source code from the repository using Git. To simply download
+the code, run the following command from a terminal:
+
+~~~~
 $ git clone https://github.com/openigtlink/OpenIGTLink.git
+~~~~
 
 Then configure using CMake. The library requires CMake version higher than 2.4.
 
+~~~~
 $ mkdir OpenIGTLink-build
 $ cd OpenIGTLink-build
 $ cmake -DBUILD_EXAMPLES:BOOL=ON ../OpenIGTLink
 $ make
+~~~~
 
-You may install the library into your disk (optional). The default target directory is /usr/local, but you can configure it from the CMake configuration screen. To install the files, run
+You may install the library into your disk (optional). The default target
+directory is /usr/local, but you can configure it from the CMake configuration
+screen. To install the files, run
 
+~~~~
 $ make install
+~~~~
 
 You might need super user access.
 

@@ -1,7 +1,8 @@
 The OpenIGTLink Library
 =======================
 
-This project provides a C/C++ implementation of the OpenIGTLink protocol.
+The OpenIGTLink Library is a C/C++ implementation of
+[The OpenIGTLink Protocol](Documents/Protocol/index.md).
 
 OpenIGTLink is an open-source network communication interface specifically
 designed for image-guided interventions. It aims to provide a plug-and-play
@@ -28,12 +29,18 @@ Build Instruction
 
 Please see [BUILD Instruction](BUILD.md).
 
-Contributing your patch
------------------------
+How to Contribute?
+------------------
 
-Please refer [How to Contribute](http://openigtlink.org/library/contribute.html).
+If you find any issues or have feature request, please feel free to post
+to [Issues](https://github.com/openigtlink/OpenIGTLink/issues).
+
+The OpenIGTLink community is adapted to the collaborative development model on GitHub.
+[GitHub's instruction"](https://help.github.com/articles/about-collaborative-development-models/)
+provides a nice overview of collaborative development models and workflows.
 
 License
 -------
-The code is distributed as open source under [The 3-Clause BSD License](https://opensource.org/licenses/BSD-3-Clause).
-
+The code is distributed as open source under The 3-Clause BSD License. Please refer to the license terms
+available at [Open Source Initiative Page](https://opensource.org/licenses/BSD-3-Clause) or
+[LICENSE.txt](LICENSE.txt) included in the source repository.

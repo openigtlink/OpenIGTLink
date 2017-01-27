@@ -19,12 +19,20 @@ Header Fields
  CRC          | uint64        | 64 bit CRC for body data
 
 
-Version number
---------------
+Header version number
+---------------------
 
-The version number field specifies the header format version. Currently the
-version number is *1*. Please note that this is different from the protocol
-version.
+The header version number field specifies the Header Version. Please note
+that the *Header Version* is not the same as the *Protocol Version*, as
+the Protocol Version reflects not only the format of the hearder but also
+the available message types. Two header versions exist as of Protocol Version 3.x:
+
+- _Header Version 1_ is used in Protocol Version 1 and 2.
+- _Header Version 2_ is used in Protocol Version 3.x.
+
+The major difference between header versions 1 and 2 is the mechanism to include
+the extended header and meta data in the message. This feature has been introduced
+in Protocol Version 3.
 
 Type name
 ---------
