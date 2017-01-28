@@ -7,137 +7,73 @@ Transform Message
 - Release Date: January 20, 2017
 
 Summary
-===================
-The TRANSFORM data type is used to transfer a homogeneous linear transformation in 4-by-4 matrix form. One such matrix was shown earlier in equation (1).  Note that if a device is sending only translation and rotation, then TRANSFORM is equivalent to POSITION. But TRANSFORM can also be used to transfer affine transformations or simple scaling. Like IMAGE and POSITION, TRANSFORM carries information about the coordinate system used.
+=======
+
+The TRANSFORM data type is used to transfer a homogeneous linear transformation
+in 4-by-4 matrix form. One such matrix was shown earlier in equation (1).  Note
+that if a device is sending only translation and rotation, then TRANSFORM is
+equivalent to POSITION. But TRANSFORM can also be used to transfer affine
+transformations or simple scaling. Like IMAGE and POSITION, TRANSFORM carries
+information about the coordinate system used.
 
 Message Types
-===================
-TRANSFORM
--------------------
+=============
 
-<table border="1" cellpadding="5" cellspacing="0" >
-<tr>
-<td style="background:#e0e0e0;"> Data
-</td><td style="background:#e0e0e0;"> Type
-</td><td style="background:#e0e0e0;"> Description
-</td></tr>
-<tr>
-<td align="left"> R11
-</td><td align="left"> 32-bit float
-</td><td align="left"> Element (1, 1) in 4-by-4 linear transformation matrix
-</td></tr>
-<tr>
-<td align="left"> R21
-</td><td align="left"> 32-bit float
-</td><td align="left"> Element (2, 1) in 4-by-4 linear transformation matrix
-</td></tr>
-<tr>
-<td align="left"> R31
-</td><td align="left"> 32-bit float
-</td><td align="left"> Element (3, 1) in 4-by-4 linear transformation matrix
-</td></tr>
-<tr>
-<td align="left"> R12
-</td><td align="left"> 32-bit float
-</td><td align="left"> Element (1, 2) in 4-by-4 linear transformation matrix
-</td></tr>
-<tr>
-<td align="left"> R22
-</td><td align="left"> 32-bit float
-</td><td align="left"> Element (2, 2) in 4-by-4 linear transformation matrix
-</td></tr>
-<tr>
-<td align="left"> R32
-</td><td align="left"> 32-bit float
-</td><td align="left"> Element (3, 2) in 4-by-4 linear transformation matrix
-</td></tr>
-<tr>
-<td align="left"> R13
-</td><td align="left"> 32-bit float
-</td><td align="left"> Element (1, 3) in 4-by-4 linear transformation matrix
-</td></tr>
-<tr>
-<td align="left"> R23
-</td><td align="left"> 32-bit float
-</td><td align="left"> Element (2, 3) in 4-by-4 linear transformation matrix
-</td></tr>
-<tr>
-<td align="left"> R33
-</td><td align="left"> 32-bit float
-</td><td align="left"> Element (3, 3) in 4-by-4 linear transformation matrix
-</td></tr>
-<tr>
-<td align="left"> TX
-</td><td align="left"> 32-bit float
-</td><td align="left"> Element (1, 4) in 4-by-4 linear transformation matrix (translation along x-axis in millimeter)
-</td></tr>
-<tr>
-<td align="left"> TY
-</td><td align="left"> 32-bit float
-</td><td align="left"> Element (2, 4) in 4-by-4 linear transformation matrix (translation along y-axis in millimeter)
-</td></tr>
-<tr>
-<td align="left"> TZ
-</td><td align="left"> 32-bit float
-</td><td align="left"> Element (3, 4) in 4-by-4 linear transformation matrix (translation along z-axisin millimeter)
-</td></tr>
-</table>
+TRANSFORM
+---------
+
+The message contains the elements for the upper 3 rows of 4x4 linear transform matrix.
+
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+ R11          | float32       | Element (1, 1)
+ R21          | float32       | Element (2, 1)
+ R31          | float32       | Element (3, 1)
+ R12          | float32       | Element (1, 2)
+ R22          | float32       | Element (2, 2)
+ R32          | float32       | Element (3, 2)
+ R13          | float32       | Element (1, 3)
+ R23          | float32       | Element (2, 3)
+ R33          | float32       | Element (3, 3)
+ TX           | float32       | Element (1, 4) (translation along x-axis in millimeter)
+ TY           | float32       | Element (2, 4) (translation along y-axis in millimeter)
+ TZ           | float32       | Element (3, 4) (translation along z-axisin millimeter)
+
 
 GET_TRANS
 -------------------
-<table border="1" cellpadding="5" cellspacing="0" >
-<tr>
-<td style="background:#e0e0e0;"> Data
-</td><td style="background:#e0e0e0;"> Type
-</td><td style="background:#e0e0e0;"> Description
-</td></tr>
-</table>
+
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+              |               |
 
 
 STT_TRANS
 -------------------
 
-<table border="1" cellpadding="5" cellspacing="0" >
-<tr>
-<td style="background:#e0e0e0;"> Data
-</td><td style="background:#e0e0e0;"> Type
-</td><td style="background:#e0e0e0;"> Description
-</td></tr>
-</table>
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+              |               |
 
 
 STP_TRANS
 -------------------
 
-<table border="1" cellpadding="5" cellspacing="0" >
-<tr>
-<td style="background:#e0e0e0;"> Data
-</td><td style="background:#e0e0e0;"> Type
-</td><td style="background:#e0e0e0;"> Description
-</td></tr>
-</table>
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+              |               |
 
 
 RTS_TRANS
 -------------------
 
-<table border="1" cellpadding="5" cellspacing="0" >
-<tr>
-<td style="background:#e0e0e0;"> Data
-</td><td style="background:#e0e0e0;"> Type
-</td><td style="background:#e0e0e0;"> Description
-</td></tr>
-<tr>
-<td align="left"> Status
-</td><td align="left"> 8 bit unsigned
-</td><td align="left"> 0: Success 1: Error
-</td></tr>
-</table>
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+ STATUS       | uint8         | 0: Success; 1: Error
 
 
 Implementations
 ===================
-IMAGE type is implemented in the following files:
 * [igtlTransformMessage.h](/Source/igtlTransformMessage.h)
 * [igtlTransformMessage.cxx](/Source/igtlTransformMessage.cxx)
 

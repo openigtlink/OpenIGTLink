@@ -7,62 +7,40 @@ Capability Message
 - Release Date: January 20, 2017
 
 Summary
-===================
+=======
 
-The CAPABILITY data type lists the names of message types that the receiver can interpret. Although the OpenIGTLink protocol guarantees that any receiver can at least skip messages with unknown type and continue to interpret the following messages, it is a good idea to get the capability information at system startup to ensure application-level compatibility of various devices. In a CAPABILITY message type, each message type name comes with format version number. If the receiver can interpret multiple versions for a certain message type, they should be listed as independent types.
-
+The CAPABILITY type lists the names of message types that the receiver can
+interpret. Although the OpenIGTLink protocol guarantees that any receiver can at
+least skip messages with unknown type and continue to interpret the following
+messages, it is a good idea to get the capability information at system startup
+to ensure application-level compatibility of various devices. In a CAPABILITY
+message type, each message type name comes with format version number. If the
+receiver can interpret multiple versions for a certain message type, they should
+be listed as independent types.
 
 Message Types
 ===================
 
 CAPABILITY
--------------------
+----------
 
-<table border="1" cellpadding="5" cellspacing="0">
-<tr>
-<td style="background:#e0e0e0;"> Data
-</td><td style="background:#e0e0e0;"> Type
-</td><td style="background:#e0e0e0;"> Description
-</td></tr>
-<tr>
-<td align="left"> TYPE_0
-</td><td align="left"> unsigned char [12]
-</td><td align="left"> Type name #0
-</td></tr>
-<tr>
-<td align="left"> Type_1
-</td><td align="left"> unsigned char [12]
-</td><td align="left"> Type name #1
-</td></tr>
-<tr>
-<td align="left"> ...
-</td><td align="left"> ...
-</td><td align="left"> ...
-</td></tr>
-<tr>
-<td align="left"> Type_(N-1)
-</td><td align="left"> unsigned char [12]
-</td><td align="left"> Type name #N-1
-</td></tr>
-</table>
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+ TYPE_0       | uint8[12]     | Type name #0
+ ...          | ...           |
+ TYPE_(N_TYPE)| uint8[12]     | Type name #(N_TYPE)
 
-* Number of type names <b>N</b> is calculated by (Body size) / 12.
+* Number of type names (N_TYPE) is calculated by BODY_SIZE / 12.
 
 GET_CAPABIL
--------------------
+-----------
 
-<table border="1" cellpadding="5" cellspacing="0" align="center">
-
-<tr>
-<td style="background:#e0e0e0;"> Data
-</td><td style="background:#e0e0e0;"> Type
-</td><td style="background:#e0e0e0;"> Description
-</td></tr>
-</table>
-
+ Data         | Type          | Description
+--------------|---------------|-------------------------------------------------
+              |               |
 
 STT_CAPABIL
--------------------
+-----------
 
 N/A
 

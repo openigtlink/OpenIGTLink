@@ -1,10 +1,7 @@
 /*=========================================================================
 
   Program:   OpenIGTLink -- Example for Sending Capability Messasge
-  Module:    $RCSfile: $
   Language:  C++
-  Date:      $Date: $
-  Version:   $Revision: $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 

@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   Open IGT Link -- Example for Tracker Client Program
-  Module:    $RCSfile: $
+  Program:   OpenIGTLink -- Example for Tracker Client Program
   Language:  C++
-  Date:      $Date: $
-  Version:   $Revision: $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -117,6 +114,9 @@ int main(int argc, char* argv[])
 #endif
               imgMsg->AllocateScalars();
               
+              // Following line may be called in case of 16-, 32-, and 64-bit scalar types.
+              // imgMsg->SetEndian(igtl::ImageMessage::ENDIAN_BIG);
+
               //------------------------------------------------------------
               // Set image data (See GetTestImage() bellow for the details)
               GetTestImage(imgMsg, filedir, i % 5);

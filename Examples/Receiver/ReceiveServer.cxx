@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   Open IGT Link -- Example for Data Receiving Server Program
-  Module:    $RCSfile: $
+  Program:   OpenIGTLink -- Example for Data Receiving Server Program
   Language:  C++
-  Date:      $Date: $
-  Version:   $Revision: $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -279,14 +276,17 @@ int ReceiveImage(igtl::Socket * socket, igtl::MessageHeader * header)
     int   svsize[3];        // sub-volume size
     int   svoffset[3];      // sub-volume offset
     int   scalarType;       // scalar type
+    int   endian;           // endian
 
     scalarType = imgMsg->GetScalarType();
+    endian = imgMsg->GetEndian();
     imgMsg->GetDimensions(size);
     imgMsg->GetSpacing(spacing);
     imgMsg->GetSubVolume(svsize, svoffset);
 
     std::cerr << "Device Name           : " << imgMsg->GetDeviceName() << std::endl;
     std::cerr << "Scalar Type           : " << scalarType << std::endl;
+    std::cerr << "Endian                : " << endian << std::endl;
     std::cerr << "Dimensions            : ("
               << size[0] << ", " << size[1] << ", " << size[2] << ")" << std::endl;
     std::cerr << "Spacing               : ("
