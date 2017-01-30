@@ -104,9 +104,9 @@ namespace igtl {
   int MessageRTPWrapper::PushDataIntoPacketBuffer(igtlUint8* UDPPacket, igtlUint16 PacketLen)
   {
     this->glock->Lock();
-    igtlUint16 firstMsgLen = this->incommingPackets.pPacketLengthInByte[0];
     if(this->incommingPackets.pPacketLengthInByte.size()>PacketMaximumBufferNum)
     {
+      igtlUint16 firstMsgLen = this->incommingPackets.pPacketLengthInByte[0];
       this->incommingPackets.pPacketLengthInByte.erase(this->incommingPackets.pPacketLengthInByte.begin());
       this->incommingPackets.pBsBuf.erase(this->incommingPackets.pBsBuf.begin(), this->incommingPackets.pBsBuf.begin()+firstMsgLen);
       this->incommingPackets.totalLength -= firstMsgLen;
@@ -223,9 +223,9 @@ namespace igtl {
             glock->Lock();
             unWrappedMessages.insert(std::pair<igtl_uint32, igtl::UnWrappedMessage*>(it->first,message));
             glock->Unlock();
-            this->reorderBufferMap.erase(it);
             delete it->second;
             it->second = NULL;
+            this->reorderBufferMap.erase(it);
             status = MessageReady;
           }
           curPackedMSGLocation += header->GetBodySizeToRead()+IGTL_HEADER_SIZE;
@@ -273,14 +273,21 @@ namespace igtl {
               std::map<igtl_uint32, igtl::ReorderBuffer*>::iterator it_forDelete= this->reorderBufferMap.begin();
               while(it_forDelete != this->reorderBufferMap.end())
               {
-                this->reorderBufferMap.erase(it_forDelete);
                 delete it_forDelete->second;
                 it_forDelete->second = NULL;
-                if(it_forDelete->first==it->first)
+                this->reorderBufferMap.erase(it_forDelete);
+                if (this->reorderBufferMap.size())
+                {
+                  if (it_forDelete->first == it->first)
+                  {
+                    break;
+                  }
+                }
+                else
                 {
                   break;
                 }
-                it_forDelete =this->reorderBufferMap.begin();
+                it_forDelete = this->reorderBufferMap.begin();
               }
               status = MessageReady;
             }

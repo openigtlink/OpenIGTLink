@@ -590,9 +590,9 @@ static void* ThreadFunctionReadFrame(void* ptr)
       if (parentObj.server->incommingFrames.size()>3)
       {
         std::map<igtlUint32, igtl_uint8*>::iterator it = parentObj.server->incommingFrames.begin();
-        parentObj.server->incommingFrames.erase(it);
         delete it->second;
         it->second = NULL;
+        parentObj.server->incommingFrames.erase(it);
       }
       parentObj.server->incommingFrames.insert(std::pair<igtl_uint32, igtl_uint8*>(0, pYUV));
       parentObj.server->glockInFrame->Unlock();
@@ -629,9 +629,9 @@ static void* ThreadFunctionSendPacket(void* ptr)
       std::map<igtlUint32, VideoStreamIGTLinkServer::encodedFrame*>::iterator it = parentObj.server->encodedFrames.begin();
       frameCopy->messageDataLength = it->second->messageDataLength;
       memcpy(frameCopy->messagePackPointer,it->second->messagePackPointer,it->second->messageDataLength);
-      parentObj.server->encodedFrames.erase(it);
       delete it->second;
       it->second = NULL;
+      parentObj.server->encodedFrames.erase(it);
       if (parentObj.server->transportMethod == VideoStreamIGTLinkServer::TransportMethod::UseUDP)
       {
         parentObj.server->rtpWrapper->WrapMessageAndSend(parentObj.server->serverUDPSocket, frameCopy->messagePackPointer, frameCopy->messageDataLength);
@@ -674,9 +674,9 @@ void VideoStreamIGTLinkServer::CheckEncodedFrameMap()
   if(this->encodedFrames.size()>5)
   {
     std::map<igtlUint32, VideoStreamIGTLinkServer::encodedFrame*>::iterator it = this->encodedFrames.begin();
-    this->encodedFrames.erase(it);
     delete it->second;
     it->second = NULL;
+    this->encodedFrames.erase(it);
   }
 }
 
@@ -697,9 +697,9 @@ void VideoStreamIGTLinkServer::SendOriginalData()
         this->glockInFrame->Lock();
         std::map<igtlUint32, igtl_uint8*>::iterator it = this->incommingFrames.begin();
         memcpy(pYUV,it->second,kiPicResSize);
-        this->incommingFrames.erase(it);
         delete it->second;
         it->second = NULL;
+        this->incommingFrames.erase(it);
         frameNum = this->incommingFrames.size();
         this->glockInFrame->Unlock();
         messageID ++;
@@ -808,9 +808,9 @@ void* VideoStreamIGTLinkServer::EncodeFile(void)
       this->glockInFrame->Lock();
       std::map<igtlUint32, igtl_uint8*>::iterator it = this->incommingFrames.begin();
       memcpy(pYUV,it->second,kiPicResSize);
-      this->incommingFrames.erase(it);
       delete it->second;
       it->second = NULL;
+      this->incommingFrames.erase(it);
       frameNum = this->incommingFrames.size();
       this->glockInFrame->Unlock();
       iStart = WelsTime();

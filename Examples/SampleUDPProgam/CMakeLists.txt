@@ -13,7 +13,7 @@ ADD_EXECUTABLE(ClientUDPTransfer   ClientUDPTransfer.cxx)
 TARGET_LINK_LIBRARIES(ClientUDPTransfer)
 
 ADD_EXECUTABLE(ServerUDPTransfer   ServerUDPTransfer.cxx)
-TARGET_LINK_LIBRARIES(TrackingDataServerUDPTransfer)
+TARGET_LINK_LIBRARIES(ServerUDPTransfer)
 
 
 

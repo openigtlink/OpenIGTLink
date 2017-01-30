@@ -252,8 +252,9 @@ int VideoStreamIGTLinkReceiver::RunOnUDPSocket()
       static int frameNum = 0;
       int MSGLength = it->second->messageDataLength;
       memcpy(message, it->second->messagePackPointer, it->second->messageDataLength);
-      rtpWrapper->unWrappedMessages.erase(it);
       delete it->second;
+      it->second = NULL;
+      rtpWrapper->unWrappedMessages.erase(it);
       glock->Unlock();
       igtl::MessageHeader::Pointer header = igtl::MessageHeader::New();
       header->InitPack();
