@@ -297,22 +297,30 @@ int VideoStreamIGTLinkReceiver::RunOnUDPSocket()
 bool VideoStreamIGTLinkReceiver::InitializeClient()
 {
   // if configure file exit, reading configure file firstly
-  cRdCfg.Openf (this->augments.c_str());// to do get the first augments from this->augments.
-  if (cRdCfg.ExistFile())
+  if(strcmp(this->augments.c_str(),"")==0)
   {
-    cRdCfg.Openf (this->augments.c_str());// reset the file read pointer to the beginning.
-    int iRet = ParseConfigForClient();
-    if (iRet == -1) {
-      fprintf (stderr, "parse client parameter config file failed.\n");
-      return false;
-    }
+    fprintf (stdout, "The udp/tcp selection is upto the application.\n");
     return true;
   }
   else
   {
-    fprintf (stderr, "Specified file: %s not exist, maybe invalid path or parameter settting.\n",
-             cRdCfg.GetFileName().c_str());
-    return false;
+    cRdCfg.Openf (this->augments.c_str());// to do get the first augments from this->augments.
+    if (cRdCfg.ExistFile())
+    {
+      cRdCfg.Openf (this->augments.c_str());// reset the file read pointer to the beginning.
+      int iRet = ParseConfigForClient();
+      if (iRet == -1) {
+        fprintf (stderr, "parse client parameter config file failed.\n");
+        return false;
+      }
+      return true;
+    }
+    else
+    {
+      fprintf (stderr, "Specified file: %s not exist, maybe invalid path or parameter settting.\n",
+               cRdCfg.GetFileName().c_str());
+      return false;
+    }
   }
 }
 

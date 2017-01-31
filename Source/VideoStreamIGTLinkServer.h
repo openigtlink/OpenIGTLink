@@ -66,15 +66,10 @@ public:
   bool InitializeEncoderAndServer();
   
   /**
-   Set the input frame pointer , the encoder will read the frame from the pointer
-   */
-  void SetInputFramePointer(igtl_uint8* picPointer);
-  
-  /**
    Encode a frame, for performance issue, before encode the frame, make sure the frame pointer is updated with a new frame.
    Otherwize, the old frame will be encoded.
    */
-  int EncodeSingleFrame();
+  int EncodeSingleFrame(igtl_uint8* picPointer);
   
   /**
    Pack the encoded frame into a OpenIGTLink message and send the message to a client.

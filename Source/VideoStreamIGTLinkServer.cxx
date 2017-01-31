@@ -523,7 +523,7 @@ struct serverPointer
   VideoStreamIGTLinkServer* server;
 };
 
-static void* ThreadFunctionReadFrame(void* ptr)
+static void* ThreadFunctionReadFrameFromFile(void* ptr)
 {
   // Get thread information
   igtl::MultiThreader::ThreadInfo* info =
@@ -533,7 +533,6 @@ static void* ThreadFunctionReadFrame(void* ptr)
   igtl_int32 iActualFrameEncodedCount = 0;
   igtl_int32 iFrameNumInFile = -1;
   FILE* pFileYUV = NULL;
-  bool fileValid = true;
   pFileYUV = fopen (parentObj.server->fs.strSeqFile.c_str(), "rb");
   if (pFileYUV != NULL) {
 #if defined(_WIN32) || defined(_WIN64)
@@ -557,56 +556,56 @@ static void* ThreadFunctionReadFrame(void* ptr)
       iFrameNumInFile = WELS_MAX ((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
     }
 #endif
+    igtl_int32 iFrameIdx = 0;
+    while((igtl_int32)parentObj.server->iTotalFrameToEncode > 0)
+    {
+      iFrameIdx = 0;
+#if defined(_WIN32) || defined(_WIN64)
+#if _MSC_VER >= 1400
+      _fseeki64(pFileYUV, 0, SEEK_SET);
+#else
+      fseek(pFileYUV, 0, SEEK_SET);
+#endif
+#else
+      fseeko(pFileYUV, 0, SEEK_SET);
+#endif
+      while (iFrameIdx < iFrameNumInFile && iFrameIdx < parentObj.server->iTotalFrameToEncode) {
+        
+#ifdef ONLY_ENC_FRAMES_NUM
+        // Only encoded some limited frames here
+        if (iActualFrameEncodedCount >= ONLY_ENC_FRAMES_NUM) {
+          break;
+        }
+#endif//ONLY_ENC_FRAMES_NUM
+        bool bCanBeRead = false;
+        igtl_uint8* pYUV = new igtl_uint8[kiPicResSize];
+        bCanBeRead = (fread (pYUV, 1, kiPicResSize, pFileYUV) == kiPicResSize);
+        parentObj.server->glockInFrame->Lock();
+        if (parentObj.server->incommingFrames.size()>3)
+        {
+          std::map<igtlUint32, igtl_uint8*>::iterator it = parentObj.server->incommingFrames.begin();
+          delete it->second;
+          it->second = NULL;
+          parentObj.server->incommingFrames.erase(it);
+        }
+        parentObj.server->incommingFrames.insert(std::pair<igtl_uint32, igtl_uint8*>(0, pYUV));
+        parentObj.server->glockInFrame->Unlock();
+        parentObj.server->iTotalFrameToEncode = parentObj.server->iTotalFrameToEncode - 1; // excluding skipped frame time
+        igtl::Sleep(parentObj.server->interval);
+        if (!bCanBeRead)
+          break;
+      }
+    }
+    if (pFileYUV)
+    {
+      fclose(pFileYUV);
+      pFileYUV = NULL;
+    }
   } else {
     fprintf (stderr, "Unable to open source sequence file (%s), check corresponding path!\n",
              parentObj.server->fs.strSeqFile.c_str());
-    fileValid = false;
   }
-  igtl_int32 iFrameIdx = 0;
-  while((igtl_int32)parentObj.server->iTotalFrameToEncode > 0)
-  {
-    iFrameIdx = 0;
-#if defined(_WIN32) || defined(_WIN64)
-#if _MSC_VER >= 1400
-    _fseeki64(pFileYUV, 0, SEEK_SET);
-#else
-    fseek(pFileYUV, 0, SEEK_SET);
-#endif
-#else
-    fseeko(pFileYUV, 0, SEEK_SET);
-#endif
-    while (fileValid && iFrameIdx < iFrameNumInFile && iFrameIdx < parentObj.server->iTotalFrameToEncode) {
-      
-#ifdef ONLY_ENC_FRAMES_NUM
-      // Only encoded some limited frames here
-      if (iActualFrameEncodedCount >= ONLY_ENC_FRAMES_NUM) {
-        break;
-      }
-#endif//ONLY_ENC_FRAMES_NUM
-      bool bCanBeRead = false;
-      igtl_uint8* pYUV = new igtl_uint8[kiPicResSize];
-      bCanBeRead = (fread (pYUV, 1, kiPicResSize, pFileYUV) == kiPicResSize);
-      parentObj.server->glockInFrame->Lock();
-      if (parentObj.server->incommingFrames.size()>3)
-      {
-        std::map<igtlUint32, igtl_uint8*>::iterator it = parentObj.server->incommingFrames.begin();
-        delete it->second;
-        it->second = NULL;
-        parentObj.server->incommingFrames.erase(it);
-      }
-      parentObj.server->incommingFrames.insert(std::pair<igtl_uint32, igtl_uint8*>(0, pYUV));
-      parentObj.server->glockInFrame->Unlock();
-      parentObj.server->iTotalFrameToEncode = parentObj.server->iTotalFrameToEncode - 1; // excluding skipped frame time
-      igtl::Sleep(parentObj.server->interval);
-      if (!bCanBeRead)
-        break;
-    }
-  }
-  if (pFileYUV)
-  {
-    fclose(pFileYUV);
-    pFileYUV = NULL;
-  }
+  
   return NULL;
 }
 
@@ -655,7 +654,7 @@ int VideoStreamIGTLinkServer::StartReadFrameThread(int frameRate)
   this->interval = 1000/frameRate;
   serverPointer ptr;
   ptr.server = this;
-  int threadID = threader->SpawnThread((igtl::ThreadFunctionType)&ThreadFunctionReadFrame, &ptr);
+  int threadID = threader->SpawnThread((igtl::ThreadFunctionType)&ThreadFunctionReadFrameFromFile, &ptr);
   igtl::Sleep(10);
   return threadID;
 }
@@ -794,7 +793,6 @@ void* VideoStreamIGTLinkServer::EncodeFile(void)
   
   igtl_int32 iFrameIdx = 0;
   igtl_uint8* pYUV = new igtl_uint8[kiPicResSize];
-  this->SetInputFramePointer(pYUV);
   this->totalCompressedDataSize = 0;
   int iActualFrameEncodedCount = 0;
   while(this->iTotalFrameToEncode)
@@ -817,7 +815,7 @@ void* VideoStreamIGTLinkServer::EncodeFile(void)
       this->pSrcPic->uiTimeStamp = WELS_ROUND (iFrameIdx * (1000 / sSvcParam.fMaxFrameRate));
       this->ServerTimer->GetTime();
       this->encodeStartTime = this->ServerTimer->GetTimeStampInNanoseconds();
-      int iEncFrames = this->pSVCEncoder->EncodeFrame (pSrcPic, &sFbi);
+      int iEncFrames = this->EncodeSingleFrame(pYUV);
       this->ServerTimer->GetTime();
       this->encodeEndTime = this->ServerTimer->GetTimeStampInNanoseconds();
       iTotal += WelsTime()- iStart;
@@ -859,15 +857,9 @@ void* VideoStreamIGTLinkServer::EncodeFile(void)
 
 
 
-int VideoStreamIGTLinkServer::EncodeSingleFrame()
+int VideoStreamIGTLinkServer::EncodeSingleFrame(igtl_uint8* picPointer)
 {
-  int encodeRet = pSVCEncoder->EncodeFrame(pSrcPic, &sFbi);
-  this->videoFrameType = sFbi.eFrameType;
-  return encodeRet;
-}
-
-void VideoStreamIGTLinkServer::SetInputFramePointer(igtl_uint8* picPointer)
-{
+  int encodeRet = -1;
   if (this->InitializationDone == true)
   {
     int iSourceWidth = pSrcPic->iPicWidth;
@@ -875,6 +867,9 @@ void VideoStreamIGTLinkServer::SetInputFramePointer(igtl_uint8* picPointer)
     pSrcPic->pData[0] = picPointer;
     pSrcPic->pData[1] = pSrcPic->pData[0] + (iSourceWidth * iSourceHeight);
     pSrcPic->pData[2] = pSrcPic->pData[1] + (iSourceWidth * iSourceHeight >> 2);
+    encodeRet = pSVCEncoder->EncodeFrame(pSrcPic, &sFbi);
+    this->videoFrameType = sFbi.eFrameType;
   }
+  return encodeRet;
 }
 
