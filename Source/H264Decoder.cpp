@@ -33,14 +33,14 @@ int H264Decode::Process (void* pDst[3], SBufferInfo* pInfo, FILE* pFp) {
   
   int iRet = 0;
   
-  if (pFp && pDst[0] && pDst[1] && pDst[2] && pInfo) {
+  if (pDst[0] && pDst[1] && pDst[2] && pInfo) {
     int iStride[2];
     int iWidth = pInfo->UsrData.sSystemBuffer.iWidth;
     int iHeight = pInfo->UsrData.sSystemBuffer.iHeight;
     iStride[0] = pInfo->UsrData.sSystemBuffer.iStride[0];
     iStride[1] = pInfo->UsrData.sSystemBuffer.iStride[1];
-    
-    Write2File (pFp, (unsigned char**)pDst, iStride, iWidth, iHeight);
+    if(pFp)
+      Write2File (pFp, (unsigned char**)pDst, iStride, iWidth, iHeight);
   }
   return iRet;
 }
@@ -201,7 +201,7 @@ int H264Decode::DecodeSingleNal (ISVCDecoder* pDecoder, unsigned char* kpH264Bit
     iTotal  = iEnd - iStart;
     if (sDstBufInfo.iBufferStatus == 1)
     {
-      Process ((void**)pData, &sDstBufInfo, pYuvFile);
+      Process ((void**)pData, &sDstBufInfo, NULL);
       iWidth  = sDstBufInfo.UsrData.sSystemBuffer.iWidth;
       iHeight = sDstBufInfo.UsrData.sSystemBuffer.iHeight;
       
@@ -228,7 +228,7 @@ int H264Decode::DecodeSingleNal (ISVCDecoder* pDecoder, unsigned char* kpH264Bit
     iEnd    = getCurrentTime();
     iTotal = iEnd - iStart;
     if (sDstBufInfo.iBufferStatus == 1) {
-      Process ((void**)pData, &sDstBufInfo, pYuvFile);
+      Process ((void**)pData, &sDstBufInfo, NULL);
       ComposeByteSteam(pData, sDstBufInfo, outputByteStream, iWidth,iHeight);
       iWidth  = sDstBufInfo.UsrData.sSystemBuffer.iWidth;
       iHeight = sDstBufInfo.UsrData.sSystemBuffer.iHeight;
