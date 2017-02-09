@@ -77,7 +77,7 @@ TEST(TransformMessageTest, UnpackFormatVersion1)
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
 #include "igtlutil/igtl_test_data_transformFormat2.h"
-#include "igtlMessageFormat2TestMarco.h"
+#include "igtlMessageFormat2TestMacro.h"
 TEST(TransformMessageTest, PackFormatVersion2)
 {
   transformSendMsg = igtl::TransformMessage::New();
