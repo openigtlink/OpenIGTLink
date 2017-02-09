@@ -110,6 +110,7 @@ igtl::MessageBase::Pointer MessageBase::Clone()
 void MessageBase::SetHeaderVersion(unsigned short version)
 {
   m_HeaderVersion = version;
+  m_IsBodyPacked = false;
 }
 
 unsigned short MessageBase::GetHeaderVersion() const
@@ -119,17 +120,23 @@ unsigned short MessageBase::GetHeaderVersion() const
 
 void MessageBase::SetDeviceName(const char* name)
 {
-  m_DeviceName = std::string(name);
+  if (name == NULL)
+  {
+    return;
+  }
+  SetDeviceName(std::string(name));
 }
 
 void MessageBase::SetDeviceName(const std::string& name)
 {
   m_DeviceName = name;
+  m_IsBodyPacked = false;
 }
 
 void MessageBase::SetDeviceType(const std::string& type)
 {
   this->m_ReceiveMessageType = type;
+  m_IsBodyPacked = false;
 }
 
 std::string MessageBase::GetDeviceName() const
@@ -199,6 +206,7 @@ igtlUint32 MessageBase::GetMessageID()
 void MessageBase::SetMessageID(igtlUint32 idValue)
 {
   m_MessageId = idValue;
+  m_IsBodyPacked = false;
 }
 
 bool MessageBase::SetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE encodingScheme, std::string value)
@@ -215,6 +223,9 @@ bool MessageBase::SetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE 
   m_MetaDataMap[key] = value;
   m_MetaDataSize += key.length() + value.length();
   m_MetaDataHeaderSize += sizeof(igtl_metadata_header_entry);
+
+  m_IsBodyPacked = false;
+
   return true;
 }
 
@@ -666,7 +677,8 @@ void MessageBase::AllocateBuffer()
 void MessageBase::InitBuffer()
 {
   m_IsHeaderUnpacked = false;
-  m_IsBodyUnpacked   = 0;
+  m_IsBodyPacked     = false;
+  m_IsBodyUnpacked   = false;
   m_BodySizeToRead   = 0;
 
   m_DeviceName       = "";
