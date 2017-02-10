@@ -120,7 +120,7 @@ TEST(CommandMessageTest, UnpackFormatVersion2)
   EXPECT_EQ(messageHeader->header_version, 2);
   EXPECT_EQ(messageHeader->timestamp, 0);
 
-  auto size = sizeof(test_command_messageFormat2) - IGTL_HEADER_SIZE;
+  int size = sizeof(test_command_messageFormat2) - IGTL_HEADER_SIZE;
   EXPECT_EQ(messageHeader->body_size, sizeof(test_command_messageFormat2)-IGTL_HEADER_SIZE);
 
   igtl_uint64 crc;

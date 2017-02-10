@@ -85,7 +85,7 @@ namespace igtl
 
 #if OpenIGTLink_HEADER_VERSION >= 2
     // Types for managing meta data
-    typedef std::map<std::string, std::pair<IANA_ENCODING_TYPE, std::string>> MetaDataMap;
+    typedef std::map<std::string, std::pair<IANA_ENCODING_TYPE, std::string> > MetaDataMap;
 #endif
 
     igtlTypeMacro(igtl::MessageBase, igtl::Object)
