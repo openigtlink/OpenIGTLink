@@ -31,16 +31,20 @@
   std::vector<std::string> groundTruth(0); \
   groundTruth.push_back("First patient age");\
   groundTruth.push_back("Second patient age");\
+  \
   std::vector<std::string> groundTruthAge(0);\
   groundTruthAge.push_back("22");\
   groundTruthAge.push_back("25");\
+  \
   EXPECT_EQ(object->GetMessageID(),1);\
+  \
+  \
   int i = 0;\
-  for (std::map<std::string, std::string>::const_iterator it = object->GetMetaData().begin(); it != object->GetMetaData().end(); ++it, ++i)\
+  for (igtl::MessageBase::MetaDataMap::const_iterator it = object->GetMetaData().begin(); it != object->GetMetaData().end(); ++it, ++i)\
   {\
-  EXPECT_STREQ(it->first.c_str(), groundTruth[i].c_str());\
-  EXPECT_EQ(object->GetMetaDataHeaderEntries()[i].value_encoding,3);\
-  EXPECT_STREQ(it->second.c_str(), groundTruthAge[i].c_str());\
+    EXPECT_STREQ(it->first.c_str(), groundTruth[i].c_str());\
+    EXPECT_EQ(it->second.first, IANA_TYPE_US_ASCII);\
+    EXPECT_STREQ(it->second.second.c_str(), groundTruthAge[i].c_str());\
   }
 
 

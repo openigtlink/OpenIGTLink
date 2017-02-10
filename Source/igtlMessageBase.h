@@ -83,6 +83,11 @@ namespace igtl
     typedef SmartPointer<Self>        Pointer;
     typedef SmartPointer<const Self>  ConstPointer;
 
+#if OpenIGTLink_HEADER_VERSION >= 2
+    // Types for managing meta data
+    typedef std::map<std::string, std::pair<IANA_ENCODING_TYPE, std::string> > MetaDataMap;
+#endif
+
     igtlTypeMacro(igtl::MessageBase, igtl::Object)
     igtlNewMacro(igtl::MessageBase);
 
@@ -152,12 +157,10 @@ namespace igtl
 
     /// Get meta data element
     bool GetMetaDataElement(const std::string& key, std::string& value) const;
+    bool GetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE& encoding, std::string& value) const;
 
     /// Get meta data map
-    const std::map<std::string, std::string>& GetMetaData() const;
-
-    /// Get meta data header entries
-    const std::vector<igtl_metadata_header_entry>& GetMetaDataHeaderEntries() const;
+    const MetaDataMap& GetMetaData() const;
 
     /// Pack the extended header
     bool PackExtendedHeader();
@@ -343,37 +346,23 @@ namespace igtl
 
 #if OpenIGTLink_HEADER_VERSION >= 2
   protected:
-
-    // Types for managing meta data
-    typedef std::vector<igtl_metadata_header_entry> MetaDataHeaderEntryList;
-    typedef std::map<std::string, std::string>      MetaDataMap;
-
     /// A pointer to the serialized extended header.
-    unsigned char* m_ExtendedHeader;
+    unsigned char*                                                            m_ExtendedHeader;
 
     /// A flag to record the unpacked state of the extended header
-    bool m_IsExtendedHeaderUnpacked;
+    bool                                                                      m_IsExtendedHeaderUnpacked;
 
     /// A pointer to the meta data.
-    unsigned char* m_MetaData;
+    unsigned char*                                                            m_MetaData;
 
     /// A pointer to the meta data header.
-    unsigned char* m_MetaDataHeader;
-
-    /// Size of the meta data
-    igtlUint32 m_MetaDataSize;
-
-    /// Size of the meta data header
-    igtlUint32 m_MetaDataHeaderSize;
+    unsigned char*                                                            m_MetaDataHeader;
 
     /// Message ID
-    igtlUint32 m_MessageId;
-
-    /// Vector storing the meta data header entries
-    MetaDataHeaderEntryList m_MetaDataHeaderEntries;
+    igtlUint32                                                                m_MessageId;
 
     /// Map storing the key value pairs
-    MetaDataMap             m_MetaDataMap;
+    MetaDataMap                                                               m_MetaDataMap;
 
 #endif // if OpenIGTLink_HEADER_VERSION >= 2
 

@@ -111,7 +111,7 @@ TEST(TrackingMessageTest, Unpack)
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
 #include "igtlutil/igtl_test_data_tdataFormat2.h"
-#include "igtlMessageFormat2TestMarco.h"
+#include "igtlMessageFormat2TestMacro.h"
 
 TEST(TrackingMessageTest, PackFormatVersion2)
 {
