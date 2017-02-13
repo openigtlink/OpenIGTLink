@@ -156,10 +156,10 @@ int ReceiveImageData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::P
     if (imageData->GetHeaderVersion() >= IGTL_HEADER_VERSION_2)
     {
       int i = 0;
-      for (std::map<std::string, std::string>::const_iterator it = imageData->GetMetaData().begin(); it != imageData->GetMetaData().end(); ++it, ++i)
+      for (std::map<std::string, std::pair<IANA_ENCODING_TYPE, std::string> >::const_iterator it = imageData->GetMetaData().begin(); it != imageData->GetMetaData().end(); ++it, ++i)
       {
         std::cerr<<"The message ID is:"<< " " << imageData->GetMessageID() << std::endl;
-        std::cerr<< it->first << " coding scheme: " << imageData->GetMetaDataHeaderEntries()[i].value_encoding << " " << it->second << std::endl;
+        std::cerr<< it->first << " coding scheme: " << it->second.first << " " << it->second.second << std::endl;
       }
     }
 #endif
