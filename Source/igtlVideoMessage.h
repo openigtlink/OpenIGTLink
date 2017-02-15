@@ -220,7 +220,7 @@ public:
 #if OpenIGTLink_HEADER_VERSION >= 2
       if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
       {
-       return GetPackBodySize()-IGTL_VIDEO_HEADER_SIZE - sizeof(igtl_extended_header) - m_MetaDataHeaderSize - GetMetaDataSize();
+       return GetPackBodySize()-IGTL_VIDEO_HEADER_SIZE - sizeof(igtl_extended_header) - GetMetaDataHeaderSize() - GetMetaDataSize();
       }
       else
       {
