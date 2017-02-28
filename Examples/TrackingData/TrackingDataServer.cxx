@@ -194,7 +194,7 @@ void* ThreadFunction(void* ptr)
 
   igtl::TrackingDataMessage::Pointer trackingMsg;
   trackingMsg = igtl::TrackingDataMessage::New();
-  trackingMsg->SetDeviceName("Tracker");
+  
 
   igtl::TrackingDataElement::Pointer trackElement0;
   trackElement0 = igtl::TrackingDataElement::New();
@@ -219,6 +219,7 @@ void* ThreadFunction(void* ptr)
   // Loop
   while (!td->stop)
     {
+    trackingMsg->SetDeviceName("Tracker");
     glock->Lock();
     SendTrackingData(socket, trackingMsg);
     glock->Unlock();
