@@ -198,7 +198,6 @@ void* ThreadFunction(void* ptr)
 
   igtl::QuaternionTrackingDataMessage::Pointer quaternionTrackingMsg;
   quaternionTrackingMsg = igtl::QuaternionTrackingDataMessage::New();
-  quaternionTrackingMsg->SetDeviceName("Tracker");
 
   igtl::QuaternionTrackingDataElement::Pointer quaternionTrackElement0;
   quaternionTrackElement0 = igtl::QuaternionTrackingDataElement::New();
@@ -223,6 +222,7 @@ void* ThreadFunction(void* ptr)
   // Loop
   while (!td->stop)
     {
+    quaternionTrackingMsg->SetDeviceName("Tracker");
     glock->Lock();
     SendQuaternionTrackingData(socket, quaternionTrackingMsg);
     glock->Unlock();

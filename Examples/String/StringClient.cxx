@@ -70,13 +70,14 @@ int main(int argc, char* argv[])
 
   igtl::StringMessage::Pointer stringMsg;
   stringMsg = igtl::StringMessage::New();
-  stringMsg->SetDeviceName("StringMessage");
+  
 
   //------------------------------------------------------------
   // loop
   int i = 0;
   while (1)
     {
+    stringMsg->SetDeviceName("StringMessage");
     std::cout << "Sending string: " << testString[i] << std::endl;
     stringMsg->SetString(testString[i]);
     stringMsg->Pack();
