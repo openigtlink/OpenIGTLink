@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   Open IGT Link Library
-  Module:    $HeadURL: http://svn.na-mic.org/NAMICSandBox/trunk/OpenIGTLink/igtl_typeconfig.h.in $
+  Program:   The OpenIGTLink Library
   Language:  C
-  Date:      $Date: 2008-12-22 18:59:18 -0500 (Mon, 22 Dec 2008) $
-  Version:   $Revision: 3459 $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 

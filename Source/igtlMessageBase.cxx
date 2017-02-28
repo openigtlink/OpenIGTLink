@@ -50,11 +50,8 @@ MessageBase::MessageBase()
   , m_ExtendedHeader(NULL)
   , m_IsExtendedHeaderUnpacked(false)
   , m_MetaData(NULL)
-  , m_MetaDataSize(0)
-  , m_MetaDataHeaderSize(0)
   , m_MessageId(0)
-  , m_MetaDataHeaderEntries(std::vector<igtl_metadata_header_entry>())
-  , m_MetaDataMap(std::map<std::string, std::string>())
+  , m_MetaDataMap(MetaDataMap())
 #endif
 {
 }
@@ -110,6 +107,7 @@ igtl::MessageBase::Pointer MessageBase::Clone()
 void MessageBase::SetHeaderVersion(unsigned short version)
 {
   m_HeaderVersion = version;
+  m_IsBodyPacked = false;
 }
 
 unsigned short MessageBase::GetHeaderVersion() const
@@ -119,17 +117,23 @@ unsigned short MessageBase::GetHeaderVersion() const
 
 void MessageBase::SetDeviceName(const char* name)
 {
-  m_DeviceName = std::string(name);
+  if (name == NULL)
+  {
+    return;
+  }
+  SetDeviceName(std::string(name));
 }
 
 void MessageBase::SetDeviceName(const std::string& name)
 {
   m_DeviceName = name;
+  m_IsBodyPacked = false;
 }
 
 void MessageBase::SetDeviceType(const std::string& type)
 {
   this->m_ReceiveMessageType = type;
+  m_IsBodyPacked = false;
 }
 
 std::string MessageBase::GetDeviceName() const
@@ -171,7 +175,13 @@ igtlUint32 MessageBase::GetMetaDataSize()
 {
   if( m_HeaderVersion >= IGTL_HEADER_VERSION_2 )
   {
-    return m_MetaDataSize;
+    igtlUint32 metaDataSize(0);
+    for (MetaDataMap::const_iterator it = m_MetaDataMap.begin(); it != m_MetaDataMap.end(); ++it)
+    {
+      metaDataSize += it->first.length() + it->second.second.length();
+    }
+
+    return metaDataSize;
   }
   else
   {
@@ -183,7 +193,7 @@ igtlUint16 MessageBase::GetMetaDataHeaderSize()
 {
   if( m_HeaderVersion >= IGTL_HEADER_VERSION_2 )
   {
-    return m_MetaDataHeaderSize + sizeof(igtlUint16); // index_count is at beginning of header
+    return (m_MetaDataMap.size()*sizeof(igtl_metadata_header_entry)) + sizeof(igtlUint16); // index_count is at beginning of header
   }
   else
   {
@@ -199,6 +209,7 @@ igtlUint32 MessageBase::GetMessageID()
 void MessageBase::SetMessageID(igtlUint32 idValue)
 {
   m_MessageId = idValue;
+  m_IsBodyPacked = false;
 }
 
 bool MessageBase::SetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE encodingScheme, std::string value)
@@ -211,10 +222,11 @@ bool MessageBase::SetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE 
   entry.key_size = static_cast<igtl_uint16>(key.length());
   entry.value_encoding = static_cast<igtlUint16>(encodingScheme);
   entry.value_size = value.length();
-  m_MetaDataHeaderEntries.push_back(entry);
-  m_MetaDataMap[key] = value;
-  m_MetaDataSize += key.length() + value.length();
-  m_MetaDataHeaderSize += sizeof(igtl_metadata_header_entry);
+
+  m_MetaDataMap[key] = std::pair<IANA_ENCODING_TYPE, std::string>(encodingScheme, value);
+
+  m_IsBodyPacked = false;
+
   return true;
 }
 
@@ -290,9 +302,16 @@ bool MessageBase::SetMetaDataElement(const std::string& key, double value)
 
 bool MessageBase::GetMetaDataElement(const std::string& key, std::string& value) const
 {
+  IANA_ENCODING_TYPE type;
+  return GetMetaDataElement(key, type, value);
+}
+
+bool MessageBase::GetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE& encoding, std::string& value) const
+{
   if (m_MetaDataMap.find(key) != m_MetaDataMap.end())
   {
-    value = m_MetaDataMap.find(key)->second;
+    encoding = m_MetaDataMap.find(key)->second.first;
+    value = m_MetaDataMap.find(key)->second.second;
     return true;
   }
 
@@ -302,11 +321,6 @@ bool MessageBase::GetMetaDataElement(const std::string& key, std::string& value)
 const MessageBase::MetaDataMap& MessageBase::GetMetaData() const
 {
   return this->m_MetaDataMap;
-}
-
-const MessageBase::MetaDataHeaderEntryList& MessageBase::GetMetaDataHeaderEntries() const
-{
-  return this->m_MetaDataHeaderEntries;
 }
 
 bool MessageBase::PackExtendedHeader()
@@ -353,9 +367,13 @@ bool MessageBase::PackMetaData()
     if (m_MetaDataMap.size() > 0)
     {
       unsigned char* entryPointer = &m_MetaDataHeader[META_DATA_INDEX_COUNT_SIZE];
-      for (unsigned int i = 0; i < m_MetaDataMap.size(); i++)
+      for (MetaDataMap::const_iterator it = m_MetaDataMap.begin(); it != m_MetaDataMap.end();++it)
       {
-        igtl_metadata_header_entry entry = m_MetaDataHeaderEntries[i];
+        igtl_metadata_header_entry entry;
+        entry.key_size = it->first.length();
+        entry.value_encoding = it->second.first;
+        entry.value_size = it->second.second.length();
+
         if(igtl_is_little_endian())
         {
           entry.key_size = BYTE_SWAP_INT16(entry.key_size);
@@ -377,10 +395,10 @@ bool MessageBase::PackMetaData()
       int i(0);
       for (MetaDataMap::iterator it = m_MetaDataMap.begin(); it != m_MetaDataMap.end(); ++it, ++i)
       {
-        memcpy(metaDataPointer, it->first.c_str(), m_MetaDataHeaderEntries[i].key_size);
-        metaDataPointer += m_MetaDataHeaderEntries[i].key_size;
-        memcpy(metaDataPointer, it->second.c_str(), m_MetaDataHeaderEntries[i].value_size);
-        metaDataPointer += m_MetaDataHeaderEntries[i].value_size;
+        memcpy(metaDataPointer, it->first.c_str(), it->first.length());
+        metaDataPointer += it->first.length();
+        memcpy(metaDataPointer, it->second.second.c_str(), it->second.second.length());
+        metaDataPointer += it->second.second.length();
       }
 
       return true;
@@ -405,8 +423,6 @@ bool MessageBase::UnpackExtendedHeader()
       // any extra data will be dropped, if the order of variables is changed, this will be seriously broken
       // TODO : add error reporting?
     }
-    this->m_MetaDataHeaderSize  = extended_header->meta_data_header_size;
-    this->m_MetaDataSize        = extended_header->meta_data_size;
     this->m_MessageId           = extended_header->message_id;
 
     m_Content = &m_Body[extended_header->extended_header_size];
@@ -438,6 +454,7 @@ bool MessageBase::UnpackMetaData()
       return true;
     }
 
+    std::vector<igtl_metadata_header_entry> metaDataEntries;
     igtl_metadata_header_entry entry;
     unsigned char* entryPointer = &m_MetaDataHeader[META_DATA_INDEX_COUNT_SIZE];
     for (int i = 0; i < index_count; i++)
@@ -451,7 +468,7 @@ bool MessageBase::UnpackMetaData()
         entry.value_encoding = BYTE_SWAP_INT16(entry.value_encoding);
         entry.value_size = BYTE_SWAP_INT32(entry.value_size);
       }
-      m_MetaDataHeaderEntries.push_back(entry);
+      metaDataEntries.push_back(entry);
 
       entryPointer += sizeof(igtl_metadata_header_entry);
     }
@@ -463,12 +480,12 @@ bool MessageBase::UnpackMetaData()
     for (int i = 0; i < index_count; i++)
     {
       std::string key;
-      key.assign(metaDataPointer, metaDataPointer + m_MetaDataHeaderEntries[i].key_size);
-      metaDataPointer += m_MetaDataHeaderEntries[i].key_size;
+      key.assign(metaDataPointer, metaDataPointer + metaDataEntries[i].key_size);
+      metaDataPointer += metaDataEntries[i].key_size;
       std::string value;
-      value.assign(metaDataPointer, metaDataPointer + m_MetaDataHeaderEntries[i].value_size);
-      metaDataPointer += m_MetaDataHeaderEntries[i].value_size;
-      m_MetaDataMap[key] = value;
+      value.assign(metaDataPointer, metaDataPointer + metaDataEntries[i].value_size);
+      metaDataPointer += metaDataEntries[i].value_size;
+      m_MetaDataMap[key] = std::pair<IANA_ENCODING_TYPE, std::string>((IANA_ENCODING_TYPE)metaDataEntries[i].value_encoding, value);
     }
 
     return true;
@@ -666,7 +683,8 @@ void MessageBase::AllocateBuffer()
 void MessageBase::InitBuffer()
 {
   m_IsHeaderUnpacked = false;
-  m_IsBodyUnpacked   = 0;
+  m_IsBodyPacked     = false;
+  m_IsBodyUnpacked   = false;
   m_BodySizeToRead   = 0;
 
   m_DeviceName       = "";
@@ -731,6 +749,7 @@ void MessageBase::AllocateBuffer(int contentSize)
     m_Header = new unsigned char [message_size];
     m_IsHeaderUnpacked = false;
     m_IsBodyUnpacked = false;
+    m_IsBodyPacked = false;
   }
   else if (m_MessageSize != message_size)
   {
@@ -781,6 +800,7 @@ int MessageBase::CopyHeader(const MessageBase* mb)
   m_TimeStampSecFraction = mb->m_TimeStampSecFraction;
   m_IsHeaderUnpacked     = mb->m_IsHeaderUnpacked;
   m_IsBodyUnpacked       = mb->m_IsBodyUnpacked;
+  m_IsBodyPacked         = mb->m_IsBodyPacked;
   m_BodySizeToRead       = mb->m_BodySizeToRead;
   m_HeaderVersion        = mb->m_HeaderVersion;
 
@@ -805,9 +825,7 @@ int MessageBase::CopyBody(const MessageBase *mb)
       m_ExtendedHeader = m_Body;
       m_Content = &m_Body[other_ext_header->extended_header_size];
       m_MetaDataHeader = &m_Body[bodySize - other_ext_header->meta_data_header_size - other_ext_header->meta_data_size];
-      m_MetaDataSize = other_ext_header->meta_data_size;
       m_MetaData = &m_Body[bodySize - other_ext_header->meta_data_size];
-      m_MetaDataSize = other_ext_header->meta_data_size;
     }
     else
     {
@@ -904,6 +922,7 @@ void MessageBase::AllocateUnpack(int bodySizeToRead)
     m_Header = new unsigned char [message_size];
     m_IsHeaderUnpacked = false;
     m_IsBodyUnpacked = false;
+    m_IsBodyPacked = false;
   }
   else if (m_MessageSize != message_size)
   {

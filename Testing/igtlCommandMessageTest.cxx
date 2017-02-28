@@ -36,9 +36,9 @@ void BuildMessageFormat1()
 TEST(CommandMessageTest, Pack)
 {
   BuildMessageFormat1();
-  int r = memcmp((const void*)sendCommandMsg->GetPackPointer(), (const void*)test_command_message,(size_t)(IGTL_HEADER_SIZE));
+  int r = memcmp((const void*)sendCommandMsg->GetBufferPointer(), (const void*)test_command_message,(size_t)(IGTL_HEADER_SIZE));
   EXPECT_EQ(r, 0);
-  r = memcmp((const void*)sendCommandMsg->GetPackBodyPointer(), (const void*)(test_command_message+(size_t)(IGTL_HEADER_SIZE)), sizeof(test_command_message)-IGTL_HEADER_SIZE);
+  r = memcmp((const void*)sendCommandMsg->GetBufferBodyPointer(), (const void*)(test_command_message+(size_t)(IGTL_HEADER_SIZE)), sizeof(test_command_message)-IGTL_HEADER_SIZE);
   EXPECT_EQ(r, 0);
 }
 
@@ -47,14 +47,14 @@ TEST(CommandMessageTest, UnPack)
 {
   BuildMessageFormat1();
   igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
-  headerMsg->AllocatePack();
-  memcpy(headerMsg->GetPackPointer(), (const void*)sendCommandMsg->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->InitBuffer();
+  memcpy(headerMsg->GetBufferPointer(), (const void*)sendCommandMsg->GetBufferPointer(), IGTL_HEADER_SIZE);
   headerMsg->Unpack();
   receiveCommandMsg->SetMessageHeader(headerMsg);
   receiveCommandMsg->AllocatePack();
-  memcpy(receiveCommandMsg->GetPackBodyPointer(), sendCommandMsg->GetPackBodyPointer(), headerMsg->GetBodySizeToRead());
+  memcpy(receiveCommandMsg->GetBufferBodyPointer(), sendCommandMsg->GetBufferBodyPointer(), headerMsg->GetBodySizeToRead());
   receiveCommandMsg->Unpack();
-  igtl_header *messageHeader = (igtl_header *)receiveCommandMsg->GetPackPointer();
+  igtl_header *messageHeader = (igtl_header *)receiveCommandMsg->GetBufferPointer();
   EXPECT_STREQ(messageHeader->device_name, "");
   EXPECT_STREQ(messageHeader->name, "COMMAND");
   EXPECT_EQ(messageHeader->header_version, 1);
@@ -73,7 +73,7 @@ TEST(CommandMessageTest, UnPack)
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
 #include "igtlutil/igtl_test_data_commandFormat2.h"
-#include "igtlMessageFormat2TestMarco.h"
+#include "igtlMessageFormat2TestMacro.h"
 void BuildMessageFormat2()
 {
   sendCommandMsg = igtl::CommandMessage::New();
@@ -90,10 +90,10 @@ void BuildMessageFormat2()
 TEST(CommandMessageTest, PackFormatVersion2)
 {
   BuildMessageFormat2();
-  int r = memcmp((const void*)sendCommandMsg->GetPackPointer(), (const void*)test_command_messageFormat2,
+  int r = memcmp((const void*)sendCommandMsg->GetBufferPointer(), (const void*)test_command_messageFormat2,
                  (size_t)(IGTL_HEADER_SIZE));
   EXPECT_EQ(r, 0);
-  r = memcmp((const void*)sendCommandMsg->GetPackBodyPointer(), (const void*)(test_command_messageFormat2+(size_t)(IGTL_HEADER_SIZE)), sizeof(test_command_messageFormat2)-IGTL_HEADER_SIZE);
+  r = memcmp((const void*)sendCommandMsg->GetBufferBodyPointer(), (const void*)(test_command_messageFormat2+(size_t)(IGTL_HEADER_SIZE)), sizeof(test_command_messageFormat2)-IGTL_HEADER_SIZE);
   EXPECT_EQ(r, 0);
 }
 
@@ -104,19 +104,25 @@ TEST(CommandMessageTest, UnpackFormatVersion2)
   igtlMetaDataAddElementMacro(sendCommandMsg);
   sendCommandMsg->Pack();
   igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
-  headerMsg->AllocatePack();
-  memcpy(headerMsg->GetPackPointer(), (const void*)sendCommandMsg->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
+  headerMsg->InitBuffer();
+  memcpy(headerMsg->GetBufferPointer(), (const void*)sendCommandMsg->GetBufferPointer(), IGTL_HEADER_SIZE);
   headerMsg->Unpack();
+
   receiveCommandMsg->SetMessageHeader(headerMsg);
   receiveCommandMsg->AllocatePack();
-  memcpy(receiveCommandMsg->GetPackBodyPointer(), sendCommandMsg->GetPackBodyPointer(), headerMsg->GetBodySizeToRead());
+  memcpy(receiveCommandMsg->GetBufferBodyPointer(), sendCommandMsg->GetBufferBodyPointer(), headerMsg->GetBodySizeToRead());
   receiveCommandMsg->Unpack();
-  igtl_header *messageHeader = (igtl_header *)receiveCommandMsg->GetPackPointer();
+
+  igtl_header *messageHeader = (igtl_header *)receiveCommandMsg->GetBufferPointer();
   EXPECT_STREQ(messageHeader->device_name, "OpticalTracker");
   EXPECT_STREQ(messageHeader->name, "COMMAND");
   EXPECT_EQ(messageHeader->header_version, 2);
   EXPECT_EQ(messageHeader->timestamp, 0);
+
+  int size = sizeof(test_command_messageFormat2) - IGTL_HEADER_SIZE;
   EXPECT_EQ(messageHeader->body_size, sizeof(test_command_messageFormat2)-IGTL_HEADER_SIZE);
+
   igtl_uint64 crc;
   memcpy(&crc, &test_command_messageFormat2[IGTL_HEADER_SIZE-sizeof(igtl_uint64)], sizeof(igtl_uint64));
   if(igtl_is_little_endian())

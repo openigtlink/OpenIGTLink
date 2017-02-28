@@ -66,7 +66,7 @@ TEST(PositionMessageTest, UnpackFormateVersion1)
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
 #include "igtlutil/igtl_test_data_positionFormat2.h"
-#include "igtlMessageFormat2TestMarco.h"
+#include "igtlMessageFormat2TestMacro.h"
 
 TEST(PositionMessageTest, PackFormatVersion2)
 {

@@ -1,10 +1,7 @@
 /*=========================================================================
 
-  Program:   Open IGT Link -- Example for Tracker Client Program
-  Module:    $RCSfile: $
+  Program:   OpenIGTLink -- Example for Tracker Client Program
   Language:  C++
-  Date:      $Date: $
-  Version:   $Revision: $
 
   Copyright (c) Insight Software Consortium. All rights reserved.
 
@@ -125,10 +122,10 @@ int main(int argc, char* argv[])
         {
 #if OpenIGTLink_HEADER_VERSION >= 2
           int i = 0;
-          for (std::map<std::string, std::string>::const_iterator it = pointData->GetMetaData().begin(); it != pointData->GetMetaData().end(); ++it, ++i)
+          for (std::map<std::string, std::pair<IANA_ENCODING_TYPE, std::string> >::const_iterator it = pointData->GetMetaData().begin(); it != pointData->GetMetaData().end(); ++it, ++i)
           {
             std::cerr<<"The message ID is:"<< " " << pointData->GetMessageID() << std::endl;
-            std::cerr<< it->first << " coding scheme: " << pointData->GetMetaDataHeaderEntries()[i].value_encoding << " " << it->second << std::endl;
+            std::cerr<< it->first << " coding scheme: " << it->second.first << " " << it->second.second << std::endl;
           }
 #endif
         }

@@ -138,7 +138,7 @@ TEST(TrajectoryMessageTest, UnpackFormatVersion1)
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
 #include "igtlutil/igtl_test_data_trajectoryFormat2.h"
-#include "igtlMessageFormat2TestMarco.h"
+#include "igtlMessageFormat2TestMacro.h"
 
 TEST(TrajectoryMessageTest, PackFormatVersion2)
 {
