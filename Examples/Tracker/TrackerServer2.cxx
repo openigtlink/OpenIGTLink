@@ -39,10 +39,7 @@ int main(int argc, char* argv[])
   double fps      = atof(argv[2]);
   int    interval = (int) (1000.0 / fps);
 
-  igtl::PositionMessage::Pointer positionMsg;
-  positionMsg = igtl::PositionMessage::New();
-  positionMsg->SetDeviceName("Tracker");
-  positionMsg->SetPackType(igtl::PositionMessage::ALL); // default
+  
 
   igtl::ServerSocket::Pointer serverSocket;
   serverSocket = igtl::ServerSocket::New();
@@ -70,7 +67,10 @@ int main(int argc, char* argv[])
         {
         float position[3];
         float quaternion[4];
-        
+        igtl::PositionMessage::Pointer positionMsg;
+        positionMsg = igtl::PositionMessage::New();
+        positionMsg->SetDeviceName("Tracker");
+        positionMsg->SetPackType(igtl::PositionMessage::ALL); // default
         GetRandomTestVectors(position, quaternion);
         positionMsg->SetPosition(position);
         positionMsg->SetQuaternion(quaternion);
