@@ -113,12 +113,14 @@ TEST(PolyDataMessageTest, Unpack)
     polygonUnpacked->GetCell(i, polygon);
     EXPECT_THAT(polygon, ::testing::ElementsAreArray(polyArray[i]));
   }
-  igtl_float32 attributeValue[1];
+  igtl_float32 attributeValue[8];
   for (int i = 0; i<8; i++)
   {
-    attrUnpacked->GetNthData(i, attributeValue);
-    EXPECT_EQ(attributeValue[0], attribute[i]);
+    igtl_float32 value[1];
+    attrUnpacked->GetNthData(i, value);
+    attributeValue[i] = *value;
   }
+  EXPECT_TRUE(ArrayFloatComparison(attributeValue, attribute,8,ABS_ERROR));
 }
 
 
