@@ -750,6 +750,7 @@ void VideoStreamIGTLinkServer::SendCompressedData()
     videoMsg->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
     videoMsg->SetWidth(pSrcPic->iPicWidth);
     videoMsg->SetHeight(pSrcPic->iPicHeight);
+    videoMsg->SetFrameType(this->videoFrameType);
     messageID ++;
     videoMsg->SetMessageID(messageID);
     while (iLayer < sFbi.iLayerNum) {

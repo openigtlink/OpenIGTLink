@@ -211,7 +211,14 @@ public:
   
   /// Gets the height of the image scalars.
   int  GetHeight()             { return height; };
-
+  
+  /// Sets the frame type of the encoded image
+  void SetFrameType(int e){videoFrameType = e;}
+  
+  /// Gets the frame type of the encoded image
+  int GetFrameType(){return videoFrameType;}
+  
+  
   /// This should only be called when the data is unpacked
   int  GetBitStreamSize()
   {
@@ -315,6 +322,9 @@ public:
   
   /// The Height of the picture
   int    height;
+  
+  /// The frame type of the encoded image
+  int  videoFrameType;
   
   /// A variable for the allocate the message body
   int    bitStreamSize;

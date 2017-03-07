@@ -231,6 +231,7 @@ int VideoMessage::PackContent()
   frame_header->endian            = this->endian;
   frame_header->width             = this->width;
   frame_header->height            = this->height;
+  frame_header->frameType         = this->videoFrameType;
   igtl_frame_convert_byte_order(frame_header);
   m_MetaDataHeader = &m_Body[CalculateContentBufferSize()+sizeof(igtl_extended_header)];
   return 1;
@@ -265,6 +266,7 @@ int VideoMessage::UnpackContent()
       this->endian           = frame_header->endian;
       this->width            = frame_header->width;
       this->height           = frame_header->height;
+      this->videoFrameType   = frame_header->frameType;
       this->m_Frame = this->m_FrameHeader;
       this->m_Frame += IGTL_VIDEO_HEADER_SIZE;
       

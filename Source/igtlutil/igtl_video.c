@@ -48,5 +48,6 @@ void igtl_export igtl_frame_convert_byte_order(igtl_frame_header * header)
     header->version = BYTE_SWAP_INT16(header->version);
     header->width = BYTE_SWAP_INT32(header->width);
     header->height = BYTE_SWAP_INT32(header->height);
+    header->frameType = BYTE_SWAP_INT16(header->frameType);
   }
 }
