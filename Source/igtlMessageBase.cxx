@@ -590,7 +590,7 @@ int MessageBase::Unpack(int crccheck)
   // is > 0, or if full body size > sizeof(igtl_extended_header)
   if( m_HeaderVersion >= IGTL_HEADER_VERSION_2 )
   {
-    if (GetBufferBodySize() > sizeof(igtl_extended_header) + META_DATA_INDEX_COUNT_SIZE && !m_IsBodyUnpacked)
+    if (GetBufferBodySize() > static_cast<int>(sizeof(igtl_extended_header)) + META_DATA_INDEX_COUNT_SIZE && !m_IsBodyUnpacked)
     {
       UnpackBody(crccheck, r);
     }
