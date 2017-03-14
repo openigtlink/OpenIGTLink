@@ -235,6 +235,7 @@ int TrajectoryMessage::AddTrajectoryElement(TrajectoryElement::Pointer& elem)
 
 void TrajectoryMessage::ClearTrajectoryElement(TrajectoryElement::Pointer& elem)
 {
+  (void)(elem); // Unused variable
   this->m_TrajectoryList.clear();
 }
 
