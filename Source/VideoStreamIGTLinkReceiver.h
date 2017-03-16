@@ -121,7 +121,11 @@ public:
   
   int YUV420ToRGBConversion(igtl_uint8 *RGBFrame, igtl_uint8 * YUV420Frame, int iHeight, int iWidth);
   
+  int YUV420ToGrayImageConversion(igtl_uint8 *GrayFrame, igtl_uint8 * YUV420Frame, int iHeight, int iWidth);
+  
   bool flipAtX;
+  
+  bool IsGrayImage;
 
 };
 

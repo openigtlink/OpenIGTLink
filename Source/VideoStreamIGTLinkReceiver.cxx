@@ -537,3 +537,26 @@ int VideoStreamIGTLinkReceiver::YUV420ToRGBConversion(igtl_uint8 *RGBFrame, igtl
   return 1;
 }
 
+
+int VideoStreamIGTLinkReceiver::YUV420ToGrayImageConversion(igtl_uint8 *GrayFrame, igtl_uint8 * YUV420Frame, int iHeight, int iWidth)
+{
+  int componentLength = iHeight*iWidth;
+  for (int i = 0,j= 0; i < 3*componentLength; i=i+3,j++) {
+    if (flipAtX)
+    {
+      int pos = componentLength-j-Width+(i%Width)*2;
+      GrayFrame[i] = YUV420Frame[pos];
+      GrayFrame[i+1] = YUV420Frame[pos];
+      GrayFrame[i+2] = YUV420Frame[pos];
+    }
+    else
+    {
+      GrayFrame[i] = YUV420Frame[j];
+      GrayFrame[i+1] = YUV420Frame[j];
+      GrayFrame[i+2] = YUV420Frame[j];
+    }
+    
+  }
+  return 1;
+}
+
