@@ -10,6 +10,10 @@
  PURPOSE.  See the above copyright notices for more information.
  
  =========================================================================*/
+
+#ifndef __igtVideoStreamIGTLinkReceiver_h
+#define __igtVideoStreamIGTLinkReceiver_h
+
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
@@ -120,3 +124,5 @@ public:
   bool flipAtX;
 
 };
+
+#endif

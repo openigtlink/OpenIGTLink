@@ -26,7 +26,7 @@ int main (int argc, char** argv)
     std::cerr << "    <configurationfile> : file name "  << std::endl;
     exit(0);
   }
-  VideoStreamIGTLinkServer server(argv);
+  VideoStreamIGTLinkServer server(argv[1]);
   server.InitializeEncoderAndServer();
   server.SetWaitSTTCommand(true);
   if(server.transportMethod==server.UseTCP)

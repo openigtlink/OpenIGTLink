@@ -27,7 +27,7 @@ void UpdateHashFromFrame (SFrameBSInfo& info, SHA1Context* ctx) {
   }
 }
 
-VideoStreamIGTLinkServer::VideoStreamIGTLinkServer(char *argv[])
+VideoStreamIGTLinkServer::VideoStreamIGTLinkServer(char *argv)
 {
   this->pSVCEncoder = NULL;
   memset (&sFbi, 0, sizeof (SFrameBSInfo));
@@ -45,7 +45,7 @@ VideoStreamIGTLinkServer::VideoStreamIGTLinkServer(char *argv[])
   signal (SIGINT, SigIntHandler);
   
   this->serverConnected = false;
-  this->augments = std::string(argv[1]);
+  this->augments = std::string(argv);
   this->waitSTTCommand = true;
   this->InitializationDone = false;
   this->serverPortNumber = -1;
@@ -372,6 +372,16 @@ bool VideoStreamIGTLinkServer::CompareHash (const unsigned char* digest, const c
   return false;
 }
 
+void VideoStreamIGTLinkServer::SetSrcPicWidth(int width)
+{
+  pSrcPic->iPicWidth = width;
+}
+
+void VideoStreamIGTLinkServer::SetSrcPicHeight(int height)
+{
+  pSrcPic->iPicHeight = height;
+}
+
 bool VideoStreamIGTLinkServer::InitializeEncoderAndServer()
 {
   //------------------------------------------------------------
@@ -441,6 +451,7 @@ bool VideoStreamIGTLinkServer::InitializeEncoderAndServer()
   //update pSrcPic
   pSrcPic->iStride[0] = iSourceWidth;
   pSrcPic->iStride[1] = pSrcPic->iStride[2] = pSrcPic->iStride[0] >> 1;
+  pSrcPic->iStride[3] = 0;
   
   //update sSvcParam
   sSvcParam.iPicWidth = 0;

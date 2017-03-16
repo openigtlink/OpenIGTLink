@@ -11,6 +11,9 @@
 
 =========================================================================*/
 
+#ifndef __igtVideoStreamIGTLinkServer_h
+#define __igtVideoStreamIGTLinkServer_h
+
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
@@ -47,7 +50,7 @@ class ISVCEncoder;
 class VideoStreamIGTLinkServer
 {
 public:
-  VideoStreamIGTLinkServer(char *argv[]);
+  VideoStreamIGTLinkServer(char *argv);
   ~VideoStreamIGTLinkServer(){};
   
   /**
@@ -64,6 +67,16 @@ public:
    Parse the configuration file to initialize the encoder and server.
    */
   bool InitializeEncoderAndServer();
+  
+  /**
+   Set the picture width
+  */
+  void SetSrcPicWidth(int width);
+
+  /**
+  Set the picture height
+  */
+  void SetSrcPicHeight(int height);
   
   /**
    Encode a frame, for performance issue, before encode the frame, make sure the frame pointer is updated with a new frame.
@@ -211,3 +224,5 @@ private:
   
   unsigned long totalCompressedDataSize;
 };
+
+#endif

@@ -71,8 +71,7 @@ VideoMessage::VideoMessage():
   m_FrameHeader = NULL;
   m_Frame       = NULL;
 
-  m_SendMessageType  = "Video";
-
+  m_SendMessageType  = "VIDEO";
   ScalarSizeTable[0] = 0;
   ScalarSizeTable[1] = 0;
   ScalarSizeTable[2] = sizeof(igtlInt8);    // TYPE_INT8
@@ -113,7 +112,7 @@ void VideoMessage::AllocateScalars()
   // message and frame header, by using AllocatePack() implemented
   // in the parent class.
   int s = GetBitStreamSize();
-  this->m_MessageSize = IGTL_HEADER_SIZE + IGTL_VIDEO_HEADER_SIZE + s;
+  //this->m_MessageSize = IGTL_HEADER_SIZE + IGTL_VIDEO_HEADER_SIZE + s;
 
   AllocatePack(IGTL_VIDEO_HEADER_SIZE + s);
   this->m_FrameHeader = m_Body;
@@ -144,7 +143,7 @@ void VideoMessage::AllocateBuffer()
   
 int VideoMessage::CalculateContentBufferSize()
 {
-  return bitStreamSize + IGTL_VIDEO_HEADER_SIZE;
+  return  IGTL_VIDEO_HEADER_SIZE + bitStreamSize;
 }
 
 
@@ -217,7 +216,7 @@ int VideoMessage::GetBodyPackSize()
     size =  IGTL_VIDEO_HEADER_SIZE + bitStreamSize;
   }
 #else
-  int size = IGTL_HEADER_SIZE + bitStreamSize;
+  int size = IGTL_VIDEO_HEADER_SIZE + bitStreamSize;
 #endif
   return size;
 }
@@ -306,7 +305,6 @@ void VideoMessage::AllocatePack(int bodySize)
       this->m_Frame = NULL;
       }
     this->m_Body = new unsigned char [bodySize];
-    this->m_MessageSize = s;
     }
 }
 
