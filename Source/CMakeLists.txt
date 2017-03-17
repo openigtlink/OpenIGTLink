@@ -226,6 +226,7 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" )
 			VideoStreamIGTLinkServer.cxx 
 			VideoStreamIGTLinkReceiver.cxx
 			H264Decoder.cpp
+      H264Encoder.cpp
 			igtlutil/igtl_video.c
 			${CMAKE_BINARY_DIR}/OpenH264/test/api/sha1.c
 			${CMAKE_BINARY_DIR}/OpenH264/codec/console/common/src/read_config.cpp  
@@ -239,6 +240,7 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" )
       VideoStreamIGTLinkServer.h
       VideoStreamIGTLinkReceiver.h
       H264Decoder.h
+      H264Encoder.h
       igtlutil/igtl_video.h
       ${CMAKE_BINARY_DIR}/OpenH264/test/sha1.h
       ${CMAKE_BINARY_DIR}/OpenH264/codec/console/common/inc/read_config.h
