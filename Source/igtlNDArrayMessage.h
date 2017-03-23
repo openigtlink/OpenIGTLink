@@ -91,7 +91,8 @@ public:
   int                     SetValue(IndexType index, T value)
   {
     if (Get1DIndex(index) <= GetNumberOfElements()) {
-      * (T *) this->m_ByteArray[Get1DIndex(index) * sizeof(T)] = value;
+      T* ByteArray = (T*)GetRawArray();
+      ByteArray[Get1DIndex(index) * sizeof(T)] = value;
       return 1;
     } else {
       return 0;
@@ -102,7 +103,8 @@ public:
   int                     GetValue(IndexType index,  T & value)
   {
     if (Get1DIndex(index) <= GetNumberOfElements()) {
-      value = * (T *) this->m_ByteArray[Get1DIndex(index) * sizeof(T)];
+      T* ByteArray = (T*)GetRawArray();
+      value = ByteArray[Get1DIndex(index) * sizeof(T)];
       return 1;
     } else {
       return 0;

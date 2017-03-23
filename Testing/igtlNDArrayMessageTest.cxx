@@ -52,6 +52,20 @@ void BuildUpArrayElements()
   NDArraySendMsg->Pack();
 }
 
+TEST(NDArrayMessageTest, SetAndGetValue)
+{
+  BuildUpArrayElements();
+  igtl::ArrayBase::IndexType index(array.GetSize());
+  index.at(0) = 0;
+  index.at(1) = 0;
+  index.at(2) = 0;
+  igtl_float64 inputValue = 3.0;
+  array.SetValue(index, inputValue);
+  igtl_float64 returnValue = 1.0;
+  array.GetValue(index, returnValue);
+  EXPECT_FLOAT_EQ(inputValue, returnValue);
+}
+
 TEST(NDArrayMessageTest, Pack)
 {
   BuildUpArrayElements();
