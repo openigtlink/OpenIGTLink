@@ -184,7 +184,7 @@ namespace igtl
     }
 #endif
     this->m_SocketDescriptor = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    if (BindSocket(this->m_SocketDescriptor, this->PortNum) == 0);
+    if (BindSocket(this->m_SocketDescriptor, this->PortNum) == 0)
     {
       /*With UDP, you have to bind() the socket in the client because UDP is connectionless, so there is no other way for the stack to know which program to deliver datagrams to for a particular port.
 

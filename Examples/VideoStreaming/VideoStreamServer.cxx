@@ -27,7 +27,7 @@ int main (int argc, char** argv)
     exit(0);
   }
   VideoStreamIGTLinkServer server(argv[1]);
-  server.InitializeEncoderAndServer();
+  server.InitializeServer();
   server.SetWaitSTTCommand(true);
   if(server.transportMethod==server.UseTCP)
   {
@@ -48,7 +48,7 @@ int main (int argc, char** argv)
       {
         if (!server.GetInitializationStatus())
         {
-          server.InitializeEncoderAndServer();
+          server.InitializeServer();
         }
         if(server.useCompress == 1)
         {
@@ -64,7 +64,7 @@ int main (int argc, char** argv)
     {
       if (!server.GetInitializationStatus())
       {
-        server.InitializeEncoderAndServer();
+        server.InitializeServer();
       }
       if(server.useCompress == 1)
       {

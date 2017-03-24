@@ -12,7 +12,6 @@
  =========================================================================*/
 
 #include "VideoStreamIGTLinkServer.h"
-#include "welsencUtil.cpp"
 
 static void* ThreadFunctionServer(void* ptr);
 
@@ -29,21 +28,8 @@ void UpdateHashFromFrame (SFrameBSInfo& info, SHA1Context* ctx) {
 
 VideoStreamIGTLinkServer::VideoStreamIGTLinkServer(char *argv)
 {
-  this->pSVCEncoder = NULL;
-  memset (&sFbi, 0, sizeof (SFrameBSInfo));
+  this->videoEncoder = new H264Encoder();
   pSrcPic = new SSourcePicture;
-  
-#ifdef _MSC_VER
-  _setmode (_fileno (stdin), _O_BINARY);  /* thanks to Marcoss Morais <morais at dee.ufcg.edu.br> */
-  _setmode (_fileno (stdout), _O_BINARY);
-  
-  // remove the LOCK_TO_SINGLE_CORE micro, user need to enable it with manual
-  // LockToSingleCore();
-#endif
-  
-  /* Control-C handler */
-  signal (SIGINT, SigIntHandler);
-  
   this->serverConnected = false;
   this->augments = std::string(argv);
   this->waitSTTCommand = true;
@@ -64,6 +50,7 @@ VideoStreamIGTLinkServer::VideoStreamIGTLinkServer(char *argv)
   this->netWorkBandWidth = 10000; // in Kbps
   this->interval = 30; //in ms
   this->totalCompressedDataSize = 0;
+  this->iTotalFrameToEncode = -1;
 }
 
 int VideoStreamIGTLinkServer::StartTCPServer ()
@@ -172,6 +159,39 @@ int VideoStreamIGTLinkServer::ParseConfigForServer()
         }
         
       }
+      if (strTag[0].compare ("InputFile") == 0)
+      {
+        this->strSeqFile =strTag[1].c_str();
+        arttributNum ++;
+      }
+      if (strTag[0].compare ("SourceWidth") == 0)
+      {
+        this->pSrcPic->iPicWidth = atoi(strTag[1].c_str());
+        pSrcPic->iStride[0] = this->pSrcPic->iPicWidth;
+        pSrcPic->iStride[1] = pSrcPic->iStride[2] = pSrcPic->iStride[0] >> 1;
+        arttributNum ++;
+      }
+      if (strTag[0].compare ("SourceHeight") == 0)
+      {
+        this->pSrcPic->iPicHeight = atoi(strTag[1].c_str());
+        arttributNum ++;
+      }
+      if (strTag[0].compare ("TotalFrameToEncode") == 0)
+      {
+        this->iTotalFrameToEncode = atoi(strTag[1].c_str());
+        arttributNum ++;
+      }
+      if (strTag[0].compare ("OutputBitStreamFile") == 0)
+      {
+        this->strOutputFile =strTag[1].c_str();
+        arttributNum ++;
+      }
+      if (strTag[0].compare ("CodecConfigurationFile") == 0)
+      {
+        this->videoEncoder->SetConfigurationFile(strTag[1].c_str());
+        this->videoEncoder->InitializeEncoder();
+        arttributNum ++;
+      }
       if (strTag[0].compare ("DeviceName") == 0)
       {
         this->deviceName =strTag[1].c_str();
@@ -196,11 +216,14 @@ int VideoStreamIGTLinkServer::ParseConfigForServer()
         arttributNum ++;
       }
     }
-    if (arttributNum ==20) // only parse the first 20 arttribute
+    if (arttributNum ==25) // only parse the first 25 arttribute
     {
       break;
     }
   }
+  pSrcPic->pData[0] = new unsigned char[pSrcPic->iPicHeight*pSrcPic->iPicWidth];
+  pSrcPic->pData[1] = new unsigned char[pSrcPic->iPicHeight*pSrcPic->iPicWidth/4];
+  pSrcPic->pData[2] = new unsigned char[pSrcPic->iPicHeight*pSrcPic->iPicWidth/4];
   if (this->transportMethod == 1 )
   {
     if (this->clientIPAddress && this->clientPortNumber)
@@ -382,13 +405,12 @@ void VideoStreamIGTLinkServer::SetSrcPicHeight(int height)
   pSrcPic->iPicHeight = height;
 }
 
-bool VideoStreamIGTLinkServer::InitializeEncoderAndServer()
+bool VideoStreamIGTLinkServer::InitializeServer()
 {
   //------------------------------------------------------------
   int iRet = 0;
-  iRet = CreateSVCEncHandle(&(this->pSVCEncoder));
-  if (this->pSVCEncoder == NULL)
-    this->serverConnected = false;
+  if (this->videoEncoder == NULL)
+    iRet = 1;
   
   this->iTotalFrameToEncode = 0;
   
@@ -396,17 +418,6 @@ bool VideoStreamIGTLinkServer::InitializeEncoderAndServer()
   
   // Inactive with sink with output file handler
   FILE* pFpBs = NULL;
-#if defined(COMPARE_DATA)
-  //For getting the golden file handle
-  FILE* fpGolden = NULL;
-#endif
-#if defined ( STICK_STREAM_SIZE )
-  FILE* fTrackStream = fopen ("coding_size.stream", "wb");
-#endif
-  this->pSVCEncoder->GetDefaultParams (&sSvcParam);
-  memset (&fs.sRecFileName[0][0], 0, sizeof (fs.sRecFileName));
-  
-  FillSpecificParameters (sSvcParam);
   if (pSrcPic == NULL) {
     iRet = 1;
     goto INSIDE_MEM_FREE;
@@ -419,12 +430,6 @@ bool VideoStreamIGTLinkServer::InitializeEncoderAndServer()
   cRdCfg.Openf (this->augments.c_str());// to do get the first augments from this->augments.
   if (cRdCfg.ExistFile())
   {
-    iRet = ParseConfig (cRdCfg, pSrcPic, sSvcParam, fs);
-    if (iRet) {
-      fprintf (stderr, "parse svc parameter config file failed.\n");
-      iRet = 1;
-      goto INSIDE_MEM_FREE;
-    }
     cRdCfg.Openf (this->augments.c_str());// reset the file read pointer to the beginning.
     iRet = ParseConfigForServer();
     if (iRet) {
@@ -440,8 +445,7 @@ bool VideoStreamIGTLinkServer::InitializeEncoderAndServer()
     iRet = 1;
     goto INSIDE_MEM_FREE;
   }
-  this->iTotalFrameToEncode = (igtl_int32)fs.uiFrameToBeCoded;
-  this->pSVCEncoder->SetOption (ENCODER_OPTION_TRACE_LEVEL, &g_LevelSetting);
+  
   //finish reading the configurations
   igtl_uint32 iSourceWidth, iSourceHeight, kiPicResSize;
   iSourceWidth = pSrcPic->iPicWidth;
@@ -453,54 +457,6 @@ bool VideoStreamIGTLinkServer::InitializeEncoderAndServer()
   pSrcPic->iStride[1] = pSrcPic->iStride[2] = pSrcPic->iStride[0] >> 1;
   pSrcPic->iStride[3] = 0;
   
-  //update sSvcParam
-  sSvcParam.iPicWidth = 0;
-  sSvcParam.iPicHeight = 0;
-  for (int iLayer = 0; iLayer < sSvcParam.iSpatialLayerNum; iLayer++) {
-    SSpatialLayerConfig* pDLayer = &sSvcParam.sSpatialLayers[iLayer];
-    sSvcParam.iPicWidth = WELS_MAX (sSvcParam.iPicWidth, pDLayer->iVideoWidth);
-    sSvcParam.iPicHeight = WELS_MAX (sSvcParam.iPicHeight, pDLayer->iVideoHeight);
-  }
-  //if target output resolution is not set, use the source size
-  sSvcParam.iPicWidth = (!sSvcParam.iPicWidth) ? iSourceWidth : sSvcParam.iPicWidth;
-  sSvcParam.iPicHeight = (!sSvcParam.iPicHeight) ? iSourceHeight : sSvcParam.iPicHeight;
-  
-  //  sSvcParam.bSimulcastAVC = true;
-  if (cmResultSuccess != this->pSVCEncoder->InitializeExt (&sSvcParam)) { // SVC encoder initialization
-    fprintf (stderr, "SVC encoder Initialize failed\n");
-    iRet = 1;
-    goto INSIDE_MEM_FREE;
-  }
-  for (int iLayer = 0; iLayer < MAX_DEPENDENCY_LAYER; iLayer++) {
-    if (fs.sRecFileName[iLayer][0] != 0) {
-      SDumpLayer sDumpLayer;
-      sDumpLayer.iLayer = iLayer;
-      sDumpLayer.pFileName = fs.sRecFileName[iLayer];
-      if (cmResultSuccess != this->pSVCEncoder->SetOption (ENCODER_OPTION_DUMP_FILE, &sDumpLayer)) {
-        fprintf (stderr, "SetOption ENCODER_OPTION_DUMP_FILE failed!\n");
-        iRet = 1;
-        goto INSIDE_MEM_FREE;
-      }
-    }
-  }
-  // Inactive with sink with output file handler
-  if (fs.strBsFile.length() > 0) {
-    pFpBs = fopen (fs.strBsFile.c_str(), "wb");
-    if (pFpBs == NULL) {
-      fprintf (stderr, "Can not open file (%s) to write bitstream!\n", fs.strBsFile.c_str());
-      iRet = 1;
-      goto INSIDE_MEM_FREE;
-    }
-  }
-  
-#if defined(COMPARE_DATA)
-  //For getting the golden file handle
-  if ((fpGolden = fopen (argv[3], "rb")) == NULL) {
-    fprintf (stderr, "Unable to open golden sequence file, check corresponding path!\n");
-    iRet = 1;
-    goto INSIDE_MEM_FREE;
-  }
-#endif
   this->InitializationDone = true;
   return true;
 INSIDE_MEM_FREE:
@@ -508,18 +464,6 @@ INSIDE_MEM_FREE:
     fclose (pFpBs);
     pFpBs = NULL;
   }
-#if defined (STICK_STREAM_SIZE)
-  if (fTrackStream) {
-    fclose (fTrackStream);
-    fTrackStream = NULL;
-  }
-#endif
-#if defined (COMPARE_DATA)
-  if (fpGolden) {
-    fclose (fpGolden);
-    fpGolden = NULL;
-  }
-#endif
   if (pSrcPic) {
     delete pSrcPic;
     pSrcPic = NULL;
@@ -544,7 +488,7 @@ static void* ThreadFunctionReadFrameFromFile(void* ptr)
   igtl_int32 iActualFrameEncodedCount = 0;
   igtl_int32 iFrameNumInFile = -1;
   FILE* pFileYUV = NULL;
-  pFileYUV = fopen (parentObj.server->fs.strSeqFile.c_str(), "rb");
+  pFileYUV = fopen (parentObj.server->strSeqFile.c_str(), "rb");
   if (pFileYUV != NULL) {
 #if defined(_WIN32) || defined(_WIN64)
 #if _MSC_VER >= 1400
@@ -614,7 +558,7 @@ static void* ThreadFunctionReadFrameFromFile(void* ptr)
     }
   } else {
     fprintf (stderr, "Unable to open source sequence file (%s), check corresponding path!\n",
-             parentObj.server->fs.strSeqFile.c_str());
+             parentObj.server->strSeqFile.c_str());
   }
   
   return NULL;
@@ -642,11 +586,11 @@ static void* ThreadFunctionSendPacket(void* ptr)
       delete it->second;
       it->second = NULL;
       parentObj.server->encodedFrames.erase(it);
-      if (parentObj.server->transportMethod == VideoStreamIGTLinkServer::TransportMethod::UseUDP)
+      if (parentObj.server->transportMethod == VideoStreamIGTLinkServer::UseUDP)
       {
         parentObj.server->rtpWrapper->WrapMessageAndSend(parentObj.server->serverUDPSocket, frameCopy->messagePackPointer, frameCopy->messageDataLength);
       }
-      else if(parentObj.server->transportMethod == VideoStreamIGTLinkServer::TransportMethod::UseTCP)
+      else if(parentObj.server->transportMethod == VideoStreamIGTLinkServer::UseTCP)
       {
         if(parentObj.server->socket)
         {
@@ -742,69 +686,17 @@ void VideoStreamIGTLinkServer::SendOriginalData()
   }
 }
 
-void VideoStreamIGTLinkServer::SendCompressedData()
-{
-  if (sFbi.iFrameSizeInBytes > 0)
-  {
-    igtl::VideoMessage::Pointer videoMsg;
-    videoMsg = igtl::VideoMessage::New();
-    videoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
-    videoMsg->SetDeviceName(this->deviceName.c_str());
-    ServerTimer->SetTime(this->encodeEndTime);
-    videoMsg->SetTimeStamp(ServerTimer);
-    static igtl_uint32 messageID = -1;
-    int frameSize = 0;
-    int iLayer = 0;
-    videoMsg->SetBitStreamSize(sFbi.iFrameSizeInBytes);
-    videoMsg->AllocateBuffer();
-    videoMsg->SetScalarType(videoMsg->TYPE_UINT8);
-    videoMsg->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
-    videoMsg->SetWidth(pSrcPic->iPicWidth);
-    videoMsg->SetHeight(pSrcPic->iPicHeight);
-    videoMsg->SetFrameType(this->videoFrameType);
-    messageID ++;
-    videoMsg->SetMessageID(messageID);
-    while (iLayer < sFbi.iLayerNum) {
-      SLayerBSInfo* pLayerBsInfo = &sFbi.sLayerInfo[iLayer];
-      if (pLayerBsInfo != NULL) {
-        int iLayerSize = 0;
-        int iNalIdx = pLayerBsInfo->iNalCount - 1;
-        do {
-          iLayerSize += pLayerBsInfo->pNalLengthInByte[iNalIdx];
-          -- iNalIdx;
-        } while (iNalIdx >= 0);
-        frameSize += iLayerSize;
-        for (int i = 0; i < iLayerSize ; i++)
-        {
-          videoMsg->GetPackFragmentPointer(2)[frameSize-iLayerSize+i] = pLayerBsInfo->pBsBuf[i];
-        }
-      }
-      ++ iLayer;
-    }
-    this->totalCompressedDataSize += frameSize;
-    videoMsg->Pack();
-    encodedFrame* frame = new encodedFrame();
-    memcpy(frame->messagePackPointer, videoMsg->GetPackPointer(), videoMsg->GetBufferSize());
-    frame->messageDataLength = videoMsg->GetBufferSize();
-    this->glock->Lock();
-    this->CheckEncodedFrameMap();
-    this->encodedFrames.insert(std::pair<igtlUint32, VideoStreamIGTLinkServer::encodedFrame*>(messageID, frame));
-    this->glock->Unlock();
-  }
-}
-
 void* VideoStreamIGTLinkServer::EncodeFile(void)
 {
   if(!this->InitializationDone)
   {
-    this->InitializeEncoderAndServer();
+    this->InitializeServer();
   }
   igtl_int64 iStart = 0, iTotal = 0;
   
-  int kiPicResSize = pSrcPic->iPicWidth*pSrcPic->iPicHeight*3>>1;
+  int picSize = pSrcPic->iPicWidth*pSrcPic->iPicHeight;
   
   igtl_int32 iFrameIdx = 0;
-  igtl_uint8* pYUV = new igtl_uint8[kiPicResSize];
   this->totalCompressedDataSize = 0;
   int iActualFrameEncodedCount = 0;
   while(this->iTotalFrameToEncode)
@@ -817,59 +709,57 @@ void* VideoStreamIGTLinkServer::EncodeFile(void)
       // To encoder this frame
       this->glockInFrame->Lock();
       std::map<igtlUint32, igtl_uint8*>::iterator it = this->incommingFrames.begin();
-      memcpy(pYUV,it->second,kiPicResSize);
+      memcpy(this->pSrcPic->pData[0],it->second,picSize);
+      memcpy(this->pSrcPic->pData[1],it->second+picSize,picSize/4);
+      memcpy(this->pSrcPic->pData[2],it->second+picSize+picSize/4,picSize/4);
       delete it->second;
       it->second = NULL;
       this->incommingFrames.erase(it);
       frameNum = this->incommingFrames.size();
       this->glockInFrame->Unlock();
-      iStart = WelsTime();
-      this->pSrcPic->uiTimeStamp = WELS_ROUND (iFrameIdx * (1000 / sSvcParam.fMaxFrameRate));
       this->ServerTimer->GetTime();
       this->encodeStartTime = this->ServerTimer->GetTimeStampInNanoseconds();
-      int iEncFrames = this->EncodeSingleFrame(pYUV);
+      iStart = this->encodeStartTime;
+      igtl::VideoMessage::Pointer videoMsg = igtl::VideoMessage::New();
+      int iEncFrames = this->videoEncoder->EncodeSingleFrameIntoVideoMSG(this->pSrcPic, videoMsg, false);
       this->ServerTimer->GetTime();
       this->encodeEndTime = this->ServerTimer->GetTimeStampInNanoseconds();
-      iTotal += WelsTime()- iStart;
+      iTotal += this->encodeEndTime - iStart;
       ++ iFrameIdx;
-      if (sFbi.eFrameType == videoFrameTypeSkip) {
+      if (this->videoEncoder->GetVideoFrameType() == videoFrameTypeSkip) {
         continue;
       }
       
       if (iEncFrames == cmResultSuccess ) {
-        SendCompressedData();
+        static int messageID = -1;
+        messageID++;
+        this->totalCompressedDataSize += videoMsg->GetBitStreamSize();
+        encodedFrame* frame = new encodedFrame();
+        memcpy(frame->messagePackPointer, videoMsg->GetPackPointer(), videoMsg->GetBufferSize());
+        frame->messageDataLength = videoMsg->GetBufferSize();
+        this->glock->Lock();
+        this->CheckEncodedFrameMap();
+        this->encodedFrames.insert(std::pair<igtlUint32, VideoStreamIGTLinkServer::encodedFrame*>(messageID, frame));
+        this->glock->Unlock();
         igtl::Sleep(1);
-  #if defined (STICK_STREAM_SIZE)
-        if (fTrackStream) {
-          fwrite (&iFrameSize, 1, sizeof (int), fTrackStream);
-        }
-  #endif//STICK_STREAM_SIZE
         iActualFrameEncodedCount ++;
       } else {
         fprintf (stderr, "EncodeFrame(), ret: %d, frame index: %d.\n", iEncFrames, iFrameIdx);
       }
       if (iActualFrameEncodedCount%10 == 0) {
-        double dElapsed = iTotal / 1e6;
+        double dElapsed = iTotal / 1e9;
         printf ("Width:\t\t%d\nHeight:\t\t%d\nFrames:\t\t%d\nencode time:\t%f sec\nFPS:\t\t%f fps\nCompressionRate:\t\t%f\n",
-                sSvcParam.iPicWidth, sSvcParam.iPicHeight,
-                iActualFrameEncodedCount, dElapsed, (iActualFrameEncodedCount * 1.0) / dElapsed, totalCompressedDataSize/(iActualFrameEncodedCount*3/2.0*sSvcParam.iPicWidth*sSvcParam.iPicHeight));
-        
-  #if defined (WINDOWS_PHONE)
-        g_fFPS = (iActualFrameEncodedCount * 1.0f) / (float) dElapsed;
-        g_dEncoderTime = dElapsed;
-        g_iEncodedFrame = iActualFrameEncodedCount;
-  #endif
+                this->pSrcPic->iPicWidth, this->pSrcPic->iPicHeight,
+                iActualFrameEncodedCount, dElapsed, (iActualFrameEncodedCount * 1.0) / dElapsed, totalCompressedDataSize/(iActualFrameEncodedCount*3/2.0*this->pSrcPic->iPicWidth*this->pSrcPic->iPicHeight));
       }
     }
   }
-  delete[] pYUV;
-  pYUV = NULL;
   return NULL;
 }
 
 
 
-int VideoStreamIGTLinkServer::EncodeSingleFrame(igtl_uint8* picPointer)
+int VideoStreamIGTLinkServer::EncodeSingleFrame(igtl_uint8* picPointer, bool isGrayImage)
 {
   int encodeRet = -1;
   if (this->InitializationDone == true)
@@ -879,8 +769,9 @@ int VideoStreamIGTLinkServer::EncodeSingleFrame(igtl_uint8* picPointer)
     pSrcPic->pData[0] = picPointer;
     pSrcPic->pData[1] = pSrcPic->pData[0] + (iSourceWidth * iSourceHeight);
     pSrcPic->pData[2] = pSrcPic->pData[1] + (iSourceWidth * iSourceHeight >> 2);
-    encodeRet = pSVCEncoder->EncodeFrame(pSrcPic, &sFbi);
-    this->videoFrameType = sFbi.eFrameType;
+    igtl::VideoMessage::Pointer videoMsg = igtl::VideoMessage::New();
+    encodeRet = this->videoEncoder->EncodeSingleFrameIntoVideoMSG(this->pSrcPic, videoMsg, isGrayImage);
+    this->videoFrameType = videoEncoder->GetVideoFrameType();
   }
   return encodeRet;
 }

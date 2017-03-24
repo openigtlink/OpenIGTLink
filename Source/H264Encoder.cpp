@@ -128,8 +128,12 @@ H264Encoder::H264Encoder(char *configFile)
   
   /* Control-C handler */
   signal (SIGINT, SigIntHandler);
-  memset(&layerConfigFiles, 0, sizeof(SFilesSet));
-  this->configFile = std::string(configFile);
+  
+  this->configFile = std::string("");
+  if (configFile!=NULL)
+  {
+    this->configFile = std::string(configFile);
+  }
   this->InitializationDone = false;
   this->deviceName = "";
 }
@@ -145,7 +149,7 @@ void H264Encoder::SetConfigurationFile(std::string configFile)
   this->configFile = std::string(configFile);
 }
 
-int H264Encoder::ParseLayerConfig (CReadConfig& cRdLayerCfg, const int iLayer, SEncParamExt& pSvcParam, SFilesSet& sFileSet) {
+int H264Encoder::ParseLayerConfig (CReadConfig& cRdLayerCfg, const int iLayer, SEncParamExt& pSvcParam) {
   if (!cRdLayerCfg.ExistFile()) {
     fprintf (stderr, "Unabled to open layer #%d configuration file: %s.\n", iLayer, cRdLayerCfg.GetFileName().c_str());
     return 1;
@@ -351,7 +355,7 @@ int H264Encoder::ParseConfig() {
         }
       } else if (strTag[0].compare ("LayerCfg") == 0) {
         if (strTag[1].length() > 0)
-          layerConfigFiles.strLayerCfgFile[iLayerCount] = strTag[1];
+          layerConfigFiles[iLayerCount] = strTag[1];
         //          pSvcParam.sDependencyLayers[iLayerCount].uiDependencyId = iLayerCount;
         ++ iLayerCount;
       } else if (strTag[0].compare ("PrefixNALAddingCtrl") == 0) {
@@ -374,8 +378,8 @@ int H264Encoder::ParseConfig() {
   assert (kiActualLayerNum <= MAX_DEPENDENCY_LAYER);
   
   for (int8_t iLayer = 0; iLayer < kiActualLayerNum; ++ iLayer) {
-    CReadConfig cRdLayerCfg (layerConfigFiles.strLayerCfgFile[iLayer]);
-    if (-1 == ParseLayerConfig (cRdLayerCfg, iLayer, sSvcParam, layerConfigFiles)) {
+    CReadConfig cRdLayerCfg (layerConfigFiles[iLayer]);
+    if (-1 == ParseLayerConfig (cRdLayerCfg, iLayer, sSvcParam)) {
       iRet = 1;
       break;
     }
@@ -393,18 +397,17 @@ bool H264Encoder::InitializeEncoder()
   // Preparing encoding process
   
   // Inactive with sink with output file handler
-  FILE* pFpBs = NULL;
-#if defined(COMPARE_DATA)
-  //For getting the golden file handle
-  FILE* fpGolden = NULL;
-#endif
-#if defined ( STICK_STREAM_SIZE )
-  FILE* fTrackStream = fopen ("coding_size.stream", "wb");
-#endif
   this->pSVCEncoder->GetDefaultParams (&sSvcParam);
   
   //FillSpecificParameters (sSvcParam);
   // if configure file exit, reading configure file firstly
+  if (this->configFile=="")
+  {
+    fprintf (stderr, "No configuration file specified. \n");
+    iRet = 1;
+    goto INSIDE_MEM_FREE;
+  }
+  
   cRdCfg.Openf (this->configFile.c_str());// to do get the first augments from this->augments.
   if (cRdCfg.ExistFile())
   {
@@ -432,44 +435,11 @@ bool H264Encoder::InitializeEncoder()
     iRet = 1;
     goto INSIDE_MEM_FREE;
   }
-  // Inactive with sink with output file handler
-  if (layerConfigFiles.strBsFile.length() > 0) {
-    pFpBs = fopen (layerConfigFiles.strBsFile.c_str(), "wb");
-    if (pFpBs == NULL) {
-      fprintf (stderr, "Can not open file (%s) to write bitstream!\n", layerConfigFiles.strBsFile.c_str());
-      iRet = 1;
-      goto INSIDE_MEM_FREE;
-    }
-  }
-  
-#if defined(COMPARE_DATA)
-  //For getting the golden file handle
-  if ((fpGolden = fopen (argv[3], "rb")) == NULL) {
-    fprintf (stderr, "Unable to open golden sequence file, check corresponding path!\n");
-    iRet = 1;
-    goto INSIDE_MEM_FREE;
-  }
-#endif
+
   this->InitializationDone = true;
   return true;
+  
 INSIDE_MEM_FREE:
-  if (pFpBs) {
-    fclose (pFpBs);
-    pFpBs = NULL;
-  }
-#if defined (STICK_STREAM_SIZE)
-  if (fTrackStream) {
-    fclose (fTrackStream);
-    fTrackStream = NULL;
-  }
-#endif
-#if defined (COMPARE_DATA)
-  if (fpGolden) {
-    fclose (fpGolden);
-    fpGolden = NULL;
-  }
-#endif
-
   this->InitializationDone = false;
   return false;
 }
@@ -496,12 +466,12 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SSourcePicture* pSrcPic, igtl::Vi
       videoMessage->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
       videoMessage->SetWidth(pSrcPic->iPicWidth);
       videoMessage->SetHeight(pSrcPic->iPicHeight);
-      int frameType = sFbi.eFrameType;
+      encodedFrameType = sFbi.eFrameType;
       if (isGrayImage)
       {
-        frameType = sFbi.eFrameType<<8;
+        encodedFrameType = sFbi.eFrameType<<8;
       }
-      videoMessage->SetFrameType(frameType);
+      videoMessage->SetFrameType(encodedFrameType);
       messageID ++;
       videoMessage->SetMessageID(messageID);
       while (iLayer < sFbi.iLayerNum) {
@@ -533,12 +503,12 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SSourcePicture* pSrcPic, igtl::Vi
       videoMessage->SetEndian(igtl_is_little_endian()==true?IGTL_VIDEO_ENDIAN_LITTLE:IGTL_VIDEO_ENDIAN_BIG); //little endian is 2 big endian is 1
       videoMessage->SetWidth(pSrcPic->iPicWidth);
       videoMessage->SetHeight(pSrcPic->iPicHeight);
-      int frameType = videoFrameTypeIDR;
+      encodedFrameType = videoFrameTypeIDR;
       if (isGrayImage)
       {
-        frameType = videoFrameTypeIDR<<8;
+        encodedFrameType = videoFrameTypeIDR<<8;
       }
-      videoMessage->SetFrameType(frameType);
+      videoMessage->SetFrameType(encodedFrameType);
       messageID ++;
       videoMessage->SetMessageID(messageID);
       memcpy(videoMessage->m_Frame, pSrcPic->pData[0], kiPicResSize);

@@ -48,20 +48,12 @@ typedef struct LayerpEncCtx_s {
   SSliceArgument  sSliceArgument;
 } SLayerPEncCtx;
 
-typedef struct tagFilesSet {
-  string strBsFile;
-  string strSeqFile;    // for cmd lines
-  string strLayerCfgFile[MAX_DEPENDENCY_LAYER];
-  uint32_t uiFrameToBeCoded;
-} SFilesSet;
-
-
 class ISVCEncoder;
 
 class H264Encoder
 {
 public:
-  H264Encoder(char * configFile);
+  H264Encoder(char * configFile = NULL);
   ~H264Encoder();
   
   void SetConfigurationFile(std::string configFile);
@@ -75,7 +67,7 @@ public:
    Encode a frame, for performance issue, before encode the frame, make sure the frame pointer is updated with a new frame.
    Otherwize, the old frame will be encoded.
    */
-  int EncodeSingleFrameIntoVideoMSG(SSourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage );
+  int EncodeSingleFrameIntoVideoMSG(SSourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage = false );
   
   /**
    Get the encoder and server initialization status.
@@ -92,7 +84,7 @@ public:
   void SetDeviceName(std::string name);
   
 private:
-  int ParseLayerConfig (CReadConfig& cRdLayerCfg, const int iLayer, SEncParamExt& pSvcParam, SFilesSet& sFileSet);
+  int ParseLayerConfig (CReadConfig& cRdLayerCfg, const int iLayer, SEncParamExt& pSvcParam);
   
   int ParseConfig();
   
@@ -104,7 +96,7 @@ private:
   
   SEncParamExt sSvcParam;
   
-  SFilesSet layerConfigFiles;
+  std::string layerConfigFiles[MAX_DEPENDENCY_LAYER];
   // for configuration file
   
   CReadConfig cRdCfg;

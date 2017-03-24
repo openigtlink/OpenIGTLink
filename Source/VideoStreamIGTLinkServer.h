@@ -39,13 +39,9 @@
 #include "igtlConditionVariable.h"
 #include "igtlMessageRTPWrapper.h"
 #include "igtlTimeStamp.h"
-#include "codec_def.h"
-#include "codec_app_def.h"
 #include "read_config.h"
-#include "wels_const.h"
-#include "welsencUtil.h"
-
-class ISVCEncoder;
+#include "macros.h"
+#include "H264Encoder.h"
 
 class VideoStreamIGTLinkServer
 {
@@ -66,7 +62,7 @@ public:
   /**
    Parse the configuration file to initialize the encoder and server.
    */
-  bool InitializeEncoderAndServer();
+  bool InitializeServer();
   
   /**
    Set the picture width
@@ -82,7 +78,7 @@ public:
    Encode a frame, for performance issue, before encode the frame, make sure the frame pointer is updated with a new frame.
    Otherwize, the old frame will be encoded.
    */
-  int EncodeSingleFrame(igtl_uint8* picPointer);
+  int EncodeSingleFrame(igtl_uint8* picPointer, bool isGrayImage = false);
   
   /**
    Pack the encoded frame into a OpenIGTLink message and send the message to a client.
@@ -146,16 +142,15 @@ public:
   
   igtl::MessageRTPWrapper::Pointer rtpWrapper;
   
-  ISVCEncoder*  pSVCEncoder;
+  H264Encoder*  videoEncoder;
   
-  SEncParamExt sSvcParam;
-  
-  SFilesSet fs;
-  // for configuration file
+  // for server configuration file
   
   CReadConfig cRdCfg;
   
-  SFrameBSInfo sFbi;
+  std::string strSeqFile;
+  
+  std::string strOutputFile;
   
   SSourcePicture* pSrcPic;
   
