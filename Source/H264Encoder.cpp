@@ -148,78 +148,68 @@ void H264Encoder::SetConfigurationFile(std::string configFile)
   this->configFile = std::string(configFile);
 }
 
-int H264Encoder::ParseLayerConfig (CReadConfig& cRdLayerCfg, const int iLayer, SEncParamExt& pSvcParam) {
-  if (!cRdLayerCfg.ExistFile()) {
-    fprintf (stderr, "Unabled to open layer #%d configuration file: %s.\n", iLayer, cRdLayerCfg.GetFileName().c_str());
-    return 1;
-  }
+int H264Encoder::ParseLayerConfig (string strTag[], const int iLayer, SEncParamExt& pSvcParam) {
   
   SSpatialLayerConfig* pDLayer = &pSvcParam.sSpatialLayers[iLayer];
   int iLeftTargetBitrate = (pSvcParam.iRCMode != RC_OFF_MODE) ? pSvcParam.iTargetBitrate : 0;
   SLayerPEncCtx sLayerCtx;
   memset (&sLayerCtx, 0, sizeof (SLayerPEncCtx));
   
-  string strTag[4];
   string str_ ("SlicesAssign");
   const int kiSize = (int)str_.size();
   
-  while (!cRdLayerCfg.EndOfFile()) {
-    long iLayerRd = cRdLayerCfg.ReadLine (&strTag[0]);
-    if (iLayerRd > 0) {
-      if (strTag[0].empty())
-        continue;
-      if (strTag[0].compare ("FrameWidth") == 0) {
-        pDLayer->iVideoWidth = atoi (strTag[1].c_str());
-      } else if (strTag[0].compare ("FrameHeight") == 0) {
-        pDLayer->iVideoHeight = atoi (strTag[1].c_str());
-      } else if (strTag[0].compare ("FrameRateOut") == 0) {
-        pDLayer->fFrameRate = (float)atof (strTag[1].c_str());
-      } else if (strTag[0].compare ("ProfileIdc") == 0) {
-        pDLayer->uiProfileIdc = (EProfileIdc)atoi (strTag[1].c_str());
-      } else if (strTag[0].compare ("FRExt") == 0) {
-        //        pDLayer->frext_mode = (bool)atoi(strTag[1].c_str());
-      } else if (strTag[0].compare ("SpatialBitrate") == 0) {
-        pDLayer->iSpatialBitrate = 1000 * atoi (strTag[1].c_str());
-        if (pSvcParam.iRCMode != RC_OFF_MODE) {
-          if (pDLayer->iSpatialBitrate <= 0) {
-            fprintf (stderr, "Invalid spatial bitrate(%d) in dependency layer #%d.\n", pDLayer->iSpatialBitrate, iLayer);
-            return -1;
-          }
-          if (pDLayer->iSpatialBitrate > iLeftTargetBitrate) {
-            fprintf (stderr, "Invalid spatial(#%d) bitrate(%d) setting due to unavailable left(%d)!\n", iLayer,
-                     pDLayer->iSpatialBitrate, iLeftTargetBitrate);
-            return -1;
-          }
-          iLeftTargetBitrate -= pDLayer->iSpatialBitrate;
+  pDLayer->iVideoWidth = this->sSvcParam.iPicWidth;
+  pDLayer->iVideoHeight = this->sSvcParam.iPicHeight;
+  if (!strTag[0].empty())
+  {
+    if (strTag[0].compare ("FrameWidth") == 0) {
+      pDLayer->iVideoWidth = atoi (strTag[1].c_str());
+    } else if (strTag[0].compare ("FrameHeight") == 0) {
+      pDLayer->iVideoHeight = atoi (strTag[1].c_str());
+    } else if (strTag[0].compare ("FrameRateOut") == 0) {
+      pDLayer->fFrameRate = (float)atof (strTag[1].c_str());
+    } else if (strTag[0].compare ("ProfileIdc") == 0) {
+      pDLayer->uiProfileIdc = (EProfileIdc)atoi (strTag[1].c_str());
+    } else if (strTag[0].compare ("SpatialBitrate") == 0) {
+      pDLayer->iSpatialBitrate = 1000 * atoi (strTag[1].c_str());
+      if (pSvcParam.iRCMode != RC_OFF_MODE) {
+        if (pDLayer->iSpatialBitrate <= 0) {
+          fprintf (stderr, "Invalid spatial bitrate(%d) in dependency layer #%d.\n", pDLayer->iSpatialBitrate, iLayer);
+          return -1;
         }
-      } else if (strTag[0].compare ("MaxSpatialBitrate") == 0) {
-        pDLayer->iMaxSpatialBitrate = 1000 * atoi (strTag[1].c_str());
-        if (pSvcParam.iRCMode != RC_OFF_MODE) {
-          if (pDLayer->iMaxSpatialBitrate < 0) {
-            fprintf (stderr, "Invalid max spatial bitrate(%d) in dependency layer #%d.\n", pDLayer->iMaxSpatialBitrate, iLayer);
-            return -1;
-          }
-          if (pDLayer->iMaxSpatialBitrate > 0 && pDLayer->iMaxSpatialBitrate < pDLayer->iSpatialBitrate) {
-            fprintf (stderr, "Invalid max spatial(#%d) bitrate(%d) setting::: < layerBitrate(%d)!\n", iLayer,
-                     pDLayer->iMaxSpatialBitrate, pDLayer->iSpatialBitrate);
-            return -1;
-          }
+        if (pDLayer->iSpatialBitrate > iLeftTargetBitrate) {
+          fprintf (stderr, "Invalid spatial(#%d) bitrate(%d) setting due to unavailable left(%d)!\n", iLayer,
+                   pDLayer->iSpatialBitrate, iLeftTargetBitrate);
+          return -1;
         }
-      } else if (strTag[0].compare ("InitialQP") == 0) {
-        sLayerCtx.iDLayerQp = atoi (strTag[1].c_str());
-      } else if (strTag[0].compare ("SliceMode") == 0) {
-        sLayerCtx.sSliceArgument.uiSliceMode = (SliceModeEnum)atoi (strTag[1].c_str());
-      } else if (strTag[0].compare ("SliceSize") == 0) { //SM_SIZELIMITED_SLICE
-        sLayerCtx.sSliceArgument.uiSliceSizeConstraint = atoi (strTag[1].c_str());
-        continue;
-      } else if (strTag[0].compare ("SliceNum") == 0) {
-        sLayerCtx.sSliceArgument.uiSliceNum = atoi (strTag[1].c_str());
-      } else if (strTag[0].compare (0, kiSize, str_) == 0) {
-        const char* kpString = strTag[0].c_str();
-        int uiSliceIdx = atoi (&kpString[kiSize]);
-        assert (uiSliceIdx < MAX_SLICES_NUM);
-        sLayerCtx.sSliceArgument.uiSliceMbNum[uiSliceIdx] = atoi (strTag[1].c_str());
+        iLeftTargetBitrate -= pDLayer->iSpatialBitrate;
       }
+    } else if (strTag[0].compare ("MaxSpatialBitrate") == 0) {
+      pDLayer->iMaxSpatialBitrate = 1000 * atoi (strTag[1].c_str());
+      if (pSvcParam.iRCMode != RC_OFF_MODE) {
+        if (pDLayer->iMaxSpatialBitrate < 0) {
+          fprintf (stderr, "Invalid max spatial bitrate(%d) in dependency layer #%d.\n", pDLayer->iMaxSpatialBitrate, iLayer);
+          return -1;
+        }
+        if (pDLayer->iMaxSpatialBitrate > 0 && pDLayer->iMaxSpatialBitrate < pDLayer->iSpatialBitrate) {
+          fprintf (stderr, "Invalid max spatial(#%d) bitrate(%d) setting::: < layerBitrate(%d)!\n", iLayer,
+                   pDLayer->iMaxSpatialBitrate, pDLayer->iSpatialBitrate);
+          return -1;
+        }
+      }
+    } else if (strTag[0].compare ("InitialQP") == 0) {
+      sLayerCtx.iDLayerQp = atoi (strTag[1].c_str());
+    } else if (strTag[0].compare ("SliceMode") == 0) {
+      sLayerCtx.sSliceArgument.uiSliceMode = (SliceModeEnum)atoi (strTag[1].c_str());
+    } else if (strTag[0].compare ("SliceSize") == 0) { //SM_SIZELIMITED_SLICE
+      sLayerCtx.sSliceArgument.uiSliceSizeConstraint = atoi (strTag[1].c_str());
+    } else if (strTag[0].compare ("SliceNum") == 0) {
+      sLayerCtx.sSliceArgument.uiSliceNum = atoi (strTag[1].c_str());
+    } else if (strTag[0].compare (0, kiSize, str_) == 0) {
+      const char* kpString = strTag[0].c_str();
+      int uiSliceIdx = atoi (&kpString[kiSize]);
+      assert (uiSliceIdx < MAX_SLICES_NUM);
+      sLayerCtx.sSliceArgument.uiSliceMbNum[uiSliceIdx] = atoi (strTag[1].c_str());
     }
   }
   pDLayer->iDLayerQp             = sLayerCtx.iDLayerQp;
@@ -356,14 +346,9 @@ int H264Encoder::ParseConfig() {
         sSvcParam.iSpatialLayerNum = (int8_t)atoi (strTag[1].c_str());
         if (sSvcParam.iSpatialLayerNum > MAX_DEPENDENCY_LAYER || sSvcParam.iSpatialLayerNum <= 0) {
           fprintf (stderr, "Invalid parameter in iSpatialLayerNum: %d.\n", sSvcParam.iSpatialLayerNum);
-          iRet = 1;
-          break;
+          return 1;
         }
-      } else if (strTag[0].compare ("LayerCfg") == 0) {
-        if (strTag[1].length() > 0)
-          layerConfigFiles[iLayerCount] = strTag[1];
-        //          pSvcParam.sDependencyLayers[iLayerCount].uiDependencyId = iLayerCount;
-        ++ iLayerCount;
+        break;
       } else if (strTag[0].compare ("PrefixNALAddingCtrl") == 0) {
         int ctrl_flag = atoi (strTag[1].c_str());
         if (ctrl_flag > 1)
@@ -374,23 +359,30 @@ int H264Encoder::ParseConfig() {
       }
     }
   }
+  igtlUint8 actLayerConfigNum = 0;
+  igtlUint8 layerIndex = -1;
+  while (!cRdCfg.EndOfFile()) {
+    long iRd = cRdCfg.ReadLine (&strTag[0]);
+    if (iRd > 0) {
+      if (strTag[0].empty())
+        continue;
+      if (strTag[0].compare ("LayerIndex") == 0) {
+        layerIndex = atoi(strTag[1].c_str());
+        actLayerConfigNum++;
+      }
+      if(layerIndex>=0)
+      {
+        this->ParseLayerConfig(strTag, layerIndex, sSvcParam);
+      }
+    }
+  }
   
-  const int8_t kiActualLayerNum = WELS_MIN (sSvcParam.iSpatialLayerNum, iLayerCount);
+  const igtlUint8 kiActualLayerNum = WELS_MIN (sSvcParam.iSpatialLayerNum, actLayerConfigNum);
   if (sSvcParam.iSpatialLayerNum >
       kiActualLayerNum) { // fixed number of dependency layer due to parameter error in settings
     sSvcParam.iSpatialLayerNum = kiActualLayerNum;
   }
-  
   assert (kiActualLayerNum <= MAX_DEPENDENCY_LAYER);
-  
-  for (int8_t iLayer = 0; iLayer < kiActualLayerNum; ++ iLayer) {
-    CReadConfig cRdLayerCfg (layerConfigFiles[iLayer]);
-    if (-1 == ParseLayerConfig (cRdLayerCfg, iLayer, sSvcParam)) {
-      iRet = 1;
-      break;
-    }
-  }
-  
   return iRet;
 }
 

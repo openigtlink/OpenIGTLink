@@ -90,7 +90,7 @@ public:
   void SetUseCompression(bool useCompression);
   
 private:
-  int ParseLayerConfig (CReadConfig& cRdLayerCfg, const int iLayer, SEncParamExt& pSvcParam);
+  int ParseLayerConfig (string strTag[], const int iLayer, SEncParamExt& pSvcParam);
   
   int ParseConfig();
   

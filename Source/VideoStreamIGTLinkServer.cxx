@@ -216,7 +216,7 @@ int VideoStreamIGTLinkServer::ParseConfigForServer()
 int VideoStreamIGTLinkServer::InitializeEncoder()
 {
   int iRet = 1;
-  if( (pSrcPic->iPicWidth*pSrcPic->iPicHeight>0) and this->encoderConfigFile.c_str())
+  if( (pSrcPic->iPicWidth*pSrcPic->iPicHeight>0) && this->encoderConfigFile.c_str())
   {
     this->videoEncoder->SetConfigurationFile(encoderConfigFile);
     this->videoEncoder->SetPicWidth(pSrcPic->iPicWidth);
