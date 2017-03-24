@@ -76,5 +76,6 @@ int main (int argc, char** argv)
       }
     }
   }
+  server.Stop();
   return 0;
 }

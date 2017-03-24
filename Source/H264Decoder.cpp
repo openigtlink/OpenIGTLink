@@ -143,7 +143,7 @@ void H264Decode::ComposeByteSteam(igtl_uint8** inputData, SBufferInfo bufInfo, i
 }
 
 int H264Decode::DecodeSingleNal (ISVCDecoder* pDecoder, unsigned char* kpH264BitStream,igtl_uint8* outputByteStream, const char* kpOuputFileName,
-                         igtl_int32& iWidth, igtl_int32& iHeight, igtl_int32& iStreamSize, const char* pOptionFileName) {
+                         igtl_int32& iWidth, igtl_int32& iHeight, igtl_int32& iStreamSize) {
   
   
   unsigned long long uiTimeStamp = 0;
@@ -186,14 +186,6 @@ int H264Decode::DecodeSingleNal (ISVCDecoder* pDecoder, unsigned char* kpH264Bit
     fprintf (stderr, "Can not find any output file to write..\n");
     // any options
   }
-  
-  /*if (pOptionFileName) {
-    pOptionFile = fopen (pOptionFileName, "wb");
-    if (pOptionFile == NULL) {
-      fprintf (stderr, "Can not open optional file for write..\n");
-    } else
-      fprintf (stderr, "Extra optional file: %s..\n", pOptionFileName);
-  }*/
   
   //printf ("------------------------------------------------------\n");
   
@@ -273,7 +265,7 @@ int H264Decode::DecodeSingleNal (ISVCDecoder* pDecoder, unsigned char* kpH264Bit
     iEnd    = getCurrentTime();
     iTotal = iEnd - iStart;
     if (sDstBufInfo.iBufferStatus == 1) {
-      Process ((void**)pData, &sDstBufInfo, NULL);
+      Process ((void**)pData, &sDstBufInfo, pYuvFile);
       ComposeByteSteam(pData, sDstBufInfo, outputByteStream, iWidth,iHeight);
       iWidth  = sDstBufInfo.UsrData.sSystemBuffer.iWidth;
       iHeight = sDstBufInfo.UsrData.sSystemBuffer.iHeight;

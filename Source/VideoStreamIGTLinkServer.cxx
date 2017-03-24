@@ -51,6 +51,9 @@ VideoStreamIGTLinkServer::VideoStreamIGTLinkServer(char *argv)
   this->interval = 30; //in ms
   this->totalCompressedDataSize = 0;
   this->iTotalFrameToEncode = -1;
+  this->sendPacketThreadID = -1;
+  this->readFrameThreadID = -1;
+  this->serverThreadID = -1;
 }
 
 int VideoStreamIGTLinkServer::StartTCPServer ()
@@ -61,7 +64,7 @@ int VideoStreamIGTLinkServer::StartTCPServer ()
     
     if(this->transportMethod==VideoStreamIGTLinkServer::UseTCP)
     {
-      threader->SpawnThread((igtl::ThreadFunctionType)&ThreadFunctionServer, this);
+      serverThreadID = threader->SpawnThread((igtl::ThreadFunctionType)&ThreadFunctionServer, this);
       this->glock->Lock();
       while(!this->serverConnected)
       {
@@ -109,8 +112,6 @@ int VideoStreamIGTLinkServer::StartUDPServer ()
 
 int VideoStreamIGTLinkServer::ParseConfigForServer()
 {
-  int iRet = 1;
-  int arttributNum = 0;
   std::string strTag[4];
   while (!cRdCfg.EndOfFile()) {
     strTag->clear();
@@ -123,26 +124,16 @@ int VideoStreamIGTLinkServer::ParseConfigForServer()
         if(this->serverPortNumber<0 || this->serverPortNumber>65535)
         {
           fprintf (stderr, "Invalid parameter for server port number should between 0 and 65525.");
-          iRet = 1;
-          arttributNum ++;
-        }
-        else
-        {
-          iRet = 0;
+          return 1;
         }
       }
       if (strTag[0].compare ("ClientIPAddress") == 0) {
         this->clientIPAddress = new char[IP4AddressStrLen];
         memcpy(this->clientIPAddress, strTag[1].c_str(), IP4AddressStrLen);
-        if(inet_addr(this->clientIPAddress))
-        {
-          iRet = 0;
-        }
-        else
+        if(!inet_addr(this->clientIPAddress))
         {
           fprintf (stderr, "Invalid parameter for IP address");
-          iRet = 1;
-          arttributNum ++;
+          return 1;
         }
       }
       if (strTag[0].compare ("ClientPortNumber") == 0) {
@@ -150,62 +141,46 @@ int VideoStreamIGTLinkServer::ParseConfigForServer()
         if(this->clientPortNumber<0 || this->clientPortNumber>65535)
         {
           fprintf (stderr, "Invalid parameter for server port number should between 0 and 65525.");
-          iRet = 1;
-          arttributNum ++;
+          return 1;
         }
-        else
-        {
-          iRet = 0;
-        }
-        
       }
       if (strTag[0].compare ("InputFile") == 0)
       {
         this->strSeqFile =strTag[1].c_str();
-        arttributNum ++;
       }
       if (strTag[0].compare ("SourceWidth") == 0)
       {
         this->pSrcPic->iPicWidth = atoi(strTag[1].c_str());
         pSrcPic->iStride[0] = this->pSrcPic->iPicWidth;
         pSrcPic->iStride[1] = pSrcPic->iStride[2] = pSrcPic->iStride[0] >> 1;
-        arttributNum ++;
       }
       if (strTag[0].compare ("SourceHeight") == 0)
       {
         this->pSrcPic->iPicHeight = atoi(strTag[1].c_str());
-        arttributNum ++;
       }
       if (strTag[0].compare ("TotalFrameToEncode") == 0)
       {
         this->iTotalFrameToEncode = atoi(strTag[1].c_str());
-        arttributNum ++;
       }
       if (strTag[0].compare ("OutputBitStreamFile") == 0)
       {
         this->strOutputFile =strTag[1].c_str();
-        arttributNum ++;
       }
       if (strTag[0].compare ("CodecConfigurationFile") == 0)
       {
-        this->videoEncoder->SetConfigurationFile(strTag[1].c_str());
-        this->videoEncoder->InitializeEncoder();
-        arttributNum ++;
+        this->encoderConfigFile = strTag[1];
       }
       if (strTag[0].compare ("DeviceName") == 0)
       {
         this->deviceName =strTag[1].c_str();
-        arttributNum ++;
       }
       if (strTag[0].compare ("TransportMethod") == 0)
       {
         this->transportMethod = atoi(strTag[1].c_str());
-        arttributNum ++;
       }
       if (strTag[0].compare ("UseCompress") == 0)
       {
         this->useCompress = atoi(strTag[1].c_str());
-        arttributNum ++;
       }
       if (strTag[0].compare ("NetWorkBandWidth") == 0)
       {
@@ -213,17 +188,17 @@ int VideoStreamIGTLinkServer::ParseConfigForServer()
         int netWorkBandWidthInBPS = netWorkBandWidth * 1000; //networkBandwidth is in kbps
         int time = floor(8*RTP_PAYLOAD_LENGTH*1e9/netWorkBandWidthInBPS+ 1.0); // the needed time in nanosecond to send a RTP payload.
         this->rtpWrapper->packetIntervalTime = time; // in nanoSecond
-        arttributNum ++;
       }
     }
-    if (arttributNum ==25) // only parse the first 25 arttribute
-    {
-      break;
-    }
   }
-  pSrcPic->pData[0] = new unsigned char[pSrcPic->iPicHeight*pSrcPic->iPicWidth];
-  pSrcPic->pData[1] = new unsigned char[pSrcPic->iPicHeight*pSrcPic->iPicWidth/4];
-  pSrcPic->pData[2] = new unsigned char[pSrcPic->iPicHeight*pSrcPic->iPicWidth/4];
+  pSrcPic->pData[0] = new unsigned char[pSrcPic->iPicHeight*pSrcPic->iPicWidth*3/2];
+  pSrcPic->pData[1] = pSrcPic->pData[0]+pSrcPic->iPicHeight*pSrcPic->iPicWidth;
+  pSrcPic->pData[2] = pSrcPic->pData[1]+pSrcPic->iPicHeight*pSrcPic->iPicWidth/4;
+  if (this->InitializeEncoder())
+  {
+    fprintf (stderr, "Invalid parameter for h264 encoder.\n");
+    return 1;
+  }
   if (this->transportMethod == 1 )
   {
     if (this->clientIPAddress && this->clientPortNumber)
@@ -232,8 +207,22 @@ int VideoStreamIGTLinkServer::ParseConfigForServer()
     }
     else
     {
-      iRet = 1;
+      return 1;
     }
+  }
+  return 0;
+}
+
+int VideoStreamIGTLinkServer::InitializeEncoder()
+{
+  int iRet = 1;
+  if( (pSrcPic->iPicWidth*pSrcPic->iPicHeight>0) and this->encoderConfigFile.c_str())
+  {
+    this->videoEncoder->SetConfigurationFile(encoderConfigFile);
+    this->videoEncoder->SetPicWidth(pSrcPic->iPicWidth);
+    this->videoEncoder->SetPicHeight(pSrcPic->iPicHeight);
+    this->videoEncoder->SetUseCompression(this->useCompress);
+    iRet = this->videoEncoder->InitializeEncoder();
   }
   return iRet;
 }
@@ -405,7 +394,7 @@ void VideoStreamIGTLinkServer::SetSrcPicHeight(int height)
   pSrcPic->iPicHeight = height;
 }
 
-bool VideoStreamIGTLinkServer::InitializeServer()
+int VideoStreamIGTLinkServer::InitializeServer()
 {
   //------------------------------------------------------------
   int iRet = 0;
@@ -470,7 +459,7 @@ INSIDE_MEM_FREE:
   }
   this->serverConnected = false;
   this->InitializationDone = false;
-  return false;
+  return iRet;
 }
 
 struct serverPointer
@@ -609,18 +598,18 @@ int VideoStreamIGTLinkServer::StartReadFrameThread(int frameRate)
   this->interval = 1000/frameRate;
   serverPointer ptr;
   ptr.server = this;
-  int threadID = threader->SpawnThread((igtl::ThreadFunctionType)&ThreadFunctionReadFrameFromFile, &ptr);
+  readFrameThreadID = threader->SpawnThread((igtl::ThreadFunctionType)&ThreadFunctionReadFrameFromFile, &ptr);
   igtl::Sleep(10);
-  return threadID;
+  return readFrameThreadID;
 }
 
 int VideoStreamIGTLinkServer::StartSendPacketThread()
 {
   serverPointer ptr;
   ptr.server = this;
-  int threadID = threader->SpawnThread((igtl::ThreadFunctionType)&ThreadFunctionSendPacket, &ptr);
+  sendPacketThreadID = threader->SpawnThread((igtl::ThreadFunctionType)&ThreadFunctionSendPacket, &ptr);
   igtl::Sleep(10);
-  return threadID;
+  return sendPacketThreadID;
 }
 
 void VideoStreamIGTLinkServer::CheckEncodedFrameMap()
@@ -709,9 +698,7 @@ void* VideoStreamIGTLinkServer::EncodeFile(void)
       // To encoder this frame
       this->glockInFrame->Lock();
       std::map<igtlUint32, igtl_uint8*>::iterator it = this->incommingFrames.begin();
-      memcpy(this->pSrcPic->pData[0],it->second,picSize);
-      memcpy(this->pSrcPic->pData[1],it->second+picSize,picSize/4);
-      memcpy(this->pSrcPic->pData[2],it->second+picSize+picSize/4,picSize/4);
+      memcpy(this->pSrcPic->pData[0],it->second,picSize*3/2);
       delete it->second;
       it->second = NULL;
       this->incommingFrames.erase(it);
@@ -721,6 +708,7 @@ void* VideoStreamIGTLinkServer::EncodeFile(void)
       this->encodeStartTime = this->ServerTimer->GetTimeStampInNanoseconds();
       iStart = this->encodeStartTime;
       igtl::VideoMessage::Pointer videoMsg = igtl::VideoMessage::New();
+      videoMsg->SetDeviceName(this->deviceName.c_str());
       int iEncFrames = this->videoEncoder->EncodeSingleFrameIntoVideoMSG(this->pSrcPic, videoMsg, false);
       this->ServerTimer->GetTime();
       this->encodeEndTime = this->ServerTimer->GetTimeStampInNanoseconds();
@@ -733,7 +721,7 @@ void* VideoStreamIGTLinkServer::EncodeFile(void)
       if (iEncFrames == cmResultSuccess ) {
         static int messageID = -1;
         messageID++;
-        this->totalCompressedDataSize += videoMsg->GetBitStreamSize();
+        this->totalCompressedDataSize += videoMsg->GetPackedBitStreamSize();
         encodedFrame* frame = new encodedFrame();
         memcpy(frame->messagePackPointer, videoMsg->GetPackPointer(), videoMsg->GetBufferSize());
         frame->messageDataLength = videoMsg->GetBufferSize();
@@ -748,16 +736,26 @@ void* VideoStreamIGTLinkServer::EncodeFile(void)
       }
       if (iActualFrameEncodedCount%10 == 0) {
         double dElapsed = iTotal / 1e9;
+        float totalFrameSize = iActualFrameEncodedCount*3/2.0*this->pSrcPic->iPicWidth*this->pSrcPic->iPicHeight;
         printf ("Width:\t\t%d\nHeight:\t\t%d\nFrames:\t\t%d\nencode time:\t%f sec\nFPS:\t\t%f fps\nCompressionRate:\t\t%f\n",
                 this->pSrcPic->iPicWidth, this->pSrcPic->iPicHeight,
-                iActualFrameEncodedCount, dElapsed, (iActualFrameEncodedCount * 1.0) / dElapsed, totalCompressedDataSize/(iActualFrameEncodedCount*3/2.0*this->pSrcPic->iPicWidth*this->pSrcPic->iPicHeight));
+                iActualFrameEncodedCount, dElapsed, (iActualFrameEncodedCount * 1.0) / dElapsed, totalCompressedDataSize/totalFrameSize);
       }
     }
   }
   return NULL;
 }
 
-
+void VideoStreamIGTLinkServer::Stop()
+{
+  if(serverThreadID>=0)
+    threader->TerminateThread(serverThreadID);
+  if(readFrameThreadID>=0)
+    threader->TerminateThread(readFrameThreadID);
+  if(sendPacketThreadID>=0)
+    threader->TerminateThread(sendPacketThreadID);
+  this->serverSocket->CloseSocket();
+}
 
 int VideoStreamIGTLinkServer::EncodeSingleFrame(igtl_uint8* picPointer, bool isGrayImage)
 {

@@ -105,21 +105,6 @@ VideoMessage::~VideoMessage()
     delete [] this->m_Body;
   }*/
 }
-
-void VideoMessage::AllocateScalars()
-{
-  // Memory area to store frame scalar is allocated with
-  // message and frame header, by using AllocatePack() implemented
-  // in the parent class.
-  int s = GetBitStreamSize();
-  //this->m_MessageSize = IGTL_HEADER_SIZE + IGTL_VIDEO_HEADER_SIZE + s;
-
-  AllocatePack(IGTL_VIDEO_HEADER_SIZE + s);
-  this->m_FrameHeader = m_Body;
-  this->m_Frame  = &m_FrameHeader[IGTL_VIDEO_HEADER_SIZE];
-  //this->m_Frame = new unsigned char [s];
-}
-
   
 void VideoMessage::AllocateBuffer()
 {
@@ -145,22 +130,6 @@ int VideoMessage::CalculateContentBufferSize()
 {
   return  IGTL_VIDEO_HEADER_SIZE + bitStreamSize;
 }
-
-
-void* VideoMessage::GetScalarPointer()
-{
-  return (void*)m_Frame;
-}
-
-void  VideoMessage::SetScalarPointer(unsigned char * p)
-{
-  if (this->m_Frame)
-  {
-    delete [] this->m_Frame;
-  }
-  this->m_Frame =  p;
-}
-
 
 unsigned char* VideoMessage::GetPackFragmentPointer(int id)
 {
@@ -198,27 +167,6 @@ int VideoMessage::GetPackFragmentSize(int id)
     }
 
   return 0;
-}
-
-int VideoMessage::GetBodyPackSize()
-{
-  // This function is called by:
-  //   MessageBase::Pack()
-  //   MessageBase::AllocatePack()
-#if OpenIGTLink_HEADER_VERSION >= 2
-  int size(-1);
-  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
-  {
-    size =  IGTL_VIDEO_HEADER_SIZE + bitStreamSize + sizeof(igtl_extended_header) + GetMetaDataHeaderSize() + GetMetaDataSize();
-  }
-  else
-  {
-    size =  IGTL_VIDEO_HEADER_SIZE + bitStreamSize;
-  }
-#else
-  int size = IGTL_VIDEO_HEADER_SIZE + bitStreamSize;
-#endif
-  return size;
 }
 
 int VideoMessage::PackContent()

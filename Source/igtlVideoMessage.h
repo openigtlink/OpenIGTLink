@@ -243,6 +243,15 @@ public:
     }
   };
   
+  // Get the packed bit stream size
+  int GetPackedBitStreamSize()
+  {
+    if(m_IsBodyPacked)
+      return bitStreamSize;
+    return -1;
+  }
+  
+  // For memory allocation in packing process
   void SetBitStreamSize(int size)
   {
     bitStreamSize = size;
@@ -264,21 +273,15 @@ public:
     
   };
 
-  /// Allocates a memory area for the scalar data based on the dimensions of the subvolume,
-  /// the number of components, and the scalar type.
-  /// Note: If FragmentedPack is active, GetScalarPointer() causes extra memory allocation to
-  /// create a single pack memroy degrading the performance.
-  virtual void  AllocateScalars();
-
   virtual int CalculateContentBufferSize();
   
   virtual void AllocateBuffer();
   
   /// Gets a pointer to the scalar data.
-  virtual void* GetScalarPointer();
+  //virtual void* GetScalarPointer();
 
   /// Sets the pointer to the scalar data (for fragmented pack support).
-  virtual void  SetScalarPointer(unsigned char * p);
+  //virtual void  SetScalarPointer(unsigned char * p);
 
   /// Gets a pointer to the scalar data (for fragmented pack support).
   void* GetPackPointer(){return GetBufferPointer();};
@@ -298,7 +301,7 @@ protected:
   
 protected:
 
-  virtual int  GetBodyPackSize();
+  //virtual int  GetBodyPackSize();
   
   /// Pack() serializes the header and body based on the member variables.
   /// PackBody() must be implemented in the child class. (for fragmented pack support)

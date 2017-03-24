@@ -61,7 +61,7 @@ public:
   /**
    Parse the configuration file to initialize the encoder and server.
    */
-  bool InitializeEncoder();
+  int InitializeEncoder();
   
   /**
    Encode a frame, for performance issue, before encode the frame, make sure the frame pointer is updated with a new frame.
@@ -83,14 +83,18 @@ public:
   
   void SetDeviceName(std::string name);
   
+  void SetPicWidth(unsigned int width);
+  
+  void SetPicHeight(unsigned int height);
+  
+  void SetUseCompression(bool useCompression);
+  
 private:
   int ParseLayerConfig (CReadConfig& cRdLayerCfg, const int iLayer, SEncParamExt& pSvcParam);
   
   int ParseConfig();
   
   int encodedFrameType;
-  
-  std::string deviceName;
   
   ISVCEncoder*  pSVCEncoder;
   

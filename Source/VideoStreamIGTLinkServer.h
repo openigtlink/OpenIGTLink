@@ -62,7 +62,12 @@ public:
   /**
    Parse the configuration file to initialize the encoder and server.
    */
-  bool InitializeServer();
+  int InitializeServer();
+  
+  /**
+   intialize the encoder
+   */
+  int InitializeEncoder();
   
   /**
    Set the picture width
@@ -123,6 +128,7 @@ public:
     UseUDP
   };
   
+  void Stop();
   
   //void* ThreadFunctionServer(void*);
   
@@ -218,6 +224,15 @@ private:
   void ReadInFileWithFrameRate(int rate);
   
   unsigned long totalCompressedDataSize;
+  
+  std::string encoderConfigFile;
+  
+  int serverThreadID;
+  
+  int sendPacketThreadID;
+  
+  int readFrameThreadID;
+  
 };
 
 #endif

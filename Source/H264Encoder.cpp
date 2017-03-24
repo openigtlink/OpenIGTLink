@@ -135,7 +135,6 @@ H264Encoder::H264Encoder(char *configFile)
     this->configFile = std::string(configFile);
   }
   this->InitializationDone = false;
-  this->deviceName = "";
 }
 
 H264Encoder::~H264Encoder()
@@ -243,7 +242,14 @@ int H264Encoder::ParseConfig() {
     if (iRd > 0) {
       if (strTag[0].empty())
         continue;
-      
+      if (strTag[0].compare ("PicWidth") == 0)
+      {
+        sSvcParam.iPicWidth = atoi(strTag[1].c_str());
+      }
+      if (strTag[0].compare ("PicHeight") == 0)
+      {
+        sSvcParam.iPicHeight = atoi(strTag[1].c_str());
+      }
       if (strTag[0].compare ("UsageType") == 0) {
         sSvcParam.iUsageType = (EUsageType)atoi (strTag[1].c_str());
       }else if (strTag[0].compare ("SimulcastAVC") == 0) {
@@ -388,7 +394,7 @@ int H264Encoder::ParseConfig() {
   return iRet;
 }
 
-bool H264Encoder::InitializeEncoder()
+int H264Encoder::InitializeEncoder()
 {
   //------------------------------------------------------------
   int iRet = 0;
@@ -397,10 +403,15 @@ bool H264Encoder::InitializeEncoder()
   // Preparing encoding process
   
   // Inactive with sink with output file handler
+  unsigned int picWidth = sSvcParam.iPicWidth;
+  unsigned int picHeight = sSvcParam.iPicHeight;
   this->pSVCEncoder->GetDefaultParams (&sSvcParam);
+  this->sSvcParam.iPicHeight = picHeight;
+  this->sSvcParam.iPicWidth = picWidth;
   
   //FillSpecificParameters (sSvcParam);
   // if configure file exit, reading configure file firstly
+  
   if (this->configFile=="")
   {
     fprintf (stderr, "No configuration file specified. \n");
@@ -437,11 +448,27 @@ bool H264Encoder::InitializeEncoder()
   }
 
   this->InitializationDone = true;
-  return true;
+  return 0;
   
 INSIDE_MEM_FREE:
   this->InitializationDone = false;
-  return false;
+  return 1;
+}
+
+
+void H264Encoder::SetPicWidth(unsigned int width)
+{
+  this->sSvcParam.iPicWidth = width;
+}
+
+void H264Encoder::SetPicHeight(unsigned int height)
+{
+  this->sSvcParam.iPicHeight = height;
+}
+
+void H264Encoder::SetUseCompression(bool useCompression)
+{
+  this->useCompress = useCompression;
 }
 
 int H264Encoder::EncodeSingleFrameIntoVideoMSG(SSourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage)
@@ -496,7 +523,6 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SSourcePicture* pSrcPic, igtl::Vi
     {
       static igtl_uint32 messageID = -1;
       videoMessage->SetHeaderVersion(IGTL_HEADER_VERSION_2);
-      videoMessage->SetDeviceName(this->deviceName.c_str());
       videoMessage->SetBitStreamSize(kiPicResSize);
       videoMessage->AllocateBuffer();
       videoMessage->SetScalarType(videoMessage->TYPE_UINT8);

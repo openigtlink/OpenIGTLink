@@ -95,7 +95,6 @@ VideoStreamIGTLinkReceiver::VideoStreamIGTLinkReceiver(char *argv[])
   this->decParam.sVideoProperty.eVideoBsType = VIDEO_BITSTREAM_DEFAULT;
   this->pSVCDecoder->Initialize (&decParam);
   this->kpOuputFileName = (char*)"decodedOutput.yuv";
-  this->pOptionFileName = NULL;
   this->videoMessageBuffer=NULL;
   this->decodedNal=NULL;
   socket = igtl::ClientSocket::New();
@@ -131,7 +130,6 @@ int VideoStreamIGTLinkReceiver::RunOnTCPSocket()
   startVideoMsg->SetUseCompress(useCompress);
   startVideoMsg->Pack();
   socket->Send(startVideoMsg->GetPackPointer(), startVideoMsg->GetPackSize());
-  std::string outputFileName = "outputDecodedVideoTCP.yuv";
   while (1)
   {
     //------------------------------------------------------------
@@ -216,7 +214,7 @@ void VideoStreamIGTLinkReceiver::SendStopMessage()
   igtl::StopVideoMessage::Pointer stopVideoMsg;
   stopVideoMsg = igtl::StopVideoMessage::New();
   stopVideoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
-  stopVideoMsg->SetDeviceName("Video");
+  stopVideoMsg->SetDeviceName("VIDEO");
   stopVideoMsg->Pack();
   socket->Send(stopVideoMsg->GetPackPointer(), stopVideoMsg->GetPackSize());
 }
@@ -326,8 +324,6 @@ bool VideoStreamIGTLinkReceiver::InitializeClient()
 
 int VideoStreamIGTLinkReceiver::ParseConfigForClient()
 {
-  int iRet = 1;
-  int arttributNum = 0;
   std::string strTag[4];
   while (!cRdCfg.EndOfFile()) {
     strTag->clear();
@@ -340,26 +336,16 @@ int VideoStreamIGTLinkReceiver::ParseConfigForClient()
         if(this->TCPServerPort<0 || this->TCPServerPort>65535)
         {
           fprintf (stderr, "Invalid parameter for server port number should between 0 and 65525.");
-          iRet = 1;
-          arttributNum ++;
-        }
-        else
-        {
-          iRet = 0;
+          return 1;
         }
       }
       if (strTag[0].compare ("TCPServerIPAddress") == 0) {
         this->TCPServerIPAddress = new char[IP4AddressStrLen];
         memcpy(this->TCPServerIPAddress, strTag[1].c_str(), IP4AddressStrLen);
-        if(inet_addr(this->TCPServerIPAddress))
-        {
-          iRet = 0;
-        }
-        else
+        if(!inet_addr(this->TCPServerIPAddress))
         {
           fprintf (stderr, "Invalid parameter for IP address");
-          iRet = 1;
-          arttributNum ++;
+          return 1;
         }
       }
       if (strTag[0].compare ("UDPClientPortNumber") == 0) {
@@ -367,38 +353,29 @@ int VideoStreamIGTLinkReceiver::ParseConfigForClient()
         if(this->UDPClientPort<0 || this->UDPClientPort>65535)
         {
           fprintf (stderr, "Invalid parameter for server port number should between 0 and 65525.");
-          iRet = 1;
-          arttributNum ++;
+          return 1;
         }
-        else
-        {
-          iRet = 0;
-        }
-        
       }
       if (strTag[0].compare ("DeviceName") == 0)
       {
         this->deviceName =strTag[1].c_str();
-        arttributNum ++;
       }
       if (strTag[0].compare ("TransportMethod") == 0)
       {
         this->transportMethod = atoi(strTag[1].c_str());
-        arttributNum ++;
       }
       if (strTag[0].compare ("UseCompress") == 0)
       {
         this->useCompress = atoi(strTag[1].c_str());
-        arttributNum ++;
+      }
+      
+      if (strTag[0].compare ("DecodedFile") == 0)
+      {
+        this->kpOuputFileName = std::string(strTag[1].c_str());
       }
     }
-    if (arttributNum ==20)
-    {
-      break;
-    }
-    
   }
-  return iRet;
+  return 0;
 }
 
 void VideoStreamIGTLinkReceiver::SetWidth(int iWidth)
@@ -435,7 +412,7 @@ int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream)
   if (useCompress)
   {
     this->SetDecodedNal();
-    int status = H264DecodeInstance->DecodeSingleNal(this->pSVCDecoder, bitStream, this->decodedNal, kpOuputFileName, Width, Height, StreamLength, pOptionFileName);
+    int status = H264DecodeInstance->DecodeSingleNal(this->pSVCDecoder, bitStream, this->decodedNal, kpOuputFileName.c_str(), Width, Height, StreamLength);
     // return 2 for succefully decode one frame
     return status;
   }
@@ -443,7 +420,7 @@ int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream)
   {
     //std::cerr << "No using compression, data size in byte is: " << Width*Height*3/2  <<std::endl;
     FILE* pYuvFile    = NULL;
-    pYuvFile = fopen (kpOuputFileName, "ab");
+    pYuvFile = fopen (kpOuputFileName.c_str(), "ab");
     unsigned char* pData[3];
     int iStride[2] = {Width, Width/2};
     pData[0] = bitStream;

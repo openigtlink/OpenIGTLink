@@ -73,7 +73,7 @@ public:
   void ComposeByteSteam(igtl_uint8** inputData, SBufferInfo bufInfo, igtl_uint8 *outputByteStream,  int iWidth, int iHeight);
   
   int DecodeSingleNal (ISVCDecoder* pDecoder, unsigned char* kpH264BitStream,igtl_uint8* outputByteStream, const char* kpOuputFileName,
-                                            igtl_int32& iWidth, igtl_int32& iHeight, igtl_int32& iStreamSize, const char* pOptionFileName);
+                                            igtl_int32& iWidth, igtl_int32& iHeight, igtl_int32& iStreamSize);
 };
 
 #endif

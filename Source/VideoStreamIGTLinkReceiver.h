@@ -67,9 +67,7 @@ public:
   
   unsigned char* decodedNal;
   
-  char* kpOuputFileName;
-  
-  char* pOptionFileName;
+  std::string kpOuputFileName;
   
   igtl::MutexLock::Pointer glock;
   
