@@ -466,10 +466,16 @@ void H264Encoder::SetUseCompression(bool useCompression)
 int H264Encoder::EncodeSingleFrameIntoVideoMSG(SSourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage)
 {
   int encodeRet = -1;
+  int iSourceWidth = pSrcPic->iPicWidth;
+  int iSourceHeight = pSrcPic->iPicHeight;
+  if (iSourceWidth != this->sSvcParam.iPicWidth || iSourceHeight != this->sSvcParam.iPicHeight)
+  {
+    this->sSvcParam.iPicWidth = iSourceWidth;
+    this->sSvcParam.iPicHeight = iSourceHeight;
+    this->InitializeEncoder();
+  }
   if (this->InitializationDone == true)
   {
-    int iSourceWidth = pSrcPic->iPicWidth;
-    int iSourceHeight = pSrcPic->iPicHeight;
     pSrcPic->iStride[0] = iSourceWidth;
     pSrcPic->iStride[1] = pSrcPic->iStride[2] = pSrcPic->iStride[0] >> 1;
     int kiPicResSize = iSourceWidth * iSourceHeight * 3 >> 1;
