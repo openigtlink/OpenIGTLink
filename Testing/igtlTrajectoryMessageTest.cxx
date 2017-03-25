@@ -11,6 +11,7 @@
  
  =========================================================================*/
 
+//#define IGTL_LEGACY_TEST
 #include "igtlTrajectoryMessage.h"
 #include "igtlutil/igtl_test_data_trajectory.h"
 #include "igtlMessageDebugFunction.h"
@@ -60,7 +61,23 @@ void BuildUpElements()
   trajectorySendMsg->AddTrajectoryElement(trajectoryElement0);
   trajectorySendMsg->AddTrajectoryElement(trajectoryElement1);
   trajectorySendMsg->AddTrajectoryElement(trajectoryElement2);
-  
+}
+
+TEST(TrajectoryMessageTest, DeprecatedMethodTest)
+{
+  BuildUpElements();
+  int size = trajectorySendMsg->GetNumberOfTrajectoryElement();
+  EXPECT_EQ(size, 3);
+  igtl::TrajectoryElement::Pointer trajectoryElementNotUsed = igtl::TrajectoryElement::New();
+  trajectorySendMsg->ClearTrajectoryElement(trajectoryElementNotUsed);
+  size = trajectorySendMsg->GetNumberOfTrajectoryElement();
+  EXPECT_EQ(size, 0);
+  BuildUpElements();
+  size = trajectorySendMsg->GetNumberOfTrajectoryElement();
+  EXPECT_EQ(size, 3);
+  trajectorySendMsg->ClearTrajectoryElement(trajectoryElementNotUsed);
+  size = trajectorySendMsg->GetNumberOfTrajectoryElement();
+  EXPECT_EQ(size, 0);
 }
 
 TEST(TrajectoryMessageTest, PackFormatVersion1)

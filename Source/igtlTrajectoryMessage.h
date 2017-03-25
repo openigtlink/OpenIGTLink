@@ -185,9 +185,13 @@ public:
 
   /// Adds a trajectory to the list.
   int  AddTrajectoryElement(TrajectoryElement::Pointer& elem);
-
+  
   /// Clears the all trajectory from the list.
-  void ClearTrajectoryElement(TrajectoryElement::Pointer& elem);
+  igtlLegacyMacro(
+  void ClearTrajectoryElement(TrajectoryElement::Pointer& elem));
+  
+  /// Clears all trajectory elements from the list.
+  void ClearAllTrajectoryElements();
 
   /// Gets the number of trajectory in the list.
   int  GetNumberOfTrajectoryElement();
