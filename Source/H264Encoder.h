@@ -86,7 +86,9 @@ class H264Encoder
 public:
   H264Encoder(char * configFile = NULL);
   ~H264Encoder();
-  
+
+  int FillSpecificParameters(SEncParamExt& sParam);
+
   void SetConfigurationFile(std::string configFile);
   
   /**
