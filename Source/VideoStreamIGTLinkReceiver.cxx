@@ -33,7 +33,7 @@ void* ThreadFunctionUnWrap(void* ptr)
   // Get thread information
   igtl::MultiThreader::ThreadInfo* info =
   static_cast<igtl::MultiThreader::ThreadInfo*>(ptr);
-  const char *deviceType = "Video";
+  const char *deviceType = "VIDEO";
   Wrapper parentObj = *(static_cast<Wrapper*>(info->UserData));
   const char * videoDeviceName = parentObj.receiver->deviceName.c_str();
   while(1)

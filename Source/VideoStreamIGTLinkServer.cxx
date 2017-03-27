@@ -30,6 +30,12 @@ VideoStreamIGTLinkServer::VideoStreamIGTLinkServer(char *argv)
 {
   this->videoEncoder = new H264Encoder();
   pSrcPic = new SSourcePicture;
+  pSrcPic->iColorFormat = videoFormatI420;
+  pSrcPic->uiTimeStamp = 0;
+  pSrcPic->iPicHeight = videoEncoder->GetPicHeight();
+  pSrcPic->iPicWidth = videoEncoder->GetPicWidth();
+  pSrcPic->iStride[0] = pSrcPic->iPicWidth;
+  pSrcPic->iStride[2] = pSrcPic->iStride[1] = pSrcPic->iPicWidth>>1;
   this->serverConnected = false;
   this->augments = std::string(argv);
   this->waitSTTCommand = true;

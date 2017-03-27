@@ -120,7 +120,17 @@ public:
   
   void SetPicHeight(unsigned int height);
   
+  unsigned int GetPicWidth(){return this->sSvcParam.iPicWidth;};
+  
+  unsigned int GetPicHeight(){return this->sSvcParam.iPicHeight;};
+  
   void SetUseCompression(bool useCompression);
+  
+  bool GetUseCompression(){return useCompress;};
+  
+  void SetLosslessLink(bool isLossLessLink);
+
+  bool GetLosslessLink(){return this->sSvcParam.bIsLosslessLink;};
   
 private:
   int ParseLayerConfig (string strTag[], const int iLayer, SEncParamExt& pSvcParam);

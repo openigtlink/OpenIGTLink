@@ -134,6 +134,12 @@ H264Encoder::H264Encoder(char *configFile)
   {
     this->configFile = std::string(configFile);
   }
+  WelsCreateSVCEncoder(&(this->pSVCEncoder));
+  
+  this->pSVCEncoder->GetDefaultParams (&sSvcParam);
+  
+  FillSpecificParameters (sSvcParam);
+
   this->InitializationDone = false;
 }
 
@@ -151,9 +157,10 @@ int H264Encoder::FillSpecificParameters(SEncParamExt& sParam) {
   sParam.iPicHeight = 720;                  // height of picture in samples
   sParam.iTargetBitrate = 2500000;              // target bitrate desired
   sParam.iMaxBitrate = UNSPECIFIED_BIT_RATE;
-  sParam.iRCMode = RC_QUALITY_MODE;      //  rc mode control
-  sParam.iTemporalLayerNum = 3;    // layer number at temporal level
-  sParam.iSpatialLayerNum = 4;    // layer number at spatial level
+  sParam.iRCMode = RC_OFF_MODE;      //  rc mode control
+  sParam.bIsLosslessLink = true;
+  sParam.iTemporalLayerNum = 2;    // layer number at temporal level
+  sParam.iSpatialLayerNum = 1;    // layer number at spatial level
   sParam.bEnableDenoise = 0;    // denoise control
   sParam.bEnableBackgroundDetection = 1; // background detection control
   sParam.bEnableAdaptiveQuant = 1; // adaptive quantization control
@@ -167,34 +174,6 @@ int H264Encoder::FillSpecificParameters(SEncParamExt& sParam) {
   sParam.bSimulcastAVC = false;
   int iIndexLayer = 0;
   sParam.sSpatialLayers[iIndexLayer].uiProfileIdc = PRO_BASELINE;
-  sParam.sSpatialLayers[iIndexLayer].iVideoWidth = 160;
-  sParam.sSpatialLayers[iIndexLayer].iVideoHeight = 90;
-  sParam.sSpatialLayers[iIndexLayer].fFrameRate = 7.5f;
-  sParam.sSpatialLayers[iIndexLayer].iSpatialBitrate = 64000;
-  sParam.sSpatialLayers[iIndexLayer].iMaxSpatialBitrate = UNSPECIFIED_BIT_RATE;
-  sParam.sSpatialLayers[iIndexLayer].sSliceArgument.uiSliceMode = SM_SINGLE_SLICE;
-
-  ++iIndexLayer;
-  sParam.sSpatialLayers[iIndexLayer].uiProfileIdc = PRO_SCALABLE_BASELINE;
-  sParam.sSpatialLayers[iIndexLayer].iVideoWidth = 320;
-  sParam.sSpatialLayers[iIndexLayer].iVideoHeight = 180;
-  sParam.sSpatialLayers[iIndexLayer].fFrameRate = 15.0f;
-  sParam.sSpatialLayers[iIndexLayer].iSpatialBitrate = 160000;
-  sParam.sSpatialLayers[iIndexLayer].iMaxSpatialBitrate = UNSPECIFIED_BIT_RATE;
-  sParam.sSpatialLayers[iIndexLayer].sSliceArgument.uiSliceMode = SM_SINGLE_SLICE;
-
-  ++iIndexLayer;
-  sParam.sSpatialLayers[iIndexLayer].uiProfileIdc = PRO_SCALABLE_BASELINE;
-  sParam.sSpatialLayers[iIndexLayer].iVideoWidth = 640;
-  sParam.sSpatialLayers[iIndexLayer].iVideoHeight = 360;
-  sParam.sSpatialLayers[iIndexLayer].fFrameRate = 30.0f;
-  sParam.sSpatialLayers[iIndexLayer].iSpatialBitrate = 512000;
-  sParam.sSpatialLayers[iIndexLayer].iMaxSpatialBitrate = UNSPECIFIED_BIT_RATE;
-  sParam.sSpatialLayers[iIndexLayer].sSliceArgument.uiSliceMode = SM_SINGLE_SLICE;
-  sParam.sSpatialLayers[iIndexLayer].sSliceArgument.uiSliceNum = 1;
-
-  ++iIndexLayer;
-  sParam.sSpatialLayers[iIndexLayer].uiProfileIdc = PRO_SCALABLE_BASELINE;
   sParam.sSpatialLayers[iIndexLayer].iVideoWidth = 1280;
   sParam.sSpatialLayers[iIndexLayer].iVideoHeight = 720;
   sParam.sSpatialLayers[iIndexLayer].fFrameRate = 30.0f;
@@ -227,9 +206,7 @@ int H264Encoder::ParseLayerConfig (string strTag[], const int iLayer, SEncParamE
   
   string str_ ("SlicesAssign");
   const int kiSize = (int)str_.size();
-  
-  pDLayer->iVideoWidth = this->sSvcParam.iPicWidth;
-  pDLayer->iVideoHeight = this->sSvcParam.iPicHeight;
+
   if (!strTag[0].empty())
   {
     if (strTag[0].compare ("FrameWidth") == 0) {
@@ -295,7 +272,6 @@ int H264Encoder::ParseLayerConfig (string strTag[], const int iLayer, SEncParamE
 int H264Encoder::ParseConfig() {
   string strTag[4];
   int32_t iRet = 0;
-  int8_t iLayerCount = 0;
   
   while (!cRdCfg.EndOfFile()) {
     long iRd = cRdCfg.ReadLine (&strTag[0]);
@@ -438,7 +414,13 @@ int H264Encoder::ParseConfig() {
         continue;
       if (strTag[0].compare ("LayerIndex") == 0) {
         layerIndex = atoi(strTag[1].c_str());
-        actLayerConfigNum++;
+        if(layerIndex>=0)
+        {
+          SSpatialLayerConfig* pDLayer = &sSvcParam.sSpatialLayers[layerIndex];
+          pDLayer->iVideoWidth = this->sSvcParam.iPicWidth;
+          pDLayer->iVideoHeight = this->sSvcParam.iPicHeight;
+          actLayerConfigNum++;
+        }
       }
       if(layerIndex>=0)
       {
@@ -456,61 +438,59 @@ int H264Encoder::ParseConfig() {
   return iRet;
 }
 
+void H264Encoder::SetLosslessLink(bool isLossLessLink)
+{
+  this->sSvcParam.bIsLosslessLink = isLossLessLink;
+}
+
 int H264Encoder::InitializeEncoder()
 {
   //------------------------------------------------------------
   int iRet = 0;
-  iRet = WelsCreateSVCEncoder(&(this->pSVCEncoder));
-  
-  // Preparing encoding process
-  
-  // Inactive with sink with output file handler
-  unsigned int picWidth = sSvcParam.iPicWidth;
-  unsigned int picHeight = sSvcParam.iPicHeight;
-  this->pSVCEncoder->GetDefaultParams (&sSvcParam);
-  this->sSvcParam.iPicHeight = picHeight;
-  this->sSvcParam.iPicWidth = picWidth;
-  
-  FillSpecificParameters (sSvcParam);
-  // if configure file exit, reading configure file firstly
   
   if (this->configFile=="")
   {
-    fprintf (stderr, "No configuration file specified. \n");
-    iRet = 1;
-    goto INSIDE_MEM_FREE;
-  }
-  
-  cRdCfg.Openf (this->configFile.c_str());// to do get the first augments from this->augments.
-  if (cRdCfg.ExistFile())
-  {
-    iRet = ParseConfig();
+    fprintf (stderr, "No configuration file specified. Use Default Parameters\n");
+    iRet = this->pSVCEncoder->InitializeExt (&sSvcParam);
     if (iRet) {
       fprintf (stderr, "parse svc parameter config file failed.\n");
-      iRet = 1;
       goto INSIDE_MEM_FREE;
     }
+    this->InitializationDone = true;
+    return iRet;
   }
   else
   {
-    fprintf (stderr, "Specified file: %s not exist, maybe invalid path or parameter settting.\n",
-             cRdCfg.GetFileName().c_str());
-    iRet = 1;
-    goto INSIDE_MEM_FREE;
-  }
-  static int     g_LevelSetting = WELS_LOG_ERROR;
-  this->pSVCEncoder->SetOption (ENCODER_OPTION_TRACE_LEVEL, &g_LevelSetting);
-  //finish reading the configuration
-  
-  //  sSvcParam.bSimulcastAVC = true;
-  if (cmResultSuccess != this->pSVCEncoder->InitializeExt (&sSvcParam)) { // SVC encoder initialization
-    fprintf (stderr, "SVC encoder Initialize failed\n");
-    iRet = 1;
-    goto INSIDE_MEM_FREE;
-  }
+    cRdCfg.Openf (this->configFile.c_str());// to do get the first augments from this->augments.
+    if (cRdCfg.ExistFile())
+    {
+      iRet = ParseConfig();
+      if (iRet) {
+        fprintf (stderr, "parse svc parameter config file failed.\n");
+        goto INSIDE_MEM_FREE;
+      }
+    }
+    else
+    {
+      fprintf (stderr, "Specified file: %s not exist, maybe invalid path or parameter settting.\n",
+               cRdCfg.GetFileName().c_str());
+      iRet = 1;
+      goto INSIDE_MEM_FREE;
+    }
+    static int     g_LevelSetting = WELS_LOG_ERROR;
+    this->pSVCEncoder->SetOption (ENCODER_OPTION_TRACE_LEVEL, &g_LevelSetting);
+    //finish reading the configuration
+    
+    //  sSvcParam.bSimulcastAVC = true;
+    if (cmResultSuccess != this->pSVCEncoder->InitializeExt (&sSvcParam)) { // SVC encoder initialization
+      fprintf (stderr, "SVC encoder Initialize failed\n");
+      iRet = 1;
+      goto INSIDE_MEM_FREE;
+    }
 
-  this->InitializationDone = true;
-  return 0;
+    this->InitializationDone = true;
+    return 0;
+  }
   
 INSIDE_MEM_FREE:
   this->InitializationDone = false;
@@ -521,11 +501,21 @@ INSIDE_MEM_FREE:
 void H264Encoder::SetPicWidth(unsigned int width)
 {
   this->sSvcParam.iPicWidth = width;
+  if(sSvcParam.iSpatialLayerNum)
+  {
+    SSpatialLayerConfig* pDLayer = &sSvcParam.sSpatialLayers[0]; //reset only the first spatial layer
+    pDLayer->iVideoWidth = this->sSvcParam.iPicWidth;
+  }
 }
 
 void H264Encoder::SetPicHeight(unsigned int height)
 {
   this->sSvcParam.iPicHeight = height;
+  if(sSvcParam.iSpatialLayerNum)
+  {
+    SSpatialLayerConfig* pDLayer = &sSvcParam.sSpatialLayers[0]; //reset only the first spatial layer
+    pDLayer->iVideoHeight = this->sSvcParam.iPicHeight;
+  }
 }
 
 void H264Encoder::SetUseCompression(bool useCompression)
@@ -540,8 +530,8 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SSourcePicture* pSrcPic, igtl::Vi
   int iSourceHeight = pSrcPic->iPicHeight;
   if (iSourceWidth != this->sSvcParam.iPicWidth || iSourceHeight != this->sSvcParam.iPicHeight)
   {
-    this->sSvcParam.iPicWidth = iSourceWidth;
-    this->sSvcParam.iPicHeight = iSourceHeight;
+    this->SetPicWidth(iSourceWidth);
+    this->SetPicHeight(iSourceHeight);
     this->InitializeEncoder();
   }
   if (this->InitializationDone == true)
