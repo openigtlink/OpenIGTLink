@@ -480,7 +480,6 @@ static void* ThreadFunctionReadFrameFromFile(void* ptr)
   static_cast<igtl::MultiThreader::ThreadInfo*>(ptr);
   serverPointer parentObj = *(static_cast<serverPointer*>(info->UserData));
   int kiPicResSize = parentObj.server->pSrcPic->iPicWidth*parentObj.server->pSrcPic->iPicHeight*3>>1;
-  igtl_int32 iActualFrameEncodedCount = 0;
   igtl_int32 iFrameNumInFile = -1;
   FILE* pFileYUV = NULL;
   pFileYUV = fopen (parentObj.server->strSeqFile.c_str(), "rb");
@@ -520,13 +519,6 @@ static void* ThreadFunctionReadFrameFromFile(void* ptr)
       fseeko(pFileYUV, 0, SEEK_SET);
 #endif
       while (iFrameIdx < iFrameNumInFile && iFrameIdx < parentObj.server->iTotalFrameToEncode) {
-        
-#ifdef ONLY_ENC_FRAMES_NUM
-        // Only encoded some limited frames here
-        if (iActualFrameEncodedCount >= ONLY_ENC_FRAMES_NUM) {
-          break;
-        }
-#endif//ONLY_ENC_FRAMES_NUM
         bool bCanBeRead = false;
         igtl_uint8* pYUV = new igtl_uint8[kiPicResSize];
         bCanBeRead = (fread (pYUV, 1, kiPicResSize, pFileYUV) == kiPicResSize);
@@ -589,7 +581,7 @@ static void* ThreadFunctionSendPacket(void* ptr)
       {
         if(parentObj.server->socket)
         {
-         int success =  parentObj.server->socket->Send(frameCopy->messagePackPointer, frameCopy->messageDataLength);
+          parentObj.server->socket->Send(frameCopy->messagePackPointer, frameCopy->messageDataLength);
         }
       }
       parentObj.server->glock->Unlock();
@@ -657,13 +649,13 @@ void VideoStreamIGTLinkServer::SendOriginalData()
         videoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
         videoMsg->SetDeviceName(this->deviceName.c_str());
         videoMsg->SetBitStreamSize(kiPicResSize);
-        videoMsg->AllocateBuffer();
+        videoMsg->AllocateScalars();
         videoMsg->SetScalarType(videoMsg->TYPE_UINT8);
         videoMsg->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
         videoMsg->SetWidth(pSrcPic->iPicWidth);
         videoMsg->SetHeight(pSrcPic->iPicHeight);
         videoMsg->SetMessageID(messageID);
-        memcpy(videoMsg->m_Frame, pYUV, kiPicResSize);
+        memcpy(videoMsg->GetPackFragmentPointer(2), pYUV, kiPicResSize);
         ServerTimer->GetTime();
         videoMsg->SetTimeStamp(ServerTimer);
         videoMsg->Pack();
@@ -714,6 +706,7 @@ void* VideoStreamIGTLinkServer::EncodeFile(void)
       this->encodeStartTime = this->ServerTimer->GetTimeStampInNanoseconds();
       iStart = this->encodeStartTime;
       igtl::VideoMessage::Pointer videoMsg = igtl::VideoMessage::New();
+      videoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
       videoMsg->SetDeviceName(this->deviceName.c_str());
       int iEncFrames = this->videoEncoder->EncodeSingleFrameIntoVideoMSG(this->pSrcPic, videoMsg, false);
       this->ServerTimer->GetTime();

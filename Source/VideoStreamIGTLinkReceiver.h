@@ -46,10 +46,11 @@
 class VideoStreamIGTLinkReceiver
 {
 public:
-  VideoStreamIGTLinkReceiver(char *argv[]);
-  ~VideoStreamIGTLinkReceiver(){};
+  VideoStreamIGTLinkReceiver(char * fileName);
   
-  int ProcessVideoStream(igtl_uint8* bitStream);
+  ~VideoStreamIGTLinkReceiver();
+  
+  int ProcessVideoStream(igtl_uint8* bitStream, int streamLength);
   
   bool InitializeClient();
   
@@ -57,15 +58,39 @@ public:
   
   int ParseConfigForClient();
   
+  void SetWidth(int iWidth);
+  
+  void SetHeight(int iHeight);
+  
+  int GetWidth(){return Width;};
+  
+  int GetHeight(){return Height;};
+  
+  void InitializeDecodedFrame();
+  
+  int RunOnTCPSocket();
+  
+  int RunOnUDPSocket();
+  
+  enum
+  {
+    RunOnTCP = 0,
+    RunOnUDP = 1
+  };
+  
+  int GetTransportMethod(){return transportMethod;}
+  
+  std::string GetDeviceName(){return deviceName;}
+  
+private:
+  
+  H264Decode* H264DecodeInstance;
+  
   std::string deviceName;
   
   int transportMethod;
   
-  ISVCDecoder*  pSVCDecoder;
-  
-  SDecodingParam decParam;
-  
-  unsigned char* decodedNal;
+  unsigned char* decodedFrame;
   
   std::string kpOuputFileName;
   
@@ -93,37 +118,11 @@ public:
   
   char codecType[IGTL_VIDEO_CODEC_NAME_SIZE];
   
-  int argc;
-  
-  std::string augments;
-  
-  void SetWidth(int iWidth);
-  
-  void SetHeight(int iHeight);
-  
-  void SetStreamLength(int iStreamLength);
-  
-  void SetDecodedNal();
-  
   int Width;
   
   int Height;
   
-  int StreamLength;
-  
-  int RunOnTCPSocket();
-  
-  int RunOnUDPSocket();
-  
-  H264Decode* H264DecodeInstance;
-  
-  int YUV420ToRGBConversion(igtl_uint8 *RGBFrame, igtl_uint8 * YUV420Frame, int iHeight, int iWidth);
-  
-  int YUV420ToGrayImageConversion(igtl_uint8 *GrayFrame, igtl_uint8 * YUV420Frame, int iHeight, int iWidth);
-  
-  bool flipAtX;
-  
-  bool IsGrayImage;
+  std::string configFile;
 
 };
 

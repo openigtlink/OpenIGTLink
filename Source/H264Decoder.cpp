@@ -46,7 +46,31 @@
 #include "H264Decoder.h"
 
 H264Decode::H264Decode()
-{}
+{
+  WelsCreateDecoder (&this->pDecoder);
+  memset (&this->decParam, 0, sizeof (SDecodingParam));
+  this->decParam.uiTargetDqLayer = UCHAR_MAX;
+  this->decParam.eEcActiveIdc = ERROR_CON_SLICE_COPY;
+  this->decParam.sVideoProperty.eVideoBsType = VIDEO_BITSTREAM_DEFAULT;
+  this->pDecoder->Initialize (&decParam);
+  this->deviceName = "";
+}
+
+H264Decode::~H264Decode()
+{
+  WelsDestroyDecoder(pDecoder);
+  pDecoder = NULL;
+}
+
+std::string H264Decode::GetDeviceName()
+{
+  return this->deviceName;
+}
+
+void H264Decode::SetDeviceName(std::string name)
+{
+  this->deviceName = std::string(name);
+}
 
 void H264Decode::Write2File (FILE* pFp, unsigned char* pData[3], int iStride[2], int iWidth, int iHeight) {
   int   i;
@@ -109,7 +133,7 @@ igtl_int32 iFrameCountTotal = 0;
 
 
 
-void H264Decode::ComposeByteSteam(igtl_uint8** inputData, SBufferInfo bufInfo, igtl_uint8 *outputByteStream,  int iWidth, int iHeight)
+void H264Decode::ComposeByteSteam(igtl_uint8** inputData, SBufferInfo bufInfo, igtl_uint8 *outputFrame,  int iWidth, int iHeight)
 {
   int iStride [2] = {bufInfo.UsrData.sSystemBuffer.iStride[0],bufInfo.UsrData.sSystemBuffer.iStride[1]};
 #pragma omp parallel for default(none) shared(outputByteStream,inputData, iStride, iHeight, iWidth)
@@ -118,7 +142,7 @@ void H264Decode::ComposeByteSteam(igtl_uint8** inputData, SBufferInfo bufInfo, i
     igtl_uint8* pPtr = inputData[0]+i*iStride[0];
     for (int j = 0; j < iWidth; j++)
     {
-      outputByteStream[i*iWidth + j] = pPtr[j];
+      outputFrame[i*iWidth + j] = pPtr[j];
     }
   }
 #pragma omp parallel for default(none) shared(outputByteStream,inputData, iStride, iHeight, iWidth)
@@ -127,7 +151,7 @@ void H264Decode::ComposeByteSteam(igtl_uint8** inputData, SBufferInfo bufInfo, i
     igtl_uint8* pPtr = inputData[1]+i*iStride[1];
     for (int j = 0; j < iWidth/2; j++)
     {
-      outputByteStream[i*iWidth/2 + j + iHeight*iWidth] = pPtr[j];
+      outputFrame[i*iWidth/2 + j + iHeight*iWidth] = pPtr[j];
     }
   }
 #pragma omp parallel for default(none) shared(outputByteStream, inputData, iStride, iHeight, iWidth)
@@ -136,15 +160,31 @@ void H264Decode::ComposeByteSteam(igtl_uint8** inputData, SBufferInfo bufInfo, i
     igtl_uint8* pPtr = inputData[2]+i*iStride[1];
     for (int j = 0; j < iWidth/2; j++)
     {
-      outputByteStream[i*iWidth/2 + j + iHeight*iWidth*5/4] = pPtr[j];
+      outputFrame[i*iWidth/2 + j + iHeight*iWidth*5/4] = pPtr[j];
     }
   }
   
 }
 
-int H264Decode::DecodeSingleNal (ISVCDecoder* pDecoder, unsigned char* kpH264BitStream,igtl_uint8* outputByteStream, const char* kpOuputFileName,
-                         igtl_int32& iWidth, igtl_int32& iHeight, igtl_int32& iStreamSize) {
-  
+int H264Decode::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SSourcePicture* pDecodedPic)
+{
+  if(videoMessage->GetBitStreamSize())
+  {
+    igtl_int32 iWidth = videoMessage->GetWidth();
+    igtl_int32 iHeight = videoMessage->GetHeight();
+    igtl_int32 iStreamSize = videoMessage->GetBitStreamSize();
+    pDecodedPic->pData[1]= pDecodedPic->pData[0] + iWidth*iHeight;
+    pDecodedPic->pData[2]= pDecodedPic->pData[1] + iWidth*iHeight/4;
+    pDecodedPic->iStride[0] = iWidth;
+    pDecodedPic->iStride[1] = pDecodedPic->iStride[2] = iWidth>>1;
+    pDecodedPic->iStride[3] = 0;
+    int iRet = this->DecodeBitStreamIntoFrame(videoMessage->GetPackFragmentPointer(2), pDecodedPic->pData[0], iWidth, iHeight, iStreamSize);
+    return iRet;
+  }
+  return -1;
+}
+
+int H264Decode::DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_uint8* outputFrame, igtl_int32& iWidth, igtl_int32& iHeight, igtl_int32& iStreamSize,const char* kpOuputFileName) {
   
   unsigned long long uiTimeStamp = 0;
   igtl_int64 iStart = 0, iEnd = 0, iTotal = 0;
@@ -159,7 +199,6 @@ int H264Decode::DecodeSingleNal (ISVCDecoder* pDecoder, unsigned char* kpH264Bit
   
   igtl_int32 iBufPos = 0;
   igtl_int32 i = 0;
-  igtl_int32 iLastWidth = 0, iLastHeight = 0;
   igtl_int32 iFrameCount = 0;
   igtl_int32 iEndOfStreamFlag = 0;
   //for coverage test purpose
@@ -168,26 +207,14 @@ int H264Decode::DecodeSingleNal (ISVCDecoder* pDecoder, unsigned char* kpH264Bit
   //~end for
   double dElapsed = 0;
   
-  if (pDecoder == NULL) return -1;
-  
-  
   FILE* pYuvFile    = NULL;
-  FILE* pOptionFile = NULL;
   // Lenght input mode support
   if (kpOuputFileName) {
     pYuvFile = fopen (kpOuputFileName, "ab");
     if (pYuvFile == NULL) {
       fprintf (stderr, "Can not open yuv file to output result of decoding..\n");
-      // any options
-      //return; // can let decoder work in quiet mode, no writing any output
-    } //else
-    //fprintf (stderr, "Sequence output file name: %s..\n", kpOuputFileName);
-  } else {
-    fprintf (stderr, "Can not find any output file to write..\n");
-    // any options
+    }
   }
-  
-  //printf ("------------------------------------------------------\n");
   
   if (iStreamSize <= 0) {
     //fprintf (stderr, "Current Bit Stream File is too small, read error!!!!\n");
@@ -241,16 +268,6 @@ int H264Decode::DecodeSingleNal (ISVCDecoder* pDecoder, unsigned char* kpH264Bit
       Process ((void**)pData, &sDstBufInfo, NULL);
       iWidth  = sDstBufInfo.UsrData.sSystemBuffer.iWidth;
       iHeight = sDstBufInfo.UsrData.sSystemBuffer.iHeight;
-      
-      if (pOptionFile != NULL) {
-        if (iWidth != iLastWidth && iHeight != iLastHeight) {
-          fwrite (&iFrameCount, sizeof (iFrameCount), 1, pOptionFile);
-          fwrite (&iWidth , sizeof (iWidth) , 1, pOptionFile);
-          fwrite (&iHeight, sizeof (iHeight), 1, pOptionFile);
-          iLastWidth  = iWidth;
-          iLastHeight = iHeight;
-        }
-      }
       ++ iFrameCount;
     }
     
@@ -266,18 +283,9 @@ int H264Decode::DecodeSingleNal (ISVCDecoder* pDecoder, unsigned char* kpH264Bit
     iTotal = iEnd - iStart;
     if (sDstBufInfo.iBufferStatus == 1) {
       Process ((void**)pData, &sDstBufInfo, pYuvFile);
-      ComposeByteSteam(pData, sDstBufInfo, outputByteStream, iWidth,iHeight);
+      ComposeByteSteam(pData, sDstBufInfo, outputFrame, iWidth,iHeight);
       iWidth  = sDstBufInfo.UsrData.sSystemBuffer.iWidth;
       iHeight = sDstBufInfo.UsrData.sSystemBuffer.iHeight;
-      if (pOptionFile != NULL) {
-        if (iWidth != iLastWidth && iHeight != iLastHeight) {
-          fwrite (&iFrameCount, sizeof (iFrameCount), 1, pOptionFile);
-          fwrite (&iWidth , sizeof (iWidth) , 1, pOptionFile);
-          fwrite (&iHeight, sizeof (iHeight), 1, pOptionFile);
-          iLastWidth  = iWidth;
-          iLastHeight = iHeight;
-        }
-      }
       ++ iFrameCount;
     }
 #endif
@@ -301,10 +309,6 @@ label_exit:
   if (pYuvFile) {
     fclose (pYuvFile);
     pYuvFile = NULL;
-  }
-  if (pOptionFile) {
-    fclose (pOptionFile);
-    pOptionFile = NULL;
   }
   if (iFrameCount)
   {

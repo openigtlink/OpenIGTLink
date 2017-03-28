@@ -27,14 +27,14 @@ int main (int argc, char** argv)
     std::cerr << "    <configurationfile> : file name "  << std::endl;
     exit(0);
   }
-  VideoStreamIGTLinkReceiver receiver= VideoStreamIGTLinkReceiver(argv);
+  VideoStreamIGTLinkReceiver receiver= VideoStreamIGTLinkReceiver(argv[1]);
   if (receiver.InitializeClient())
   {
-    if (receiver.transportMethod == 0)
+    if (receiver.GetTransportMethod() == receiver.RunOnTCP)
     {
       receiver.RunOnTCPSocket();
     }
-    else if(receiver.transportMethod == 1)
+    else if(receiver.GetTransportMethod() == receiver.RunOnUDP)
     {
       receiver.RunOnUDPSocket();
     }

@@ -35,7 +35,7 @@ void* ThreadFunctionUnWrap(void* ptr)
   static_cast<igtl::MultiThreader::ThreadInfo*>(ptr);
   const char *deviceType = "VIDEO";
   Wrapper parentObj = *(static_cast<Wrapper*>(info->UserData));
-  const char * videoDeviceName = parentObj.receiver->deviceName.c_str();
+  const char * videoDeviceName = parentObj.receiver->GetDeviceName().c_str();
   while(1)
   {
     parentObj.wrapper->UnWrapPacketWithTypeAndName(deviceType, videoDeviceName);
@@ -78,31 +78,28 @@ void* ThreadFunctionReadSocket(void* ptr)
   }
 }
 
-VideoStreamIGTLinkReceiver::VideoStreamIGTLinkReceiver(char *argv[])
+VideoStreamIGTLinkReceiver::VideoStreamIGTLinkReceiver(char *fileName)
 {
   this->deviceName = "";
-  this->augments     = argv[1];
+  this->configFile     = fileName;
   this->rtpWrapper = igtl::MessageRTPWrapper::New();
   strncpy(this->codecType, "H264",4);
   this->useCompress      = true;
   
   this->interval = 10; //10ms
-  
-  WelsCreateDecoder (&this->pSVCDecoder);
-  memset (&this->decParam, 0, sizeof (SDecodingParam));
-  this->decParam.uiTargetDqLayer = UCHAR_MAX;
-  this->decParam.eEcActiveIdc = ERROR_CON_SLICE_COPY;
-  this->decParam.sVideoProperty.eVideoBsType = VIDEO_BITSTREAM_DEFAULT;
-  this->pSVCDecoder->Initialize (&decParam);
   this->kpOuputFileName = (char*)"decodedOutput.yuv";
   this->videoMessageBuffer=NULL;
-  this->decodedNal=NULL;
+  this->decodedFrame=NULL;
   socket = igtl::ClientSocket::New();
   UDPSocket = igtl::UDPClientSocket::New();
   this->Height = 0;
   this->Width = 0;
-  this->flipAtX = true;
   this->H264DecodeInstance = new H264Decode();
+}
+
+VideoStreamIGTLinkReceiver::~VideoStreamIGTLinkReceiver()
+{
+  delete H264DecodeInstance;
 }
 
 int VideoStreamIGTLinkReceiver::RunOnTCPSocket()
@@ -158,9 +155,8 @@ int VideoStreamIGTLinkReceiver::RunOnTCPSocket()
       
       igtl::VideoMessage::Pointer videoMsg;
       videoMsg = igtl::VideoMessage::New();
-      videoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
       videoMsg->SetMessageHeader(headerMsg);
-      videoMsg->AllocateBuffer();
+      videoMsg->AllocateScalars();
       // Receive body from the socket
       socket->Receive(videoMsg->GetPackBodyPointer(), videoMsg->GetPackBodySize());
       // Deserialize the transform data
@@ -174,8 +170,7 @@ int VideoStreamIGTLinkReceiver::RunOnTCPSocket()
       }
       this->SetWidth(videoMsg->GetWidth());
       this->SetHeight(videoMsg->GetHeight());
-      int streamLength = videoMsg->GetPackSize()-IGTL_VIDEO_HEADER_SIZE-IGTL_HEADER_SIZE;
-      this->SetStreamLength(streamLength);
+      int streamLength = videoMsg->GetBitStreamSize();
       if (!(this->videoMessageBuffer==NULL))
       {
         delete[] this->videoMessageBuffer;
@@ -183,7 +178,7 @@ int VideoStreamIGTLinkReceiver::RunOnTCPSocket()
       this->videoMessageBuffer = new igtl_uint8[streamLength];
       memcpy(this->videoMessageBuffer, videoMsg->GetPackFragmentPointer(2), streamLength);
       static int frameNum = 0;
-      int status = this->ProcessVideoStream(this->videoMessageBuffer);
+      int status = this->ProcessVideoStream(this->videoMessageBuffer,streamLength);
       
       if (status == 0)
       {
@@ -202,9 +197,9 @@ int VideoStreamIGTLinkReceiver::RunOnTCPSocket()
     }
     igtl::Sleep(20);
   }
-  WelsDestroyDecoder(this->pSVCDecoder);
   return 1;
 }
+
 
 void VideoStreamIGTLinkReceiver::SendStopMessage()
 {
@@ -264,10 +259,9 @@ int VideoStreamIGTLinkReceiver::RunOnUDPSocket()
       {
         memcpy(videoMultiPKTMSG->GetPackPointer(), message, MSGLength);
         videoMultiPKTMSG->Unpack(0);
+        int streamLength = videoMultiPKTMSG->GetBitStreamSize();
         this->SetWidth(videoMultiPKTMSG->GetWidth());
         this->SetHeight(videoMultiPKTMSG->GetHeight());
-        int streamLength = videoMultiPKTMSG->GetBitStreamSize();
-        this->SetStreamLength(streamLength);
         if (!(this->videoMessageBuffer==NULL))
         {
           delete[] this->videoMessageBuffer;
@@ -275,7 +269,7 @@ int VideoStreamIGTLinkReceiver::RunOnUDPSocket()
         this->videoMessageBuffer = new igtl_uint8[streamLength];
         memcpy(this->videoMessageBuffer, videoMultiPKTMSG->GetPackFragmentPointer(2), streamLength);
         
-        int status = this->ProcessVideoStream(this->videoMessageBuffer);
+        int status = this->ProcessVideoStream(this->videoMessageBuffer,streamLength);
         
         if (status == 0)
         {
@@ -295,17 +289,17 @@ int VideoStreamIGTLinkReceiver::RunOnUDPSocket()
 bool VideoStreamIGTLinkReceiver::InitializeClient()
 {
   // if configure file exit, reading configure file firstly
-  if(strcmp(this->augments.c_str(),"")==0)
+  if(strcmp(this->configFile.c_str(),"")==0)
   {
     fprintf (stdout, "The udp/tcp selection is upto the application.\n");
     return true;
   }
   else
   {
-    cRdCfg.Openf (this->augments.c_str());// to do get the first augments from this->augments.
+    cRdCfg.Openf (this->configFile.c_str());// to do get the first configFile from this->configFile.
     if (cRdCfg.ExistFile())
     {
-      cRdCfg.Openf (this->augments.c_str());// reset the file read pointer to the beginning.
+      cRdCfg.Openf (this->configFile.c_str());// reset the file read pointer to the beginning.
       int iRet = ParseConfigForClient();
       if (iRet == -1) {
         fprintf (stderr, "parse client parameter config file failed.\n");
@@ -388,22 +382,17 @@ void VideoStreamIGTLinkReceiver::SetHeight(int iHeight)
   this->Height = iHeight;
 }
 
-void VideoStreamIGTLinkReceiver::SetStreamLength(int iStreamLength)
+void VideoStreamIGTLinkReceiver::InitializeDecodedFrame()
 {
-  this->StreamLength = iStreamLength;
-}
-
-void VideoStreamIGTLinkReceiver::SetDecodedNal()
-{
-  if (!(this->decodedNal == NULL))
+  if (!(this->decodedFrame == NULL))
   {
-    delete[] this->decodedNal;
+    delete[] this->decodedFrame;
   }
-  this->decodedNal = NULL;
-  this->decodedNal = new unsigned char[this->Width*this->Height*3>>1];
+  this->decodedFrame = NULL;
+  this->decodedFrame = new unsigned char[this->Width*this->Height*3>>1];
 }
 
-int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream)
+int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream, int streamLength)
 {
   //std::cerr << "Receiving Video data type." << std::endl;
   //this->videoMessageBuffer = new igtl_uint8[StreamLength];
@@ -411,8 +400,8 @@ int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream)
   
   if (useCompress)
   {
-    this->SetDecodedNal();
-    int status = H264DecodeInstance->DecodeSingleNal(this->pSVCDecoder, bitStream, this->decodedNal, kpOuputFileName.c_str(), Width, Height, StreamLength);
+    this->InitializeDecodedFrame();
+    int status = H264DecodeInstance->DecodeBitStreamIntoFrame(bitStream, this->decodedFrame, Width, Height, streamLength, kpOuputFileName.c_str());
     // return 2 for succefully decode one frame
     return status;
   }
@@ -432,108 +421,5 @@ int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream)
     return 2;
   }
   return 0;
-}
-
-
-int VideoStreamIGTLinkReceiver::YUV420ToRGBConversion(igtl_uint8 *RGBFrame, igtl_uint8 * YUV420Frame, int iHeight, int iWidth)
-{
-  int componentLength = iHeight*iWidth;
-  const igtl_uint8 *srcY = YUV420Frame;
-  const igtl_uint8 *srcU = YUV420Frame+componentLength;
-  const igtl_uint8 *srcV = YUV420Frame+componentLength*5/4;
-  igtl_uint8 * YUV444 = new igtl_uint8[componentLength * 3];
-  igtl_uint8 *dstY = YUV444;
-  igtl_uint8 *dstU = dstY + componentLength;
-  igtl_uint8 *dstV = dstU + componentLength;
-  
-  memcpy(dstY, srcY, componentLength);
-  const int halfHeight = iHeight/2;
-  const int halfWidth = iWidth/2;
-  
-#pragma omp parallel for default(none) shared(dstV,dstU,srcV,srcU,iWidth)
-  for (int y = 0; y < halfHeight; y++) {
-    for (int x = 0; x < halfWidth; x++) {
-      dstU[2 * x + 2 * y*iWidth] = dstU[2 * x + 1 + 2 * y*iWidth] = srcU[x + y*iWidth/2];
-      dstV[2 * x + 2 * y*iWidth] = dstV[2 * x + 1 + 2 * y*iWidth] = srcV[x + y*iWidth/2];
-    }
-    memcpy(&dstU[(2 * y + 1)*iWidth], &dstU[(2 * y)*iWidth], iWidth);
-    memcpy(&dstV[(2 * y + 1)*iWidth], &dstV[(2 * y)*iWidth], iWidth);
-  }
-  
-  
-  const int yOffset = 16;
-  const int cZero = 128;
-  int yMult, rvMult, guMult, gvMult, buMult;
-  yMult =   76309;
-  rvMult = 117489;
-  guMult = -13975;
-  gvMult = -34925;
-  buMult = 138438;
-  
-  static unsigned char clp_buf[384+256+384];
-  static unsigned char *clip_buf = clp_buf+384;
-  
-  // initialize clipping table
-  memset(clp_buf, 0, 384);
-  
-  for (int i = 0; i < 256; i++) {
-    clp_buf[384+i] = i;
-  }
-  memset(clp_buf+384+256, 255, 384);
-  
-  
-#pragma omp parallel for default(none) shared(dstY,dstU,dstV,RGBFrame,yMult,rvMult,guMult,gvMult,buMult,clip_buf,componentLength)// num_threads(2)
-  for (int i = 0; i < componentLength; ++i) {
-    const int Y_tmp = ((int)dstY[i] - yOffset) * yMult;
-    const int U_tmp = (int)dstU[i] - cZero;
-    const int V_tmp = (int)dstV[i] - cZero;
-    
-    const int R_tmp = (Y_tmp                  + V_tmp * rvMult ) >> 16;//32 to 16 bit conversion by left shifting
-    const int G_tmp = (Y_tmp + U_tmp * guMult + V_tmp * gvMult ) >> 16;
-    const int B_tmp = (Y_tmp + U_tmp * buMult                  ) >> 16;
-    
-    if (flipAtX)
-    {
-      int pos = componentLength-i-Width+(i%Width)*2;
-      RGBFrame[3*pos] = clip_buf[R_tmp];
-      RGBFrame[3*pos+1] = clip_buf[G_tmp];
-      RGBFrame[3*pos+2] = clip_buf[B_tmp];
-    }
-    else
-    {
-      RGBFrame[3*i]   = clip_buf[R_tmp];
-      RGBFrame[3*i+1] = clip_buf[G_tmp];
-      RGBFrame[3*i+2] = clip_buf[B_tmp];
-    }
-  }
-  delete [] YUV444;
-  YUV444 = NULL;
-  dstY = NULL;
-  dstU = NULL;
-  dstV = NULL;
-  return 1;
-}
-
-
-int VideoStreamIGTLinkReceiver::YUV420ToGrayImageConversion(igtl_uint8 *GrayFrame, igtl_uint8 * YUV420Frame, int iHeight, int iWidth)
-{
-  int componentLength = iHeight*iWidth;
-  for (int i = 0,j= 0; i < 3*componentLength; i=i+3,j++) {
-    if (flipAtX)
-    {
-      int pos = componentLength-j-Width+(i%Width)*2;
-      GrayFrame[i] = YUV420Frame[pos];
-      GrayFrame[i+1] = YUV420Frame[pos];
-      GrayFrame[i+2] = YUV420Frame[pos];
-    }
-    else
-    {
-      GrayFrame[i] = YUV420Frame[j];
-      GrayFrame[i+1] = YUV420Frame[j];
-      GrayFrame[i+2] = YUV420Frame[j];
-    }
-    
-  }
-  return 1;
 }
 

@@ -112,10 +112,6 @@ public:
    */
   int GetVideoFrameType(){return encodedFrameType;};
   
-  void SetCodecName(std::string name);
-  
-  void SetDeviceName(std::string name);
-  
   void SetPicWidth(unsigned int width);
   
   void SetPicHeight(unsigned int height);
@@ -151,8 +147,6 @@ private:
   SFrameBSInfo sFbi;
   
   bool  useCompress;
-  
-  char  codecName[IGTL_VIDEO_CODEC_NAME_SIZE];
   
   std::string configFile;
     

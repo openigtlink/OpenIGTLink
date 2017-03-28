@@ -107,6 +107,7 @@ int     g_iEncodedFrame  = 0;
 
 
 #include "H264Encoder.h"
+#include "igtlVideoMessage.h"
 
 
 /* Ctrl-C handler */
@@ -118,6 +119,7 @@ static void    SigIntHandler (int a) {
 H264Encoder::H264Encoder(char *configFile)
 {
   this->pSVCEncoder = NULL;
+  
   memset (&sFbi, 0, sizeof (SFrameBSInfo));
   
 #ifdef _MSC_VER
@@ -159,21 +161,25 @@ int H264Encoder::FillSpecificParameters(SEncParamExt& sParam) {
   sParam.iMaxBitrate = UNSPECIFIED_BIT_RATE;
   sParam.iRCMode = RC_OFF_MODE;      //  rc mode control
   sParam.bIsLosslessLink = true;
-  sParam.iTemporalLayerNum = 2;    // layer number at temporal level
+  sParam.iTemporalLayerNum = 1;    // layer number at temporal level
   sParam.iSpatialLayerNum = 1;    // layer number at spatial level
+  sParam.iEntropyCodingModeFlag = 0;
   sParam.bEnableDenoise = 0;    // denoise control
   sParam.bEnableBackgroundDetection = 1; // background detection control
   sParam.bEnableAdaptiveQuant = 1; // adaptive quantization control
-  sParam.bEnableFrameSkip = 1; // frame skipping
+  sParam.bEnableFrameSkip = 0; // frame skipping
   sParam.bEnableLongTermReference = 0; // long term reference control
   sParam.iLtrMarkPeriod = 30;
-  sParam.uiIntraPeriod = 320;           // period of Intra frame
+  sParam.uiIntraPeriod = 16;           // period of Intra frame
   sParam.eSpsPpsIdStrategy = INCREASING_ID;
   sParam.bPrefixNalAddingCtrl = 0;
-  sParam.iComplexityMode = LOW_COMPLEXITY;
+  sParam.iComplexityMode = HIGH_COMPLEXITY;
   sParam.bSimulcastAVC = false;
+  sParam.iMaxQp = 1;
+  sParam.iMinQp = 0;
   int iIndexLayer = 0;
   sParam.sSpatialLayers[iIndexLayer].uiProfileIdc = PRO_BASELINE;
+  sParam.sSpatialLayers[iIndexLayer].uiLevelIdc = LEVEL_5_2;
   sParam.sSpatialLayers[iIndexLayer].iVideoWidth = 1280;
   sParam.sSpatialLayers[iIndexLayer].iVideoHeight = 720;
   sParam.sSpatialLayers[iIndexLayer].fFrameRate = 30.0f;
@@ -546,7 +552,7 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SSourcePicture* pSrcPic, igtl::Vi
       int iLayer = 0;
       encodeRet = pSVCEncoder->EncodeFrame(pSrcPic, &sFbi);
       videoMessage->SetBitStreamSize(sFbi.iFrameSizeInBytes);
-      videoMessage->AllocateBuffer();
+      videoMessage->AllocateScalars();
       videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
       videoMessage->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
       videoMessage->SetWidth(pSrcPic->iPicWidth);
@@ -582,7 +588,7 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SSourcePicture* pSrcPic, igtl::Vi
       static igtl_uint32 messageID = -1;
       videoMessage->SetHeaderVersion(IGTL_HEADER_VERSION_2);
       videoMessage->SetBitStreamSize(kiPicResSize);
-      videoMessage->AllocateBuffer();
+      videoMessage->AllocateScalars();
       videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
       videoMessage->SetEndian(igtl_is_little_endian()==true?IGTL_VIDEO_ENDIAN_LITTLE:IGTL_VIDEO_ENDIAN_BIG); //little endian is 2 big endian is 1
       videoMessage->SetWidth(pSrcPic->iPicWidth);
@@ -595,7 +601,7 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SSourcePicture* pSrcPic, igtl::Vi
       videoMessage->SetFrameType(encodedFrameType);
       messageID ++;
       videoMessage->SetMessageID(messageID);
-      memcpy(videoMessage->m_Frame, pSrcPic->pData[0], kiPicResSize);
+      memcpy(videoMessage->GetPackFragmentPointer(2), pSrcPic->pData[0], kiPicResSize);
     }
     videoMessage->Pack();
     
