@@ -87,13 +87,17 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
   ADD_EXECUTABLE(igtlCommandMessageTest   igtlCommandMessageTest.cxx)
 ENDIF()
 
+IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2") AND BUILD_H264)
+ADD_EXECUTABLE(igtlVideoMessageTest   igtlVideoMessageTest.cxx)
+ENDIF()
+
 
 IF(USE_GTEST)
   SET(GTEST_LINK OpenIGTLink gtest_main gtest gmock_main gmock)
 ELSE()
   SET(GTEST_LINK OpenIGTLink)
 ENDIF()
-  
+
 TARGET_LINK_LIBRARIES(igtlMultiThreaderTest1 OpenIGTLink)
 TARGET_LINK_LIBRARIES(igtlMultiThreaderTest2 OpenIGTLink)
 TARGET_LINK_LIBRARIES(igtlMultiThreaderTest3 OpenIGTLink)
@@ -127,6 +131,7 @@ ENDIF()
 # Message Tests Added in Version 3
 IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
   TARGET_LINK_LIBRARIES(igtlCommandMessageTest ${GTEST_LINK})
+  TARGET_LINK_LIBRARIES(igtlVideoMessageTest ${GTEST_LINK})
 ENDIF()
 
 
@@ -167,9 +172,9 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "1")
   ADD_TEST(igtlTrajectoryMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlTrajectoryMessageTest ${TestStringFormat1})
 ENDIF()
 
+set(TestStringFormat2 "--gtest_filter=*.*FormatVersion2")
 # Message Tests Added in Version 3
 IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
-  set(TestStringFormat2 "--gtest_filter=*.*FormatVersion2")
   ADD_TEST(igtlMessageBaseTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlMessageBaseTest ${TestStringFormat2})
   ADD_TEST(igtlImageMessageTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlImageMessageTest ${TestStringFormat2})
   ADD_TEST(igtlImageMessage2TestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlImageMessage2Test ${TestStringFormat2})
@@ -189,6 +194,15 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
   ADD_TEST(igtlTrajectoryMessageTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlTrajectoryMessageTest ${TestStringFormat2})
   ADD_TEST(igtlTransformMessageTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlTransformMessageTest ${TestStringFormat2})
   ADD_TEST(igtlPositionMessageTest ${OpenIGTLink_EXECUTABLE_PATH}/igtlPositionMessageTest)
+  ## Command message is available in Protocol version 3, however, we will test both header version 1 and 2
   ADD_TEST(igtlCommandMessageTestFormatVersion1 ${OpenIGTLink_EXECUTABLE_PATH}/igtlCommandMessageTest ${TestStringFormat1})
   ADD_TEST(igtlCommandMessageTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlCommandMessageTest ${TestStringFormat2})
 ENDIF()
+
+IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
+  IF(BUILD_H264)
+  ADD_TEST(igtlVideoMessageTestFormatVersion1 ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMessageTest ${TestStringFormat1})
+  #ADD_TEST(igtlVideoMessageTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMessageTest ${TestStringFormat2})
+  ENDIF()
+ENDIF()
+

@@ -141,7 +141,9 @@ H264Encoder::H264Encoder(char *configFile)
   this->pSVCEncoder->GetDefaultParams (&sSvcParam);
   
   FillSpecificParameters (sSvcParam);
-
+  
+  this->useCompress = true;
+  
   this->InitializationDone = false;
 }
 
@@ -155,15 +157,15 @@ int H264Encoder::FillSpecificParameters(SEncParamExt& sParam) {
   /* Test for temporal, spatial, SNR scalability */
   sParam.iUsageType = CAMERA_VIDEO_REAL_TIME;
   sParam.fMaxFrameRate = 60.0f;                // input frame rate
-  sParam.iPicWidth = 1280;                 // width of picture in samples
-  sParam.iPicHeight = 720;                  // height of picture in samples
+  sParam.iPicWidth = 256;                 // width of picture in samples
+  sParam.iPicHeight = 256;                  // height of picture in samples
   sParam.iTargetBitrate = 2500000;              // target bitrate desired
   sParam.iMaxBitrate = UNSPECIFIED_BIT_RATE;
   sParam.iRCMode = RC_OFF_MODE;      //  rc mode control
   sParam.bIsLosslessLink = true;
   sParam.iTemporalLayerNum = 1;    // layer number at temporal level
   sParam.iSpatialLayerNum = 1;    // layer number at spatial level
-  sParam.iEntropyCodingModeFlag = 0;
+  sParam.iEntropyCodingModeFlag = 1;
   sParam.bEnableDenoise = 0;    // denoise control
   sParam.bEnableBackgroundDetection = 1; // background detection control
   sParam.bEnableAdaptiveQuant = 1; // adaptive quantization control
@@ -171,17 +173,19 @@ int H264Encoder::FillSpecificParameters(SEncParamExt& sParam) {
   sParam.bEnableLongTermReference = 0; // long term reference control
   sParam.iLtrMarkPeriod = 30;
   sParam.uiIntraPeriod = 16;           // period of Intra frame
+  sParam.bUseLoadBalancing = false;
   sParam.eSpsPpsIdStrategy = INCREASING_ID;
   sParam.bPrefixNalAddingCtrl = 0;
   sParam.iComplexityMode = HIGH_COMPLEXITY;
   sParam.bSimulcastAVC = false;
   sParam.iMaxQp = 1;
-  sParam.iMinQp = 0;
+  sParam.iMinQp = 1;
   int iIndexLayer = 0;
   sParam.sSpatialLayers[iIndexLayer].uiProfileIdc = PRO_BASELINE;
   sParam.sSpatialLayers[iIndexLayer].uiLevelIdc = LEVEL_5_2;
-  sParam.sSpatialLayers[iIndexLayer].iVideoWidth = 1280;
-  sParam.sSpatialLayers[iIndexLayer].iVideoHeight = 720;
+  sParam.sSpatialLayers[iIndexLayer].iVideoWidth = 256;
+  sParam.sSpatialLayers[iIndexLayer].iVideoHeight = 256;
+  sParam.sSpatialLayers[iIndexLayer].iDLayerQp = 1;
   sParam.sSpatialLayers[iIndexLayer].fFrameRate = 30.0f;
   sParam.sSpatialLayers[iIndexLayer].iSpatialBitrate = 1500000;
   sParam.sSpatialLayers[iIndexLayer].iMaxSpatialBitrate = UNSPECIFIED_BIT_RATE;
@@ -586,7 +590,6 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SSourcePicture* pSrcPic, igtl::Vi
     else
     {
       static igtl_uint32 messageID = -1;
-      videoMessage->SetHeaderVersion(IGTL_HEADER_VERSION_2);
       videoMessage->SetBitStreamSize(kiPicResSize);
       videoMessage->AllocateScalars();
       videoMessage->SetScalarType(videoMessage->TYPE_UINT8);

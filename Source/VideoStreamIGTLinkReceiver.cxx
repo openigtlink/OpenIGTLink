@@ -94,7 +94,7 @@ VideoStreamIGTLinkReceiver::VideoStreamIGTLinkReceiver(char *fileName)
   UDPSocket = igtl::UDPClientSocket::New();
   this->Height = 0;
   this->Width = 0;
-  this->H264DecodeInstance = new H264Decode();
+  this->H264DecodeInstance = new H264Decoder();
 }
 
 VideoStreamIGTLinkReceiver::~VideoStreamIGTLinkReceiver()

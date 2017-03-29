@@ -62,11 +62,11 @@
 #include "igtlVideoMessage.h"
 
 #define NO_DELAY_DECODING
-class H264Decode
+class H264Decoder
 {
 public: 
-  H264Decode();
-  ~H264Decode();
+  H264Decoder();
+  ~H264Decoder();
   
   void Write2File (FILE* pFp, unsigned char* pData[3], int iStride[2], int iWidth, int iHeight);
 

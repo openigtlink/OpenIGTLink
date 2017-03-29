@@ -60,7 +60,7 @@ void BuildUp()
   imageSendMsg2->Pack();
 }
 
-TEST(ImageMessage2Test, Pack)
+TEST(ImageMessage2Test, PackFormatVersion1)
 {
   BuildUp();
   int r = memcmp((const void*)imageSendMsg2->GetPackPointer(), (const void*)test_image_message,
@@ -70,7 +70,7 @@ TEST(ImageMessage2Test, Pack)
   EXPECT_EQ(r, 0);
 }
 
-TEST(ImageMessage2Test, Unpack)
+TEST(ImageMessage2Test, UnpackFormatVersion1)
 {
   igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
   headerMsg->AllocatePack();

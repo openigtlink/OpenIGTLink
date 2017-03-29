@@ -80,7 +80,7 @@ namespace igtl
     this->AddMessageType("COMMAND", (PointerToMessageBaseNew)&igtl::CommandMessage::New);
     this->AddMessageType("RTS_COMMAND", (PointerToMessageBaseNew)&igtl::RTSCommandMessage::New);
 #endif
-#if OpenIGTLink_BUILD_H264 >= 1
+#if (OpenIGTLink_BUILD_H264 >= 1) && (OpenIGTLink_PROTOCOL_VERSION >= 3)
     this->AddMessageType("VIDEO", (PointerToMessageBaseNew)&igtl::VideoMessage::New);
 #endif
   }

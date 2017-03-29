@@ -84,7 +84,7 @@ public:
   
 private:
   
-  H264Decode* H264DecodeInstance;
+  H264Decoder* H264DecodeInstance;
   
   std::string deviceName;
   

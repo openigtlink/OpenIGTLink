@@ -39,7 +39,7 @@ VideoStreamIGTLinkServer::VideoStreamIGTLinkServer(char *argv)
   this->serverConnected = false;
   this->augments = std::string(argv);
   this->waitSTTCommand = true;
-  this->InitializationDone = false;
+  this->serverIsSet = false;
   this->serverPortNumber = -1;
   this->deviceName = "";
   this->serverSocket = igtl::ServerSocket::New();
@@ -64,7 +64,7 @@ VideoStreamIGTLinkServer::VideoStreamIGTLinkServer(char *argv)
 
 int VideoStreamIGTLinkServer::StartTCPServer ()
 {
-  if (this->InitializationDone)
+  if (this->serverIsSet)
   {
     //----------------------------
     
@@ -90,7 +90,7 @@ int VideoStreamIGTLinkServer::StartTCPServer ()
 
 int VideoStreamIGTLinkServer::StartUDPServer ()
 {
-  if (this->InitializationDone)
+  if (this->serverIsSet)
   {
     
     if (this->transportMethod == VideoStreamIGTLinkServer::UseUDP)
@@ -270,7 +270,7 @@ static void* ThreadFunctionServer(void* ptr)
       {
         // Create a message buffer to receive header
         strncpy(parentObj->codecName, "H264", IGTL_VIDEO_CODEC_NAME_SIZE);
-        parentObj->InitializationDone = false;
+        parentObj->serverIsSet = false;
         parentObj->serverConnected     = true;
         parentObj->conditionVar->Signal();
         while (parentObj->serverConnected)
@@ -319,7 +319,7 @@ static void* ThreadFunctionServer(void* ptr)
             parentObj->socket->Skip(headerMsg->GetBodySizeToRead(), 0);
             std::cerr << "Received a STP_VIDEO message." << std::endl;
             std::cerr << "Disconnecting the client." << std::endl;
-            parentObj->InitializationDone = false;
+            parentObj->serverIsSet = false;
             parentObj->serverConnected = false;
             if (parentObj->socket.IsNotNull())
             {
@@ -400,7 +400,7 @@ void VideoStreamIGTLinkServer::SetSrcPicHeight(int height)
   pSrcPic->iPicHeight = height;
 }
 
-int VideoStreamIGTLinkServer::InitializeServer()
+int VideoStreamIGTLinkServer::SetupServer()
 {
   //------------------------------------------------------------
   int iRet = 0;
@@ -452,7 +452,7 @@ int VideoStreamIGTLinkServer::InitializeServer()
   pSrcPic->iStride[1] = pSrcPic->iStride[2] = pSrcPic->iStride[0] >> 1;
   pSrcPic->iStride[3] = 0;
   
-  this->InitializationDone = true;
+  this->serverIsSet = true;
   return true;
 INSIDE_MEM_FREE:
   if (pFpBs) {
@@ -464,7 +464,7 @@ INSIDE_MEM_FREE:
     pSrcPic = NULL;
   }
   this->serverConnected = false;
-  this->InitializationDone = false;
+  this->serverIsSet = false;
   return iRet;
 }
 
@@ -675,9 +675,9 @@ void VideoStreamIGTLinkServer::SendOriginalData()
 
 void* VideoStreamIGTLinkServer::EncodeFile(void)
 {
-  if(!this->InitializationDone)
+  if(!this->serverIsSet)
   {
-    this->InitializeServer();
+    this->SetupServer();
   }
   igtl_int64 iStart = 0, iTotal = 0;
   
@@ -759,7 +759,7 @@ void VideoStreamIGTLinkServer::Stop()
 int VideoStreamIGTLinkServer::EncodeSingleFrame(igtl_uint8* picPointer, bool isGrayImage)
 {
   int encodeRet = -1;
-  if (this->InitializationDone == true)
+  if (this->serverIsSet == true)
   {
     int iSourceWidth = pSrcPic->iPicWidth;
     int iSourceHeight = pSrcPic->iPicHeight;

@@ -62,7 +62,7 @@ public:
   /**
    Parse the configuration file to initialize the encoder and server.
    */
-  int InitializeServer();
+  int SetupServer();
   
   /**
    intialize the encoder
@@ -103,7 +103,7 @@ public:
   /**
    Get the encoder and server initialization status.
    */
-  bool GetInitializationStatus(){return InitializationDone;};
+  bool GetServerSetStatus(){return serverIsSet;};
   
   /**
    Get Server connection status, true for connected, false for not connected
@@ -194,7 +194,7 @@ public:
   
   int transportMethod;
   
-  bool InitializationDone;
+  bool serverIsSet;
   
   igtl::TimeStamp::Pointer ServerTimer;
   

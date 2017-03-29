@@ -45,7 +45,7 @@
 
 #include "H264Decoder.h"
 
-H264Decode::H264Decode()
+H264Decoder::H264Decoder()
 {
   WelsCreateDecoder (&this->pDecoder);
   memset (&this->decParam, 0, sizeof (SDecodingParam));
@@ -56,23 +56,23 @@ H264Decode::H264Decode()
   this->deviceName = "";
 }
 
-H264Decode::~H264Decode()
+H264Decoder::~H264Decoder()
 {
   WelsDestroyDecoder(pDecoder);
   pDecoder = NULL;
 }
 
-std::string H264Decode::GetDeviceName()
+std::string H264Decoder::GetDeviceName()
 {
   return this->deviceName;
 }
 
-void H264Decode::SetDeviceName(std::string name)
+void H264Decoder::SetDeviceName(std::string name)
 {
   this->deviceName = std::string(name);
 }
 
-void H264Decode::Write2File (FILE* pFp, unsigned char* pData[3], int iStride[2], int iWidth, int iHeight) {
+void H264Decoder::Write2File (FILE* pFp, unsigned char* pData[3], int iStride[2], int iWidth, int iHeight) {
   int   i;
   unsigned char*  pPtr = NULL;
   
@@ -98,7 +98,7 @@ void H264Decode::Write2File (FILE* pFp, unsigned char* pData[3], int iStride[2],
 }
 
 
-int H264Decode::Process (void* pDst[3], SBufferInfo* pInfo, FILE* pFp) {
+int H264Decoder::Process (void* pDst[3], SBufferInfo* pInfo, FILE* pFp) {
   
   int iRet = 0;
   
@@ -133,7 +133,7 @@ igtl_int32 iFrameCountTotal = 0;
 
 
 
-void H264Decode::ComposeByteSteam(igtl_uint8** inputData, SBufferInfo bufInfo, igtl_uint8 *outputFrame,  int iWidth, int iHeight)
+void H264Decoder::ComposeByteSteam(igtl_uint8** inputData, SBufferInfo bufInfo, igtl_uint8 *outputFrame,  int iWidth, int iHeight)
 {
   int iStride [2] = {bufInfo.UsrData.sSystemBuffer.iStride[0],bufInfo.UsrData.sSystemBuffer.iStride[1]};
 #pragma omp parallel for default(none) shared(outputByteStream,inputData, iStride, iHeight, iWidth)
@@ -166,7 +166,7 @@ void H264Decode::ComposeByteSteam(igtl_uint8** inputData, SBufferInfo bufInfo, i
   
 }
 
-int H264Decode::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SSourcePicture* pDecodedPic)
+int H264Decoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SSourcePicture* pDecodedPic)
 {
   if(videoMessage->GetBitStreamSize())
   {
@@ -184,7 +184,7 @@ int H264Decode::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, 
   return -1;
 }
 
-int H264Decode::DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_uint8* outputFrame, igtl_int32& iWidth, igtl_int32& iHeight, igtl_int32& iStreamSize,const char* kpOuputFileName) {
+int H264Decoder::DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_uint8* outputFrame, igtl_int32& iWidth, igtl_int32& iHeight, igtl_int32& iStreamSize,const char* kpOuputFileName) {
   
   unsigned long long uiTimeStamp = 0;
   igtl_int64 iStart = 0, iEnd = 0, iTotal = 0;
