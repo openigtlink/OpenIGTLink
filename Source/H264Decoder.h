@@ -56,6 +56,8 @@
 #endif
 
 #include <vector>
+#include <limits.h>
+#include <string.h>
 #include "api/svc/codec_api.h"
 #include "api/svc/codec_app_def.h"
 #include "igtl_types.h"

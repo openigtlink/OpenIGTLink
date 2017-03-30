@@ -27,7 +27,7 @@ branches:
   only:
     - master
     - Version3-Development
-    - Test
+    - VideoStreamMerge
       
 clone_depth: 1
 skip_tags: true

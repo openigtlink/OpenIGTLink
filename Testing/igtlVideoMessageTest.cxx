@@ -10,7 +10,7 @@
  PURPOSE.  See the above copyright notices for more information.
  
  =========================================================================*/
-
+#include <sstream>
 #include "igtlVideoMessage.h"
 #include "H264Encoder.h"
 #include "H264Decoder.h"
@@ -63,7 +63,8 @@ void TestWithVersion(int version)
     sep = "\\";
 #endif
     std::string testFileName(OpenIGTLink_SOURCE_ROOTDIR);
-    testFileName.append(sep).append("Testing").append(sep).append("img").append(sep).append("igtlTestImage").append(std::to_string(i%6+1)).append(".raw");
+    std::string imageIndexStr = static_cast< std::ostringstream & >(( std::ostringstream() << std::dec << (i%6+1))).str();
+    testFileName.append(sep).append("Testing").append(sep).append("img").append(sep).append("igtlTestImage").append(imageIndexStr).append(".raw");
     FILE* pFileYUV = NULL;
     pFileYUV = fopen (testFileName.c_str(), "rb");
     if (pFileYUV != NULL) {

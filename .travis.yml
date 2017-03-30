@@ -29,7 +29,7 @@ before_script:
   - cd    build
 
 script:
-  - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=ON ..
+  - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=ON -DBUILD_H264=ON ..
   - make
   - cd ..
   - mkdir TestBuild

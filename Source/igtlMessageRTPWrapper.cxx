@@ -32,7 +32,7 @@ namespace igtl {
     this->MSGHeader= new igtl_uint8[IGTL_HEADER_SIZE];
     this->extendedHeaderSize = sizeof(igtl_extended_header);
     this->glock = igtl::SimpleMutexLock::New();
-    this->incommingPackets =  PacketBuffer::PacketBuffer();
+    this->incommingPackets =  igtl::PacketBuffer();
     this->reorderBuffer = new igtl::ReorderBuffer();
     this->reorderBufferMap = std::map<igtl_uint32, igtl::ReorderBuffer*>();
     this->fragmentNumberList=std::vector<igtl_uint16>();

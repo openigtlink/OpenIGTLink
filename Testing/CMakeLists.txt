@@ -131,6 +131,8 @@ ENDIF()
 # Message Tests Added in Version 3
 IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
   TARGET_LINK_LIBRARIES(igtlCommandMessageTest ${GTEST_LINK})
+ENDIF()
+IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_H264)
   TARGET_LINK_LIBRARIES(igtlVideoMessageTest ${GTEST_LINK})
 ENDIF()
 
@@ -199,10 +201,8 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
   ADD_TEST(igtlCommandMessageTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlCommandMessageTest ${TestStringFormat2})
 ENDIF()
 
-IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
-  IF(BUILD_H264)
+IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_H264)
   ADD_TEST(igtlVideoMessageTestFormatVersion1 ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMessageTest ${TestStringFormat1})
-  #ADD_TEST(igtlVideoMessageTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMessageTest ${TestStringFormat2})
-  ENDIF()
+  ADD_TEST(igtlVideoMessageTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMessageTest ${TestStringFormat2})
 ENDIF()
 
