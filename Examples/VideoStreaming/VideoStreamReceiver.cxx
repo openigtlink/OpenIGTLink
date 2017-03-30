@@ -12,6 +12,7 @@
  =========================================================================*/
 
 #include "VideoStreamIGTLinkReceiver.h"
+#include "H264Decoder.h"
 
 #if defined(ANDROID_NDK) || defined(APPLE_IOS) || defined (WINDOWS_PHONE)
 extern "C" int EncMain (int argc, char** argv)
@@ -28,6 +29,8 @@ int main (int argc, char** argv)
     exit(0);
   }
   VideoStreamIGTLinkReceiver receiver= VideoStreamIGTLinkReceiver(argv[1]);
+  H264Decoder* decoder = new H264Decoder();
+  receiver.SetDecoder(decoder);
   if (receiver.InitializeClient())
   {
     if (receiver.GetTransportMethod() == receiver.RunOnTCP)

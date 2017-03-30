@@ -62,20 +62,11 @@ H264Decoder::~H264Decoder()
   pDecoder = NULL;
 }
 
-std::string H264Decoder::GetDeviceName()
-{
-  return this->deviceName;
-}
-
-void H264Decoder::SetDeviceName(std::string name)
-{
-  this->deviceName = std::string(name);
-}
-
-void H264Decoder::Write2File (FILE* pFp, unsigned char* pData[3], int iStride[2], int iWidth, int iHeight) {
-  int   i;
+void H264Decoder::Write2File (FILE* pFp, unsigned char* pData[3], igtl_uint32 Dimensions[2], igtl_uint32 iStride[2]) {
+  int i;
   unsigned char*  pPtr = NULL;
-  
+  igtl_uint32 iWidth = Dimensions[0];
+  igtl_uint32 iHeight = Dimensions[1];
   pPtr = pData[0];
   for (i = 0; i < iHeight; i++) {
     fwrite (pPtr, 1, iWidth, pFp);
@@ -103,13 +94,16 @@ int H264Decoder::Process (void* pDst[3], SBufferInfo* pInfo, FILE* pFp) {
   int iRet = 0;
   
   if (pDst[0] && pDst[1] && pDst[2] && pInfo) {
-    int iStride[2];
+    igtl_uint32 iStride[2];
     int iWidth = pInfo->UsrData.sSystemBuffer.iWidth;
     int iHeight = pInfo->UsrData.sSystemBuffer.iHeight;
     iStride[0] = pInfo->UsrData.sSystemBuffer.iStride[0];
     iStride[1] = pInfo->UsrData.sSystemBuffer.iStride[1];
     if(pFp)
-      Write2File (pFp, (unsigned char**)pDst, iStride, iWidth, iHeight);
+    {
+      igtl_uint32 dimensions[2] = {iWidth, iHeight};
+      Write2File (pFp, (unsigned char**)pDst, dimensions, iStride);
+    }
   }
   return iRet;
 }
@@ -166,30 +160,33 @@ void H264Decoder::ComposeByteSteam(igtl_uint8** inputData, SBufferInfo bufInfo, 
   
 }
 
-int H264Decoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SSourcePicture* pDecodedPic)
+int H264Decoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* pDecodedPic)
 {
   if(videoMessage->GetBitStreamSize())
   {
     igtl_int32 iWidth = videoMessage->GetWidth();
     igtl_int32 iHeight = videoMessage->GetHeight();
-    igtl_int32 iStreamSize = videoMessage->GetBitStreamSize();
-    pDecodedPic->pData[1]= pDecodedPic->pData[0] + iWidth*iHeight;
-    pDecodedPic->pData[2]= pDecodedPic->pData[1] + iWidth*iHeight/4;
-    pDecodedPic->iStride[0] = iWidth;
-    pDecodedPic->iStride[1] = pDecodedPic->iStride[2] = iWidth>>1;
-    pDecodedPic->iStride[3] = 0;
-    int iRet = this->DecodeBitStreamIntoFrame(videoMessage->GetPackFragmentPointer(2), pDecodedPic->pData[0], iWidth, iHeight, iStreamSize);
+    igtl_uint64 iStreamSize = videoMessage->GetBitStreamSize();
+    pDecodedPic->data[1]= pDecodedPic->data[0] + iWidth*iHeight;
+    pDecodedPic->data[2]= pDecodedPic->data[1] + iWidth*iHeight/4;
+    pDecodedPic->stride[0] = iWidth;
+    pDecodedPic->stride[1] = pDecodedPic->stride[2] = iWidth>>1;
+    pDecodedPic->stride[3] = 0;
+    igtl_uint32 dimensions[2] = {iWidth, iHeight};
+    int iRet = this->DecodeBitStreamIntoFrame(videoMessage->GetPackFragmentPointer(2), pDecodedPic->data[0], dimensions, iStreamSize);
     return iRet;
   }
   return -1;
 }
 
-int H264Decoder::DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_uint8* outputFrame, igtl_int32& iWidth, igtl_int32& iHeight, igtl_int32& iStreamSize,const char* kpOuputFileName) {
+int H264Decoder::DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_uint8* outputFrame, igtl_uint32 dimensions[2], igtl_uint64& iStreamSize,const char* kpOuputFileName) {
   
   unsigned long long uiTimeStamp = 0;
   igtl_int64 iStart = 0, iEnd = 0, iTotal = 0;
   igtl_int32 iSliceSize;
   igtl_int32 iSliceIndex = 0;
+  igtl_uint32 iWidth = dimensions[0];
+  igtl_uint32 iHeight = dimensions[1];
   unsigned char* pBuf = NULL;
   unsigned char uiStartCode[4] = {0, 0, 0, 1};
   

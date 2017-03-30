@@ -14,7 +14,6 @@
 #include "igtlVideoMessage.h"
 #include "H264Encoder.h"
 #include "H264Decoder.h"
-#include "codec_app_def.h"
 #include "igtlMessageDebugFunction.h"
 #include "igtl_video.h"
 #include "igtl_types.h"
@@ -41,19 +40,19 @@ void TestWithVersion(int version)
   igtl_uint8* imagePointer = new igtl_uint8[kiPicResSize*3/2];
   memset(imagePointer, 0, Width * Height * 3 / 2);
   //memcpy(imagePointer, frameImage->GetScalarPointer(), imageSizePixels[0] * imageSizePixels[1]);
-  SSourcePicture* pSrcPic = new SSourcePicture();
-  pSrcPic->iColorFormat = videoFormatI420;
-  pSrcPic->iPicWidth = Width; // check the test image
-  pSrcPic->iPicHeight = Height;
-  pSrcPic->pData[0] = imagePointer;
-  pSrcPic->pData[1] = pSrcPic->pData[0] + kiPicResSize;
-  pSrcPic->pData[2] = pSrcPic->pData[1] + kiPicResSize/4;
-  pSrcPic->iStride[0] = pSrcPic->iPicWidth;
-  pSrcPic->iStride[1] = pSrcPic->iStride[2] = pSrcPic->iStride[0] >> 1;
+  SourcePicture* pSrcPic = new SourcePicture();
+  pSrcPic->colorFormat = videoFormatI420;
+  pSrcPic->picWidth = Width; // check the test image
+  pSrcPic->picHeight = Height;
+  pSrcPic->data[0] = imagePointer;
+  pSrcPic->data[1] = pSrcPic->data[0] + kiPicResSize;
+  pSrcPic->data[2] = pSrcPic->data[1] + kiPicResSize/4;
+  pSrcPic->stride[0] = pSrcPic->picWidth;
+  pSrcPic->stride[1] = pSrcPic->stride[2] = pSrcPic->stride[0] >> 1;
   
-  SSourcePicture* pDecodedPic = new SSourcePicture();
-  pDecodedPic->pData[0] = new igtl_uint8[kiPicResSize*3/2];
-  memset(pDecodedPic->pData[0], 0, Width * Height * 3 / 2);
+  SourcePicture* pDecodedPic = new SourcePicture();
+  pDecodedPic->data[0] = new igtl_uint8[kiPicResSize*3/2];
+  memset(pDecodedPic->data[0], 0, Width * Height * 3 / 2);
   
   for(int i = 0; i <100; i++)
   {

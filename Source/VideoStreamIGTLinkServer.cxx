@@ -15,29 +15,13 @@
 
 static void* ThreadFunctionServer(void* ptr);
 
-void UpdateHashFromFrame (SFrameBSInfo& info, SHA1Context* ctx) {
-  for (int i = 0; i < info.iLayerNum; ++i) {
-    const SLayerBSInfo& layerInfo = info.sLayerInfo[i];
-    int layerSize = 0;
-    for (int j = 0; j < layerInfo.iNalCount; ++j) {
-      layerSize += layerInfo.pNalLengthInByte[j];
-    }
-    SHA1Input (ctx, layerInfo.pBsBuf, layerSize);
-  }
-}
-
 VideoStreamIGTLinkServer::VideoStreamIGTLinkServer(char *argv)
 {
-  this->videoEncoder = new H264Encoder();
-  pSrcPic = new SSourcePicture;
-  pSrcPic->iColorFormat = videoFormatI420;
-  pSrcPic->uiTimeStamp = 0;
-  pSrcPic->iPicHeight = videoEncoder->GetPicHeight();
-  pSrcPic->iPicWidth = videoEncoder->GetPicWidth();
-  pSrcPic->iStride[0] = pSrcPic->iPicWidth;
-  pSrcPic->iStride[2] = pSrcPic->iStride[1] = pSrcPic->iPicWidth>>1;
+  this->videoEncoder = NULL;
+  pSrcPic = new SourcePicture();
+  pSrcPic->colorFormat = FormatI420;
+  pSrcPic->timeStamp = 0;
   this->serverConnected = false;
-  this->augments = std::string(argv);
   this->waitSTTCommand = true;
   this->serverIsSet = false;
   this->serverPortNumber = -1;
@@ -55,11 +39,25 @@ VideoStreamIGTLinkServer::VideoStreamIGTLinkServer(char *argv)
   this->encodedFrames.clear();
   this->netWorkBandWidth = 10000; // in Kbps
   this->interval = 30; //in ms
+  this->transportMethod = UseTCP;
   this->totalCompressedDataSize = 0;
   this->iTotalFrameToEncode = -1;
   this->sendPacketThreadID = -1;
   this->readFrameThreadID = -1;
   this->serverThreadID = -1;
+  this->augments = std::string(argv);
+  if(this->augments.c_str())
+  {
+    SetupServer();
+  }
+}
+
+int VideoStreamIGTLinkServer::SetEncoder(GenericEncoder* encoder)
+{
+  this->videoEncoder = encoder;
+  videoEncoder->SetPicHeight(pSrcPic->picHeight);
+  videoEncoder->SetPicWidth(pSrcPic->picWidth);
+  return 0;
 }
 
 int VideoStreamIGTLinkServer::StartTCPServer ()
@@ -156,13 +154,13 @@ int VideoStreamIGTLinkServer::ParseConfigForServer()
       }
       if (strTag[0].compare ("SourceWidth") == 0)
       {
-        this->pSrcPic->iPicWidth = atoi(strTag[1].c_str());
-        pSrcPic->iStride[0] = this->pSrcPic->iPicWidth;
-        pSrcPic->iStride[1] = pSrcPic->iStride[2] = pSrcPic->iStride[0] >> 1;
+        this->pSrcPic->picWidth = atoi(strTag[1].c_str());
+        pSrcPic->stride[0] = this->pSrcPic->picWidth;
+        pSrcPic->stride[1] = pSrcPic->stride[2] = pSrcPic->stride[0] >> 1;
       }
       if (strTag[0].compare ("SourceHeight") == 0)
       {
-        this->pSrcPic->iPicHeight = atoi(strTag[1].c_str());
+        this->pSrcPic->picHeight = atoi(strTag[1].c_str());
       }
       if (strTag[0].compare ("TotalFrameToEncode") == 0)
       {
@@ -197,14 +195,9 @@ int VideoStreamIGTLinkServer::ParseConfigForServer()
       }
     }
   }
-  pSrcPic->pData[0] = new unsigned char[pSrcPic->iPicHeight*pSrcPic->iPicWidth*3/2];
-  pSrcPic->pData[1] = pSrcPic->pData[0]+pSrcPic->iPicHeight*pSrcPic->iPicWidth;
-  pSrcPic->pData[2] = pSrcPic->pData[1]+pSrcPic->iPicHeight*pSrcPic->iPicWidth/4;
-  if (this->InitializeEncoder())
-  {
-    fprintf (stderr, "Invalid parameter for h264 encoder.\n");
-    return 1;
-  }
+  pSrcPic->data[0] = new unsigned char[pSrcPic->picHeight*pSrcPic->picWidth*3/2];
+  pSrcPic->data[1] = pSrcPic->data[0]+pSrcPic->picHeight*pSrcPic->picWidth;
+  pSrcPic->data[2] = pSrcPic->data[1]+pSrcPic->picHeight*pSrcPic->picWidth/4;
   if (this->transportMethod == 1 )
   {
     if (this->clientIPAddress && this->clientPortNumber)
@@ -222,11 +215,11 @@ int VideoStreamIGTLinkServer::ParseConfigForServer()
 int VideoStreamIGTLinkServer::InitializeEncoder()
 {
   int iRet = 1;
-  if( (pSrcPic->iPicWidth*pSrcPic->iPicHeight>0) && this->encoderConfigFile.c_str())
+  if( this->videoEncoder && (pSrcPic->picWidth*pSrcPic->picHeight>0) && this->encoderConfigFile.c_str())
   {
     this->videoEncoder->SetConfigurationFile(encoderConfigFile);
-    this->videoEncoder->SetPicWidth(pSrcPic->iPicWidth);
-    this->videoEncoder->SetPicHeight(pSrcPic->iPicHeight);
+    this->videoEncoder->SetPicWidth(pSrcPic->picWidth);
+    this->videoEncoder->SetPicHeight(pSrcPic->picHeight);
     this->videoEncoder->SetUseCompression(this->useCompress);
     iRet = this->videoEncoder->InitializeEncoder();
   }
@@ -376,28 +369,14 @@ static void* ThreadFunctionServer(void* ptr)
   parentObj->serverSocket = NULL;
 }
 
-
-bool VideoStreamIGTLinkServer::CompareHash (const unsigned char* digest, const char* hashStr) {
-  char hashStrCmp[SHA_DIGEST_LENGTH * 2 + 1];
-  for (int i = 0; i < SHA_DIGEST_LENGTH; ++i) {
-    sprintf (&hashStrCmp[i * 2], "%.2x", digest[i]);
-  }
-  hashStrCmp[SHA_DIGEST_LENGTH * 2] = '\0';
-  if (hashStr == hashStrCmp)
-  {
-    return true;
-  }
-  return false;
-}
-
 void VideoStreamIGTLinkServer::SetSrcPicWidth(int width)
 {
-  pSrcPic->iPicWidth = width;
+  pSrcPic->picWidth = width;
 }
 
 void VideoStreamIGTLinkServer::SetSrcPicHeight(int height)
 {
-  pSrcPic->iPicHeight = height;
+  pSrcPic->picHeight = height;
 }
 
 int VideoStreamIGTLinkServer::SetupServer()
@@ -418,14 +397,14 @@ int VideoStreamIGTLinkServer::SetupServer()
     goto INSIDE_MEM_FREE;
   }
   //fill default pSrcPic
-  pSrcPic->iColorFormat = videoFormatI420;
-  pSrcPic->uiTimeStamp = 0;
+  pSrcPic->colorFormat = 23;//videoFormatI420;
+  pSrcPic->timeStamp = 0;
   
   // if configure file exit, reading configure file firstly
-  cRdCfg.Openf (this->augments.c_str());// to do get the first augments from this->augments.
+  cRdCfg.OpenFile(this->augments.c_str());// to do get the first augments from this->augments.
   if (cRdCfg.ExistFile())
   {
-    cRdCfg.Openf (this->augments.c_str());// reset the file read pointer to the beginning.
+    cRdCfg.OpenFile(this->augments.c_str());// reset the file read pointer to the beginning.
     iRet = ParseConfigForServer();
     if (iRet) {
       fprintf (stderr, "parse server parameter config file failed.\n");
@@ -443,14 +422,14 @@ int VideoStreamIGTLinkServer::SetupServer()
   
   //finish reading the configurations
   igtl_uint32 iSourceWidth, iSourceHeight, kiPicResSize;
-  iSourceWidth = pSrcPic->iPicWidth;
-  iSourceHeight = pSrcPic->iPicHeight;
+  iSourceWidth = pSrcPic->picWidth;
+  iSourceHeight = pSrcPic->picHeight;
   kiPicResSize = iSourceWidth * iSourceHeight * 3 >> 1;
   
   //update pSrcPic
-  pSrcPic->iStride[0] = iSourceWidth;
-  pSrcPic->iStride[1] = pSrcPic->iStride[2] = pSrcPic->iStride[0] >> 1;
-  pSrcPic->iStride[3] = 0;
+  pSrcPic->stride[0] = iSourceWidth;
+  pSrcPic->stride[1] = pSrcPic->stride[2] = pSrcPic->stride[0] >> 1;
+  pSrcPic->stride[3] = 0;
   
   this->serverIsSet = true;
   return true;
@@ -479,7 +458,7 @@ static void* ThreadFunctionReadFrameFromFile(void* ptr)
   igtl::MultiThreader::ThreadInfo* info =
   static_cast<igtl::MultiThreader::ThreadInfo*>(ptr);
   serverPointer parentObj = *(static_cast<serverPointer*>(info->UserData));
-  int kiPicResSize = parentObj.server->pSrcPic->iPicWidth*parentObj.server->pSrcPic->iPicHeight*3>>1;
+  int kiPicResSize = parentObj.server->pSrcPic->picWidth*parentObj.server->pSrcPic->picHeight*3>>1;
   igtl_int32 iFrameNumInFile = -1;
   FILE* pFileYUV = NULL;
   pFileYUV = fopen (parentObj.server->strSeqFile.c_str(), "rb");
@@ -489,20 +468,20 @@ static void* ThreadFunctionReadFrameFromFile(void* ptr)
     if (!_fseeki64 (pFileYUV, 0, SEEK_END)) {
       igtl_int64 i_size = _ftelli64 (pFileYUV);
       _fseeki64 (pFileYUV, 0, SEEK_SET);
-      iFrameNumInFile = WELS_MAX ((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
+      iFrameNumInFile = std::max ((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
     }
 #else
     if (!fseek (pFileYUV, 0, SEEK_END)) {
       igtl_int64 i_size = ftell (pFileYUV);
       fseek (pFileYUV, 0, SEEK_SET);
-      iFrameNumInFile = WELS_MAX ((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
+      iFrameNumInFile = std::max ((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
     }
 #endif
 #else
     if (!fseeko (pFileYUV, 0, SEEK_END)) {
       igtl_int64 i_size = ftello (pFileYUV);
       fseeko (pFileYUV, 0, SEEK_SET);
-      iFrameNumInFile = WELS_MAX ((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
+      iFrameNumInFile = std::max((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
     }
 #endif
     igtl_int32 iFrameIdx = 0;
@@ -625,7 +604,7 @@ void VideoStreamIGTLinkServer::SendOriginalData()
 {
   if(this->useCompress == 0)
   {
-    int kiPicResSize = pSrcPic->iPicWidth*pSrcPic->iPicHeight*3>>1;
+    int kiPicResSize = pSrcPic->picWidth*pSrcPic->picHeight*3>>1;
     igtl_uint8* pYUV = new igtl_uint8[kiPicResSize];
     static int messageID = -1;
     while(this->iTotalFrameToEncode)
@@ -652,8 +631,8 @@ void VideoStreamIGTLinkServer::SendOriginalData()
         videoMsg->AllocateScalars();
         videoMsg->SetScalarType(videoMsg->TYPE_UINT8);
         videoMsg->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
-        videoMsg->SetWidth(pSrcPic->iPicWidth);
-        videoMsg->SetHeight(pSrcPic->iPicHeight);
+        videoMsg->SetWidth(pSrcPic->picWidth);
+        videoMsg->SetHeight(pSrcPic->picHeight);
         videoMsg->SetMessageID(messageID);
         memcpy(videoMsg->GetPackFragmentPointer(2), pYUV, kiPicResSize);
         ServerTimer->GetTime();
@@ -673,15 +652,19 @@ void VideoStreamIGTLinkServer::SendOriginalData()
   }
 }
 
-void* VideoStreamIGTLinkServer::EncodeFile(void)
+int VideoStreamIGTLinkServer::EncodeFile(void)
 {
+  if(!this->videoEncoder)
+  {
+    return -1;
+  }
   if(!this->serverIsSet)
   {
     this->SetupServer();
   }
   igtl_int64 iStart = 0, iTotal = 0;
   
-  int picSize = pSrcPic->iPicWidth*pSrcPic->iPicHeight;
+  int picSize = pSrcPic->picWidth*pSrcPic->picHeight;
   
   igtl_int32 iFrameIdx = 0;
   this->totalCompressedDataSize = 0;
@@ -696,7 +679,7 @@ void* VideoStreamIGTLinkServer::EncodeFile(void)
       // To encoder this frame
       this->glockInFrame->Lock();
       std::map<igtlUint32, igtl_uint8*>::iterator it = this->incommingFrames.begin();
-      memcpy(this->pSrcPic->pData[0],it->second,picSize*3/2);
+      memcpy(this->pSrcPic->data[0],it->second,picSize*3/2);
       delete it->second;
       it->second = NULL;
       this->incommingFrames.erase(it);
@@ -713,11 +696,11 @@ void* VideoStreamIGTLinkServer::EncodeFile(void)
       this->encodeEndTime = this->ServerTimer->GetTimeStampInNanoseconds();
       iTotal += this->encodeEndTime - iStart;
       ++ iFrameIdx;
-      if (this->videoEncoder->GetVideoFrameType() == videoFrameTypeSkip) {
+      if (this->videoEncoder->GetVideoFrameType() == FrameTypeSkip) {
         continue;
       }
       
-      if (iEncFrames == cmResultSuccess ) {
+      if (iEncFrames == ResultSuccess ) {
         static int messageID = -1;
         messageID++;
         this->totalCompressedDataSize += videoMsg->GetPackedBitStreamSize();
@@ -735,14 +718,14 @@ void* VideoStreamIGTLinkServer::EncodeFile(void)
       }
       if (iActualFrameEncodedCount%10 == 0) {
         double dElapsed = iTotal / 1e9;
-        float totalFrameSize = iActualFrameEncodedCount*3/2.0*this->pSrcPic->iPicWidth*this->pSrcPic->iPicHeight;
+        float totalFrameSize = iActualFrameEncodedCount*3/2.0*this->pSrcPic->picWidth*this->pSrcPic->picHeight;
         printf ("Width:\t\t%d\nHeight:\t\t%d\nFrames:\t\t%d\nencode time:\t%f sec\nFPS:\t\t%f fps\nCompressionRate:\t\t%f\n",
-                this->pSrcPic->iPicWidth, this->pSrcPic->iPicHeight,
+                this->pSrcPic->picWidth, this->pSrcPic->picHeight,
                 iActualFrameEncodedCount, dElapsed, (iActualFrameEncodedCount * 1.0) / dElapsed, totalCompressedDataSize/totalFrameSize);
       }
     }
   }
-  return NULL;
+  return 0;
 }
 
 void VideoStreamIGTLinkServer::Stop()
@@ -759,13 +742,13 @@ void VideoStreamIGTLinkServer::Stop()
 int VideoStreamIGTLinkServer::EncodeSingleFrame(igtl_uint8* picPointer, bool isGrayImage)
 {
   int encodeRet = -1;
-  if (this->serverIsSet == true)
+  if (this->serverIsSet == true && this->videoEncoder)
   {
-    int iSourceWidth = pSrcPic->iPicWidth;
-    int iSourceHeight = pSrcPic->iPicHeight;
-    pSrcPic->pData[0] = picPointer;
-    pSrcPic->pData[1] = pSrcPic->pData[0] + (iSourceWidth * iSourceHeight);
-    pSrcPic->pData[2] = pSrcPic->pData[1] + (iSourceWidth * iSourceHeight >> 2);
+    int iSourceWidth = pSrcPic->picWidth;
+    int iSourceHeight = pSrcPic->picHeight;
+    pSrcPic->data[0] = picPointer;
+    pSrcPic->data[1] = pSrcPic->data[0] + (iSourceWidth * iSourceHeight);
+    pSrcPic->data[2] = pSrcPic->data[1] + (iSourceWidth * iSourceHeight >> 2);
     igtl::VideoMessage::Pointer videoMsg = igtl::VideoMessage::New();
     encodeRet = this->videoEncoder->EncodeSingleFrameIntoVideoMSG(this->pSrcPic, videoMsg, isGrayImage);
     this->videoFrameType = videoEncoder->GetVideoFrameType();

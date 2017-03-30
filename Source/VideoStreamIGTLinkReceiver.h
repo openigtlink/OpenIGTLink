@@ -28,9 +28,6 @@
 #include <climits>
 #include <cstring>
 #include <stdlib.h>
-#include "api/svc/codec_api.h"
-#include "api/svc/codec_app_def.h"
-#include "sha1.h"
 #include "igtlOSUtil.h"
 #include "igtlMessageHeader.h"
 #include "igtlVideoMessage.h"
@@ -40,8 +37,7 @@
 #include "igtlMessageRTPWrapper.h"
 #include "igtlConditionVariable.h"
 #include "igtlTimeStamp.h"
-#include "read_config.h"
-#include "H264Decoder.h"
+#include "igtlCodecCommonClasses.h"
 
 class VideoStreamIGTLinkReceiver
 {
@@ -51,6 +47,8 @@ public:
   ~VideoStreamIGTLinkReceiver();
   
   int ProcessVideoStream(igtl_uint8* bitStream, int streamLength);
+  
+  void SetDecoder(GenericDecoder* decoder);
   
   bool InitializeClient();
   
@@ -84,7 +82,7 @@ public:
   
 private:
   
-  H264Decoder* H264DecodeInstance;
+  GenericDecoder* decodeInstance;
   
   std::string deviceName;
   
@@ -106,7 +104,7 @@ private:
   
   bool  useCompress;
   
-  CReadConfig cRdCfg;
+  ReadConfigFile cRdCfg;
   
   int TCPServerPort;
   

@@ -94,13 +94,17 @@ VideoStreamIGTLinkReceiver::VideoStreamIGTLinkReceiver(char *fileName)
   UDPSocket = igtl::UDPClientSocket::New();
   this->Height = 0;
   this->Width = 0;
-  this->H264DecodeInstance = new H264Decoder();
+  this->decodeInstance = NULL;
 }
 
 VideoStreamIGTLinkReceiver::~VideoStreamIGTLinkReceiver()
+{}
+
+void VideoStreamIGTLinkReceiver::SetDecoder(GenericDecoder* decoder)
 {
-  delete H264DecodeInstance;
+  this->decodeInstance = decoder;
 }
+
 
 int VideoStreamIGTLinkReceiver::RunOnTCPSocket()
 {
@@ -296,10 +300,10 @@ bool VideoStreamIGTLinkReceiver::InitializeClient()
   }
   else
   {
-    cRdCfg.Openf (this->configFile.c_str());// to do get the first configFile from this->configFile.
+    cRdCfg.OpenFile(this->configFile.c_str());// to do get the first configFile from this->configFile.
     if (cRdCfg.ExistFile())
     {
-      cRdCfg.Openf (this->configFile.c_str());// reset the file read pointer to the beginning.
+      cRdCfg.OpenFile (this->configFile.c_str());// reset the file read pointer to the beginning.
       int iRet = ParseConfigForClient();
       if (iRet == -1) {
         fprintf (stderr, "parse client parameter config file failed.\n");
@@ -397,11 +401,16 @@ int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream, int st
   //std::cerr << "Receiving Video data type." << std::endl;
   //this->videoMessageBuffer = new igtl_uint8[StreamLength];
   //memcpy(this->videoMessageBuffer, bitStream, StreamLength);// copy slow down the process, however, the videoMsg is a smart pointer, it gets deleted unpredictable.
-  
+  if(!decodeInstance)
+  {
+    return 0;
+  }
   if (useCompress)
   {
     this->InitializeDecodedFrame();
-    int status = H264DecodeInstance->DecodeBitStreamIntoFrame(bitStream, this->decodedFrame, Width, Height, streamLength, kpOuputFileName.c_str());
+    igtl_uint32 dimensions[2] = {Width, Height};
+    igtl_uint64 bitStreamLength = streamLength;
+    int status = decodeInstance->DecodeBitStreamIntoFrame(bitStream, this->decodedFrame, dimensions , bitStreamLength, kpOuputFileName.c_str());
     // return 2 for succefully decode one frame
     return status;
   }
@@ -411,11 +420,12 @@ int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream, int st
     FILE* pYuvFile    = NULL;
     pYuvFile = fopen (kpOuputFileName.c_str(), "ab");
     unsigned char* pData[3];
-    int iStride[2] = {Width, Width/2};
+    igtl_uint32 iStride[2] = {Width, Width/2};
     pData[0] = bitStream;
     pData[1] = pData[0] + Width * Height;
     pData[2] = pData[1] + Width * Height/4;
-    H264DecodeInstance->Write2File (pYuvFile, pData, iStride, Width, Height);
+    igtl_uint32 dimensions[2] = {Width, Height};
+    decodeInstance->Write2File (pYuvFile, pData, dimensions, iStride);
     fclose (pYuvFile);
     pYuvFile = NULL;
     return 2;

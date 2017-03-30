@@ -26,8 +26,9 @@
 
 #include <fstream>
 #include <cstring>
+#include <string>
+#include <cmath>
 #include <stdlib.h>
-#include "sha1.h"
 #include "igtl_header.h"
 #include "igtl_video.h"
 #include "igtlOSUtil.h"
@@ -39,9 +40,7 @@
 #include "igtlConditionVariable.h"
 #include "igtlMessageRTPWrapper.h"
 #include "igtlTimeStamp.h"
-#include "read_config.h"
-#include "macros.h"
-#include "H264Encoder.h"
+#include "igtlCodecCommonClasses.h"
 
 class VideoStreamIGTLinkServer
 {
@@ -64,6 +63,7 @@ public:
    */
   int SetupServer();
   
+  int SetEncoder(GenericEncoder* encoder);
   /**
    intialize the encoder
    */
@@ -113,7 +113,7 @@ public:
   /**
    Encode the video stream from a source file
    */
-  void* EncodeFile(void);
+  int EncodeFile(void);
   
   /**
    Get the type of encoded frame
@@ -130,10 +130,6 @@ public:
   
   void Stop();
   
-  //void* ThreadFunctionServer(void*);
-  
-  static bool CompareHash (const unsigned char* digest, const char* hashStr);
-  
   igtl::MultiThreader::Pointer threader;
   
   igtl::SimpleMutexLock* glockInFrame;
@@ -148,17 +144,17 @@ public:
   
   igtl::MessageRTPWrapper::Pointer rtpWrapper;
   
-  H264Encoder*  videoEncoder;
+  GenericEncoder*  videoEncoder;
   
   // for server configuration file
   
-  CReadConfig cRdCfg;
+  ReadConfigFile cRdCfg;
   
   std::string strSeqFile;
   
   std::string strOutputFile;
   
-  SSourcePicture* pSrcPic;
+  SourcePicture* pSrcPic;
   
   igtlUint64 encodeStartTime;
   
@@ -219,6 +215,7 @@ public:
   int StartReadFrameThread(int frameRate);
   
 private:
+  
   void CheckEncodedFrameMap();
   
   void ReadInFileWithFrameRate(int rate);

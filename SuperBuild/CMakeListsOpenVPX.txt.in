@@ -1,0 +1,15 @@
+
+cmake_minimum_required(VERSION 2.8.2)
+ 
+project(OpenH264-download NONE)
+include(ExternalProject)
+ExternalProject_Add(OpenH264
+  GIT_REPOSITORY https://github.com/webmproject/libvpx/
+  GIT_TAG master
+  SOURCE_DIR        "${PROJECT_BINARY_DIR}/OpenVPX"
+  BINARY_DIR        "${PROJECT_BINARY_DIR}/OpenVPX"
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND     ""
+  INSTALL_COMMAND   ""
+  TEST_COMMAND      ""
+)

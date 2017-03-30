@@ -1,0 +1,202 @@
+//
+//  CodecCommonClasses.hpp
+//  OpenIGTLink
+//
+//  Created by Longquan Chen on 3/30/17.
+//
+//
+
+#ifndef igtlCodecCommonClasses_h
+#define igtlCodecCommonClasses_h
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+#include "igtlVideoMessage.h"
+
+/**
+ * @brief Enumerate the type of video format
+ */
+typedef enum {
+  FormatRGB        = 1,             ///< rgb color formats
+  FormatRGBA       = 2,
+  FormatRGB555     = 3,
+  FormatRGB565     = 4,
+  FormatBGR        = 5,
+  FormatBGRA       = 6,
+  FormatABGR       = 7,
+  FormatARGB       = 8,
+  
+  FormatYUY2       = 20,            ///< yuv color formats
+  FormatYVYU       = 21,
+  FormatUYVY       = 22,
+  FormatI420       = 23,            ///< the same as IYUV
+  FormatYV12       = 24,
+  FormatInternal   = 25,            ///< only used in SVC decoder testbed
+  
+  FormatNV12       = 26,            ///< new format for output by DXVA decoding
+  
+  FormatVFlip      = 0x80000000
+} VideoFormatType;
+
+/**
+ * @brief Enumerate  video frame type
+ */
+typedef enum {
+  FrameTypeInvalid,    ///< encoder not ready or parameters are invalidate
+  FrameTypeIDR,        ///< IDR frame in H.264
+  FrameTypeI,          ///< I frame type
+  FrameTypeP,          ///< P frame type
+  FrameTypeSkip,       ///< skip the frame based encoder kernel
+  FrameTypeIPMixed     ///< a frame where I and P slices are mixing, not supported yet
+} VideoFrameType;
+
+/**
+ * @brief Enumerate  return type
+ */
+typedef enum {
+  ResultSuccess,          ///< successful
+  InitParaError,          ///< parameters are invalid
+  UnknownReason,
+  MallocMemeError,        ///< malloc a memory error
+  InitExpected,           ///< initial action is expected
+  UnsupportedData
+} cmRETURN;
+
+class SourcePicture {
+public:
+  int       colorFormat;          ///< color space type
+  int       stride[4];            ///< stride for each plane pData
+  unsigned char*  data[4];        ///< plane pData
+  int       picWidth;             ///< luma picture width in x coordinate
+  int       picHeight;            ///< luma picture height in y coordinate
+  long long timeStamp;           ///< timestamp of the source picture, unit: millisecond
+} ;
+
+class ReadConfigFile {
+public:
+  ReadConfigFile();
+  ReadConfigFile (const char* pConfigFileName);
+  ReadConfigFile (const std::string& pConfigFileName);
+  ~ReadConfigFile();
+  
+  void OpenFile (const char* strFile);
+  long ReadLine (std::string* strVal, const int iValSize = 4);
+  const bool EndOfFile();
+  const int GetLines();
+  const bool ExistFile();
+  const std::string& GetFileName();
+  
+private:
+  FILE*             configFile;
+  std::string       configFileName;
+  unsigned int      lineNums;
+};
+
+class GenericEncoder
+{
+public:
+  GenericEncoder(){
+    this->configFile = std::string("");
+    
+    this->useCompress = true;
+    
+    this->initializationDone = false;
+  };
+  ~GenericEncoder(){};
+  //void UpdateHashFromFrame (SFrameBSInfo& info, SHA1Context* ctx);
+  
+  //bool CompareHash (const unsigned char* digest, const char* hashStr);
+  
+  /**
+   Parse the configuration file to initialize the encoder and server.
+   */
+  virtual int InitializeEncoder() = 0;
+  
+  
+  virtual void SetConfigurationFile(std::string configFile){this->configFile = std::string(configFile);};
+  
+  virtual int FillSpecificParameters(){return -1;};
+  
+  /**
+   Encode a frame, for performance issue, before encode the frame, make sure the frame pointer is updated with a new frame.
+   Otherwize, the old frame will be encoded.
+   */
+  virtual int EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage = false ){return -1;};
+  
+  /**
+   Get the encoder and server initialization status.
+   */
+  virtual bool GetInitializationStatus(){return initializationDone;};
+  
+  /**
+   Get the type of encoded frame
+   */
+  virtual int GetVideoFrameType(){return encodedFrameType;};
+  
+  virtual void SetPicWidth(unsigned int width){picWidth = width;};
+  
+  virtual void SetPicHeight(unsigned int height){picHeight = height;};
+  
+  virtual unsigned int GetPicWidth(){return this->picWidth;};
+  
+  virtual unsigned int GetPicHeight(){return this->picHeight;};
+  
+  virtual void SetUseCompression(bool useCompression){
+    this->useCompress = useCompression;
+  };
+  
+  virtual bool GetUseCompression(){return useCompress;};
+  
+  virtual void SetLosslessLink(bool linkMethod){this->isLossLessLink = linkMethod;};
+  
+  virtual bool GetLosslessLink(){return this->isLossLessLink;};
+  
+protected:
+  unsigned int picWidth;
+  
+  unsigned int picHeight;
+  
+  int encodedFrameType;
+  
+  ReadConfigFile cRdCfg;
+  
+  bool  useCompress;
+  
+  std::string configFile;
+  
+  bool initializationDone;
+  
+  bool isLossLessLink;
+  
+};
+
+class GenericDecoder
+{
+public:
+  GenericDecoder(){deviceName = "";};
+  ~GenericDecoder(){};
+  
+  virtual void Write2File (FILE* pFp, unsigned char* pData[], igtl_uint32 iDimensions[], igtl_uint32 iStride[]) = 0;
+  
+  virtual int DecodeBitStreamIntoFrame(unsigned char* bitStream,igtl_uint8* outputFrame,igtl_uint32 iDimensions[], igtl_uint64 &iStreamSize, const char* kpOuputFileName = NULL){return 0;};
+  
+  virtual int DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* decodedPic){return 0;};
+  
+  virtual std::string GetDeviceName()
+  {
+    return this->deviceName;
+  };
+  
+  virtual void SetDeviceName(std::string name)
+  {
+    this->deviceName = std::string(name);
+  };
+  
+protected:
+  
+  std::string deviceName;
+  
+};
+
+#endif /* CodecCommonClasses_h */

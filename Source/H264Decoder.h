@@ -62,35 +62,30 @@
 #include "api/svc/codec_app_def.h"
 #include "igtl_types.h"
 #include "igtlVideoMessage.h"
+#include "igtlCodecCommonClasses.h"
 
 #define NO_DELAY_DECODING
-class H264Decoder
+class H264Decoder:public GenericDecoder
 {
 public: 
   H264Decoder();
   ~H264Decoder();
   
-  void Write2File (FILE* pFp, unsigned char* pData[3], int iStride[2], int iWidth, int iHeight);
-
+  virtual void Write2File (FILE* pFp, unsigned char* pData[3], igtl_uint32 Dimensions[2], igtl_uint32 iStride[2]);
+  
+  virtual int DecodeBitStreamIntoFrame(unsigned char* bitStream,igtl_uint8* outputFrame, igtl_uint32 iDimensions[2], igtl_uint64 &iStreamSize, const char* kpOuputFileName = NULL);
+  
+  virtual int DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* pDecodedPic);
+  
   int Process (void* pDst[3], SBufferInfo* pInfo, FILE* pFp);
   
   void ComposeByteSteam(igtl_uint8** inputData, SBufferInfo bufInfo, igtl_uint8 *outputByteStream,  int iWidth, int iHeight);
-  
-  int DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_uint8* outputFrame,igtl_int32& iWidth, igtl_int32& iHeight, igtl_int32 &iStreamSize, const char* kpOuputFileName = NULL);
-  
-  int DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SSourcePicture* pDecodedPic);
-  
-  std::string GetDeviceName();
-  
-  void SetDeviceName(std::string name);
   
 private:
   
   ISVCDecoder* pDecoder;
   
   SDecodingParam decParam;
-  
-  std::string deviceName;
   
 };
 

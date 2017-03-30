@@ -12,6 +12,7 @@
 =========================================================================*/
 
 #include "VideoStreamIGTLinkServer.h"
+#include "H264Encoder.h"
 
 #if defined(ANDROID_NDK) || defined(APPLE_IOS) || defined (WINDOWS_PHONE)
 extern "C" int EncMain (int argc, char** argv)
@@ -27,6 +28,8 @@ int main (int argc, char** argv)
     exit(0);
   }
   VideoStreamIGTLinkServer server(argv[1]);
+  H264Encoder* encoder = new H264Encoder();
+  server.SetEncoder(encoder);
   server.InitializeEncoder();
   server.SetWaitSTTCommand(true);
   if(server.transportMethod==server.UseTCP)
@@ -52,7 +55,11 @@ int main (int argc, char** argv)
         }
         if(server.useCompress == 1)
         {
-          server.EncodeFile();
+          int iRet = server.EncodeFile();
+          if (iRet == -1)
+          {
+            break;
+          }
         }
         else
         {
@@ -68,7 +75,11 @@ int main (int argc, char** argv)
       }
       if(server.useCompress == 1)
       {
-        server.EncodeFile();
+        int iRet = server.EncodeFile();
+        if (iRet == -1)
+        {
+          break;
+        }
       }
       else
       {

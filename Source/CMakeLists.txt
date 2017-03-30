@@ -215,37 +215,29 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" )
     igtlQueryMessage.cxx
     igtlutil/igtl_command.c
     igtlutil/igtl_query.c
+    igtlutil/igtl_video.c
+    igtlVideoMessage.cxx
+    igtlMessageRTPWrapper.cxx
+    igtlGeneralSocket.cxx
+    igtlUDPClientSocket.cxx
+    igtlUDPServerSocket.cxx
+    VideoStreamIGTLinkServer.cxx
+    VideoStreamIGTLinkReceiver.cxx
+    igtlCodecCommonClasses.cxx
     )
   IF(BUILD_H264)
   	LIST(APPEND OpenIGTLink_SOURCES
-			igtlVideoMessage.cxx
-			igtlMessageRTPWrapper.cxx
-			igtlGeneralSocket.cxx
-			igtlUDPClientSocket.cxx
-			igtlUDPServerSocket.cxx
-			VideoStreamIGTLinkServer.cxx 
-			VideoStreamIGTLinkReceiver.cxx
 			H264Decoder.cpp
       H264Encoder.cpp
-			igtlutil/igtl_video.c
 			${CMAKE_BINARY_DIR}/OpenH264/test/api/sha1.c
 			${CMAKE_BINARY_DIR}/OpenH264/codec/console/common/src/read_config.cpp  
 			)
     LIST(APPEND OpenIGTLink_SOURCES
-      igtlVideoMessage.h
-      igtlMessageRTPWrapper.h
-      igtlGeneralSocket.h
-      igtlUDPClientSocket.h
-      igtlUDPServerSocket.h
-      VideoStreamIGTLinkServer.h
-      VideoStreamIGTLinkReceiver.h
       H264Decoder.h
       H264Encoder.h
-      igtlutil/igtl_video.h
       ${CMAKE_BINARY_DIR}/OpenH264/test/sha1.h
       ${CMAKE_BINARY_DIR}/OpenH264/codec/console/common/inc/read_config.h
     )
-
 	ENDIF()
   IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
     LIST(APPEND OpenIGTLink_INCLUDE_FILES
@@ -253,6 +245,15 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" )
       igtlQueryMessage.h
       igtlutil/igtl_command.h
       igtlutil/igtl_query.h
+      igtlVideoMessage.h
+      igtlMessageRTPWrapper.h
+      igtlGeneralSocket.h
+      igtlUDPClientSocket.h
+      igtlUDPServerSocket.h
+      VideoStreamIGTLinkServer.h
+      VideoStreamIGTLinkReceiver.h
+      igtlutil/igtl_video.h
+      igtlCodecCommonClasses.h
       )
   ENDIF()
 ENDIF()

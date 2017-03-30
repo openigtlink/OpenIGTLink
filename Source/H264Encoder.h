@@ -59,6 +59,9 @@
 #include <fstream>
 #include <cstring>
 #include <stdlib.h>
+#include <iostream>
+
+#include "igtlCodecCommonClasses.h"
 #include "sha1.h"
 #include "igtl_header.h"
 #include "igtl_video.h"
@@ -71,7 +74,7 @@
 #include "read_config.h"
 #include "wels_const.h"
 
-#include <iostream>
+
 using namespace std;
 
 typedef struct LayerpEncCtx_s {
@@ -81,59 +84,45 @@ typedef struct LayerpEncCtx_s {
 
 class ISVCEncoder;
 
-class H264Encoder
+class H264Encoder: public GenericEncoder
 {
 public:
   H264Encoder(char * configFile = NULL);
   ~H264Encoder();
+  
+  void UpdateHashFromFrame (SFrameBSInfo& info, SHA1Context* ctx);
+  
+  bool CompareHash (const unsigned char* digest, const char* hashStr);
 
-  int FillSpecificParameters(SEncParamExt& sParam);
-
-  void SetConfigurationFile(std::string configFile);
+  virtual int FillSpecificParameters();
   
   /**
    Parse the configuration file to initialize the encoder and server.
    */
-  int InitializeEncoder();
+  virtual int InitializeEncoder();
   
   /**
    Encode a frame, for performance issue, before encode the frame, make sure the frame pointer is updated with a new frame.
    Otherwize, the old frame will be encoded.
    */
-  int EncodeSingleFrameIntoVideoMSG(SSourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage = false );
+  virtual int EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage = false );
   
-  /**
-   Get the encoder and server initialization status.
-   */
-  bool GetInitializationStatus(){return InitializationDone;};
+  virtual void SetPicWidth(unsigned int width);
   
-  /**
-   Get the type of encoded frame
-   */
-  int GetVideoFrameType(){return encodedFrameType;};
+  virtual void SetPicHeight(unsigned int height);
   
-  void SetPicWidth(unsigned int width);
+  virtual unsigned int GetPicWidth(){return this->sSvcParam.iPicWidth;};
   
-  void SetPicHeight(unsigned int height);
+  virtual unsigned int GetPicHeight(){return this->sSvcParam.iPicHeight;};
   
-  unsigned int GetPicWidth(){return this->sSvcParam.iPicWidth;};
+  virtual void SetLosslessLink(bool linkMethod);
   
-  unsigned int GetPicHeight(){return this->sSvcParam.iPicHeight;};
-  
-  void SetUseCompression(bool useCompression);
-  
-  bool GetUseCompression(){return useCompress;};
-  
-  void SetLosslessLink(bool isLossLessLink);
-
-  bool GetLosslessLink(){return this->sSvcParam.bIsLosslessLink;};
+  virtual bool GetLosslessLink(){return this->sSvcParam.bIsLosslessLink;};
   
 private:
   int ParseLayerConfig (string strTag[], const int iLayer, SEncParamExt& pSvcParam);
   
   int ParseConfig();
-  
-  int encodedFrameType;
   
   ISVCEncoder*  pSVCEncoder;
   
@@ -142,15 +131,8 @@ private:
   std::string layerConfigFiles[MAX_DEPENDENCY_LAYER];
   // for configuration file
   
-  CReadConfig cRdCfg;
-  
   SFrameBSInfo sFbi;
   
-  bool  useCompress;
-  
-  std::string configFile;
-    
-  bool InitializationDone;
 };
 
 #endif

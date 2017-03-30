@@ -116,7 +116,7 @@ static void    SigIntHandler (int a) {
   g_iCtrlC = 1;
 }
 
-H264Encoder::H264Encoder(char *configFile)
+H264Encoder::H264Encoder(char *configFile):GenericEncoder()
 {
   this->pSVCEncoder = NULL;
   
@@ -131,20 +131,11 @@ H264Encoder::H264Encoder(char *configFile)
   /* Control-C handler */
   signal (SIGINT, SigIntHandler);
   
-  this->configFile = std::string("");
-  if (configFile!=NULL)
-  {
-    this->configFile = std::string(configFile);
-  }
   WelsCreateSVCEncoder(&(this->pSVCEncoder));
   
   this->pSVCEncoder->GetDefaultParams (&sSvcParam);
   
-  FillSpecificParameters (sSvcParam);
-  
-  this->useCompress = true;
-  
-  this->InitializationDone = false;
+  FillSpecificParameters ();
 }
 
 H264Encoder::~H264Encoder()
@@ -153,58 +144,78 @@ H264Encoder::~H264Encoder()
   this->pSVCEncoder = NULL;
 }
 
-int H264Encoder::FillSpecificParameters(SEncParamExt& sParam) {
-  /* Test for temporal, spatial, SNR scalability */
-  sParam.iUsageType = CAMERA_VIDEO_REAL_TIME;
-  sParam.fMaxFrameRate = 60.0f;                // input frame rate
-  sParam.iPicWidth = 256;                 // width of picture in samples
-  sParam.iPicHeight = 256;                  // height of picture in samples
-  sParam.iTargetBitrate = 2500000;              // target bitrate desired
-  sParam.iMaxBitrate = UNSPECIFIED_BIT_RATE;
-  sParam.iRCMode = RC_OFF_MODE;      //  rc mode control
-  sParam.bIsLosslessLink = true;
-  sParam.iTemporalLayerNum = 1;    // layer number at temporal level
-  sParam.iSpatialLayerNum = 1;    // layer number at spatial level
-  sParam.iEntropyCodingModeFlag = 1;
-  sParam.bEnableDenoise = 0;    // denoise control
-  sParam.bEnableBackgroundDetection = 1; // background detection control
-  sParam.bEnableAdaptiveQuant = 1; // adaptive quantization control
-  sParam.bEnableFrameSkip = 0; // frame skipping
-  sParam.bEnableLongTermReference = 0; // long term reference control
-  sParam.iLtrMarkPeriod = 30;
-  sParam.uiIntraPeriod = 16;           // period of Intra frame
-  sParam.bUseLoadBalancing = false;
-  sParam.eSpsPpsIdStrategy = INCREASING_ID;
-  sParam.bPrefixNalAddingCtrl = 0;
-  sParam.iComplexityMode = HIGH_COMPLEXITY;
-  sParam.bSimulcastAVC = false;
-  sParam.iMaxQp = 1;
-  sParam.iMinQp = 1;
-  int iIndexLayer = 0;
-  sParam.sSpatialLayers[iIndexLayer].uiProfileIdc = PRO_BASELINE;
-  sParam.sSpatialLayers[iIndexLayer].uiLevelIdc = LEVEL_5_2;
-  sParam.sSpatialLayers[iIndexLayer].iVideoWidth = 256;
-  sParam.sSpatialLayers[iIndexLayer].iVideoHeight = 256;
-  sParam.sSpatialLayers[iIndexLayer].iDLayerQp = 1;
-  sParam.sSpatialLayers[iIndexLayer].fFrameRate = 30.0f;
-  sParam.sSpatialLayers[iIndexLayer].iSpatialBitrate = 1500000;
-  sParam.sSpatialLayers[iIndexLayer].iMaxSpatialBitrate = UNSPECIFIED_BIT_RATE;
-  sParam.sSpatialLayers[iIndexLayer].sSliceArgument.uiSliceMode = SM_SINGLE_SLICE;
-  sParam.sSpatialLayers[iIndexLayer].sSliceArgument.uiSliceNum = 1;
-
-  float fMaxFr = sParam.sSpatialLayers[sParam.iSpatialLayerNum - 1].fFrameRate;
-  for (int32_t i = sParam.iSpatialLayerNum - 2; i >= 0; --i) {
-    if (sParam.sSpatialLayers[i].fFrameRate > fMaxFr + EPSN)
-      fMaxFr = sParam.sSpatialLayers[i].fFrameRate;
+bool H264Encoder::CompareHash (const unsigned char* digest, const char* hashStr) {
+  char hashStrCmp[SHA_DIGEST_LENGTH * 2 + 1];
+  for (int i = 0; i < SHA_DIGEST_LENGTH; ++i) {
+    sprintf (&hashStrCmp[i * 2], "%.2x", digest[i]);
   }
-  sParam.fMaxFrameRate = fMaxFr;
-
-  return 0;
+  hashStrCmp[SHA_DIGEST_LENGTH * 2] = '\0';
+  if (hashStr == hashStrCmp)
+  {
+    return true;
+  }
+  return false;
 }
 
-void H264Encoder::SetConfigurationFile(std::string configFile)
-{
-  this->configFile = std::string(configFile);
+
+void H264Encoder::UpdateHashFromFrame (SFrameBSInfo& info, SHA1Context* ctx) {
+  for (int i = 0; i < info.iLayerNum; ++i) {
+    const SLayerBSInfo& layerInfo = info.sLayerInfo[i];
+    int layerSize = 0;
+    for (int j = 0; j < layerInfo.iNalCount; ++j) {
+      layerSize += layerInfo.pNalLengthInByte[j];
+    }
+    SHA1Input (ctx, layerInfo.pBsBuf, layerSize);
+  }
+}
+
+int H264Encoder::FillSpecificParameters() {
+  /* Test for temporal, spatial, SNR scalability */
+  sSvcParam.iUsageType = CAMERA_VIDEO_REAL_TIME;
+  sSvcParam.fMaxFrameRate = 60.0f;                // input frame rate
+  sSvcParam.iPicWidth = 256;                 // width of picture in samples
+  sSvcParam.iPicHeight = 256;                  // height of picture in samples
+  sSvcParam.iTargetBitrate = 2500000;              // target bitrate desired
+  sSvcParam.iMaxBitrate = UNSPECIFIED_BIT_RATE;
+  sSvcParam.iRCMode = RC_OFF_MODE;      //  rc mode control
+  sSvcParam.bIsLosslessLink = true;
+  sSvcParam.iTemporalLayerNum = 1;    // layer number at temporal level
+  sSvcParam.iSpatialLayerNum = 1;    // layer number at spatial level
+  sSvcParam.iEntropyCodingModeFlag = 1;
+  sSvcParam.bEnableDenoise = 0;    // denoise control
+  sSvcParam.bEnableBackgroundDetection = 1; // background detection control
+  sSvcParam.bEnableAdaptiveQuant = 1; // adaptive quantization control
+  sSvcParam.bEnableFrameSkip = 0; // frame skipping
+  sSvcParam.bEnableLongTermReference = 0; // long term reference control
+  sSvcParam.iLtrMarkPeriod = 30;
+  sSvcParam.uiIntraPeriod = 16;           // period of Intra frame
+  sSvcParam.bUseLoadBalancing = false;
+  sSvcParam.eSpsPpsIdStrategy = INCREASING_ID;
+  sSvcParam.bPrefixNalAddingCtrl = 0;
+  sSvcParam.iComplexityMode = HIGH_COMPLEXITY;
+  sSvcParam.bSimulcastAVC = false;
+  sSvcParam.iMaxQp = 1;
+  sSvcParam.iMinQp = 1;
+  int iIndexLayer = 0;
+  sSvcParam.sSpatialLayers[iIndexLayer].uiProfileIdc = PRO_BASELINE;
+  sSvcParam.sSpatialLayers[iIndexLayer].uiLevelIdc = LEVEL_5_2;
+  sSvcParam.sSpatialLayers[iIndexLayer].iVideoWidth = 256;
+  sSvcParam.sSpatialLayers[iIndexLayer].iVideoHeight = 256;
+  sSvcParam.sSpatialLayers[iIndexLayer].iDLayerQp = 1;
+  sSvcParam.sSpatialLayers[iIndexLayer].fFrameRate = 30.0f;
+  sSvcParam.sSpatialLayers[iIndexLayer].iSpatialBitrate = 1500000;
+  sSvcParam.sSpatialLayers[iIndexLayer].iMaxSpatialBitrate = UNSPECIFIED_BIT_RATE;
+  sSvcParam.sSpatialLayers[iIndexLayer].sSliceArgument.uiSliceMode = SM_SINGLE_SLICE;
+  sSvcParam.sSpatialLayers[iIndexLayer].sSliceArgument.uiSliceNum = 1;
+
+  float fMaxFr = sSvcParam.sSpatialLayers[sSvcParam.iSpatialLayerNum - 1].fFrameRate;
+  for (int32_t i = sSvcParam.iSpatialLayerNum - 2; i >= 0; --i) {
+    if (sSvcParam.sSpatialLayers[i].fFrameRate > fMaxFr + EPSN)
+      fMaxFr = sSvcParam.sSpatialLayers[i].fFrameRate;
+  }
+  sSvcParam.fMaxFrameRate = fMaxFr;
+
+  return 0;
 }
 
 int H264Encoder::ParseLayerConfig (string strTag[], const int iLayer, SEncParamExt& pSvcParam) {
@@ -448,8 +459,9 @@ int H264Encoder::ParseConfig() {
   return iRet;
 }
 
-void H264Encoder::SetLosslessLink(bool isLossLessLink)
+void H264Encoder::SetLosslessLink(bool linkMethod)
 {
+  this->isLossLessLink = linkMethod;
   this->sSvcParam.bIsLosslessLink = isLossLessLink;
 }
 
@@ -466,12 +478,12 @@ int H264Encoder::InitializeEncoder()
       fprintf (stderr, "parse svc parameter config file failed.\n");
       goto INSIDE_MEM_FREE;
     }
-    this->InitializationDone = true;
+    this->initializationDone = true;
     return iRet;
   }
   else
   {
-    cRdCfg.Openf (this->configFile.c_str());// to do get the first augments from this->augments.
+    cRdCfg.OpenFile (this->configFile.c_str());// to do get the first augments from this->augments.
     if (cRdCfg.ExistFile())
     {
       iRet = ParseConfig();
@@ -498,12 +510,12 @@ int H264Encoder::InitializeEncoder()
       goto INSIDE_MEM_FREE;
     }
 
-    this->InitializationDone = true;
+    this->initializationDone = true;
     return 0;
   }
   
 INSIDE_MEM_FREE:
-  this->InitializationDone = false;
+  this->initializationDone = false;
   return 1;
 }
 
@@ -528,39 +540,43 @@ void H264Encoder::SetPicHeight(unsigned int height)
   }
 }
 
-void H264Encoder::SetUseCompression(bool useCompression)
-{
-  this->useCompress = useCompression;
-}
-
-int H264Encoder::EncodeSingleFrameIntoVideoMSG(SSourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage)
+int H264Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage)
 {
   int encodeRet = -1;
-  int iSourceWidth = pSrcPic->iPicWidth;
-  int iSourceHeight = pSrcPic->iPicHeight;
+  int iSourceWidth = pSrcPic->picWidth;
+  int iSourceHeight = pSrcPic->picHeight;
   if (iSourceWidth != this->sSvcParam.iPicWidth || iSourceHeight != this->sSvcParam.iPicHeight)
   {
     this->SetPicWidth(iSourceWidth);
     this->SetPicHeight(iSourceHeight);
     this->InitializeEncoder();
   }
-  if (this->InitializationDone == true)
+  if (this->initializationDone == true)
   {
-    pSrcPic->iStride[0] = iSourceWidth;
-    pSrcPic->iStride[1] = pSrcPic->iStride[2] = pSrcPic->iStride[0] >> 1;
+    pSrcPic->stride[0] = iSourceWidth;
+    pSrcPic->stride[1] = pSrcPic->stride[2] = pSrcPic->stride[0] >> 1;
     int kiPicResSize = iSourceWidth * iSourceHeight * 3 >> 1;
     if(this->useCompress)
     {
       static igtl_uint32 messageID = -1;
       int frameSize = 0;
       int iLayer = 0;
-      encodeRet = pSVCEncoder->EncodeFrame(pSrcPic, &sFbi);
+      SSourcePicture h264Pic;
+      for(int i = 0; i < 4; i++)
+      {
+        h264Pic.iStride[i] = pSrcPic->stride[i];
+        h264Pic.pData[i] = pSrcPic->data[i];
+      }
+      h264Pic.iColorFormat = pSrcPic->colorFormat;
+      h264Pic.iPicWidth = iSourceWidth;
+      h264Pic.iPicHeight = iSourceHeight;
+      encodeRet = pSVCEncoder->EncodeFrame(&h264Pic, &sFbi);
       videoMessage->SetBitStreamSize(sFbi.iFrameSizeInBytes);
       videoMessage->AllocateScalars();
       videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
       videoMessage->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
-      videoMessage->SetWidth(pSrcPic->iPicWidth);
-      videoMessage->SetHeight(pSrcPic->iPicHeight);
+      videoMessage->SetWidth(pSrcPic->picWidth);
+      videoMessage->SetHeight(pSrcPic->picHeight);
       encodedFrameType = sFbi.eFrameType;
       if (isGrayImage)
       {
@@ -594,8 +610,8 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SSourcePicture* pSrcPic, igtl::Vi
       videoMessage->AllocateScalars();
       videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
       videoMessage->SetEndian(igtl_is_little_endian()==true?IGTL_VIDEO_ENDIAN_LITTLE:IGTL_VIDEO_ENDIAN_BIG); //little endian is 2 big endian is 1
-      videoMessage->SetWidth(pSrcPic->iPicWidth);
-      videoMessage->SetHeight(pSrcPic->iPicHeight);
+      videoMessage->SetWidth(pSrcPic->picWidth);
+      videoMessage->SetHeight(pSrcPic->picHeight);
       encodedFrameType = videoFrameTypeIDR;
       if (isGrayImage)
       {
@@ -604,7 +620,7 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SSourcePicture* pSrcPic, igtl::Vi
       videoMessage->SetFrameType(encodedFrameType);
       messageID ++;
       videoMessage->SetMessageID(messageID);
-      memcpy(videoMessage->GetPackFragmentPointer(2), pSrcPic->pData[0], kiPicResSize);
+      memcpy(videoMessage->GetPackFragmentPointer(2), pSrcPic->data[0], kiPicResSize);
     }
     videoMessage->Pack();
     
