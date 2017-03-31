@@ -284,11 +284,13 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" )
     LIST(APPEND OpenIGTLink_SOURCES
       VPXDecoder.cxx
       VPXEncoder.cxx
+      ${CMAKE_BINARY_DIR}/OpenVPX/tools_common.c
     )
     IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
       LIST(APPEND OpenIGTLink_INCLUDE_FILES
         VPXDecoder.h
         VPXEncoder.h
+        ${CMAKE_BINARY_DIR}/OpenVPX/tools_common.h
       )
     ENDIF()
   ENDIF()

@@ -16,6 +16,7 @@
 VPXDecoder::VPXDecoder()
 {
   decoder = get_vpx_decoder_by_name("vp9");
+  vpx_codec_dec_init(&codec, decoder->codec_interface(), NULL, 0);
   this->deviceName = "";
 }
 
@@ -44,12 +45,12 @@ int VPXDecoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, 
   return -1;
 }
 
-int VPXDecoder::DecodeBitStreamIntoFrame(unsigned char* bitstream,igtl_uint8* outputFrame, igtl_uint32 dimensions[2], igtl_uint64& iStreamSize,const char* kpOuputFileName) {
+int VPXDecoder::DecodeBitStreamIntoFrame(unsigned char* bitstream,igtl_uint8* outputFrame, igtl_uint32 dimensions[2], igtl_uint64& iStreamSize) {
   
   if (vpx_codec_decode(&codec, bitstream, (unsigned int)iStreamSize, NULL, 0))
     die_codec(&codec, "Failed to decode frame.");
   if((outputImage = vpx_codec_get_frame(&codec, &iter)) != NULL) {
-    memcpy(outputFrame, outputImage->fb_priv, outputImage->w*outputImage->h*3/2);
+    memcpy(outputFrame, outputImage->fb_priv, outputImage->d_h*outputImage->d_w*3/2);
     return 2;
   }
   return 1;

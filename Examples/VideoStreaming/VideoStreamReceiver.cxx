@@ -12,7 +12,14 @@
  =========================================================================*/
 
 #include "VideoStreamIGTLinkReceiver.h"
+#if OpenIGTLink_BUILD_H264
 #include "H264Decoder.h"
+#endif
+
+#if OpenIGTLink_BUILD_VPX
+#include "VPXDecoder.h"
+#endif
+
 
 #if defined(ANDROID_NDK) || defined(APPLE_IOS) || defined (WINDOWS_PHONE)
 extern "C" int EncMain (int argc, char** argv)
@@ -29,7 +36,11 @@ int main (int argc, char** argv)
     exit(0);
   }
   VideoStreamIGTLinkReceiver receiver= VideoStreamIGTLinkReceiver(argv[1]);
+#if OpenIGTLink_BUILD_VPX
+  VPXDecoder* decoder = new VPXDecoder();
+#elif OpenIGTLink_BUILD_H264
   H264Decoder* decoder = new H264Decoder();
+#endif
   receiver.SetDecoder(decoder);
   if (receiver.InitializeClient())
   {

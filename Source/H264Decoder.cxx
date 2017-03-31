@@ -103,7 +103,7 @@ int H264Decoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage,
   return -1;
 }
 
-int H264Decoder::DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_uint8* outputFrame, igtl_uint32 dimensions[2], igtl_uint64& iStreamSize,const char* kpOuputFileName) {
+int H264Decoder::DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_uint8* outputFrame, igtl_uint32 dimensions[2], igtl_uint64& iStreamSize) {
   
   unsigned long long uiTimeStamp = 0;
   igtl_int64 iStart = 0, iEnd = 0, iTotal = 0;
@@ -127,15 +127,6 @@ int H264Decoder::DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_ui
   pDecoder->SetOption (DECODER_OPTION_ERROR_CON_IDC, &iErrorConMethod);
   //~end for
   double dElapsed = 0;
-  
-  FILE* pYuvFile    = NULL;
-  // Lenght input mode support
-  if (kpOuputFileName) {
-    pYuvFile = fopen (kpOuputFileName, "ab");
-    if (pYuvFile == NULL) {
-      fprintf (stderr, "Can not open yuv file to output result of decoding..\n");
-    }
-  }
   
   if (iStreamSize <= 0) {
     //fprintf (stderr, "Current Bit Stream File is too small, read error!!!!\n");
@@ -203,7 +194,7 @@ int H264Decoder::DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_ui
     iEnd    = getCurrentTime();
     iTotal = iEnd - iStart;
     if (sDstBufInfo.iBufferStatus == 1) {
-      Process ((void**)pData, &sDstBufInfo, pYuvFile);
+      Process ((void**)pData, &sDstBufInfo, NULL);
       int dimension[2] = {iWidth, iHeight};
       int stride[2] = {sDstBufInfo.UsrData.sSystemBuffer.iStride[0],sDstBufInfo.UsrData.sSystemBuffer.iStride[1]};
       ComposeByteSteam(pData, dimension, stride, outputFrame);
@@ -228,10 +219,6 @@ label_exit:
   if (pBuf) {
     delete[] pBuf;
     pBuf = NULL;
-  }
-  if (pYuvFile) {
-    fclose (pYuvFile);
-    pYuvFile = NULL;
   }
   if (iFrameCount)
   {

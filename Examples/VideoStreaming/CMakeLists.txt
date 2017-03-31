@@ -13,4 +13,7 @@ add_executable( VideoStreamReceiver VideoStreamReceiver.cxx)
 target_link_libraries( VideoStreamReceiver OpenIGTLink)
 
 add_executable( VideoStreamServer VideoStreamServer.cxx)
+message("dfawef")
+message("${OpenIGTLink_LIBRARY_TARGETS_FILE}")
+
 target_link_libraries( VideoStreamServer OpenIGTLink)

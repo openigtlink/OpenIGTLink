@@ -75,6 +75,7 @@ typedef enum {
 
 class SourcePicture {
 public:
+  SourcePicture(){};
   int       colorFormat;          ///< color space type
   int       stride[4];            ///< stride for each plane pData
   unsigned char*  data[4];        ///< plane pData
@@ -142,6 +143,12 @@ public:
   /**
    Get the type of encoded frame
    */
+  
+  /**
+   Convert the generic image format to local specific data format of the codec
+   */
+  virtual int ConvertToLocalImageFormat(SourcePicture* pSrcPic){return 0;};
+  
   virtual int GetVideoFrameType(){return encodedFrameType;};
   
   virtual void SetPicWidth(unsigned int width){picWidth = width;};
@@ -187,7 +194,7 @@ public:
   GenericDecoder(){deviceName = "";};
   ~GenericDecoder(){};
   
-  virtual int DecodeBitStreamIntoFrame(unsigned char* bitStream,igtl_uint8* outputFrame,igtl_uint32 iDimensions[], igtl_uint64 &iStreamSize, const char* kpOuputFileName = NULL) = 0;
+  virtual int DecodeBitStreamIntoFrame(unsigned char* bitStream,igtl_uint8* outputFrame,igtl_uint32 iDimensions[], igtl_uint64 &iStreamSize) = 0;
   
   virtual void Write2File (FILE* pFp, unsigned char* pData[], igtl_uint32 iDimensions[], igtl_uint32 iStride[]);
   

@@ -410,8 +410,23 @@ int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream, int st
     this->InitializeDecodedFrame();
     igtl_uint32 dimensions[2] = {Width, Height};
     igtl_uint64 bitStreamLength = streamLength;
-    int status = decodeInstance->DecodeBitStreamIntoFrame(bitStream, this->decodedFrame, dimensions , bitStreamLength, kpOuputFileName.c_str());
+    int status = decodeInstance->DecodeBitStreamIntoFrame(bitStream, this->decodedFrame, dimensions , bitStreamLength);
     // return 2 for succefully decode one frame
+    FILE* pYuvFile    = NULL;
+    // Lenght input mode support
+    if (kpOuputFileName.c_str()) {
+      pYuvFile = fopen (kpOuputFileName.c_str(), "ab");
+      if (pYuvFile == NULL) {
+        fprintf (stderr, "Can not open yuv file to output result of decoding..\n");
+      }
+    }
+    igtl_uint32 stride[2] = {Width, Width/2};
+    SourcePicture pic;
+    pic.data[0] = this->decodedFrame;
+    pic.data[1] = this->decodedFrame+Width*Height;
+    pic.data[2] = this->decodedFrame+Width*Height*5/4;
+    //pic.data[0] =
+    decodeInstance->Write2File (pYuvFile, pic.data, dimensions, stride);
     return status;
   }
   else

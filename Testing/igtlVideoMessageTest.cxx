@@ -26,13 +26,29 @@
   #include "igtlMessageFormat2TestMacro.h"
 #endif
 
+#if OpenIGTLink_BUILD_H264
+  #include "H264Encoder.h"
+  #include "H264Decoder.h"
+#endif
+
+#if OpenIGTLink_BUILD_VPX
+  #include "VPXEncoder.h"
+  #include "VPXDecoder.h"
+#endif
+
 void TestWithVersion(int version)
 {
   // Get thread information
   int Width = 256;
   int Height = 256;
+#if OpenIGTLink_BUILD_VPX
+  VPXEncoder* videoStreamEncoder = new VPXEncoder();
+  VPXDecoder* videoStreamDecoder = new VPXDecoder();
+#elif OpenIGTLink_BUILD_H264
   H264Encoder* videoStreamEncoder = new H264Encoder();
   H264Decoder* videoStreamDecoder = new H264Decoder();
+#endif
+  
   videoStreamEncoder->SetPicWidth(Width);
   videoStreamEncoder->SetPicHeight(Height);
   videoStreamEncoder->InitializeEncoder();
@@ -124,7 +140,7 @@ void TestWithVersion(int version)
             videoMessageReceived->SetMessageID(1); // Message ID is reset by the codec, so the comparison of ID is no longer valid, manually set to 1;
             igtlMetaDataComparisonMacro(videoMessageReceived);
           }
-          //EXPECT_EQ(memcmp(pDecodedPic->pData[0], pSrcPic->pData[0],kiPicResSize),0);
+          EXPECT_EQ(memcmp(pDecodedPic->data[0], pSrcPic->data[0],kiPicResSize),0);
         }
       }
       igtl::Sleep(20);

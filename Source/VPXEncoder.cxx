@@ -15,33 +15,34 @@
 #include "VPXEncoder.h"
 #include "igtlVideoMessage.h"
 
-
-/* Ctrl-C handler */
-static int     g_iCtrlC = 0;
-static void    SigIntHandler (int a) {
-  g_iCtrlC = 1;
-}
+void usage_exit(void) {exit(EXIT_FAILURE);};
 
 VPXEncoder::VPXEncoder(char *configFile):GenericEncoder()
 {
-  this->encoder = get_vpx_encoder_by_name("vp9");;
+  this->encoder = get_vpx_encoder_by_name("vp9");
+  codec = new vpx_codec_ctx_t();
+  encodedBuf = new vpx_fixed_buf_t();
+  inputImage = new vpx_image_t();
   FillSpecificParameters ();
 }
 
 VPXEncoder::~VPXEncoder()
 {
-  vpx_codec_encode(&codec, NULL, -1, 1, 0, VPX_DL_GOOD_QUALITY); //Flush the codec
-  vpx_codec_destroy(&codec);
+  vpx_codec_encode(codec, NULL, -1, 1, 0, VPX_DL_GOOD_QUALITY); //Flush the codec
+  vpx_codec_destroy(codec);
+  delete inputImage;
   this->encoder = NULL;
 }
 
 int VPXEncoder::FillSpecificParameters() {
   if (vpx_codec_enc_config_default(encoder->codec_interface(), &cfg, 0))
   {
-    die_codec(&codec, "Failed to get default codec config.");
+    die_codec(codec, "Failed to get default codec config.");
     return -1;
   }
+  cfg.g_lag_in_frames = 1;
   // Lossless link is by default true;
+  vpx_codec_enc_init(codec, encoder->codec_interface(), &cfg, 0);
   return this->SetLosslessLink(true);
 }
 
@@ -51,9 +52,9 @@ int VPXEncoder::ParseConfig() {
 
 int VPXEncoder::SetLosslessLink(bool linkMethod)
 {
-  if (vpx_codec_control_(&codec, VP9E_SET_LOSSLESS, 1))
+  if (vpx_codec_control_(codec, VP9E_SET_LOSSLESS, linkMethod))
   {
-    die_codec(&codec, "Failed to use lossless mode");
+    die_codec(codec, "Failed to use lossless mode");
     this->isLossLessLink = false;
     return -1;
   }
@@ -66,10 +67,26 @@ int VPXEncoder::SetLosslessLink(bool linkMethod)
 
 int VPXEncoder::InitializeEncoder()
 {
-  if (vpx_codec_enc_init(&codec, encoder->codec_interface(), &cfg, 0))
+  vpx_codec_err_t res = vpx_codec_enc_config_default(encoder->codec_interface(), &cfg, 0);
+  if (res)
   {
-    die_codec(&codec, "Failed to initialize encoder");
-    this->initializationDone = false;
+    die_codec(codec, "Failed to get default codec config.");
+    return -1;
+  }
+  cfg.g_lag_in_frames = 0;
+  cfg.g_w = this->GetPicWidth();
+  cfg.g_h = this->GetPicHeight();
+  vpx_img_alloc(inputImage, VPX_IMG_FMT_I420, cfg.g_w,
+                cfg.g_h, 1);
+  if (vpx_codec_enc_init(codec, encoder->codec_interface(), &cfg, 0))
+  {
+    die_codec(codec, "Failed to initialize encoder");
+    return -1;
+  }
+  
+  if (vpx_codec_control_(codec, VP9E_SET_LOSSLESS, this->GetLosslessLink()))
+  {
+    die_codec(codec, "Failed to use lossless mode");
     return -1;
   }
   this->initializationDone = true;
@@ -89,6 +106,26 @@ void VPXEncoder::SetPicHeight(unsigned int height)
   this->cfg.g_h = height;
 }
 
+int VPXEncoder::ConvertToLocalImageFormat(SourcePicture* pSrcPic)
+{
+  if (pSrcPic->picWidth != this->cfg.g_w || pSrcPic->picHeight != this->cfg.g_h)
+  {
+    this->SetPicWidth(pSrcPic->picWidth);
+    this->SetPicHeight(pSrcPic->picHeight);
+    this->InitializeEncoder();
+  }
+  int plane;
+  for (plane = 0; plane < 3; ++plane) {
+    unsigned char *buf = inputImage->planes[plane];
+    const int w = vpx_img_plane_width(inputImage, plane) *
+    ((inputImage->fmt & VPX_IMG_FMT_HIGHBITDEPTH) ? 2 : 1);
+    const int h = vpx_img_plane_height(inputImage, plane);
+    memcpy(buf, pSrcPic->data[plane], w*h);
+  }
+  
+  return 1;
+}
+
 int VPXEncoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage)
 {
   int iSourceWidth = pSrcPic->picWidth;
@@ -98,52 +135,44 @@ int VPXEncoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
     this->SetPicWidth(iSourceWidth);
     this->SetPicHeight(iSourceHeight);
     this->InitializeEncoder();
+    this->SetLosslessLink(this->GetLosslessLink());
   }
   if (this->initializationDone == true)
   {
     int kiPicResSize = iSourceWidth * iSourceHeight * 3 >> 1;
     if(this->useCompress)
     {
-      static igtl_uint32 messageID = -1;
+      static igtl_uint32 messageID = 6;
       messageID ++;
-      int frameSize = 0;
-      int iLayer = 0;
-      vpx_img_alloc(&inputImage, VPX_IMG_FMT_I420, iSourceWidth,
-                    iSourceHeight, 1);
-      const vpx_codec_err_t res = vpx_codec_set_cx_data_buf(&codec,encodedBuf,0,0);
-      if (res != VPX_CODEC_OK)
+      this->ConvertToLocalImageFormat(pSrcPic);
+      const vpx_codec_err_t res2 = vpx_codec_encode(codec, inputImage, messageID, 1, 0, VPX_DL_BEST_QUALITY);
+      if (res2 != VPX_CODEC_OK)
       {
-        die_codec(&codec, "Failed to set output buffer");
+        die_codec(codec, "Failed to encode frame");
         return -1;
       }
-      vpx_codec_encode(&codec, &inputImage, messageID, 1, 0, VPX_DL_GOOD_QUALITY);
-      if (res != VPX_CODEC_OK)
-      {
-        die_codec(&codec, "Failed to encode frame");
-        return -1;
-      }
-      /*iter = NULL;
-      pkt = NULL;
-      int totalStreamLength = 0;
-      while ((pkt = vpx_codec_get_cx_data(&codec, &iter)) != NULL) {
+      iter = NULL;
+      if((pkt = vpx_codec_get_cx_data(codec, &iter)) != NULL) {
         if (pkt->kind == VPX_CODEC_CX_FRAME_PKT) {
-          encodedFrameType = pkt->data.frame.flags;
-          totalStreamLength += pkt->data.frame.sz;
+          encodedFrameType = FrameTypeIDR;
+          videoMessage->SetBitStreamSize(pkt->data.frame.sz);
+          videoMessage->AllocateScalars();
+          videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
+          videoMessage->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
+          videoMessage->SetWidth(pSrcPic->picWidth);
+          videoMessage->SetHeight(pSrcPic->picHeight);
+          if (isGrayImage)
+          {
+            encodedFrameType = encodedFrameType<<8;
+          }
+          videoMessage->SetFrameType(encodedFrameType);
+          videoMessage->SetMessageID(messageID);
+          memcpy(videoMessage->GetPackFragmentPointer(2), pkt->data.frame.buf, pkt->data.frame.sz);
+          videoMessage->Pack();
+          return 0;
         }
-      }*/
-      videoMessage->SetBitStreamSize(encodedBuf->sz);
-      videoMessage->AllocateScalars();
-      videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
-      videoMessage->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
-      videoMessage->SetWidth(pSrcPic->picWidth);
-      videoMessage->SetHeight(pSrcPic->picHeight);
-      if (isGrayImage)
-      {
-        encodedFrameType = encodedFrameType<<8;
       }
-      videoMessage->SetFrameType(encodedFrameType);
-      videoMessage->SetMessageID(messageID);
-      memcpy(videoMessage->GetPackFragmentPointer(2), encodedBuf->buf, encodedBuf->sz);
+      return -1;
     }
     else
     {
@@ -163,9 +192,8 @@ int VPXEncoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
       messageID ++;
       videoMessage->SetMessageID(messageID);
       memcpy(videoMessage->GetPackFragmentPointer(2), pSrcPic->data[0], kiPicResSize);
+      videoMessage->Pack();
     }
-    videoMessage->Pack();
-    
   }
   return 0;
 }

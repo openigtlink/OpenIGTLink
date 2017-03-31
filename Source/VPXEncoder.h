@@ -47,6 +47,8 @@ public:
    */
   virtual int InitializeEncoder();
   
+  virtual int ConvertToLocalImageFormat(SourcePicture* pSrcPic);
+  
   /**
    Encode a frame, for performance issue, before encode the frame, make sure the frame pointer is updated with a new frame.
    Otherwize, the old frame will be encoded.
@@ -57,13 +59,11 @@ public:
   
   virtual void SetPicHeight(unsigned int height);
   
-  virtual unsigned int GetPicWidth(){return this->cfg.g_w;};
+  virtual unsigned int GetPicWidth(){return this->picWidth;};
   
-  virtual unsigned int GetPicHeight(){return this->cfg.g_h;};
+  virtual unsigned int GetPicHeight(){return this->picHeight;};
   
   virtual int SetLosslessLink(bool linkMethod);
-  
-private:
   
   int ParseConfig();
   
@@ -71,15 +71,15 @@ private:
   
   vpx_codec_enc_cfg_t cfg;
   
-  vpx_codec_ctx_t codec;
+  vpx_codec_ctx_t* codec;
   
-  vpx_image_t inputImage;
+  vpx_image_t* inputImage;
   
-  //vpx_codec_iter_t iter;
+  vpx_codec_iter_t iter;
   
   const vpx_fixed_buf_t *encodedBuf;
   
-  //const vpx_codec_cx_pkt_t *pkt;
+  const vpx_codec_cx_pkt_t *pkt;
   
 };
 
