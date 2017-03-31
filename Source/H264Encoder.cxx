@@ -459,10 +459,11 @@ int H264Encoder::ParseConfig() {
   return iRet;
 }
 
-void H264Encoder::SetLosslessLink(bool linkMethod)
+int H264Encoder::SetLosslessLink(bool linkMethod)
 {
   this->isLossLessLink = linkMethod;
   this->sSvcParam.bIsLosslessLink = isLossLessLink;
+  return 0;
 }
 
 int H264Encoder::InitializeEncoder()
@@ -612,10 +613,10 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
       videoMessage->SetEndian(igtl_is_little_endian()==true?IGTL_VIDEO_ENDIAN_LITTLE:IGTL_VIDEO_ENDIAN_BIG); //little endian is 2 big endian is 1
       videoMessage->SetWidth(pSrcPic->picWidth);
       videoMessage->SetHeight(pSrcPic->picHeight);
-      encodedFrameType = videoFrameTypeIDR;
+      encodedFrameType = FrameTypeIDR;
       if (isGrayImage)
       {
-        encodedFrameType = videoFrameTypeIDR<<8;
+        encodedFrameType = FrameTypeIDR<<8;
       }
       videoMessage->SetFrameType(encodedFrameType);
       messageID ++;

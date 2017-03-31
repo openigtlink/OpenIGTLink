@@ -10,7 +10,13 @@ IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
 		${LINK_LIBS}
 		"${CMAKE_BINARY_DIR}/OpenH264/openh264.lib"
 		)
-	ENDIF()  
+	ENDIF()
+  IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND BUILD_VPX)
+    SET(LINK_LIBS
+      ${LINK_LIBS}
+      "${CMAKE_BINARY_DIR}/OpenVPX/vpx.lib"
+    )
+  ENDIF()
   #For debug under win32 system, the run time check mode should be set to /RTCu for multithreading purpose
   STRING(REPLACE "/RTC1" "/RTCu" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
   SET(OpenIGTLink_REQUIRED_CXX_FLAGS ${OpenIGTLink_REQUIRED_CXX_FLAGS})
@@ -30,7 +36,13 @@ ELSE() # for POSIX-compatible OSs
 		${LINK_LIBS}
 		"${CMAKE_BINARY_DIR}/OpenH264/libopenh264.a"
 		)
-	ENDIF()  
+	ENDIF()
+  IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND BUILD_VPX)
+    SET(LINK_LIBS
+    ${LINK_LIBS}
+    "${CMAKE_BINARY_DIR}/OpenVPX/libvpx.a"
+    )
+  ENDIF()
   IF(OpenIGTLink_PLATFORM_SUNOS)
     LIST(APPEND LINK_LIBS
       ${OpenIGTLink_STD_LINK_LIBRARIES}
@@ -61,7 +73,17 @@ IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND BUILD_H264)
 	"${CMAKE_BINARY_DIR}/OpenH264/codec/encoder/core/inc"
 	"${CMAKE_BINARY_DIR}/OpenH264/codec/processing/interface"
 	"${CMAKE_BINARY_DIR}/OpenH264/test")
-ENDIF()  
+ENDIF()
+
+IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND BUILD_VPX)
+  SET(OpenIGTLink_INCLUDE_DIRS
+  ${OpenIGTLink_INCLUDE_DIRS}
+    "${CMAKE_BINARY_DIR}/OpenVPX"
+    "${CMAKE_BINARY_DIR}/OpenVPX/vpx"
+    "${CMAKE_BINARY_DIR}/OpenVPX/vp9"
+    "${CMAKE_BINARY_DIR}/OpenVPX/vp9/common"
+  )
+ENDIF()
 
 SET(OpenIGTLink_SOURCES
   igtlutil/igtl_header.c
@@ -225,20 +247,6 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" )
     VideoStreamIGTLinkReceiver.cxx
     igtlCodecCommonClasses.cxx
     )
-  IF(BUILD_H264)
-  	LIST(APPEND OpenIGTLink_SOURCES
-			H264Decoder.cpp
-      H264Encoder.cpp
-			${CMAKE_BINARY_DIR}/OpenH264/test/api/sha1.c
-			${CMAKE_BINARY_DIR}/OpenH264/codec/console/common/src/read_config.cpp  
-			)
-    LIST(APPEND OpenIGTLink_SOURCES
-      H264Decoder.h
-      H264Encoder.h
-      ${CMAKE_BINARY_DIR}/OpenH264/test/sha1.h
-      ${CMAKE_BINARY_DIR}/OpenH264/codec/console/common/inc/read_config.h
-    )
-	ENDIF()
   IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
     LIST(APPEND OpenIGTLink_INCLUDE_FILES
       igtlCommandMessage.h
@@ -255,6 +263,34 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" )
       igtlutil/igtl_video.h
       igtlCodecCommonClasses.h
       )
+  ENDIF()
+  IF(BUILD_H264)
+    LIST(APPEND OpenIGTLink_SOURCES
+      H264Decoder.cxx
+      H264Encoder.cxx
+      ${CMAKE_BINARY_DIR}/OpenH264/test/api/sha1.c
+      ${CMAKE_BINARY_DIR}/OpenH264/codec/console/common/src/read_config.cpp
+    )
+    IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
+      LIST(APPEND OpenIGTLink_INCLUDE_FILES
+        H264Decoder.h
+        H264Encoder.h
+        ${CMAKE_BINARY_DIR}/OpenH264/test/sha1.h
+        ${CMAKE_BINARY_DIR}/OpenH264/codec/console/common/inc/read_config.h
+      )
+    ENDIF()
+  ENDIF()
+  IF(BUILD_VPX)
+    LIST(APPEND OpenIGTLink_SOURCES
+      VPXDecoder.cxx
+      VPXEncoder.cxx
+    )
+    IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
+      LIST(APPEND OpenIGTLink_INCLUDE_FILES
+        VPXDecoder.h
+        VPXEncoder.h
+      )
+    ENDIF()
   ENDIF()
 ENDIF()
 

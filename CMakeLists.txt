@@ -56,6 +56,8 @@ IF(BUILD_VPX)
   execute_process(COMMAND "${CMAKE_COMMAND}" --build .
               WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/OpenVPX-download" )
   if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    #execute_process(COMMAND "cd" "${PROJECT_BINARY_DIR}/OpenVPX/configure")
+    execute_process(COMMAND "${PROJECT_BINARY_DIR}/OpenVPX/configure" WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/OpenVPX" )
     execute_process(COMMAND "make" WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/OpenVPX" )
   endif(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
 ENDIF()

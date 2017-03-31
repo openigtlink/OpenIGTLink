@@ -115,7 +115,7 @@ public:
   
   virtual unsigned int GetPicHeight(){return this->sSvcParam.iPicHeight;};
   
-  virtual void SetLosslessLink(bool linkMethod);
+  virtual int SetLosslessLink(bool linkMethod);
   
   virtual bool GetLosslessLink(){return this->sSvcParam.bIsLosslessLink;};
   

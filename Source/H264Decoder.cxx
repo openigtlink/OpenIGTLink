@@ -62,32 +62,6 @@ H264Decoder::~H264Decoder()
   pDecoder = NULL;
 }
 
-void H264Decoder::Write2File (FILE* pFp, unsigned char* pData[3], igtl_uint32 Dimensions[2], igtl_uint32 iStride[2]) {
-  int i;
-  unsigned char*  pPtr = NULL;
-  igtl_uint32 iWidth = Dimensions[0];
-  igtl_uint32 iHeight = Dimensions[1];
-  pPtr = pData[0];
-  for (i = 0; i < iHeight; i++) {
-    fwrite (pPtr, 1, iWidth, pFp);
-    pPtr += iStride[0];
-  }
-  
-  iHeight = iHeight / 2;
-  iWidth = iWidth / 2;
-  pPtr = pData[1];
-  for (i = 0; i < iHeight; i++) {
-    fwrite (pPtr, 1, iWidth, pFp);
-    pPtr += iStride[1];
-  }
-  
-  pPtr = pData[2];
-  for (i = 0; i < iHeight; i++) {
-    fwrite (pPtr, 1, iWidth, pFp);
-    pPtr += iStride[1];
-  }
-}
-
 
 int H264Decoder::Process (void* pDst[3], SBufferInfo* pInfo, FILE* pFp) {
   
@@ -108,57 +82,7 @@ int H264Decoder::Process (void* pDst[3], SBufferInfo* pInfo, FILE* pFp) {
   return iRet;
 }
 
-igtl_int64 getCurrentTime()
-{
-#if defined(_WIN32)
-  SYSTEMTIME sysTime = {0};
-  GetLocalTime(&sysTime);
-  return sysTime.wMilliseconds;
-#else
-  struct timeval tv_date;
-  gettimeofday(&tv_date, NULL);
-  return ((igtl_int64)tv_date.tv_sec * 1000000 + (igtl_int64)tv_date.tv_usec);
-#endif
-  
-  
-}
-
 igtl_int32 iFrameCountTotal = 0;
-
-
-
-void H264Decoder::ComposeByteSteam(igtl_uint8** inputData, SBufferInfo bufInfo, igtl_uint8 *outputFrame,  int iWidth, int iHeight)
-{
-  int iStride [2] = {bufInfo.UsrData.sSystemBuffer.iStride[0],bufInfo.UsrData.sSystemBuffer.iStride[1]};
-#pragma omp parallel for default(none) shared(outputByteStream,inputData, iStride, iHeight, iWidth)
-  for (int i = 0; i < iHeight; i++)
-  {
-    igtl_uint8* pPtr = inputData[0]+i*iStride[0];
-    for (int j = 0; j < iWidth; j++)
-    {
-      outputFrame[i*iWidth + j] = pPtr[j];
-    }
-  }
-#pragma omp parallel for default(none) shared(outputByteStream,inputData, iStride, iHeight, iWidth)
-  for (int i = 0; i < iHeight/2; i++)
-  {
-    igtl_uint8* pPtr = inputData[1]+i*iStride[1];
-    for (int j = 0; j < iWidth/2; j++)
-    {
-      outputFrame[i*iWidth/2 + j + iHeight*iWidth] = pPtr[j];
-    }
-  }
-#pragma omp parallel for default(none) shared(outputByteStream, inputData, iStride, iHeight, iWidth)
-  for (int i = 0; i < iHeight/2; i++)
-  {
-    igtl_uint8* pPtr = inputData[2]+i*iStride[1];
-    for (int j = 0; j < iWidth/2; j++)
-    {
-      outputFrame[i*iWidth/2 + j + iHeight*iWidth*5/4] = pPtr[j];
-    }
-  }
-  
-}
 
 int H264Decoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* pDecodedPic)
 {
@@ -280,7 +204,9 @@ int H264Decoder::DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_ui
     iTotal = iEnd - iStart;
     if (sDstBufInfo.iBufferStatus == 1) {
       Process ((void**)pData, &sDstBufInfo, pYuvFile);
-      ComposeByteSteam(pData, sDstBufInfo, outputFrame, iWidth,iHeight);
+      int dimension[2] = {iWidth, iHeight};
+      int stride[2] = {sDstBufInfo.UsrData.sSystemBuffer.iStride[0],sDstBufInfo.UsrData.sSystemBuffer.iStride[1]};
+      ComposeByteSteam(pData, dimension, stride, outputFrame);
       iWidth  = sDstBufInfo.UsrData.sSystemBuffer.iWidth;
       iHeight = sDstBufInfo.UsrData.sSystemBuffer.iHeight;
       ++ iFrameCount;

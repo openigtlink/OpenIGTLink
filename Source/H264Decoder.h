@@ -45,16 +45,6 @@
 #ifndef __igtlH264Decoder_h
 #define __igtlH264Decoder_h
 
-#include <time.h>
-#if defined(_WIN32) /*&& defined(_DEBUG)*/
-  #include <windows.h>
-  #include <stdio.h>
-  #include <stdarg.h>
-  #include <sys/types.h>
-#else
-  #include <sys/time.h>
-#endif
-
 #include <vector>
 #include <limits.h>
 #include <string.h>
@@ -71,15 +61,11 @@ public:
   H264Decoder();
   ~H264Decoder();
   
-  virtual void Write2File (FILE* pFp, unsigned char* pData[3], igtl_uint32 Dimensions[2], igtl_uint32 iStride[2]);
-  
   virtual int DecodeBitStreamIntoFrame(unsigned char* bitStream,igtl_uint8* outputFrame, igtl_uint32 iDimensions[2], igtl_uint64 &iStreamSize, const char* kpOuputFileName = NULL);
   
   virtual int DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* pDecodedPic);
   
   int Process (void* pDst[3], SBufferInfo* pInfo, FILE* pFp);
-  
-  void ComposeByteSteam(igtl_uint8** inputData, SBufferInfo bufInfo, igtl_uint8 *outputByteStream,  int iWidth, int iHeight);
   
 private:
   
