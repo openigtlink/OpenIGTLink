@@ -12,8 +12,6 @@
  =========================================================================*/
 #include <sstream>
 #include "igtlVideoMessage.h"
-#include "H264Encoder.h"
-#include "H264Decoder.h"
 #include "igtlMessageDebugFunction.h"
 #include "igtl_video.h"
 #include "igtl_types.h"
@@ -21,7 +19,6 @@
 #include "igtl_util.h"
 #include "igtlTestConfig.h"
 #include "string.h"
-#include "macros.h"
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
   #include "igtlMessageFormat2TestMacro.h"
 #endif
@@ -34,6 +31,8 @@
 #if OpenIGTLink_BUILD_VPX
   #include "VPXEncoder.h"
   #include "VPXDecoder.h"
+  #include "../video_reader.h"
+  #include "./vpx_config.h"
 #endif
 
 void TestWithVersion(int version)
@@ -57,7 +56,7 @@ void TestWithVersion(int version)
   memset(imagePointer, 0, Width * Height * 3 / 2);
   //memcpy(imagePointer, frameImage->GetScalarPointer(), imageSizePixels[0] * imageSizePixels[1]);
   SourcePicture* pSrcPic = new SourcePicture();
-  pSrcPic->colorFormat = videoFormatI420;
+  pSrcPic->colorFormat = FormatI420;
   pSrcPic->picWidth = Width; // check the test image
   pSrcPic->picHeight = Height;
   pSrcPic->data[0] = imagePointer;
@@ -70,7 +69,7 @@ void TestWithVersion(int version)
   pDecodedPic->data[0] = new igtl_uint8[kiPicResSize*3/2];
   memset(pDecodedPic->data[0], 0, Width * Height * 3 / 2);
   
-  for(int i = 0; i <100; i++)
+  for(int i = 0; i <6; i++)
   {
     igtl_int32 iFrameNumInFile = -1;
     std::string sep = "/";
@@ -88,20 +87,20 @@ void TestWithVersion(int version)
       if (!_fseeki64 (pFileYUV, 0, SEEK_END)) {
         igtl_int64 i_size = _ftelli64 (pFileYUV);
         _fseeki64 (pFileYUV, 0, SEEK_SET);
-        iFrameNumInFile = WELS_MAX ((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
+        iFrameNumInFile = std::max((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
       }
 #else
       if (!fseek (pFileYUV, 0, SEEK_END)) {
         igtl_int64 i_size = ftell (pFileYUV);
         fseek (pFileYUV, 0, SEEK_SET);
-        iFrameNumInFile = WELS_MAX ((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
+        iFrameNumInFile = std::max((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
       }
 #endif
 #else
       if (!fseeko (pFileYUV, 0, SEEK_END)) {
         igtl_int64 i_size = ftello (pFileYUV);
         fseeko (pFileYUV, 0, SEEK_SET);
-        iFrameNumInFile = WELS_MAX ((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
+        iFrameNumInFile = std::max((igtl_int32) (i_size / (kiPicResSize)), iFrameNumInFile);
       }
 #endif
       
@@ -114,7 +113,7 @@ void TestWithVersion(int version)
 #else
       fseeko(pFileYUV, 0, SEEK_SET);
 #endif
-      if(fread (imagePointer, 1, kiPicResSize, pFileYUV) == kiPicResSize)
+      while(fread (imagePointer, 1, kiPicResSize, pFileYUV) == kiPicResSize)
       {
         bool isGrayImage = true;
         igtl::VideoMessage::Pointer videoMessageSend = igtl::VideoMessage::New();
@@ -140,7 +139,7 @@ void TestWithVersion(int version)
             videoMessageReceived->SetMessageID(1); // Message ID is reset by the codec, so the comparison of ID is no longer valid, manually set to 1;
             igtlMetaDataComparisonMacro(videoMessageReceived);
           }
-          EXPECT_EQ(memcmp(pDecodedPic->data[0], pSrcPic->data[0],kiPicResSize),0);
+          EXPECT_EQ(memcmp(pDecodedPic->data[0], pSrcPic->data[0],kiPicResSize*3/2),0);
         }
       }
       igtl::Sleep(20);

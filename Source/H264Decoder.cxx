@@ -84,6 +84,41 @@ int H264Decoder::Process (void* pDst[3], SBufferInfo* pInfo, FILE* pFp) {
 
 igtl_int32 iFrameCountTotal = 0;
 
+
+void H264Decoder::ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[2], igtl_uint8 *outputFrame)
+{
+  int iWidth = dimension[0];
+  int iHeight = dimension[1];
+#pragma omp parallel for default(none) shared(outputByteStream,inputData, iStride, iHeight, iWidth)
+  for (int i = 0; i < iHeight; i++)
+  {
+    igtl_uint8* pPtr = inputData[0]+i*iStride[0];
+    for (int j = 0; j < iWidth; j++)
+    {
+      outputFrame[i*iWidth + j] = pPtr[j];
+    }
+  }
+#pragma omp parallel for default(none) shared(outputByteStream,inputData, iStride, iHeight, iWidth)
+  for (int i = 0; i < iHeight/2; i++)
+  {
+    igtl_uint8* pPtr = inputData[1]+i*iStride[1];
+    for (int j = 0; j < iWidth/2; j++)
+    {
+      outputFrame[i*iWidth/2 + j + iHeight*iWidth] = pPtr[j];
+    }
+  }
+#pragma omp parallel for default(none) shared(outputByteStream, inputData, iStride, iHeight, iWidth)
+  for (int i = 0; i < iHeight/2; i++)
+  {
+    igtl_uint8* pPtr = inputData[2]+i*iStride[1];
+    for (int j = 0; j < iWidth/2; j++)
+    {
+      outputFrame[i*iWidth/2 + j + iHeight*iWidth*5/4] = pPtr[j];
+    }
+  }
+}
+
+
 int H264Decoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* pDecodedPic)
 {
   if(videoMessage->GetBitStreamSize())
@@ -91,6 +126,8 @@ int H264Decoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage,
     igtl_int32 iWidth = videoMessage->GetWidth();
     igtl_int32 iHeight = videoMessage->GetHeight();
     igtl_uint64 iStreamSize = videoMessage->GetBitStreamSize();
+    pDecodedPic->picWidth = iWidth;
+    pDecodedPic->picHeight = iHeight;
     pDecodedPic->data[1]= pDecodedPic->data[0] + iWidth*iHeight;
     pDecodedPic->data[2]= pDecodedPic->data[1] + iWidth*iHeight/4;
     pDecodedPic->stride[0] = iWidth;

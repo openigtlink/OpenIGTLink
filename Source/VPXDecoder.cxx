@@ -33,6 +33,8 @@ int VPXDecoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, 
     igtl_int32 iWidth = videoMessage->GetWidth();
     igtl_int32 iHeight = videoMessage->GetHeight();
     igtl_uint64 iStreamSize = videoMessage->GetBitStreamSize();
+    pDecodedPic->picWidth = iWidth;
+    pDecodedPic->picHeight = iHeight;
     pDecodedPic->data[1]= pDecodedPic->data[0] + iWidth*iHeight;
     pDecodedPic->data[2]= pDecodedPic->data[1] + iWidth*iHeight/4;
     pDecodedPic->stride[0] = iWidth;
@@ -45,12 +47,36 @@ int VPXDecoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, 
   return -1;
 }
 
+void VPXDecoder::ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[3], igtl_uint8 *outputFrame)
+{
+  int plane;
+  int dimensionW [3] = {dimension[0],dimension[0]/2,dimension[0]/2};
+  int dimensionH [3] = {dimension[1],dimension[1]/2,dimension[1]/2};
+  int shift = 0;
+  for (plane = 0; plane < 3; ++plane) {
+    const unsigned char *buf = inputData[plane];
+    const int stride = iStride[plane];
+    int w = dimensionW[plane];
+    int h = dimensionH[plane];
+    int y;
+    for (y = 0; y < h; ++y) {
+      memcpy(outputFrame+shift + w*y, buf, w);
+      buf += stride;
+    }
+    shift += w*h;
+  }
+}
+
 int VPXDecoder::DecodeBitStreamIntoFrame(unsigned char* bitstream,igtl_uint8* outputFrame, igtl_uint32 dimensions[2], igtl_uint64& iStreamSize) {
   
   if (vpx_codec_decode(&codec, bitstream, (unsigned int)iStreamSize, NULL, 0))
     die_codec(&codec, "Failed to decode frame.");
+  iter = NULL;
   if((outputImage = vpx_codec_get_frame(&codec, &iter)) != NULL) {
-    memcpy(outputFrame, outputImage->fb_priv, outputImage->d_h*outputImage->d_w*3/2);
+    int stride[3] = {outputImage->stride[0], outputImage->stride[1],outputImage->stride[2]};
+    int convertedDimensions[2] = {vpx_img_plane_width(outputImage, 0) *
+      ((outputImage->fmt & VPX_IMG_FMT_HIGHBITDEPTH) ? 2 : 1), vpx_img_plane_height(outputImage, 0)};
+    ComposeByteSteam(outputImage->planes, convertedDimensions, stride, outputFrame);
     return 2;
   }
   return 1;

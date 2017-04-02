@@ -130,39 +130,6 @@ void GenericDecoder::Write2File (FILE* pFp, unsigned char* pData[], igtl_uint32 
   }
 }
 
-void GenericDecoder::ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[2], igtl_uint8 *outputFrame)
-{
-  int iWidth = dimension[0];
-  int iHeight = dimension[1];
-#pragma omp parallel for default(none) shared(outputByteStream,inputData, iStride, iHeight, iWidth)
-  for (int i = 0; i < iHeight; i++)
-  {
-    igtl_uint8* pPtr = inputData[0]+i*iStride[0];
-    for (int j = 0; j < iWidth; j++)
-    {
-      outputFrame[i*iWidth + j] = pPtr[j];
-    }
-  }
-#pragma omp parallel for default(none) shared(outputByteStream,inputData, iStride, iHeight, iWidth)
-  for (int i = 0; i < iHeight/2; i++)
-  {
-    igtl_uint8* pPtr = inputData[1]+i*iStride[1];
-    for (int j = 0; j < iWidth/2; j++)
-    {
-      outputFrame[i*iWidth/2 + j + iHeight*iWidth] = pPtr[j];
-    }
-  }
-#pragma omp parallel for default(none) shared(outputByteStream, inputData, iStride, iHeight, iWidth)
-  for (int i = 0; i < iHeight/2; i++)
-  {
-    igtl_uint8* pPtr = inputData[2]+i*iStride[1];
-    for (int j = 0; j < iWidth/2; j++)
-    {
-      outputFrame[i*iWidth/2 + j + iHeight*iWidth*5/4] = pPtr[j];
-    }
-  }
-}
-
 igtl_int64 GenericDecoder::getCurrentTime()
 {
 #if defined(_WIN32)

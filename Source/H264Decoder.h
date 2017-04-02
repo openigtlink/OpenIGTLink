@@ -69,6 +69,8 @@ public:
   
 private:
   
+  virtual void ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[2], igtl_uint8 *outputFrame);
+  
   ISVCDecoder* pDecoder;
   
   SDecodingParam decParam;

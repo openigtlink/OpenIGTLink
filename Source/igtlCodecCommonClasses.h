@@ -18,7 +18,7 @@
 #else
 #include <sys/time.h>
 #endif
-
+#include <cstring>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -200,8 +200,6 @@ public:
   
   virtual int DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* decodedPic){return 0;};
   
-  virtual void ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[2], igtl_uint8 *outputFrame);
-  
   virtual igtl_int64 getCurrentTime();
   
   virtual std::string GetDeviceName()
@@ -215,6 +213,8 @@ public:
   };
   
 protected:
+  
+  virtual void ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[2], igtl_uint8 *outputFrame){};
   
   std::string deviceName;
   
