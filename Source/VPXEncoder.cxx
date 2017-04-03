@@ -52,15 +52,14 @@ int VPXEncoder::ParseConfig() {
 
 int VPXEncoder::SetLosslessLink(bool linkMethod)
 {
+  this->isLossLessLink = linkMethod;
   if (vpx_codec_control_(codec, VP9E_SET_LOSSLESS, linkMethod))
   {
     die_codec(codec, "Failed to use lossless mode");
-    this->isLossLessLink = false;
     return -1;
   }
   else
   {
-    this->isLossLessLink = true;
     return 0;
   }
 }
@@ -145,7 +144,7 @@ int VPXEncoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
       static igtl_uint32 messageID = 6;
       messageID ++;
       this->ConvertToLocalImageFormat(pSrcPic);
-      const vpx_codec_err_t res2 = vpx_codec_encode(codec, inputImage, messageID, 1, 0, VPX_DL_BEST_QUALITY);
+      const vpx_codec_err_t res2 = vpx_codec_encode(codec, inputImage, messageID, 1, 0, VPX_DL_GOOD_QUALITY);
       if (res2 != VPX_CODEC_OK)
       {
         die_codec(codec, "Failed to encode frame");

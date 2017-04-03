@@ -35,22 +35,18 @@
   #include "./vpx_config.h"
 #endif
 
-void TestWithVersion(int version)
+int startEncodeTime = 0;
+int endEncodeTime = 0;
+int startDecodeTime = 0;
+int endDecodeTime = 0;
+int totalEncodeTime = 0;
+int totalDecodeTime =0;
+
+void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDecoder* videoStreamDecoder, bool compareImage)
 {
   // Get thread information
   int Width = 256;
   int Height = 256;
-#if OpenIGTLink_BUILD_VPX
-  VPXEncoder* videoStreamEncoder = new VPXEncoder();
-  VPXDecoder* videoStreamDecoder = new VPXDecoder();
-#elif OpenIGTLink_BUILD_H264
-  H264Encoder* videoStreamEncoder = new H264Encoder();
-  H264Decoder* videoStreamDecoder = new H264Decoder();
-#endif
-  
-  videoStreamEncoder->SetPicWidth(Width);
-  videoStreamEncoder->SetPicHeight(Height);
-  videoStreamEncoder->InitializeEncoder();
   int kiPicResSize = Width*Height;
   igtl_uint8* imagePointer = new igtl_uint8[kiPicResSize*3/2];
   memset(imagePointer, 0, Width * Height * 3 / 2);
@@ -68,8 +64,9 @@ void TestWithVersion(int version)
   SourcePicture* pDecodedPic = new SourcePicture();
   pDecodedPic->data[0] = new igtl_uint8[kiPicResSize*3/2];
   memset(pDecodedPic->data[0], 0, Width * Height * 3 / 2);
-  
-  for(int i = 0; i <6; i++)
+  int bitstreamTotalLength = 0;
+  totalEncodeTime = 0;
+  for(int i = 0; i <100; i++)
   {
     igtl_int32 iFrameNumInFile = -1;
     std::string sep = "/";
@@ -120,7 +117,10 @@ void TestWithVersion(int version)
         videoMessageSend->SetHeaderVersion(version);
         if(version == IGTL_HEADER_VERSION_2)
           igtlMetaDataAddElementMacro(videoMessageSend);
+        startEncodeTime = videoStreamDecoder->getCurrentTime();
         int iEncFrames = videoStreamEncoder->EncodeSingleFrameIntoVideoMSG(pSrcPic, videoMessageSend, isGrayImage);
+        endEncodeTime = videoStreamDecoder->getCurrentTime();
+        totalEncodeTime += (endEncodeTime - startEncodeTime);
         if(iEncFrames == 0)
         {
           igtl::VideoMessage::Pointer videoMessageReceived = igtl::VideoMessage::New();
@@ -132,14 +132,19 @@ void TestWithVersion(int version)
           videoMessageReceived->AllocatePack();
           memcpy(videoMessageReceived->GetPackBodyPointer(), videoMessageSend->GetPackBodyPointer(), videoMessageSend->GetPackBodySize());
           videoMessageReceived->Unpack();
+          bitstreamTotalLength += videoMessageReceived->GetBitStreamSize();
           EXPECT_EQ(memcmp(videoMessageReceived->GetPackFragmentPointer(2),videoMessageSend->GetPackFragmentPointer(2),videoMessageReceived->GetBitStreamSize()),0);
+          startDecodeTime = videoStreamDecoder->getCurrentTime();
           videoStreamDecoder->DecodeVideoMSGIntoSingleFrame(videoMessageReceived.GetPointer(), pDecodedPic);
+          endDecodeTime = videoStreamDecoder->getCurrentTime();
+          totalDecodeTime += (endDecodeTime - startDecodeTime);
           if(version == IGTL_HEADER_VERSION_2)
           {
             videoMessageReceived->SetMessageID(1); // Message ID is reset by the codec, so the comparison of ID is no longer valid, manually set to 1;
             igtlMetaDataComparisonMacro(videoMessageReceived);
           }
-          EXPECT_EQ(memcmp(pDecodedPic->data[0], pSrcPic->data[0],kiPicResSize*3/2),0);
+          if(compareImage)
+            EXPECT_EQ(memcmp(pDecodedPic->data[0], pSrcPic->data[0],kiPicResSize*3/2),0);
         }
       }
       igtl::Sleep(20);
@@ -152,18 +157,84 @@ void TestWithVersion(int version)
       fprintf (stderr, "Unable to open source sequence file, check corresponding path!\n");
     }
   }
+  std::cerr<<"Compression Rate: "<<(float)bitstreamTotalLength/(Width*Height*100)<<std::endl;
 }
+
+
+TEST(VideoMessageTest, VPXCodecSpeedAndQualityTestFormatVersion1)
+{
+#if OpenIGTLink_BUILD_VPX
+  VPXEncoder* videoStreamEncoder = new VPXEncoder();
+  VPXDecoder* videoStreamDecoder = new VPXDecoder();
+  int Width = 256;
+  int Height = 256;
+  videoStreamEncoder->SetPicWidth(Width);
+  videoStreamEncoder->SetPicHeight(Height);
+  videoStreamEncoder->SetLosslessLink(false);
+  videoStreamEncoder->InitializeEncoder();
+  TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);
+  std::cerr<<"Total encode and decode time for lossy coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
+  videoStreamEncoder->SetLosslessLink(true);
+  videoStreamEncoder->InitializeEncoder();
+  TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder,true);
+  std::cerr<<"Total encode and decode time for lossless coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
+#endif
+}
+
+
+
+TEST(VideoMessageTest, H264CodecSpeedAndQualityTestFormatVersion1)
+{
+#if OpenIGTLink_BUILD_H264
+  H264Encoder* videoStreamEncoder = new H264Encoder();
+  H264Decoder* videoStreamDecoder = new H264Decoder();
+  int Width = 256;
+  int Height = 256;
+  videoStreamEncoder->SetPicWidth(Width);
+  videoStreamEncoder->SetPicHeight(Height);
+  videoStreamEncoder->SetLosslessLink(false);
+  videoStreamEncoder->InitializeEncoder();
+  TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder,false);
+  std::cerr<<"Total encode and decode time for near lossless coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
+#endif
+}
+
 
 TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
 {
-  TestWithVersion(IGTL_HEADER_VERSION_1);
+#if OpenIGTLink_BUILD_VPX
+  VPXEncoder* videoStreamEncoder = new VPXEncoder();
+  VPXDecoder* videoStreamDecoder = new VPXDecoder();
+#elif OpenIGTLink_BUILD_H264
+  H264Encoder* videoStreamEncoder = new H264Encoder();
+  H264Decoder* videoStreamDecoder = new H264Decoder();
+#endif
+  int Width = 256;
+  int Height = 256;
+  videoStreamEncoder->SetPicWidth(Width);
+  videoStreamEncoder->SetPicHeight(Height);
+  videoStreamEncoder->InitializeEncoder();
+  TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder,true);
 }
+
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
 
   TEST(VideoMessageTest, EncodeAndDecodeFormatVersion2)
   {
-    TestWithVersion(IGTL_HEADER_VERSION_2);
+#if OpenIGTLink_BUILD_VPX
+    VPXEncoder* videoStreamEncoder = new VPXEncoder();
+    VPXDecoder* videoStreamDecoder = new VPXDecoder();
+#elif OpenIGTLink_BUILD_H264
+    H264Encoder* videoStreamEncoder = new H264Encoder();
+    H264Decoder* videoStreamDecoder = new H264Decoder();
+#endif
+    int Width = 256;
+    int Height = 256;
+    videoStreamEncoder->SetPicWidth(Width);
+    videoStreamEncoder->SetPicHeight(Height);
+    videoStreamEncoder->InitializeEncoder();
+    TestWithVersion(IGTL_HEADER_VERSION_2, videoStreamEncoder, videoStreamDecoder,true);
   }
 
 #endif

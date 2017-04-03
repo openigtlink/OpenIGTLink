@@ -194,8 +194,8 @@ int H264Encoder::FillSpecificParameters() {
   sSvcParam.bPrefixNalAddingCtrl = 0;
   sSvcParam.iComplexityMode = HIGH_COMPLEXITY;
   sSvcParam.bSimulcastAVC = false;
-  sSvcParam.iMaxQp = 1;
-  sSvcParam.iMinQp = 1;
+  sSvcParam.iMaxQp = 0;
+  sSvcParam.iMinQp = 0;
   int iIndexLayer = 0;
   sSvcParam.sSpatialLayers[iIndexLayer].uiProfileIdc = PRO_BASELINE;
   sSvcParam.sSpatialLayers[iIndexLayer].uiLevelIdc = LEVEL_5_2;
