@@ -1,5 +1,5 @@
 //
-//  CodecCommonClasses.hpp
+//  CodecCommonClasses.h
 //  OpenIGTLink
 //
 //  Created by Longquan Chen on 3/30/17.
@@ -191,7 +191,7 @@ protected:
 class GenericDecoder
 {
 public:
-  GenericDecoder(){deviceName = "";};
+  GenericDecoder(){deviceName = ""; isGrayImage = false;};
   ~GenericDecoder(){};
   
   virtual int DecodeBitStreamIntoFrame(unsigned char* bitStream,igtl_uint8* outputFrame,igtl_uint32 iDimensions[], igtl_uint64 &iStreamSize) = 0;
@@ -212,11 +212,27 @@ public:
     this->deviceName = std::string(name);
   };
   
+  virtual bool GetIsGrayImage()
+  {
+    return this->isGrayImage;
+  };
+  
+  virtual void SetIsGrayImage(bool grayImage)
+  {
+    this->isGrayImage = grayImage;
+  };
+  
+  int ConvertYUVToRGB(igtl_uint8 *YUVFrame, igtl_uint8* RGBFrame, int iHeight, int iWidth);
+  
+  int ConvertYUVToGrayImage(igtl_uint8 * YUV420Frame, igtl_uint8 *GrayFrame, int iHeight, int iWidth);
+  
 protected:
   
   virtual void ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[2], igtl_uint8 *outputFrame){};
   
   std::string deviceName;
+  
+  bool isGrayImage;
   
 };
 

@@ -29,7 +29,7 @@
 //     // do something
 //   }
 
-#ifdef OpenIGTLink_PROTOCOL_VERSION >= 3
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
 #define igtlMessageHandlerClassMacro(messagetype, classname, datatype)     \
   class classname : public ::igtl::MessageHandler                 \
   {                                                               \

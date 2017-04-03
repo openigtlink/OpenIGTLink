@@ -42,6 +42,7 @@ int main (int argc, char** argv)
   H264Encoder* encoder = new H264Encoder();
 #endif
   server.SetEncoder(encoder);
+  server.SetupServer();
   server.InitializeEncoder();
   server.SetWaitSTTCommand(true);
   if(server.transportMethod==server.UseTCP)

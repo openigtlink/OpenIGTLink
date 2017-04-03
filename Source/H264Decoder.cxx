@@ -126,6 +126,13 @@ int H264Decoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage,
     igtl_int32 iWidth = videoMessage->GetWidth();
     igtl_int32 iHeight = videoMessage->GetHeight();
     igtl_uint64 iStreamSize = videoMessage->GetBitStreamSize();
+    igtl_uint16 frameType = videoMessage->GetFrameType();
+    isGrayImage = false;
+    if (frameType>0X00FF)
+    {
+      frameType= frameType>>8;
+      isGrayImage = true;
+    }
     pDecodedPic->picWidth = iWidth;
     pDecodedPic->picHeight = iHeight;
     pDecodedPic->data[1]= pDecodedPic->data[0] + iWidth*iHeight;
