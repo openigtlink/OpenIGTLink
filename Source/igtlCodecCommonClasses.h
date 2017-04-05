@@ -169,6 +169,12 @@ public:
   
   virtual bool GetLosslessLink(){return this->isLossLessLink;};
   
+  virtual int SetRCMode(int value){return -1;};
+  
+  virtual int SetQP(int maxQP, int minQP){return -1;};
+  
+  virtual int SetRCTaregetBitRate(unsigned int bitRate){return -1;};
+  
 protected:
   unsigned int picWidth;
   
@@ -235,5 +241,10 @@ protected:
   bool isGrayImage;
   
 };
+
+
+
+
+float* SSIMCalculate();
 
 #endif /* CodecCommonClasses_h */

@@ -10,7 +10,18 @@
  PURPOSE.  See the above copyright notices for more information.
  
  =========================================================================*/
+/*
+ *  Copyright (c) 2014 The WebM project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree. An additional intellectual property rights grant can be found
+ *  in the file PATENTS.  All contributing project authors may
+ *  be found in the AUTHORS file in the root of the source tree.
+ */
+
 #include <sstream>
+#include <map>
 #include "igtlVideoMessage.h"
 #include "igtlMessageDebugFunction.h"
 #include "igtl_video.h"
@@ -41,7 +52,93 @@ int startDecodeTime = 0;
 int endDecodeTime = 0;
 int totalEncodeTime = 0;
 int totalDecodeTime =0;
+double ssim = 0.0;
+float compressionRate = 0.0;
 
+//------------------------
+//Taken from the libvpx and modified, as the original code is broken,
+//will be removed when the original code bug is fixed.
+void vpx_ssim_parms_8x8_c(const uint8_t *s, int sp, const uint8_t *r, int rp,
+                          uint32_t *sum_s, uint32_t *sum_r, uint32_t *sum_sq_s,
+                          uint32_t *sum_sq_r, uint32_t *sum_sxr) {
+  int i, j;
+  for (i = 0; i < 8; i++, s += sp, r += rp) {
+    for (j = 0; j < 8; j++) {
+      *sum_s += s[j];
+      *sum_r += r[j];
+      *sum_sq_s += s[j] * s[j];
+      *sum_sq_r += r[j] * r[j];
+      *sum_sxr += s[j] * r[j];
+    }
+  }
+}
+
+static const int64_t cc1 = 26634;        // (64^2*(.01*255)^2
+static const int64_t cc2 = 239708;       // (64^2*(.03*255)^2
+static const int64_t cc1_10 = 428658;    // (64^2*(.01*1023)^2
+static const int64_t cc2_10 = 3857925;   // (64^2*(.03*1023)^2
+static const int64_t cc1_12 = 6868593;   // (64^2*(.01*4095)^2
+static const int64_t cc2_12 = 61817334;  // (64^2*(.03*4095)^2
+
+static double similarity(uint32_t sum_s, uint32_t sum_r, uint32_t sum_sq_s,
+                         uint32_t sum_sq_r, uint32_t sum_sxr, int count,
+                         uint32_t bd) {
+  int64_t ssim_n, ssim_d;
+  int64_t c1, c2;
+  if (bd == 8) {
+    // scale the constants by number of pixels
+    c1 = (cc1 * count * count) >> 12;
+    c2 = (cc2 * count * count) >> 12;
+  } else if (bd == 10) {
+    c1 = (cc1_10 * count * count) >> 12;
+    c2 = (cc2_10 * count * count) >> 12;
+  } else if (bd == 12) {
+    c1 = (cc1_12 * count * count) >> 12;
+    c2 = (cc2_12 * count * count) >> 12;
+  } else {
+    c1 = c2 = 0;
+    assert(0);
+  }
+  
+  ssim_n = (2 * sum_s * sum_r + c1) *
+  ((int64_t)2 * count * sum_sxr - (int64_t)2 * sum_s * sum_r + c2);
+  
+  ssim_d = (sum_s * sum_s + sum_r * sum_r + c1) *
+  ((int64_t)count * sum_sq_s - (int64_t)sum_s * sum_s +
+   (int64_t)count * sum_sq_r - (int64_t)sum_r * sum_r + c2);
+  
+  return ssim_n * 1.0 / ssim_d;
+}
+
+static double local_ssim_8x8(const uint8_t *s, int sp, const uint8_t *r, int rp) {
+  uint32_t sum_s = 0, sum_r = 0, sum_sq_s = 0, sum_sq_r = 0, sum_sxr = 0;
+  vpx_ssim_parms_8x8_c(s, sp, r, rp, &sum_s, &sum_r, &sum_sq_s, &sum_sq_r,
+                     &sum_sxr);
+  return similarity(sum_s, sum_r, sum_sq_s, sum_sq_r, sum_sxr, 64, 8);
+}
+
+static double local_vpx_ssim2(const uint8_t *img1, const uint8_t *img2,
+                        int stride_img1, int stride_img2, int width,
+                        int height) {
+  int i, j;
+  int samples = 0;
+  double ssim_total = 0;
+  
+  // sample point start with each 4x4 location
+  for (i = 0; i <= height - 8;
+       i += 4, img1 += stride_img1 * 4, img2 += stride_img2 * 4) {
+    for (j = 0; j <= width - 8; j += 4) {
+      double v = local_ssim_8x8(img1 + j, stride_img1, img2 + j, stride_img2);
+      ssim_total += v;
+      samples++;
+    }
+  }
+  ssim_total /= samples;
+  return ssim_total;
+}
+//Taken from the libvpx and modified, as the original code is broken,
+//will be removed when the original code bug is fixed.
+//-----------------------------------
 void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDecoder* videoStreamDecoder, bool compareImage)
 {
   // Get thread information
@@ -50,7 +147,6 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
   int kiPicResSize = Width*Height;
   igtl_uint8* imagePointer = new igtl_uint8[kiPicResSize*3/2];
   memset(imagePointer, 0, Width * Height * 3 / 2);
-  //memcpy(imagePointer, frameImage->GetScalarPointer(), imageSizePixels[0] * imageSizePixels[1]);
   SourcePicture* pSrcPic = new SourcePicture();
   pSrcPic->colorFormat = FormatI420;
   pSrcPic->picWidth = Width; // check the test image
@@ -65,6 +161,7 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
   pDecodedPic->data[0] = new igtl_uint8[kiPicResSize*3/2];
   memset(pDecodedPic->data[0], 0, Width * Height * 3 / 2);
   int bitstreamTotalLength = 0;
+  ssim = 0.0;
   totalEncodeTime = 0;
   for(int i = 0; i <100; i++)
   {
@@ -143,6 +240,9 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
             videoMessageReceived->SetMessageID(1); // Message ID is reset by the codec, so the comparison of ID is no longer valid, manually set to 1;
             igtlMetaDataComparisonMacro(videoMessageReceived);
           }
+#if OpenIGTLink_BUILD_VPX
+           ssim += local_vpx_ssim2(pSrcPic->data[0], pDecodedPic->data[0], pSrcPic->stride[0], pDecodedPic->stride[0], pSrcPic->picWidth, pSrcPic->picHeight);
+#endif
           if(compareImage)
             EXPECT_EQ(memcmp(pDecodedPic->data[0], pSrcPic->data[0],kiPicResSize*3/2),0);
         }
@@ -157,48 +257,87 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
       fprintf (stderr, "Unable to open source sequence file, check corresponding path!\n");
     }
   }
-  std::cerr<<"Compression Rate: "<<(float)bitstreamTotalLength/(Width*Height*100)<<std::endl;
+  ssim/=100.0;
+  std::cerr<<"SSIM value: "<<ssim<<std::endl;
+  compressionRate = (float)bitstreamTotalLength/(Width*Height*100);
+  std::cerr<<"Compression Rate: "<<compressionRate<<std::endl;
 }
 
+#define TESTQUALITY 0
+#if TESTQUALITY
+  TEST(VideoMessageTest, H264CodecSpeedAndQualityTestFormatVersion1)
+  {
+    #if OpenIGTLink_BUILD_H264
+      H264Encoder* videoStreamEncoder = new H264Encoder();
+      H264Decoder* videoStreamDecoder = new H264Decoder();
+      int Width = 256;
+      int Height = 256;
+      videoStreamEncoder->SetPicWidth(Width);
+      videoStreamEncoder->SetPicHeight(Height);
+      videoStreamEncoder->SetLosslessLink(true);
+      videoStreamEncoder->SetQP(0,0);
+      videoStreamEncoder->InitializeEncoder();
+      TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder,false);
+      std::cerr<<"Total encode and decode time for near lossless coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
+      std::map<std::string, std::string> values, times;
+      values.insert(std::pair<std::string, std::string>(std::to_string(ssim), std::to_string(compressionRate)));
+      times.insert(std::pair<std::string, std::string>(std::to_string((float)totalEncodeTime/1e6), std::to_string((float)totalDecodeTime/1e6)));
+      for (int i = 1; i<=51; i=i+3)
+      {
+        videoStreamEncoder->SetQP(i,i);
+        videoStreamEncoder->InitializeEncoder();
+        TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);
+        std::cerr<<"Total encode and decode time for QP="<<i<<": "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
+        values.insert(std::pair<std::string, std::string>(std::to_string(ssim), std::to_string(compressionRate)));
+        times.insert(std::pair<std::string, std::string>(std::to_string((float)totalEncodeTime/1e6), std::to_string((float)totalDecodeTime/1e6)));
+      }
+      std::map<std::string, std::string>::const_iterator it2 = times.begin();
+      for( std::map<std::string, std::string>::const_iterator it = values.begin(); it != values.end(); ++it, ++it2)
+      {
+        std::cerr<<it->first<<" "<<it->second<<" "<<it2->first<<" "<<it2->second<<std::endl;
+      }
+    #endif
+  }
 
-TEST(VideoMessageTest, VPXCodecSpeedAndQualityTestFormatVersion1)
-{
-#if OpenIGTLink_BUILD_VPX
-  VPXEncoder* videoStreamEncoder = new VPXEncoder();
-  VPXDecoder* videoStreamDecoder = new VPXDecoder();
-  int Width = 256;
-  int Height = 256;
-  videoStreamEncoder->SetPicWidth(Width);
-  videoStreamEncoder->SetPicHeight(Height);
-  videoStreamEncoder->SetLosslessLink(false);
-  videoStreamEncoder->InitializeEncoder();
-  TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);
-  std::cerr<<"Total encode and decode time for lossy coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
-  videoStreamEncoder->SetLosslessLink(true);
-  videoStreamEncoder->InitializeEncoder();
-  TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder,true);
-  std::cerr<<"Total encode and decode time for lossless coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
+
+  TEST(VideoMessageTest, VPXCodecSpeedAndQualityTestFormatVersion1)
+  {
+  #if OpenIGTLink_BUILD_VPX
+    VPXEncoder* videoStreamEncoder = new VPXEncoder();
+    VPXDecoder* videoStreamDecoder = new VPXDecoder();
+    int Width = 256;
+    int Height = 256;
+    videoStreamEncoder->SetPicWidth(Width);
+    videoStreamEncoder->SetPicHeight(Height);
+    videoStreamEncoder->SetLosslessLink(false);
+    videoStreamEncoder->InitializeEncoder();
+    TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);
+    std::cerr<<"Total encode and decode time for Variable Rate coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
+    std::cerr<<"Total encode and decode time for near lossless coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
+    std::map<std::string, std::string> values, times;
+    values.insert(std::pair<std::string, std::string>(std::to_string(ssim), std::to_string(compressionRate)));
+    times.insert(std::pair<std::string, std::string>(std::to_string((float)totalEncodeTime/1e6), std::to_string((float)totalDecodeTime/1e6)));
+    for (int i = 1; i<=61; i=i+3)
+    {
+      videoStreamEncoder->SetQP(i,i);
+      videoStreamEncoder->InitializeEncoder();
+      TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);
+      std::cerr<<"Total encode and decode time for QP="<<i<<": "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
+      values.insert(std::pair<std::string, std::string>(std::to_string(ssim), std::to_string(compressionRate)));
+      times.insert(std::pair<std::string, std::string>(std::to_string((float)totalEncodeTime/1e6), std::to_string((float)totalDecodeTime/1e6)));
+    }
+    videoStreamEncoder->SetLosslessLink(true);
+    videoStreamEncoder->InitializeEncoder();
+    TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder,true);
+    std::cerr<<"Total encode and decode time for lossless coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
+    std::map<std::string, std::string>::const_iterator it2 = times.begin();
+    for( std::map<std::string, std::string>::const_iterator it = values.begin(); it != values.end(); ++it, ++it2)
+    {
+      std::cerr<<it->first<<" "<<it->second<<" "<<it2->first<<" "<<it2->second<<std::endl;
+    }
+  #endif
+  }
 #endif
-}
-
-
-
-TEST(VideoMessageTest, H264CodecSpeedAndQualityTestFormatVersion1)
-{
-#if OpenIGTLink_BUILD_H264
-  H264Encoder* videoStreamEncoder = new H264Encoder();
-  H264Decoder* videoStreamDecoder = new H264Decoder();
-  int Width = 256;
-  int Height = 256;
-  videoStreamEncoder->SetPicWidth(Width);
-  videoStreamEncoder->SetPicHeight(Height);
-  videoStreamEncoder->SetLosslessLink(false);
-  videoStreamEncoder->InitializeEncoder();
-  TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder,false);
-  std::cerr<<"Total encode and decode time for near lossless coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
-#endif
-}
-
 
 TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
 {

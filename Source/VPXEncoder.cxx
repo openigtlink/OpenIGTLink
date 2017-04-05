@@ -23,12 +23,13 @@ VPXEncoder::VPXEncoder(char *configFile):GenericEncoder()
   codec = new vpx_codec_ctx_t();
   encodedBuf = new vpx_fixed_buf_t();
   inputImage = new vpx_image_t();
+  deadlineMode = VPX_DL_REALTIME;
   FillSpecificParameters ();
 }
 
 VPXEncoder::~VPXEncoder()
 {
-  vpx_codec_encode(codec, NULL, -1, 1, 0, VPX_DL_GOOD_QUALITY); //Flush the codec
+  vpx_codec_encode(codec, NULL, -1, 1, 0, deadlineMode); //Flush the codec
   vpx_codec_destroy(codec);
   delete inputImage;
   this->encoder = NULL;
@@ -50,6 +51,27 @@ int VPXEncoder::ParseConfig() {
   return 0;
 }
 
+int VPXEncoder::SetRCMode(int value)
+{
+  this->cfg.rc_end_usage = (vpx_rc_mode) value;
+  return 0;
+}
+
+
+int VPXEncoder::SetRCTaregetBitRate(unsigned int bitRate)
+{
+  this->cfg.rc_target_bitrate = bitRate;
+  return 0;
+}
+
+int VPXEncoder::SetQP(int maxQP, int minQP)
+{
+  this->cfg.rc_max_quantizer = maxQP<63?maxQP:63;
+  this->cfg.rc_min_quantizer = minQP>0?minQP:0;
+  this->cfg.rc_end_usage = VPX_Q;
+  return 0;
+}
+
 int VPXEncoder::SetLosslessLink(bool linkMethod)
 {
   this->isLossLessLink = linkMethod;
@@ -60,18 +82,13 @@ int VPXEncoder::SetLosslessLink(bool linkMethod)
   }
   else
   {
+    this->cfg.rc_end_usage = VPX_VBR;
     return 0;
   }
 }
 
 int VPXEncoder::InitializeEncoder()
 {
-  vpx_codec_err_t res = vpx_codec_enc_config_default(encoder->codec_interface(), &cfg, 0);
-  if (res)
-  {
-    die_codec(codec, "Failed to get default codec config.");
-    return -1;
-  }
   cfg.g_lag_in_frames = 0;
   cfg.g_w = this->GetPicWidth();
   cfg.g_h = this->GetPicHeight();
@@ -85,7 +102,7 @@ int VPXEncoder::InitializeEncoder()
   
   if (vpx_codec_control_(codec, VP9E_SET_LOSSLESS, this->GetLosslessLink()))
   {
-    die_codec(codec, "Failed to use lossless mode");
+    die_codec(codec, "Failed to set lossless mode");
     return -1;
   }
   this->initializationDone = true;
@@ -103,6 +120,12 @@ void VPXEncoder::SetPicHeight(unsigned int height)
 {
   this->picHeight = height;
   this->cfg.g_h = height;
+}
+
+int VPXEncoder::SetDeadlineMode(unsigned long mode)
+{
+  this->deadlineMode = mode;
+  return 0;
 }
 
 int VPXEncoder::ConvertToLocalImageFormat(SourcePicture* pSrcPic)
@@ -144,7 +167,7 @@ int VPXEncoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
       static igtl_uint32 messageID = 6;
       messageID ++;
       this->ConvertToLocalImageFormat(pSrcPic);
-      const vpx_codec_err_t res2 = vpx_codec_encode(codec, inputImage, messageID, 1, 0, VPX_DL_GOOD_QUALITY);
+      const vpx_codec_err_t res2 = vpx_codec_encode(codec, inputImage, messageID, 1, 0, this->deadlineMode);
       if (res2 != VPX_CODEC_OK)
       {
         die_codec(codec, "Failed to encode frame");

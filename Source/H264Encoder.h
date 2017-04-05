@@ -97,6 +97,21 @@ public:
   virtual int FillSpecificParameters();
   
   /**
+   * @brief Enumerate the type of rate control mode
+    typedef enum {
+      RC_QUALITY_MODE = 0,     ///< quality mode
+      RC_BITRATE_MODE = 1,     ///< bitrate mode
+      RC_BUFFERBASED_MODE = 2, ///< no bitrate control,only using buffer status,adjust the video quality
+      RC_TIMESTAMP_MODE = 3, //rate control based timestamp
+      RC_BITRATE_MODE_POST_SKIP = 4, ///< this is in-building RC MODE, WILL BE DELETED after algorithm tuning!
+      RC_OFF_MODE = -1,         ///< rate control off mode
+    } RC_MODES;
+   */
+  virtual int SetRCMode(int value);
+  
+  virtual int SetQP(int maxQP, int minQP);
+  
+  /**
    Parse the configuration file to initialize the encoder and server.
    */
   virtual int InitializeEncoder();
@@ -116,6 +131,8 @@ public:
   virtual unsigned int GetPicHeight(){return this->sSvcParam.iPicHeight;};
   
   virtual int SetLosslessLink(bool linkMethod);
+  
+  virtual int SetRCTaregetBitRate(unsigned int bitRate);
   
   virtual bool GetLosslessLink(){return this->sSvcParam.bIsLosslessLink;};
   

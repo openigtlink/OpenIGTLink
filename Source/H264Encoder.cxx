@@ -194,7 +194,7 @@ int H264Encoder::FillSpecificParameters() {
   sSvcParam.bPrefixNalAddingCtrl = 0;
   sSvcParam.iComplexityMode = HIGH_COMPLEXITY;
   sSvcParam.bSimulcastAVC = false;
-  sSvcParam.iMaxQp = 0;
+  sSvcParam.iMaxQp = 51;
   sSvcParam.iMinQp = 0;
   int iIndexLayer = 0;
   sSvcParam.sSpatialLayers[iIndexLayer].uiProfileIdc = PRO_BASELINE;
@@ -215,6 +215,34 @@ int H264Encoder::FillSpecificParameters() {
   }
   sSvcParam.fMaxFrameRate = fMaxFr;
 
+  return 0;
+}
+
+int H264Encoder::SetRCTaregetBitRate(unsigned int bitRate)
+{
+  this->sSvcParam.iTargetBitrate = bitRate;
+  return 0;
+}
+
+int H264Encoder::SetRCMode(int value)
+{
+  sSvcParam.iRCMode = (RC_MODES)value;
+  if(sSvcParam.iRCMode == RC_QUALITY_MODE || sSvcParam.iRCMode == RC_BITRATE_MODE || sSvcParam.iRCMode == RC_TIMESTAMP_MODE)
+  {
+    sSvcParam.bEnableFrameSkip = true;
+  }
+  return 0;
+}
+
+int H264Encoder::SetQP(int maxQP, int minQP)
+{
+  sSvcParam.iMaxQp = maxQP<51?maxQP:51;
+  sSvcParam.iMinQp = minQP>0?minQP:0;
+  for(int i = 0; i <sSvcParam.iSpatialLayerNum; i++)
+  {
+    sSvcParam.sSpatialLayers[i].iDLayerQp = (sSvcParam.iMaxQp + sSvcParam.iMinQp)/2;
+  }
+  sSvcParam.iRCMode = RC_OFF_MODE;
   return 0;
 }
 
@@ -510,7 +538,6 @@ int H264Encoder::InitializeEncoder()
       iRet = 1;
       goto INSIDE_MEM_FREE;
     }
-
     this->initializationDone = true;
     return 0;
   }

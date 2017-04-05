@@ -63,7 +63,22 @@ public:
   
   virtual unsigned int GetPicHeight(){return this->picHeight;};
   
+  virtual int SetRCMode(int value);
+  
+  virtual int SetQP(int maxQP, int minQP);
+  
+  virtual int SetRCTaregetBitRate(unsigned int bitRate);
+  
   virtual int SetLosslessLink(bool linkMethod);
+  
+  /*!\brief deadline parameter analogous to VPx REALTIME mode. */
+  //#define VPX_DL_REALTIME (1)
+  /*!\brief deadline parameter analogous to  VPx GOOD QUALITY mode. */
+  //#define VPX_DL_GOOD_QUALITY (1000000)
+  /*!\brief deadline parameter analogous to VPx BEST QUALITY mode. */
+  //#define VPX_DL_BEST_QUALITY (0)
+  /*!\brief Encode a frame*/
+  int SetDeadlineMode(unsigned long mode);
   
   int ParseConfig();
   
@@ -80,6 +95,8 @@ public:
   const vpx_fixed_buf_t *encodedBuf;
   
   const vpx_codec_cx_pkt_t *pkt;
+  
+  unsigned long deadlineMode;
   
 };
 
