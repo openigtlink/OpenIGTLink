@@ -44,6 +44,8 @@
   #include "VPXDecoder.h"
   #include "../video_reader.h"
   #include "./vpx_config.h"
+  #include "vpx_dsp_rtcd.h"
+  #include "vpx_dsp/ssim.h"
 #endif
 
 int startEncodeTime = 0;
@@ -163,6 +165,7 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
   int bitstreamTotalLength = 0;
   ssim = 0.0;
   totalEncodeTime = 0;
+  int totalFrame = 0;
   for(int i = 0; i <100; i++)
   {
     igtl_int32 iFrameNumInFile = -1;
@@ -232,22 +235,37 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
           bitstreamTotalLength += videoMessageReceived->GetBitStreamSize();
           EXPECT_EQ(memcmp(videoMessageReceived->GetPackFragmentPointer(2),videoMessageSend->GetPackFragmentPointer(2),videoMessageReceived->GetBitStreamSize()),0);
           startDecodeTime = videoStreamDecoder->getCurrentTime();
-          videoStreamDecoder->DecodeVideoMSGIntoSingleFrame(videoMessageReceived.GetPointer(), pDecodedPic);
-          endDecodeTime = videoStreamDecoder->getCurrentTime();
-          totalDecodeTime += (endDecodeTime - startDecodeTime);
-          if(version == IGTL_HEADER_VERSION_2)
+          int iRet= videoStreamDecoder->DecodeVideoMSGIntoSingleFrame(videoMessageReceived.GetPointer(), pDecodedPic);
+          if(iRet)
           {
-            videoMessageReceived->SetMessageID(1); // Message ID is reset by the codec, so the comparison of ID is no longer valid, manually set to 1;
-            igtlMetaDataComparisonMacro(videoMessageReceived);
+            totalFrame ++;
+            endDecodeTime = videoStreamDecoder->getCurrentTime();
+            totalDecodeTime += (endDecodeTime - startDecodeTime);
+            if(version == IGTL_HEADER_VERSION_2)
+            {
+              videoMessageReceived->SetMessageID(1); // Message ID is reset by the codec, so the comparison of ID is no longer valid, manually set to 1;
+              igtlMetaDataComparisonMacro(videoMessageReceived);
+            }
+  #if OpenIGTLink_BUILD_VPX
+            /*YV12_BUFFER_CONFIG *source = new YV12_BUFFER_CONFIG();
+            YV12_BUFFER_CONFIG *dest = new YV12_BUFFER_CONFIG();
+            double *weight = new double(); *weight = 1.0;
+            source->y_buffer = pSrcPic->data[0];
+            dest->y_buffer = pDecodedPic->data[0];
+            source->y_stride = pSrcPic->stride[0];
+            source->uv_stride =pSrcPic->stride[1];
+            dest->y_stride = pDecodedPic->stride[0];
+            dest->uv_stride = pDecodedPic->stride[1];
+            source->y_crop_width = pSrcPic->picWidth;
+            source->y_crop_height = pSrcPic->picHeight;*/
+            ssim += local_vpx_ssim2(pSrcPic->data[0], pDecodedPic->data[0],pSrcPic->stride[0], pDecodedPic->stride[0],pSrcPic->picWidth,pSrcPic->picHeight);
+  #endif
+            if(compareImage)
+              EXPECT_EQ(memcmp(pDecodedPic->data[0], pSrcPic->data[0],kiPicResSize*3/2),0);
           }
-#if OpenIGTLink_BUILD_VPX
-           ssim += local_vpx_ssim2(pSrcPic->data[0], pDecodedPic->data[0], pSrcPic->stride[0], pDecodedPic->stride[0], pSrcPic->picWidth, pSrcPic->picHeight);
-#endif
-          if(compareImage)
-            EXPECT_EQ(memcmp(pDecodedPic->data[0], pSrcPic->data[0],kiPicResSize*3/2),0);
         }
       }
-      igtl::Sleep(20);
+      igtl::Sleep(5);
       if (pFileYUV)
       {
         fclose(pFileYUV);
@@ -257,15 +275,19 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
       fprintf (stderr, "Unable to open source sequence file, check corresponding path!\n");
     }
   }
+  delete pDecodedPic;
+  delete pSrcPic;
+  pDecodedPic = NULL;
+  pSrcPic = NULL;
   ssim/=100.0;
   std::cerr<<"SSIM value: "<<ssim<<std::endl;
-  compressionRate = (float)bitstreamTotalLength/(Width*Height*100);
-  std::cerr<<"Compression Rate: "<<compressionRate<<std::endl;
+  compressionRate = (float)bitstreamTotalLength/(Width*Height*totalFrame);
+  std::cerr<<"Compression Rate: "<<compressionRate<< "  Total Frame Number: "<< totalFrame<< std::endl;
 }
 
-#define TESTQUALITY 0
+#define TESTQUALITY 1
 #if TESTQUALITY
-  TEST(VideoMessageTest, H264CodecSpeedAndQualityTestFormatVersion1)
+  void H264CodecSpeedAndQualityEval()
   {
     #if OpenIGTLink_BUILD_H264
       H264Encoder* videoStreamEncoder = new H264Encoder();
@@ -300,7 +322,7 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
   }
 
 
-  TEST(VideoMessageTest, VPXCodecSpeedAndQualityTestFormatVersion1)
+  void VP9CodecSpeedAndQualityEval()
   {
   #if OpenIGTLink_BUILD_VPX
     VPXEncoder* videoStreamEncoder = new VPXEncoder();
@@ -317,7 +339,7 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
     std::map<std::string, std::string> values, times;
     values.insert(std::pair<std::string, std::string>(std::to_string(ssim), std::to_string(compressionRate)));
     times.insert(std::pair<std::string, std::string>(std::to_string((float)totalEncodeTime/1e6), std::to_string((float)totalDecodeTime/1e6)));
-    for (int i = 1; i<=61; i=i+3)
+    for (int i = 1; i<=63; i=i+3)
     {
       videoStreamEncoder->SetQP(i,i);
       videoStreamEncoder->InitializeEncoder();
@@ -337,9 +359,88 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
     }
   #endif
   }
+
+  void H264CodecSpeedAndRateEval()
+  {
+  #if OpenIGTLink_BUILD_H264
+    H264Encoder* videoStreamEncoder = new H264Encoder();
+    H264Decoder* videoStreamDecoder = new H264Decoder();
+    int Width = 256;
+    int Height = 256;
+    videoStreamEncoder->SetPicWidth(Width);
+    videoStreamEncoder->SetPicHeight(Height);
+    videoStreamEncoder->SetLosslessLink(false);
+    videoStreamEncoder->SetRCMode(RC_BITRATE_MODE);
+    videoStreamEncoder->InitializeEncoder();
+    TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder,false);
+    std::cerr<<"Total encode and decode time for near lossless coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
+    std::map<std::string, std::string> values, times;
+    values.insert(std::pair<std::string, std::string>(std::to_string(ssim), std::to_string(compressionRate)));
+    times.insert(std::pair<std::string, std::string>(std::to_string((float)totalEncodeTime/1e6), std::to_string((float)totalDecodeTime/1e6)));
+    for (int i = 1; i<=20; i++)
+    {
+      videoStreamEncoder->SetRCTaregetBitRate(655*8*20*i);
+      videoStreamEncoder->InitializeEncoder();
+      TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);
+      std::cerr<<"Total encode and decode time for target rate ="<<i<<": "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
+      values.insert(std::pair<std::string, std::string>(std::to_string(ssim), std::to_string(compressionRate)));
+      times.insert(std::pair<std::string, std::string>(std::to_string((float)totalEncodeTime/1e6), std::to_string((float)totalDecodeTime/1e6)));
+    }
+    std::map<std::string, std::string>::const_iterator it2 = times.begin();
+    for( std::map<std::string, std::string>::const_iterator it = values.begin(); it != values.end(); ++it, ++it2)
+    {
+      std::cerr<<it->first<<" "<<it->second<<" "<<it2->first<<" "<<it2->second<<std::endl;
+    }
+  #endif
+  }
+
+  void VP9CodecSpeedAndRateEval()
+  {
+  #if OpenIGTLink_BUILD_VPX
+    VPXEncoder* videoStreamEncoder = new VPXEncoder();
+    VPXDecoder* videoStreamDecoder = new VPXDecoder();
+    int Width = 256;
+    int Height = 256;
+    videoStreamEncoder->SetPicWidth(Width);
+    videoStreamEncoder->SetPicHeight(Height);
+    videoStreamEncoder->SetLosslessLink(true);
+    videoStreamEncoder->SetRCMode(RC_BITRATE_MODE);
+    videoStreamEncoder->InitializeEncoder();
+    TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder,false);
+    std::cerr<<"Total encode and decode time for lossless coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
+    std::map<std::string, std::string> values, times;
+    values.insert(std::pair<std::string, std::string>(std::to_string(ssim), std::to_string(compressionRate)));
+    times.insert(std::pair<std::string, std::string>(std::to_string((float)totalEncodeTime/1e6), std::to_string((float)totalDecodeTime/1e6)));
+    videoStreamEncoder->SetLosslessLink(false);
+    
+    for (int i = 1; i<=20; i++) // The original frame bits per second is 255*255*20*8, the compression ratio is set from 0.5% to 8%
+    {
+      videoStreamEncoder->SetRCTaregetBitRate((int)(65536/100*8*20*i/1000.0));
+      videoStreamEncoder->InitializeEncoder();
+      videoStreamEncoder->SetSpeed(8);
+      TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);
+      std::cerr<<"Total encode and decode time for target bitrate="<<i<<": "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
+      values.insert(std::pair<std::string, std::string>(std::to_string(ssim), std::to_string(compressionRate)));
+      times.insert(std::pair<std::string, std::string>(std::to_string((float)totalEncodeTime/1e6), std::to_string((float)totalDecodeTime/1e6)));
+    }
+    std::map<std::string, std::string>::const_iterator it2 = times.begin();
+    for( std::map<std::string, std::string>::const_iterator it = values.begin(); it != values.end(); ++it, ++it2)
+    {
+      std::cerr<<it->first<<" "<<it->second<<" "<<it2->first<<" "<<it2->second<<std::endl;
+    }
+  #endif
+  }
+
+  TEST(VideoMessageTest, CodecEvalFormatVersion1)
+  {
+    //H264CodecSpeedAndQualityEval();
+    //VP9CodecSpeedAndQualityEval();
+    H264CodecSpeedAndRateEval();
+    VP9CodecSpeedAndRateEval();
+  }
 #endif
 
-TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
+  TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
 {
 #if OpenIGTLink_BUILD_VPX
   VPXEncoder* videoStreamEncoder = new VPXEncoder();

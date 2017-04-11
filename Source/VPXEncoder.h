@@ -71,6 +71,14 @@ public:
   
   virtual int SetLosslessLink(bool linkMethod);
   
+  /* Speed Should be set between -8 to 8 for VP9 */
+  enum
+  {
+    SlowestSpeed = -8,
+    FastestSpeed = 8
+  };
+  int SetSpeed(int speed);
+  
   /*!\brief deadline parameter analogous to VPx REALTIME mode. */
   //#define VPX_DL_REALTIME (1)
   /*!\brief deadline parameter analogous to  VPx GOOD QUALITY mode. */

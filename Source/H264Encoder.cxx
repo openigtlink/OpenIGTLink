@@ -202,7 +202,7 @@ int H264Encoder::FillSpecificParameters() {
   sSvcParam.sSpatialLayers[iIndexLayer].iVideoWidth = 256;
   sSvcParam.sSpatialLayers[iIndexLayer].iVideoHeight = 256;
   sSvcParam.sSpatialLayers[iIndexLayer].iDLayerQp = 1;
-  sSvcParam.sSpatialLayers[iIndexLayer].fFrameRate = 30.0f;
+  sSvcParam.sSpatialLayers[iIndexLayer].fFrameRate = 60.0;
   sSvcParam.sSpatialLayers[iIndexLayer].iSpatialBitrate = 1500000;
   sSvcParam.sSpatialLayers[iIndexLayer].iMaxSpatialBitrate = UNSPECIFIED_BIT_RATE;
   sSvcParam.sSpatialLayers[iIndexLayer].sSliceArgument.uiSliceMode = SM_SINGLE_SLICE;
@@ -221,6 +221,10 @@ int H264Encoder::FillSpecificParameters() {
 int H264Encoder::SetRCTaregetBitRate(unsigned int bitRate)
 {
   this->sSvcParam.iTargetBitrate = bitRate;
+  for (int i = 0; i < this->sSvcParam.iSpatialLayerNum; i++)
+  {
+    this->sSvcParam.sSpatialLayers[i].iSpatialBitrate = bitRate/this->sSvcParam.iSpatialLayerNum;
+  }
   return 0;
 }
 

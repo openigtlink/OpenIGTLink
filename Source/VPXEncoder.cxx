@@ -44,7 +44,12 @@ int VPXEncoder::FillSpecificParameters() {
   cfg.g_lag_in_frames = 1;
   // Lossless link is by default true;
   vpx_codec_enc_init(codec, encoder->codec_interface(), &cfg, 0);
-  return this->SetLosslessLink(true);
+  if(this->SetSpeed(FastestSpeed)!=0)
+  {
+    die_codec(codec, "Failed to set the speed to be the fastest.");
+    return -1;
+  }
+  return 0;
 }
 
 int VPXEncoder::ParseConfig() {
@@ -61,6 +66,17 @@ int VPXEncoder::SetRCMode(int value)
 int VPXEncoder::SetRCTaregetBitRate(unsigned int bitRate)
 {
   this->cfg.rc_target_bitrate = bitRate;
+  this->cfg.layer_target_bitrate[0] = bitRate;
+  for (int i = 0; i < this->cfg.ss_number_layers; i++)
+  {
+    this->cfg.ss_target_bitrate[i] = bitRate/this->cfg.ss_number_layers;
+  }
+  if (vpx_codec_control_(codec, VP9E_SET_LOSSLESS, this->GetLosslessLink()))
+  {
+    die_codec(codec, "Failed to set lossless mode");
+    return -1;
+  }
+  this->initializationDone = true;
   return 0;
 }
 
@@ -85,6 +101,16 @@ int VPXEncoder::SetLosslessLink(bool linkMethod)
     this->cfg.rc_end_usage = VPX_VBR;
     return 0;
   }
+}
+
+int VPXEncoder::SetSpeed(int speed)
+{
+  if (speed>=SlowestSpeed && speed<=FastestSpeed)
+  {
+    vpx_codec_control(codec, VP8E_SET_CPUUSED, speed);
+    return 0;
+  }
+  return -1;
 }
 
 int VPXEncoder::InitializeEncoder()
@@ -217,5 +243,5 @@ int VPXEncoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
       videoMessage->Pack();
     }
   }
-  return 0;
+  return -1;
 }
