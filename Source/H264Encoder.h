@@ -122,9 +122,9 @@ public:
    */
   virtual int EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage = false );
   
-  virtual void SetPicWidth(unsigned int width);
+  virtual int SetPicWidth(unsigned int width);
   
-  virtual void SetPicHeight(unsigned int height);
+  virtual int SetPicHeight(unsigned int height);
   
   virtual unsigned int GetPicWidth(){return this->sSvcParam.iPicWidth;};
   

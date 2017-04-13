@@ -225,6 +225,11 @@ int H264Encoder::SetRCTaregetBitRate(unsigned int bitRate)
   {
     this->sSvcParam.sSpatialLayers[i].iSpatialBitrate = bitRate/this->sSvcParam.iSpatialLayerNum;
   }
+  if (this->pSVCEncoder->InitializeExt (&sSvcParam)) {
+    fprintf (stderr, "Set target bit rate failed. \n");
+    return -1;
+  }
+  this->initializationDone = true;
   return 0;
 }
 
@@ -235,6 +240,11 @@ int H264Encoder::SetRCMode(int value)
   {
     sSvcParam.bEnableFrameSkip = true;
   }
+  if (this->pSVCEncoder->InitializeExt (&sSvcParam)) {
+    fprintf (stderr, "Set RC mode failed. \n");
+    return -1;
+  }
+  this->initializationDone = true;
   return 0;
 }
 
@@ -247,6 +257,11 @@ int H264Encoder::SetQP(int maxQP, int minQP)
     sSvcParam.sSpatialLayers[i].iDLayerQp = (sSvcParam.iMaxQp + sSvcParam.iMinQp)/2;
   }
   sSvcParam.iRCMode = RC_OFF_MODE;
+  if (this->pSVCEncoder->InitializeExt (&sSvcParam)) {
+    fprintf (stderr, "Set QP value failed.\n");
+    return -1;
+  }
+  this->initializationDone = true;
   return 0;
 }
 
@@ -324,7 +339,6 @@ int H264Encoder::ParseLayerConfig (string strTag[], const int iLayer, SEncParamE
 
 int H264Encoder::ParseConfig() {
   string strTag[4];
-  int32_t iRet = 0;
   
   while (!cRdCfg.EndOfFile()) {
     long iRd = cRdCfg.ReadLine (&strTag[0]);
@@ -381,9 +395,7 @@ int H264Encoder::ParseConfig() {
         sSvcParam.iLoopFilterDisableIdc = (int8_t)atoi (strTag[1].c_str());
         if (sSvcParam.iLoopFilterDisableIdc > 6 || sSvcParam.iLoopFilterDisableIdc < 0) {
           fprintf (stderr, "Invalid parameter in iLoopFilterDisableIdc: %d.\n", sSvcParam.iLoopFilterDisableIdc);
-          iRet = 1;
-          break;
-        }
+          return -1;        }
       } else if (strTag[0].compare ("LoopFilterAlphaC0Offset") == 0) {
         sSvcParam.iLoopFilterAlphaC0Offset = (int8_t)atoi (strTag[1].c_str());
         if (sSvcParam.iLoopFilterAlphaC0Offset < -6)
@@ -411,13 +423,13 @@ int H264Encoder::ParseConfig() {
         sSvcParam.iTargetBitrate = 1000 * atoi (strTag[1].c_str());
         if ((sSvcParam.iRCMode != RC_OFF_MODE) && sSvcParam.iTargetBitrate <= 0) {
           fprintf (stderr, "Invalid target bitrate setting due to RC enabled. Check TargetBitrate field please!\n");
-          return 1;
+          return -1;
         }
       } else if (strTag[0].compare ("MaxOverallBitrate") == 0) {
         sSvcParam.iMaxBitrate = 1000 * atoi (strTag[1].c_str());
         if ((sSvcParam.iRCMode != RC_OFF_MODE) && sSvcParam.iMaxBitrate < 0) {
           fprintf (stderr, "Invalid max overall bitrate setting due to RC enabled. Check MaxOverallBitrate field please!\n");
-          return 1;
+          return -1;
         }
       } else if (strTag[0].compare ("MaxQp") == 0) {
         sSvcParam.iMaxQp = atoi (strTag[1].c_str());
@@ -445,7 +457,7 @@ int H264Encoder::ParseConfig() {
         sSvcParam.iSpatialLayerNum = (int8_t)atoi (strTag[1].c_str());
         if (sSvcParam.iSpatialLayerNum > MAX_DEPENDENCY_LAYER || sSvcParam.iSpatialLayerNum <= 0) {
           fprintf (stderr, "Invalid parameter in iSpatialLayerNum: %d.\n", sSvcParam.iSpatialLayerNum);
-          return 1;
+          return -1;
         }
         break;
       } else if (strTag[0].compare ("PrefixNALAddingCtrl") == 0) {
@@ -488,13 +500,18 @@ int H264Encoder::ParseConfig() {
     sSvcParam.iSpatialLayerNum = kiActualLayerNum;
   }
   assert (kiActualLayerNum <= MAX_DEPENDENCY_LAYER);
-  return iRet;
+  return 0;
 }
 
 int H264Encoder::SetLosslessLink(bool linkMethod)
 {
   this->isLossLessLink = linkMethod;
   this->sSvcParam.bIsLosslessLink = isLossLessLink;
+  if (this->pSVCEncoder->InitializeExt (&sSvcParam)) {
+    fprintf (stderr, "parse svc parameter config file failed.\n");
+    return -1;
+  }
+  this->initializationDone = true;
   return 0;
 }
 
@@ -548,11 +565,11 @@ int H264Encoder::InitializeEncoder()
   
 INSIDE_MEM_FREE:
   this->initializationDone = false;
-  return 1;
+  return -1;
 }
 
 
-void H264Encoder::SetPicWidth(unsigned int width)
+int H264Encoder::SetPicWidth(unsigned int width)
 {
   this->sSvcParam.iPicWidth = width;
   if(sSvcParam.iSpatialLayerNum)
@@ -560,9 +577,15 @@ void H264Encoder::SetPicWidth(unsigned int width)
     SSpatialLayerConfig* pDLayer = &sSvcParam.sSpatialLayers[0]; //reset only the first spatial layer
     pDLayer->iVideoWidth = this->sSvcParam.iPicWidth;
   }
+  if (this->pSVCEncoder->InitializeExt (&sSvcParam)) {
+    fprintf (stderr, "parse svc parameter config file failed.\n");
+    return -1;
+  }
+  this->initializationDone = true;
+  return 0;
 }
 
-void H264Encoder::SetPicHeight(unsigned int height)
+int H264Encoder::SetPicHeight(unsigned int height)
 {
   this->sSvcParam.iPicHeight = height;
   if(sSvcParam.iSpatialLayerNum)
@@ -570,6 +593,12 @@ void H264Encoder::SetPicHeight(unsigned int height)
     SSpatialLayerConfig* pDLayer = &sSvcParam.sSpatialLayers[0]; //reset only the first spatial layer
     pDLayer->iVideoHeight = this->sSvcParam.iPicHeight;
   }
+  if (this->pSVCEncoder->InitializeExt (&sSvcParam)) {
+    fprintf (stderr, "parse svc parameter config file failed.\n");
+    return -1;
+  }
+  this->initializationDone = true;
+  return 0;
 }
 
 int H264Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage)

@@ -42,7 +42,6 @@ int VPXEncoder::FillSpecificParameters() {
     return -1;
   }
   cfg.g_lag_in_frames = 1;
-  // Lossless link is by default true;
   vpx_codec_enc_init(codec, encoder->codec_interface(), &cfg, 0);
   if(this->SetSpeed(FastestSpeed)!=0)
   {
@@ -52,13 +51,14 @@ int VPXEncoder::FillSpecificParameters() {
   return 0;
 }
 
-int VPXEncoder::ParseConfig() {
-  return 0;
-}
-
 int VPXEncoder::SetRCMode(int value)
 {
   this->cfg.rc_end_usage = (vpx_rc_mode) value;
+  if(vpx_codec_enc_config_set(codec, &this->cfg))
+  {
+    die_codec(codec, "Failed to set RC mode");
+    return -1;
+  }
   return 0;
 }
 
@@ -71,9 +71,9 @@ int VPXEncoder::SetRCTaregetBitRate(unsigned int bitRate)
   {
     this->cfg.ss_target_bitrate[i] = bitRate/this->cfg.ss_number_layers;
   }
-  if (vpx_codec_control_(codec, VP9E_SET_LOSSLESS, this->GetLosslessLink()))
+  if (vpx_codec_enc_config_set(codec, &this->cfg))
   {
-    die_codec(codec, "Failed to set lossless mode");
+    die_codec(codec, "Failed to set target bit rate");
     return -1;
   }
   this->initializationDone = true;
@@ -85,6 +85,12 @@ int VPXEncoder::SetQP(int maxQP, int minQP)
   this->cfg.rc_max_quantizer = maxQP<63?maxQP:63;
   this->cfg.rc_min_quantizer = minQP>0?minQP:0;
   this->cfg.rc_end_usage = VPX_Q;
+  if (vpx_codec_enc_config_set(codec, &this->cfg))
+  {
+    die_codec(codec, "Failed to set QP");
+    return -1;
+  }
+  this->initializationDone = true;
   return 0;
 }
 
@@ -93,7 +99,7 @@ int VPXEncoder::SetLosslessLink(bool linkMethod)
   this->isLossLessLink = linkMethod;
   if (vpx_codec_control_(codec, VP9E_SET_LOSSLESS, linkMethod))
   {
-    die_codec(codec, "Failed to use lossless mode");
+    die_codec(codec, "Failed to set lossless mode");
     return -1;
   }
   else
@@ -136,16 +142,28 @@ int VPXEncoder::InitializeEncoder()
 }
 
 
-void VPXEncoder::SetPicWidth(unsigned int width)
+int VPXEncoder::SetPicWidth(unsigned int width)
 {
   this->picWidth = width;
   this->cfg.g_w = width;
+  if (vpx_codec_enc_config_set(codec, &this->cfg))
+  {
+    die_codec(codec, "Failed to set picture width");
+    return -1;
+  }
+  return 0;
 }
 
-void VPXEncoder::SetPicHeight(unsigned int height)
+int VPXEncoder::SetPicHeight(unsigned int height)
 {
   this->picHeight = height;
   this->cfg.g_h = height;
+  if (vpx_codec_enc_config_set(codec, &this->cfg))
+  {
+    die_codec(codec, "Failed to set picture height");
+    return -1;
+  }
+  return 0;
 }
 
 int VPXEncoder::SetDeadlineMode(unsigned long mode)
@@ -182,8 +200,6 @@ int VPXEncoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
   {
     this->SetPicWidth(iSourceWidth);
     this->SetPicHeight(iSourceHeight);
-    this->InitializeEncoder();
-    this->SetLosslessLink(this->GetLosslessLink());
   }
   if (this->initializationDone == true)
   {

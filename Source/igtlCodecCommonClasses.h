@@ -151,9 +151,9 @@ public:
   
   virtual int GetVideoFrameType(){return encodedFrameType;};
   
-  virtual void SetPicWidth(unsigned int width){picWidth = width;};
+  virtual int SetPicWidth(unsigned int width){picWidth = width;return 0;};
   
-  virtual void SetPicHeight(unsigned int height){picHeight = height;};
+  virtual int SetPicHeight(unsigned int height){picHeight = height;return 0;};
   
   virtual unsigned int GetPicWidth(){return this->picWidth;};
   
