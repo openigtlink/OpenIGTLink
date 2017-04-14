@@ -38,49 +38,70 @@
 
 namespace igtl
 {
-  /// The MessageRTPWrapper class is the class to fragment message from all type classes
-  /// into UDP packets, ass The message classes can be used
-  /// both for serializing (packing) OpenIGTLink message byte streams.
-  /// The class can also deserializing (unpacking) OpenIGTLink.
-  /// For the deserialization example, please refer igtlMessageHeader.h.
+  /// The MessageRTPWrapper class is the class to fragment/assemble messages from all type classes
+  /// into UDP packets, as The message classes can be used
+  /// both for wrapping V3 OpenIGTLink message byte streams into UDPPackets.
+  /// The class can also unwrapping the RTPPackets into OpenIGTLink messages.
   ///
-  /// The typical packing procedures using sub-classes of
-  /// MessageBase look like the followings
-  ///
-  ///     // Create instance and set Device Name
-  ///     igtl::TransformMessage::Pointer transMsg;
-  ///     transMsg = igtl::TransformMessage::New();
-  ///     transMsg->SetDeviceName("Tracker");
-  ///
-  ///     // Create matrix and substitute values
-  ///     igtl::Matrix4x4 matrix;
-  ///     GetRandomTestMatrix(matrix);
-  ///
-  ///     // Set matrix data, serialize, and send it.
-  ///     transMsg->SetMatrix(matrix);
-  ///     transMsg->AllocatePack(); // optional
-  ///     transMsg->Pack();
-  ///     socket->Send(transMsg->GetBufferPointer(), transMsg->GetBufferSize());
-  ///
-  ///     V1/V2 message structure:
-  ///                                    GetBodySize()
-  ///               /-------------------------/\----------------------------------------------------------\
-  ///                                    GetPackContentSize() (subclassed)
-  ///               /-------------------------------------/\----------------------------------------------\
-  ///  |____________|_____________________________________________________________________________________|
-  ///  m_Header     m_Body
+  /// The typical wrapping or unwrapping procedures is demonstrated in the VideoStreamIGTLinkServer,  VieoStreamIGTLinkReceiver and igtlMessageRTPWrapperTest
   ///
   ///
-  ///     V3 message structure:
-  ///                                      GetBodySize()
-  ///               /-------------------------/\------------------------------------------------------------\
-  ///                                          GetPackContentSize() (subclassed)
-  ///                                             /\                (sending after setters are called, receiving after extended header has been parsed)
-  ///                                   /--------/  \-----------\
-  ///  |____________|___________________|________________________|___________________|_______________________|
-  ///  m_Header     m_ExtendedHeader    m_Content (old m_Body)   m_MetaDataHeader    m_MetaData
-  ///               m_Body
+  ///  V3 incomming Image Message message for wrapping. Assume the length of image is 25000, which is longer than the RTP Packet payload size 8900,
+  ///  so the message is fragmented into several RTPPackets.
+  ///  0            58                  70              142                           25142               25160         25199
   ///
+  ///  |____________|___________________|_______________|_____________________________|___________________|_____________|
+  ///  m_Header     m_ExtendedHeader    m_ImageHeader   m_Image                       m_MetaDataHeader    m_MetaData
+  ///               m_Body              m_Content (old m_Body)
+  ///
+  ///  All the fragments will be attached with a 12 bytes RTP Header, the RTP Header has the format:
+  ///  0-----------4------------8------------------------16-------------------------31 bit number
+  ///  |Version|P|X|     CC     |M|     Payload Type      |     Sequence Number      |
+  ///   -----------------------------------------------------------------------------
+  ///  |                              Time Stamp                                     |
+  ///   -----------------------------------------------------------------------------
+  ///  |               Source Synchronization Identifier(SSRC)                       |
+  ///   -----------------------------------------------------------------------------
+  ///
+  ///  Fragment 1, total length 8912:
+  ///  0          12           70                  82              154                                      8912
+  ///  |__________|____________|___________________|_______________|________________________________________|
+  ///  RTPHeader  m_Header     m_ExtendedHeader1    m_ImageHeader   m_Image1 (section 1)
+  ///
+  ///
+  ///
+  ///  Fragment 2, total length 8912:
+  ///  0          12           70                  82              154                                      8912
+  ///  |__________|____________|___________________|_______________|________________________________________|
+  ///  RTPHeader  m_Header     m_ExtendedHeader2   m_ImageHeader   m_Image2 (section 2)
+  ///
+  ///
+  ///
+  ///  Fragment 3, total length 7695, M_Meta* below includs the m_MetaDataHeader and m_MetaData:
+  ///  0          12           70                  82              154                       7636      7695
+  ///  |__________|____________|___________________|_______________|_________________________|_________|
+  ///  RTPHeader  m_Header     m_ExtendedHeader3   m_ImageHeader   m_Image3 (section 3)      M_Meta*
+  ///
+  ///
+  ///  The m_image is fragmented into three parts:
+  ///  0                        8758                    17516             25000
+  ///  |________________________|_______________________|_________________|
+  ///  m_Image1                 m_Image2                 m_Image3
+  ///
+  ///
+  ///  The last two bytes are used to reorder the packets if they arrive at different time points.
+  ///  0x8000 indicates the first RTP packet
+  ///  m_ExtendedHeader1
+  ///  | First 10 Bytes from  m_ExtendedHeader|0x8000|
+  ///
+  ///  The following RTP packet increments the field 0x8000
+  ///  m_ExtendedHeader2
+  ///  | First 10 Bytes from  m_ExtendedHeader|0x8001|
+  ///
+  ///  0xE000 indicates the last RTP packet
+  ///  m_ExtendedHeader3
+  ///  | First 10 Bytes from  m_ExtendedHeader|0xE000|
+  
 
   class PacketBuffer {
   public:
@@ -163,13 +184,6 @@ namespace igtl
     std::vector<igtl_uint64> PacketBeforeSendTimeStampList;
     
     std::vector<igtl_uint16> fragmentNumberList;
-    //virtual void  AllocateScalars();
-    
-    /// Gets a pointer to the scalar data.
-    //virtual void* GetScalarPointer();
-    
-    /// Sets the pointer to the scalar data (for fragmented pack support).
-    //virtual void  SetScalarPointer(unsigned char * p);
     
     /// Gets the number of fragments for the packed (serialized) data. Returns numberOfDataFrag
     int GetNumberODataFragments() { return numberOfDataFrag;  /* the data for transmission is too big for UDP transmission, so the data will be transmitted by multiple packets*/ };
