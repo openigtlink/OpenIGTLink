@@ -13,7 +13,7 @@
 
 #include "igtlMessageRTPWrapper.h"
 #include "igtlImageMessage.h"
-#include "igtlutil/igtl_test_data_image.h"
+#include "igtlutil/igtl_test_data_rtpwrapper.h"
 #include "igtlMessageDebugFunction.h"
 #include "igtl_types.h"
 #include "igtl_header.h"
@@ -24,7 +24,8 @@
 
 igtl::ImageMessage::Pointer imageSendMsg = igtl::ImageMessage::New();
 igtl::ImageMessage::Pointer imageReceiveMsg = igtl::ImageMessage::New();
-igtl::MessageRTPWrapper::Pointer messageWrapper = igtl::MessageRTPWrapper::New();
+igtl::MessageRTPWrapper::Pointer messageWrapperSenderSide = igtl::MessageRTPWrapper::New();
+igtl::MessageRTPWrapper::Pointer messageWrapperReceiverSide = igtl::MessageRTPWrapper::New();
 float inT[4] = {-0.954892f, 0.196632f, -0.222525f, 0.0};
 float inS[4] = {-0.196632f, 0.142857f, 0.970014f, 0.0};
 float inN[4] = {0.222525f, 0.970014f, -0.0977491f, 0.0};
@@ -38,6 +39,7 @@ float spacing[3]  = {1.0f, 1.0f, 1.0f};     // spacing (mm/pixel)
 int   svsize[3]   = {50, 50, 1};       // sub-volume size
 int   svoffset[3] = {0, 0, 0};           // sub-volume offset
 int   scalarType = igtl::ImageMessage::TYPE_UINT8;// scalar type
+int UDPPacketLength = 1300;
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
 #include "igtlMessageFormat2TestMacro.h"
@@ -57,39 +59,66 @@ void BuildUp()
   imageSendMsg->SetEndian(IGTL_IMAGE_ENDIAN_LITTLE);
   imageSendMsg->SetCoordinateSystem(IGTL_IMAGE_COORD_RAS);
   imageSendMsg->SetMatrix(inMatrix);
-  imageSendMsg->AllocateScalars();
-  memcpy((void*)imageSendMsg->GetScalarPointer(), test_image_message+IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE, TEST_IMAGE_MESSAGE_SIZE);//here m_Image is set.
   igtlMetaDataAddElementMacro(imageSendMsg);
+  imageSendMsg->AllocateScalars();
+  memcpy((void*)imageSendMsg->GetScalarPointer(), test_image, TEST_IMAGE_MESSAGE_SIZE);//here m_Image is set.
   imageSendMsg->Pack();
+  messageWrapperSenderSide = igtl::MessageRTPWrapper::New();
+  messageWrapperSenderSide->SetRTPPayloadLength(UDPPacketLength);
+  messageWrapperSenderSide->SetSeqNum(0);
+  messageWrapperSenderSide->WrapMessageAndPushToBuffer((igtl_uint8*)imageSendMsg->GetPackPointer(), imageSendMsg->GetPackSize());
 }
 
-TEST(ImageMessageTest, WrapMessage)
+TEST(MessageRTPWrapperTest, WrapMessageFormatVersion2)
 {
   BuildUp();
-  //messageWrapper->WrapMessageAndSend(<#igtl::UDPServerSocket::Pointer &socket#>, <#igtl_uint8 *messagePackPointer#>, <#int msgtotalLen#>)
-  int r = memcmp((const void*)imageSendMsg->GetPackPointer(), (const void*)test_image_message,
-                 (size_t)(IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE));
+  igtl::PacketBuffer bufferedMsg = messageWrapperSenderSide->GetOutGoingPackets();
+  //First Packet excluding time stamp comparison
+  int r = memcmp(bufferedMsg.pBsBuf.data(), (const void*)test_RTPWrapper_PacketBuffer, 4);
   EXPECT_EQ(r, 0);
+  r = memcmp(bufferedMsg.pBsBuf.data()+8, (const void*)(test_RTPWrapper_PacketBuffer+8), 4);
+  EXPECT_EQ(r, 0);
+  r = memcmp(bufferedMsg.pBsBuf.data()+RTP_HEADER_LENGTH, (const void*)(test_RTPWrapper_PacketBuffer+RTP_HEADER_LENGTH), UDPPacketLength);
+  EXPECT_EQ(r, 0);
+  
+  //Second Packet excluding time stamp comparison
+  r = memcmp(bufferedMsg.pBsBuf.data()+UDPPacketLength+RTP_HEADER_LENGTH, (const void*)(test_RTPWrapper_PacketBuffer+UDPPacketLength+RTP_HEADER_LENGTH), 4);
+  EXPECT_EQ(r, 0);
+  r = memcmp(bufferedMsg.pBsBuf.data()+UDPPacketLength+RTP_HEADER_LENGTH+8, (const void*)(test_RTPWrapper_PacketBuffer+UDPPacketLength+RTP_HEADER_LENGTH+8), 4);
+  EXPECT_EQ(r, 0);//
+  r = memcmp(bufferedMsg.pBsBuf.data()+UDPPacketLength+2*RTP_HEADER_LENGTH, (const void*)(test_RTPWrapper_PacketBuffer+UDPPacketLength+2*RTP_HEADER_LENGTH), UDPPacketLength);
+  EXPECT_EQ(r, 0);//
+  
+  //Third Packet excluding time stamp comparison
+  r = memcmp(bufferedMsg.pBsBuf.data()+2*UDPPacketLength+2*RTP_HEADER_LENGTH, (const void*)(test_RTPWrapper_PacketBuffer+2*UDPPacketLength+2*RTP_HEADER_LENGTH), 4);
+  EXPECT_EQ(r, 0);
+  r = memcmp(bufferedMsg.pBsBuf.data()+2*UDPPacketLength+2*RTP_HEADER_LENGTH+8, (const void*)(test_RTPWrapper_PacketBuffer+2*UDPPacketLength+2*RTP_HEADER_LENGTH+8), 4);
+  EXPECT_EQ(r, 0);//
+  r = memcmp(bufferedMsg.pBsBuf.data()+2*UDPPacketLength+3*RTP_HEADER_LENGTH, (const void*)(test_RTPWrapper_PacketBuffer+2*UDPPacketLength+3*RTP_HEADER_LENGTH),bufferedMsg.totalLength-2*UDPPacketLength-3*RTP_HEADER_LENGTH);
+  EXPECT_EQ(r, 0);
+  //TestDebugCharArrayCmp(bufferedMsg.pBsBuf.data(), (igtlUint8*)test_RTPWrapper_PacketBuffer , bufferedMsg.totalLength);
 }
 
-TEST(ImageMessageTest, UnwrapMessage)
+void Validation()
 {
-  BuildUp();
-  igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
-  headerMsg->AllocatePack();
-  memcpy(headerMsg->GetPackPointer(), (const void*)imageSendMsg->GetPackPointer(), IGTL_HEADER_SIZE);
-  headerMsg->Unpack();
-  imageReceiveMsg->SetMessageHeader(headerMsg);
-  imageReceiveMsg->AllocatePack();
-  memcpy(imageReceiveMsg->GetPackBodyPointer(), imageSendMsg->GetPackBodyPointer(), IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
+  EXPECT_EQ(messageWrapperReceiverSide->unWrappedMessages.size(),1);
+  igtl::ImageMessage::Pointer imageReceiveMsg = igtl::ImageMessage::New();
+  std::map<igtl_uint32, igtl::UnWrappedMessage*>::iterator it = messageWrapperReceiverSide->unWrappedMessages.begin();
+  igtl::MessageHeader::Pointer header = igtl::MessageHeader::New();
+  header->InitPack();
+  memcpy(header->GetPackPointer(), it->second->messagePackPointer, IGTL_HEADER_SIZE);
+  header->Unpack();
+  imageReceiveMsg->SetMessageHeader(header);
+  imageReceiveMsg->AllocateBuffer();
+  memcpy(imageReceiveMsg->GetPackBodyPointer(), it->second->messagePackPointer+IGTL_HEADER_SIZE, it->second->messageDataLength-IGTL_HEADER_SIZE);
   imageReceiveMsg->Unpack();
   
   igtl_header *messageHeader = (igtl_header *)imageReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "IMAGE");
-  EXPECT_EQ(messageHeader->header_version, 1);
+  EXPECT_EQ(messageHeader->header_version, IGTL_HEADER_VERSION_2);
   EXPECT_EQ(messageHeader->timestamp, 1234567892);
-  EXPECT_EQ(messageHeader->body_size, IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
+  EXPECT_EQ(messageHeader->body_size, imageReceiveMsg->GetPackBodySize());
   
   int returnSize[3] = {0,0,0};
   imageReceiveMsg->GetDimensions(returnSize);
@@ -112,8 +141,45 @@ TEST(ImageMessageTest, UnwrapMessage)
   imageReceiveMsg->GetMatrix(outMatrix);
   EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
   //The imageHeader is byte-wized converted, so we skip the comparison of the image header.
-  int r = memcmp((const char*)imageReceiveMsg->GetPackBodyPointer()+IGTL_IMAGE_HEADER_SIZE, (const void*)(test_image_message+IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE), (size_t)(TEST_IMAGE_MESSAGE_SIZE));
+  int r = memcmp((const char*)imageReceiveMsg->GetPackBodyPointer()+IGTL_IMAGE_HEADER_SIZE+sizeof(igtl_extended_header), (const void*)(test_image), (size_t)(TEST_IMAGE_MESSAGE_SIZE));
   EXPECT_EQ(r, 0);
+}
+
+TEST(MessageRTPWrapperTest, UnwrapMessageFormatVersion2)
+{
+  BuildUp();
+  messageWrapperReceiverSide = igtl::MessageRTPWrapper::New();
+  messageWrapperReceiverSide->SetRTPPayloadLength(UDPPacketLength);
+  igtl::PacketBuffer bufferedMsg = messageWrapperSenderSide->GetOutGoingPackets();
+  igtlUint8* UDPPacket = bufferedMsg.pBsBuf.data();
+  for (int i= 0; i<bufferedMsg.pPacketLengthInByte.size();i++)
+  {
+    messageWrapperReceiverSide->PushDataIntoPacketBuffer(UDPPacket, bufferedMsg.pPacketLengthInByte[i]);
+    UDPPacket += bufferedMsg.pPacketLengthInByte[i];
+  }
+  while(1)
+  {
+    int iRet = messageWrapperReceiverSide->UnWrapPacketWithTypeAndName("IMAGE", "DeviceName");
+    if(iRet == 0)
+      break;
+  }
+  Validation();
+  // Test the packet reorder function of the RTP Wrapper. In the following lines, we reverse the order of received UDPPackets.
+  messageWrapperReceiverSide = igtl::MessageRTPWrapper::New();
+  messageWrapperReceiverSide->SetRTPPayloadLength(UDPPacketLength);
+  UDPPacket = bufferedMsg.pBsBuf.data()+bufferedMsg.totalLength;
+  for (int i = bufferedMsg.pPacketLengthInByte.size()-1; i>=0;i--)
+  {
+    UDPPacket -= bufferedMsg.pPacketLengthInByte[i];
+    messageWrapperReceiverSide->PushDataIntoPacketBuffer(UDPPacket, bufferedMsg.pPacketLengthInByte[i]);
+  }
+  while(1)
+  {
+    int iRet = messageWrapperReceiverSide->UnWrapPacketWithTypeAndName("IMAGE", "DeviceName");
+    if(iRet == 0)
+      break;
+  }
+  Validation();
 }
 #endif
 

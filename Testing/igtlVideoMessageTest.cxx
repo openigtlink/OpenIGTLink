@@ -59,6 +59,15 @@ int totalDecodeTime =0;
 double ssim = 0.0;
 float compressionRate = 0.0;
 
+
+template <typename T>
+std::string ToString(T variable)
+{
+  stringstream stream;
+  stream << variable;
+  return stream.str();
+}
+
 //------------------------
 //Taken from the libvpx and modified, as the original code is broken,
 //will be removed when the original code bug is fixed.
@@ -302,16 +311,16 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
       TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder,false);
       std::cerr<<"Total encode and decode time for near lossless coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
       std::map<std::string, std::string> values, times;
-      values.insert(std::pair<std::string, std::string>(std::to_string(ssim), std::to_string(compressionRate)));
-      times.insert(std::pair<std::string, std::string>(std::to_string((float)totalEncodeTime/1e6), std::to_string((float)totalDecodeTime/1e6)));
+      values.insert(std::pair<std::string, std::string>(ToString(ssim), ToString(compressionRate)));
+      times.insert(std::pair<std::string, std::string>(ToString((float)totalEncodeTime/1e6), ToString((float)totalDecodeTime/1e6)));
       for (int i = 1; i<=51; i=i+3)
       {
         videoStreamEncoder->SetQP(i,i);
         videoStreamEncoder->InitializeEncoder();
         TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);
         std::cerr<<"Total encode and decode time for QP="<<i<<": "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
-        values.insert(std::pair<std::string, std::string>(std::to_string(ssim), std::to_string(compressionRate)));
-        times.insert(std::pair<std::string, std::string>(std::to_string((float)totalEncodeTime/1e6), std::to_string((float)totalDecodeTime/1e6)));
+        values.insert(std::pair<std::string, std::string>(ToString(ssim), ToString(compressionRate)));
+        times.insert(std::pair<std::string, std::string>(ToString((float)totalEncodeTime/1e6), ToString((float)totalDecodeTime/1e6)));
       }
       std::map<std::string, std::string>::const_iterator it2 = times.begin();
       for( std::map<std::string, std::string>::const_iterator it = values.begin(); it != values.end(); ++it, ++it2)
@@ -337,16 +346,16 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
     std::cerr<<"Total encode and decode time for Variable Rate coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
     std::cerr<<"Total encode and decode time for near lossless coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
     std::map<std::string, std::string> values, times;
-    values.insert(std::pair<std::string, std::string>(std::to_string(ssim), std::to_string(compressionRate)));
-    times.insert(std::pair<std::string, std::string>(std::to_string((float)totalEncodeTime/1e6), std::to_string((float)totalDecodeTime/1e6)));
+    values.insert(std::pair<std::string, std::string>(ToString(ssim), ToString(compressionRate)));
+    times.insert(std::pair<std::string, std::string>(ToString((float)totalEncodeTime/1e6), ToString((float)totalDecodeTime/1e6)));
     for (int i = 1; i<=63; i=i+3)
     {
       videoStreamEncoder->SetQP(i,i);
       videoStreamEncoder->InitializeEncoder();
       TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);
       std::cerr<<"Total encode and decode time for QP="<<i<<": "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
-      values.insert(std::pair<std::string, std::string>(std::to_string(ssim), std::to_string(compressionRate)));
-      times.insert(std::pair<std::string, std::string>(std::to_string((float)totalEncodeTime/1e6), std::to_string((float)totalDecodeTime/1e6)));
+      values.insert(std::pair<std::string, std::string>(ToString(ssim), ToString(compressionRate)));
+      times.insert(std::pair<std::string, std::string>(ToString((float)totalEncodeTime/1e6), ToString((float)totalDecodeTime/1e6)));
     }
     videoStreamEncoder->SetLosslessLink(true);
     videoStreamEncoder->InitializeEncoder();
@@ -370,21 +379,22 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
     videoStreamEncoder->SetPicWidth(Width);
     videoStreamEncoder->SetPicHeight(Height);
     videoStreamEncoder->SetLosslessLink(false);
-    videoStreamEncoder->SetRCMode(1); // bitrate mode
+    RC_MODES mode = RC_BITRATE_MODE;
+    videoStreamEncoder->SetRCMode(mode); // bitrate mode
     videoStreamEncoder->InitializeEncoder();
     TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder,false);
     std::cerr<<"Total encode and decode time for near lossless coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
     std::map<std::string, std::string> values, times;
-    values.insert(std::pair<std::string, std::string>(std::to_string(ssim), std::to_string(compressionRate)));
-    times.insert(std::pair<std::string, std::string>(std::to_string((float)totalEncodeTime/1e6), std::to_string((float)totalDecodeTime/1e6)));
+    values.insert(std::pair<std::string, std::string>(ToString(ssim), ToString(compressionRate)));
+    times.insert(std::pair<std::string, std::string>(ToString((float)totalEncodeTime/1e6), ToString((float)totalDecodeTime/1e6)));
     for (int i = 1; i<=20; i++)
     {
       videoStreamEncoder->SetRCTaregetBitRate(655*8*20*i);
       videoStreamEncoder->InitializeEncoder();
       TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);
       std::cerr<<"Total encode and decode time for target rate ="<<i<<": "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
-      values.insert(std::pair<std::string, std::string>(std::to_string(ssim), std::to_string(compressionRate)));
-      times.insert(std::pair<std::string, std::string>(std::to_string((float)totalEncodeTime/1e6), std::to_string((float)totalDecodeTime/1e6)));
+      values.insert(std::pair<std::string, std::string>(ToString(ssim), ToString(compressionRate)));
+      times.insert(std::pair<std::string, std::string>(ToString((float)totalEncodeTime/1e6), ToString((float)totalDecodeTime/1e6)));
     }
     std::map<std::string, std::string>::const_iterator it2 = times.begin();
     for( std::map<std::string, std::string>::const_iterator it = values.begin(); it != values.end(); ++it, ++it2)
@@ -409,8 +419,8 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
     TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder,false);
     std::cerr<<"Total encode and decode time for lossless coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
     std::map<std::string, std::string> values, times;
-    values.insert(std::pair<std::string, std::string>(std::to_string(ssim), std::to_string(compressionRate)));
-    times.insert(std::pair<std::string, std::string>(std::to_string((float)totalEncodeTime/1e6), std::to_string((float)totalDecodeTime/1e6)));
+    values.insert(std::pair<std::string, std::string>(ToString(ssim), ToString(compressionRate)));
+    times.insert(std::pair<std::string, std::string>(ToString((float)totalEncodeTime/1e6), ToString((float)totalDecodeTime/1e6)));
     videoStreamEncoder->SetLosslessLink(false);
     
     for (int i = 1; i<=20; i++) // The original frame bits per second is 255*255*20*8, the compression ratio is set from 0.5% to 8%
@@ -420,8 +430,8 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
       videoStreamEncoder->SetSpeed(8);
       TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);
       std::cerr<<"Total encode and decode time for target bitrate="<<i<<": "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
-      values.insert(std::pair<std::string, std::string>(std::to_string(ssim), std::to_string(compressionRate)));
-      times.insert(std::pair<std::string, std::string>(std::to_string((float)totalEncodeTime/1e6), std::to_string((float)totalDecodeTime/1e6)));
+      values.insert(std::pair<std::string, std::string>(ToString(ssim), ToString(compressionRate)));
+      times.insert(std::pair<std::string, std::string>(ToString((float)totalEncodeTime/1e6), ToString((float)totalDecodeTime/1e6)));
     }
     std::map<std::string, std::string>::const_iterator it2 = times.begin();
     for( std::map<std::string, std::string>::const_iterator it = values.begin(); it != values.end(); ++it, ++it2)

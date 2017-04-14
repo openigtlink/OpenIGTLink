@@ -202,6 +202,7 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
   ## Command message is available in Protocol version 3, however, we will test both header version 1 and 2
   ADD_TEST(igtlCommandMessageTestFormatVersion1 ${OpenIGTLink_EXECUTABLE_PATH}/igtlCommandMessageTest ${TestStringFormat1})
   ADD_TEST(igtlCommandMessageTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlCommandMessageTest ${TestStringFormat2})
+  ADD_TEST(igtlMessageRTPWrapperTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlMessageRTPWrapperTest ${TestStringFormat2})
 ENDIF()
 
 IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (BUILD_H264 OR BUILD_VPX))

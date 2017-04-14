@@ -38,12 +38,54 @@
 
 namespace igtl
 {
-  
+  /// The MessageRTPWrapper class is the class to fragment message from all type classes
+  /// into UDP packets, ass The message classes can be used
+  /// both for serializing (packing) OpenIGTLink message byte streams.
+  /// The class can also deserializing (unpacking) OpenIGTLink.
+  /// For the deserialization example, please refer igtlMessageHeader.h.
+  ///
+  /// The typical packing procedures using sub-classes of
+  /// MessageBase look like the followings
+  ///
+  ///     // Create instance and set Device Name
+  ///     igtl::TransformMessage::Pointer transMsg;
+  ///     transMsg = igtl::TransformMessage::New();
+  ///     transMsg->SetDeviceName("Tracker");
+  ///
+  ///     // Create matrix and substitute values
+  ///     igtl::Matrix4x4 matrix;
+  ///     GetRandomTestMatrix(matrix);
+  ///
+  ///     // Set matrix data, serialize, and send it.
+  ///     transMsg->SetMatrix(matrix);
+  ///     transMsg->AllocatePack(); // optional
+  ///     transMsg->Pack();
+  ///     socket->Send(transMsg->GetBufferPointer(), transMsg->GetBufferSize());
+  ///
+  ///     V1/V2 message structure:
+  ///                                    GetBodySize()
+  ///               /-------------------------/\----------------------------------------------------------\
+  ///                                    GetPackContentSize() (subclassed)
+  ///               /-------------------------------------/\----------------------------------------------\
+  ///  |____________|_____________________________________________________________________________________|
+  ///  m_Header     m_Body
+  ///
+  ///
+  ///     V3 message structure:
+  ///                                      GetBodySize()
+  ///               /-------------------------/\------------------------------------------------------------\
+  ///                                          GetPackContentSize() (subclassed)
+  ///                                             /\                (sending after setters are called, receiving after extended header has been parsed)
+  ///                                   /--------/  \-----------\
+  ///  |____________|___________________|________________________|___________________|_______________________|
+  ///  m_Header     m_ExtendedHeader    m_Content (old m_Body)   m_MetaDataHeader    m_MetaData
+  ///               m_Body
+  ///
+
   class PacketBuffer {
   public:
-    PacketBuffer(){iPacketCount = 0; pPacketLengthInByte.reserve(100); totalLength= 0; pBsBuf.reserve(100);};
+    PacketBuffer(){pPacketLengthInByte.reserve(100); totalLength= 0; pBsBuf.reserve(100);};
     ~PacketBuffer(){pPacketLengthInByte.clear();pBsBuf.clear();};
-    int   iPacketCount;              ///< count number of NAL coded already
     std::vector<int>  pPacketLengthInByte;       ///< length of NAL size in byte from 0 to iNalCount-1
     std::vector<unsigned char> pBsBuf;       ///< buffer of Packet contained
     int totalLength;
@@ -99,7 +141,7 @@ namespace igtl
     {
       PacketReady,
       WaitingForAnotherMSG,
-      WaitingForFragment,
+      ProcessFragment,
       MessageReady,
       ToUnpackAnotherMSG,
       WaitingForAnotherPacket
@@ -163,11 +205,21 @@ namespace igtl
     ///Set the current msg header
     void SetMSGHeader(igtl_uint8* header);
     
+    ///Get the wrapped outgoing UDP packet
+    PacketBuffer GetOutGoingPackets(){return outgoingPackets;};
+    
+    ///Get the incomming UDP packet
+    PacketBuffer GetInCommingPackets(){return incommingPackets;};
+    
     int GetCurMSGLocation(){return this->curMSGLocation;};
     
     int GetPackedMSGLocation(){return this->curPackedMSGLocation;};
     
     int GetRTPWrapperStatus(){return status;};
+    
+    void SetRTPPayloadLength(unsigned int payloadLength){this->RTPPayloadLength = payloadLength;};
+    
+    unsigned int GetRTPPayloadLength(){return this->RTPPayloadLength;};
     
     std::map<igtl_uint32, igtl::UnWrappedMessage*> unWrappedMessages;
     
@@ -185,6 +237,7 @@ namespace igtl
     
     
   private:
+    unsigned int RTPPayloadLength;
     igtl_uint16 extendedHeaderSize;
     igtl_uint8* packedMsg;
     igtl_uint8* MSGHeader;
