@@ -137,6 +137,10 @@ namespace igtl
     
     void SetFCFS(bool isFCFS){FCFS = isFCFS;};
     
+    int WrapMessageAndPushToBuffer(igtl_uint8* messagePackPointer, int msgtotalLen);
+    
+    int SendBufferedDataWithInterval(igtl::UDPServerSocket::Pointer &socket, int interval);
+    
     int WrapMessageAndSend(igtl::UDPServerSocket::Pointer &socket, igtl_uint8* messagePackPointer, int msgtotalLen);
     
     int PushDataIntoPacketBuffer(igtlUint8* UDPPacket, igtlUint16 PacketLen);
@@ -199,6 +203,7 @@ namespace igtl
     igtl::ReorderBuffer* reorderBuffer;
     std::map<igtl_uint32, igtl::ReorderBuffer*> reorderBufferMap;
     PacketBuffer incommingPackets;
+    PacketBuffer outgoingPackets;
     igtl::TimeStamp::Pointer wrapperTimer;
     bool FCFS; //first come first serve
     void SleepInNanoSecond(int nanoSecond);

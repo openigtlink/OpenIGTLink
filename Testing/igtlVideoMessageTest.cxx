@@ -30,6 +30,8 @@
 #include "igtl_util.h"
 #include "igtlTestConfig.h"
 #include "string.h"
+#include <cstring>
+#include <string>
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
   #include "igtlMessageFormat2TestMacro.h"
 #endif
@@ -368,7 +370,7 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
     videoStreamEncoder->SetPicWidth(Width);
     videoStreamEncoder->SetPicHeight(Height);
     videoStreamEncoder->SetLosslessLink(false);
-    videoStreamEncoder->SetRCMode(RC_BITRATE_MODE);
+    videoStreamEncoder->SetRCMode(1); // bitrate mode
     videoStreamEncoder->InitializeEncoder();
     TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder,false);
     std::cerr<<"Total encode and decode time for near lossless coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;
@@ -402,7 +404,7 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
     videoStreamEncoder->SetPicWidth(Width);
     videoStreamEncoder->SetPicHeight(Height);
     videoStreamEncoder->SetLosslessLink(true);
-    videoStreamEncoder->SetRCMode(RC_BITRATE_MODE);
+    videoStreamEncoder->SetRCMode(1); // 1 is VPX_CBR
     videoStreamEncoder->InitializeEncoder();
     TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder,false);
     std::cerr<<"Total encode and decode time for lossless coding: "<<(float)totalEncodeTime/1e6<<",  "<<(float)totalDecodeTime/1e6<<std::endl;

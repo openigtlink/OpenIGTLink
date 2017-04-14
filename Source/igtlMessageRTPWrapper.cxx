@@ -125,15 +125,101 @@ namespace igtl {
       this->glock->Unlock();
       return 0;
     }
-    
   }
   
+  int MessageRTPWrapper::SendBufferedDataWithInterval(igtl::UDPServerSocket::Pointer &socket, int interval) //interval is in nanosecond
+  {
+    int totalMsgLen = this->outgoingPackets.totalLength;
+    int sendMsgLen = 0;
+    while (this->outgoingPackets.pPacketLengthInByte.size())
+    {
+      igtlUint8 * UDPPacket;
+      igtlUint16 currentMsgLen;
+      this->glock->Lock();
+      if(this->FCFS==true)
+      {
+        currentMsgLen = this->outgoingPackets.pPacketLengthInByte[0];
+        UDPPacket = new igtlUint8[currentMsgLen];
+        memcpy(UDPPacket, this->outgoingPackets.pBsBuf.data(), currentMsgLen);
+        this->outgoingPackets.pPacketLengthInByte.erase(this->outgoingPackets.pPacketLengthInByte.begin());
+        this->outgoingPackets.pBsBuf.erase(this->outgoingPackets.pBsBuf.begin(), this->outgoingPackets.pBsBuf.begin()+currentMsgLen);
+        this->outgoingPackets.totalLength -= currentMsgLen;
+      }
+      else
+      {
+        int packetNum = outgoingPackets.pPacketLengthInByte.size();
+        currentMsgLen = this->outgoingPackets.pPacketLengthInByte[packetNum-1];
+        UDPPacket = new igtlUint8[currentMsgLen];
+        memcpy(UDPPacket, this->outgoingPackets.pBsBuf.data() + this->outgoingPackets.pBsBuf.size()-currentMsgLen, currentMsgLen);
+        this->outgoingPackets.pPacketLengthInByte.erase(this->outgoingPackets.pPacketLengthInByte.end()-1);
+        this->outgoingPackets.pBsBuf.erase(this->outgoingPackets.pBsBuf.begin() + this->outgoingPackets.pBsBuf.size()-currentMsgLen, this->outgoingPackets.pBsBuf.end());
+        this->outgoingPackets.totalLength -= currentMsgLen;
+      }
+      this->glock->Unlock();
+      int numByteSent = socket->WriteSocket(this->GetPackPointer(), this->GetPackedMSGLocation());
+      sendMsgLen += numByteSent;
+      if (numByteSent != currentMsgLen)
+      {
+        return 0;
+      }
+    }
+    if (sendMsgLen == totalMsgLen)
+    {
+      return 1;
+    }
+    else
+    {
+      return 0;
+    }
+  }
+  
+  int MessageRTPWrapper::WrapMessageAndPushToBuffer(igtl_uint8* messagePackPointer, int msgtotalLen)
+  {
+    igtl_uint8* messageContentPointer = messagePackPointer+IGTL_HEADER_SIZE+sizeof(igtl_extended_header);
+    this->SetMSGHeader((igtl_uint8*)messagePackPointer);
+    int MSGContentLength = msgtotalLen- IGTL_HEADER_SIZE-sizeof(igtl_extended_header); // this is the m_content size + meta data size
+    int leftMsgLen = MSGContentLength;
+    igtl_uint8* leftmessageContent = messageContentPointer;
+    this->PacketTotalLengthList.clear();
+    do
+    {
+      status = this->WrapMessage(leftmessageContent, leftMsgLen);
+      if (status == igtl::MessageRTPWrapper::WaitingForFragment || status == igtl::MessageRTPWrapper::PacketReady)
+      {
+        this->glock->Lock();
+        if(this->outgoingPackets.pPacketLengthInByte.size()>PacketMaximumBufferNum)
+        {
+          igtlUint16 firstMsgLen = this->outgoingPackets.pPacketLengthInByte[0];
+          this->outgoingPackets.pPacketLengthInByte.erase(this->outgoingPackets.pPacketLengthInByte.begin());
+          this->outgoingPackets.pBsBuf.erase(this->outgoingPackets.pBsBuf.begin(), this->outgoingPackets.pBsBuf.begin()+firstMsgLen);
+          this->outgoingPackets.totalLength -= firstMsgLen;
+        }
+        this->outgoingPackets.pPacketLengthInByte.push_back(this->GetPackedMSGLocation());
+        this->outgoingPackets.pBsBuf.insert(this->outgoingPackets.pBsBuf.end(), this->GetPackPointer(), this->GetPackPointer()+this->GetPackedMSGLocation());
+        this->outgoingPackets.totalLength += this->GetPackedMSGLocation();
+        this->PacketTotalLengthList.push_back(this->GetPackedMSGLocation());
+        if (this->outgoingPackets.totalLength  == this->outgoingPackets.pBsBuf.size())
+        {
+          this->glock->Unlock();
+          return 1;
+        }
+        else
+        {
+          this->glock->Unlock();
+          return 0;
+        }
+      }
+      this->SleepInNanoSecond(this->packetIntervalTime);
+      leftmessageContent = messageContentPointer + this->GetCurMSGLocation();
+      leftMsgLen = MSGContentLength - this->GetCurMSGLocation();
+    }while(leftMsgLen>0 && status!=igtl::MessageRTPWrapper::PacketReady); // to do when bodyMsgLen
+    return 1;
+  }
   
   
   int MessageRTPWrapper::UnWrapPacketWithTypeAndName(const char *deviceType, const char * deviceName)
   {
     int extendedHeaderLength = sizeof(igtl_extended_header);
-    igtl::MessageFactory::Pointer MSGFactory = igtl::MessageFactory::New();
     if (this->incommingPackets.pPacketLengthInByte.size())
     {
       this->glock->Lock();

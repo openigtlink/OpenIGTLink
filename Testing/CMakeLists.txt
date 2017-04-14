@@ -85,6 +85,7 @@ ENDIF()
 # Message Tests Added in Version 3
 IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
   ADD_EXECUTABLE(igtlCommandMessageTest   igtlCommandMessageTest.cxx)
+  ADD_EXECUTABLE(igtlMessageRTPWrapperTest   igtlMessageRTPWrapperTest.cxx)
 ENDIF()
 
 IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2") AND (BUILD_H264 OR BUILD_VPX))
@@ -131,7 +132,9 @@ ENDIF()
 # Message Tests Added in Version 3
 IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
   TARGET_LINK_LIBRARIES(igtlCommandMessageTest ${GTEST_LINK})
+  TARGET_LINK_LIBRARIES(igtlMessageRTPWrapperTest ${GTEST_LINK})
 ENDIF()
+
 IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (BUILD_H264 OR BUILD_VPX))
   TARGET_LINK_LIBRARIES(igtlVideoMessageTest ${GTEST_LINK})
 ENDIF()
@@ -204,5 +207,6 @@ ENDIF()
 IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (BUILD_H264 OR BUILD_VPX))
   ADD_TEST(igtlVideoMessageTestFormatVersion1 ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMessageTest ${TestStringFormat1})
   ADD_TEST(igtlVideoMessageTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMessageTest ${TestStringFormat2})
+  ADD_TEST(igtlMessageRTPWrapperTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlMessageRTPWrapperTest ${TestStringFormat2})
 ENDIF()
 
