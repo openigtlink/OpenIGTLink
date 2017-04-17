@@ -36,17 +36,25 @@
 #include <sys/time.h>
 #endif
 
+/// This number defines the maximum number for UDP packet buffering, to avoid overflow of the buffer, the first buffered packet will be
+#define PacketMaximumBufferNum 1000
+#define ReorderBufferMaximumSize 200
+#define FragmentIndexBytes 2
+#define FragmentBeginIndicator 0X8000
+#define FragmentEndIndicator 0XE000
+#define NoFragmentIndicator 0X0000
+
 namespace igtl
 {
   /// The MessageRTPWrapper class is the class to fragment/assemble messages from all type classes
   /// into UDP packets, as The message classes can be used
-  /// both for wrapping V3 OpenIGTLink message byte streams into UDPPackets.
+  /// for wrapping V3 OpenIGTLink message byte streams into UDPPackets.
   /// The class can also unwrapping the RTPPackets into OpenIGTLink messages.
   ///
   /// The typical wrapping or unwrapping procedures is demonstrated in the VideoStreamIGTLinkServer,  VieoStreamIGTLinkReceiver and igtlMessageRTPWrapperTest
   ///
-  ///
-  ///  V3 incomming Image Message message for wrapping. Assume the length of image is 25000, which is longer than the RTP Packet payload size 8900,
+  ///  Here, an V3 image message is used as an example.
+  ///  Assume the length of image is 25000 with 57 byte of meta information, which is longer than the RTP Packet payload size 8900,
   ///  so the message is fragmented into several RTPPackets.
   ///  0            58                  70              142                           25142               25160         25199
   ///
@@ -77,7 +85,7 @@ namespace igtl
   ///
   ///
   ///
-  ///  Fragment 3, total length 7695, M_Meta* below includs the m_MetaDataHeader and m_MetaData:
+  ///  Fragment 3, total length 7695, for the simplicity, M_Meta* here includs the m_MetaDataHeader and m_MetaData:
   ///  0          12           70                  82              154                       7636      7695
   ///  |__________|____________|___________________|_______________|_________________________|_________|
   ///  RTPHeader  m_Header     m_ExtendedHeader3   m_ImageHeader   m_Image3 (section 3)      M_Meta*
@@ -92,22 +100,25 @@ namespace igtl
   ///  The last two bytes are used to reorder the packets if they arrive at different time points.
   ///  0x8000 indicates the first RTP packet
   ///  m_ExtendedHeader1
-  ///  | First 10 Bytes from  m_ExtendedHeader|0x8000|
+  ///  | 0xXXXX 0xXXXX.....      0xXXXX 0xXXXX |0x8000|
+  ///  First 10 Bytes from  m_ExtendedHeader
   ///
   ///  The following RTP packet increments the field 0x8000
   ///  m_ExtendedHeader2
-  ///  | First 10 Bytes from  m_ExtendedHeader|0x8001|
+  ///  | 0xXXXX 0xXXXX.....      0xXXXX 0xXXXX |0x8000|
+  ///  First 10 Bytes from  m_ExtendedHeader
   ///
   ///  0xE000 indicates the last RTP packet
   ///  m_ExtendedHeader3
-  ///  | First 10 Bytes from  m_ExtendedHeader|0xE000|
+  ///  | 0xXXXX 0xXXXX.....      0xXXXX 0xXXXX |0x8000|
+  ///  First 10 Bytes from  m_ExtendedHeader
   
 
   class PacketBuffer {
   public:
-    PacketBuffer(){pPacketLengthInByte.reserve(100); totalLength= 0; pBsBuf.reserve(100);};
+    PacketBuffer(){pPacketLengthInByte.reserve(PacketMaximumBufferNum); totalLength= 0; pBsBuf.reserve(PacketMaximumBufferNum*(RTP_PAYLOAD_LENGTH+RTP_HEADER_LENGTH));};
     ~PacketBuffer(){pPacketLengthInByte.clear();pBsBuf.clear();};
-    std::vector<int>  pPacketLengthInByte;       ///< length of NAL size in byte from 0 to iNalCount-1
+    std::vector<int>  pPacketLengthInByte;       ///< length of udp packet size in byte from 0 to number of packet - 1
     std::vector<unsigned char> pBsBuf;       ///< buffer of Packet contained
     int totalLength;
   };
@@ -193,6 +204,10 @@ namespace igtl
     
     void SetFCFS(bool isFCFS){FCFS = isFCFS;};
     
+    void SetRTPPayloadType(igtl_uint8 payLoadType){this->RTPPayloadType = payLoadType;};
+    
+    igtl_uint8 GetRTPPayLoadType(){return this->RTPPayloadType;};
+    
     int WrapMessageAndPushToBuffer(igtl_uint8* messagePackPointer, int msgtotalLen);
     
     int SendBufferedDataWithInterval(igtl::UDPServerSocket::Pointer &socket, int interval);
@@ -204,8 +219,6 @@ namespace igtl
     int UnWrapPacketWithTypeAndName(const char *deviceType, const char * deviceName);
     
     igtl::MessageBase::Pointer UnWrapMessage(igtl_uint8* messageContent, int totMsgLen);
-    
-    void SetPayLoadType(unsigned char type){RTPPayLoadType = type;};
     
     ///Set the synchronization source identifier, different session has different SSRC
     void SetSSRC(igtl_uint32 identifier);
@@ -252,14 +265,13 @@ namespace igtl
     
   private:
     unsigned int RTPPayloadLength;
-    igtl_uint16 extendedHeaderSize;
     igtl_uint8* packedMsg;
     igtl_uint8* MSGHeader;
     unsigned int curMSGLocation;
     unsigned int curPackedMSGLocation;
     unsigned int numberOfDataFrag;
     unsigned int numberOfDataFragToSent;
-    unsigned char RTPPayLoadType;
+    igtl_uint8  RTPPayloadType;
     igtl_uint16 AvailabeBytesNum;
     igtl_uint16 SeqNum;
     int status;

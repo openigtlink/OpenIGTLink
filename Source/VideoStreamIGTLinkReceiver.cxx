@@ -46,7 +46,7 @@ void WriteTimeInfo(unsigned char * UDPPacket, int totMsgLen, VideoStreamIGTLinkR
 {
   igtl_uint16 fragmentField;
   igtl_uint32 messageID;
-  int extendedHeaderLength = sizeof(igtl_extended_header);
+  int extendedHeaderLength = IGTL_EXTENDED_HEADER_SIZE;
   memcpy(&fragmentField, (void*)(UDPPacket + RTP_HEADER_LENGTH+IGTL_HEADER_SIZE+extendedHeaderLength-2),2);
   memcpy(&messageID, (void*)(UDPPacket + RTP_HEADER_LENGTH+IGTL_HEADER_SIZE+extendedHeaderLength-6),4);
   if(igtl_is_little_endian())

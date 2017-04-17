@@ -64,6 +64,7 @@ void BuildUp()
   memcpy((void*)imageSendMsg->GetScalarPointer(), test_image, TEST_IMAGE_MESSAGE_SIZE);//here m_Image is set.
   imageSendMsg->Pack();
   messageWrapperSenderSide = igtl::MessageRTPWrapper::New();
+  messageWrapperSenderSide->SetRTPPayloadType(0); // 0 corresponding to PCMU payload type, default is 96 for dynamic allocation.
   messageWrapperSenderSide->SetRTPPayloadLength(UDPPacketLength);
   messageWrapperSenderSide->SetSeqNum(0);
   messageWrapperSenderSide->WrapMessageAndPushToBuffer((igtl_uint8*)imageSendMsg->GetPackPointer(), imageSendMsg->GetPackSize());
@@ -111,8 +112,8 @@ void Validation()
   imageReceiveMsg->SetMessageHeader(header);
   imageReceiveMsg->AllocateBuffer();
   memcpy(imageReceiveMsg->GetPackBodyPointer(), it->second->messagePackPointer+IGTL_HEADER_SIZE, it->second->messageDataLength-IGTL_HEADER_SIZE);
-  imageReceiveMsg->Unpack();
-  
+  int c = imageReceiveMsg->Unpack(1);
+  EXPECT_EQ(c,2);
   igtl_header *messageHeader = (igtl_header *)imageReceiveMsg->GetPackPointer();
   EXPECT_STREQ(messageHeader->device_name, "DeviceName");
   EXPECT_STREQ(messageHeader->name, "IMAGE");
@@ -133,6 +134,8 @@ void Validation()
   EXPECT_EQ(imageReceiveMsg->GetScalarType(), IGTL_IMAGE_STYPE_TYPE_UINT8);
   EXPECT_EQ(imageReceiveMsg->GetEndian(), IGTL_IMAGE_ENDIAN_LITTLE);
   EXPECT_EQ(imageReceiveMsg->GetCoordinateSystem(), IGTL_IMAGE_COORD_RAS);
+  EXPECT_EQ(imageReceiveMsg->GetMessageID(), 1);
+  
   
   igtl::Matrix4x4 outMatrix = {{0.0,0.0,0.0,0.0},
     {0.0,0.0,0.0,0.0},
@@ -141,7 +144,7 @@ void Validation()
   imageReceiveMsg->GetMatrix(outMatrix);
   EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
   //The imageHeader is byte-wized converted, so we skip the comparison of the image header.
-  int r = memcmp((const char*)imageReceiveMsg->GetPackBodyPointer()+IGTL_IMAGE_HEADER_SIZE+sizeof(igtl_extended_header), (const void*)(test_image), (size_t)(TEST_IMAGE_MESSAGE_SIZE));
+  int r = memcmp((const char*)imageReceiveMsg->GetPackBodyPointer()+IGTL_IMAGE_HEADER_SIZE+IGTL_EXTENDED_HEADER_SIZE, (const void*)(test_image), (size_t)(TEST_IMAGE_MESSAGE_SIZE));
   EXPECT_EQ(r, 0);
 }
 

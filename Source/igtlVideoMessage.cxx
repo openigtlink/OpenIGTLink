@@ -100,7 +100,7 @@ int VideoMessage::GetBitStreamSize()
 #if OpenIGTLink_HEADER_VERSION >= 2
     if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
     {
-      return GetPackBodySize()-IGTL_VIDEO_HEADER_SIZE - sizeof(igtl_extended_header) - GetMetaDataHeaderSize() - GetMetaDataSize();
+      return GetPackBodySize()-IGTL_VIDEO_HEADER_SIZE - IGTL_EXTENDED_HEADER_SIZE - GetMetaDataHeaderSize() - GetMetaDataSize();
     }
     else
     {
@@ -117,7 +117,7 @@ void VideoMessage::SetBitStreamSize(int size)
 #if OpenIGTLink_HEADER_VERSION >= 2
   if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
-    m_MessageSize = IGTL_HEADER_SIZE + bitStreamSize + sizeof(igtl_extended_header) + GetMetaDataHeaderSize() + GetMetaDataSize() + IGTL_VIDEO_HEADER_SIZE;
+    m_MessageSize = IGTL_HEADER_SIZE + bitStreamSize + IGTL_EXTENDED_HEADER_SIZE + GetMetaDataHeaderSize() + GetMetaDataSize() + IGTL_VIDEO_HEADER_SIZE;
   }
   else
   {
@@ -145,7 +145,7 @@ void VideoMessage::AllocateScalars()
 #if OpenIGTLink_HEADER_VERSION >= 2
   if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
-    this->m_FrameHeader = &m_Body[sizeof(igtl_extended_header)];
+    this->m_FrameHeader = &m_Body[IGTL_EXTENDED_HEADER_SIZE];
   }
   else
   {
@@ -216,7 +216,7 @@ int VideoMessage::PackContent()
 #if OpenIGTLink_HEADER_VERSION >= 2
   if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
-    m_MetaDataHeader = &m_Body[CalculateContentBufferSize()+sizeof(igtl_extended_header)];
+    m_MetaDataHeader = &m_Body[CalculateContentBufferSize()+IGTL_EXTENDED_HEADER_SIZE];
   }
 #endif
   return 1;
@@ -229,7 +229,7 @@ int VideoMessage::UnpackContent()
 #if OpenIGTLink_HEADER_VERSION >= 2
   if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
-    this->m_FrameHeader = &m_Body[sizeof(igtl_extended_header)];
+    this->m_FrameHeader = &m_Body[IGTL_EXTENDED_HEADER_SIZE];
   }
   else
   {

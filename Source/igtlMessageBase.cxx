@@ -327,7 +327,7 @@ bool MessageBase::PackExtendedHeader()
 {
   if( m_HeaderVersion == IGTL_HEADER_VERSION_2 )
   {
-    int aSize = m_MessageSize - IGTL_HEADER_SIZE - sizeof(igtl_extended_header);
+    int aSize = m_MessageSize - IGTL_HEADER_SIZE - IGTL_EXTENDED_HEADER_SIZE;
     if( aSize < 0 )
     {
       // Ensure we have enough space to write the header
@@ -335,7 +335,7 @@ bool MessageBase::PackExtendedHeader()
     }
 
     igtl_extended_header* extended_header   = (igtl_extended_header*) m_ExtendedHeader;
-    extended_header->extended_header_size   = sizeof(igtl_extended_header);
+    extended_header->extended_header_size   = IGTL_EXTENDED_HEADER_SIZE;
     extended_header->meta_data_header_size  = this->GetMetaDataHeaderSize();
     extended_header->meta_data_size         = this->GetMetaDataSize();
     extended_header->message_id             = this->GetMessageID();
@@ -418,7 +418,7 @@ bool MessageBase::UnpackExtendedHeader()
   {
     igtl_extended_header* extended_header = (igtl_extended_header*)m_ExtendedHeader;
     igtl_extended_header_convert_byte_order(extended_header);
-    if( extended_header->extended_header_size != sizeof(igtl_extended_header) )
+    if( extended_header->extended_header_size != IGTL_EXTENDED_HEADER_SIZE)
     {
       // any extra data will be dropped, if the order of variables is changed, this will be seriously broken
       // TODO : add error reporting?
@@ -587,10 +587,10 @@ int MessageBase::Unpack(int crccheck)
 #if OpenIGTLink_HEADER_VERSION >= 2
   // Check if the body exists and it has not been unpacked
   // The extended header is technically located inside the body, so we have to check to see if the remaining body size
-  // is > 0, or if full body size > sizeof(igtl_extended_header)
+  // is > 0, or if full body size > IGTL_EXTENDED_HEADER_SIZE
   if( m_HeaderVersion >= IGTL_HEADER_VERSION_2 )
   {
-    if (GetBufferBodySize() > static_cast<int>(sizeof(igtl_extended_header)) + META_DATA_INDEX_COUNT_SIZE && !m_IsBodyUnpacked)
+    if (GetBufferBodySize() > (IGTL_EXTENDED_HEADER_SIZE + META_DATA_INDEX_COUNT_SIZE) && !m_IsBodyUnpacked)
     {
       UnpackBody(crccheck, r);
     }
@@ -733,7 +733,7 @@ void MessageBase::AllocateBuffer(int contentSize)
   int message_size(-1);
   if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
-    message_size = IGTL_HEADER_SIZE + contentSize + sizeof(igtl_extended_header) + GetMetaDataHeaderSize() + GetMetaDataSize();
+    message_size = IGTL_HEADER_SIZE + contentSize + IGTL_EXTENDED_HEADER_SIZE + GetMetaDataHeaderSize() + GetMetaDataSize();
   }
   else
   {
@@ -767,9 +767,9 @@ void MessageBase::AllocateBuffer(int contentSize)
   if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
     m_ExtendedHeader = m_Body;
-    m_Content = &m_Body[sizeof(igtl_extended_header)];
-    m_MetaDataHeader = &m_Body[sizeof(igtl_extended_header)+contentSize];
-    m_MetaData = &m_Body[sizeof(igtl_extended_header)+contentSize+GetMetaDataHeaderSize()];
+    m_Content = &m_Body[IGTL_EXTENDED_HEADER_SIZE];
+    m_MetaDataHeader = &m_Body[IGTL_EXTENDED_HEADER_SIZE+contentSize];
+    m_MetaData = &m_Body[IGTL_EXTENDED_HEADER_SIZE+contentSize+GetMetaDataHeaderSize()];
   }
   else
   {
@@ -818,7 +818,7 @@ int MessageBase::CopyBody(const MessageBase *mb)
     if( m_HeaderVersion == IGTL_HEADER_VERSION_2 )
     {
       igtl_extended_header* other_ext_header = (igtl_extended_header*)(mb->m_ExtendedHeader);
-      if( other_ext_header->extended_header_size != sizeof(igtl_extended_header) )
+      if( other_ext_header->extended_header_size != IGTL_EXTENDED_HEADER_SIZE )
       {
         return 0;
       }
