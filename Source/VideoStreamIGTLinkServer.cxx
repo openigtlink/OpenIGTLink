@@ -466,13 +466,13 @@ static void* ThreadFunctionReadFrameFromFile(void* ptr)
     if (!_fseeki64 (pFileYUV, 0, SEEK_END)) {
       igtl_int64 i_size = _ftelli64 (pFileYUV);
       _fseeki64 (pFileYUV, 0, SEEK_SET);
-      iFrameNumInFile = std::max ((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
+      iFrameNumInFile = max ((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
     }
 #else
     if (!fseek (pFileYUV, 0, SEEK_END)) {
       igtl_int64 i_size = ftell (pFileYUV);
       fseek (pFileYUV, 0, SEEK_SET);
-      iFrameNumInFile = std::max ((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
+      iFrameNumInFile = max ((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
     }
 #endif
 #else

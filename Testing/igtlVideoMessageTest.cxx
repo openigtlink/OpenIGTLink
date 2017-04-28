@@ -113,9 +113,9 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
 #endif
 #if defined(_WIN32) || defined(_WIN64)
   #if _MSC_VER >= 1400
-        _fseeki64(pFileSeek, startIndex*kiPicResSize, SEEK_SET); //fix the data range issue
+      _fseeki64(pFileYUV, startIndex*kiPicResSize, SEEK_SET); //fix the data range issue
   #else
-        fseek(pFileSeek, startIndex*kiPicResSize, SEEK_SET); //fix the data range issue
+      fseek(pFileYUV, startIndex*kiPicResSize, SEEK_SET); //fix the data range issue
   #endif
 #else
       fseek(pFileYUV, startIndex*kiPicResSize, SEEK_SET);

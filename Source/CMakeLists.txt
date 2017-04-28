@@ -12,9 +12,10 @@ IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
 		)
 	ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND BUILD_VPX)
-    SET(LINK_LIBS
+	SET(LINK_VP9_LIBRARY optimized ${CMAKE_BINARY_DIR}/OpenVPX/Win32/Release/vpxmt.lib debug ${CMAKE_BINARY_DIR}/OpenVPX/Win32/Debug/vpxmtd.lib)
+	SET(LINK_LIBS
       ${LINK_LIBS}
-      "${CMAKE_BINARY_DIR}/OpenVPX/vpx.lib"
+      ${LINK_VP9_LIBRARY}
     )
   ENDIF()
   #For debug under win32 system, the run time check mode should be set to /RTCu for multithreading purpose
