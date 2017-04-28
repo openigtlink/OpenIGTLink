@@ -82,6 +82,20 @@ typedef struct LayerpEncCtx_s {
   SSliceArgument  sSliceArgument;
 } SLayerPEncCtx;
 
+/**
+ * @brief Enumerate  video frame type
+ * This is H264 related frame types.
+ */
+typedef enum {
+  H264FrameTypeInvalid,    ///< encoder not ready or parameters are invalidate
+  H264FrameTypeIDR,        ///< IDR frame in H.264
+  H264FrameTypeI,          ///< I frame type
+  H264FrameTypeP,          ///< P frame type
+  H264FrameTypeSkip,       ///< skip the frame based encoder kernel
+  H264FrameTypeIPMixed     ///< a frame where I and P slices are mixing, not supported yet
+} H264VideoFrameType;
+
+
 class ISVCEncoder;
 
 class H264Encoder: public GenericEncoder
@@ -116,15 +130,15 @@ public:
    */
   virtual int InitializeEncoder();
   
+  virtual int ConvertToLocalImageFormat(SourcePicture* pSrcPic);
+  
   /**
    Encode a frame, for performance issue, before encode the frame, make sure the frame pointer is updated with a new frame.
    Otherwize, the old frame will be encoded.
    */
   virtual int EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage = false );
   
-  virtual int SetPicWidth(unsigned int width);
-  
-  virtual int SetPicHeight(unsigned int height);
+  virtual int SetPicWidthAndHeight(unsigned int Width, unsigned int Height);
   
   virtual unsigned int GetPicWidth(){return this->sSvcParam.iPicWidth;};
   
@@ -149,6 +163,8 @@ private:
   // for configuration file
   
   SFrameBSInfo sFbi;
+  
+  SSourcePicture h264SrcPicture;
   
 };
 

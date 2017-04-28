@@ -55,8 +55,7 @@ VideoStreamIGTLinkServer::VideoStreamIGTLinkServer(char *argv)
 int VideoStreamIGTLinkServer::SetEncoder(GenericEncoder* encoder)
 {
   this->videoEncoder = encoder;
-  videoEncoder->SetPicHeight(pSrcPic->picHeight);
-  videoEncoder->SetPicWidth(pSrcPic->picWidth);
+  videoEncoder->SetPicWidthAndHeight(pSrcPic->picWidth,pSrcPic->picHeight);
   return 0;
 }
 
@@ -218,8 +217,7 @@ int VideoStreamIGTLinkServer::InitializeEncoder()
   if( this->videoEncoder && (pSrcPic->picWidth*pSrcPic->picHeight>0) && this->encoderConfigFile.c_str())
   {
     this->videoEncoder->SetConfigurationFile(encoderConfigFile);
-    this->videoEncoder->SetPicWidth(pSrcPic->picWidth);
-    this->videoEncoder->SetPicHeight(pSrcPic->picHeight);
+    this->videoEncoder->SetPicWidthAndHeight(pSrcPic->picWidth,pSrcPic->picHeight);
     this->videoEncoder->SetUseCompression(this->useCompress);
     iRet = this->videoEncoder->InitializeEncoder();
   }

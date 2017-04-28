@@ -172,7 +172,7 @@ void H264Encoder::UpdateHashFromFrame (SFrameBSInfo& info, SHA1Context* ctx) {
 int H264Encoder::FillSpecificParameters() {
   /* Test for temporal, spatial, SNR scalability */
   sSvcParam.iUsageType = CAMERA_VIDEO_REAL_TIME;
-  sSvcParam.fMaxFrameRate = 60.0f;                // input frame rate
+  sSvcParam.fMaxFrameRate = 200.0f;                // input frame rate
   sSvcParam.iPicWidth = 256;                 // width of picture in samples
   sSvcParam.iPicHeight = 256;                  // height of picture in samples
   sSvcParam.iTargetBitrate = 2500000;              // target bitrate desired
@@ -520,7 +520,7 @@ int H264Encoder::InitializeEncoder()
   //------------------------------------------------------------
   int iRet = 0;
   
-  if (this->configFile=="")
+  if (this->configFile=="" && this->pSVCEncoder)
   {
     fprintf (stderr, "No configuration file specified. Use Default Parameters\n");
     iRet = this->pSVCEncoder->InitializeExt (&sSvcParam);
@@ -568,29 +568,14 @@ INSIDE_MEM_FREE:
   return -1;
 }
 
-
-int H264Encoder::SetPicWidth(unsigned int width)
+int H264Encoder::SetPicWidthAndHeight(unsigned int Width, unsigned int Height)
 {
-  this->sSvcParam.iPicWidth = width;
+  this->sSvcParam.iPicWidth = Width;
+  this->sSvcParam.iPicHeight = Height;
   if(sSvcParam.iSpatialLayerNum)
   {
     SSpatialLayerConfig* pDLayer = &sSvcParam.sSpatialLayers[0]; //reset only the first spatial layer
     pDLayer->iVideoWidth = this->sSvcParam.iPicWidth;
-  }
-  if (this->pSVCEncoder->InitializeExt (&sSvcParam)) {
-    fprintf (stderr, "parse svc parameter config file failed.\n");
-    return -1;
-  }
-  this->initializationDone = true;
-  return 0;
-}
-
-int H264Encoder::SetPicHeight(unsigned int height)
-{
-  this->sSvcParam.iPicHeight = height;
-  if(sSvcParam.iSpatialLayerNum)
-  {
-    SSpatialLayerConfig* pDLayer = &sSvcParam.sSpatialLayers[0]; //reset only the first spatial layer
     pDLayer->iVideoHeight = this->sSvcParam.iPicHeight;
   }
   if (this->pSVCEncoder->InitializeExt (&sSvcParam)) {
@@ -601,6 +586,27 @@ int H264Encoder::SetPicHeight(unsigned int height)
   return 0;
 }
 
+int H264Encoder::ConvertToLocalImageFormat(SourcePicture* pSrcPic)
+{
+  if(pSrcPic->colorFormat==FormatI420)
+  {
+    if((pSrcPic->picWidth != this->h264SrcPicture.iPicWidth || pSrcPic->picHeight != this->h264SrcPicture.iPicHeight))
+    {
+      InitPic (&this->h264SrcPicture, videoFormatI420, pSrcPic->picWidth, pSrcPic->picHeight);
+    }
+    for(int i = 0; i < 4; i++)
+    {
+      h264SrcPicture.iStride[i] = pSrcPic->stride[i];
+      h264SrcPicture.pData[i] = pSrcPic->data[i];
+    }
+    h264SrcPicture.iPicWidth = pSrcPic->picWidth;
+    h264SrcPicture.iPicHeight = pSrcPic->picHeight;
+    return 1;
+  }
+  return -1;// image format not supported
+}
+
+
 int H264Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage)
 {
   int encodeRet = -1;
@@ -608,8 +614,7 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
   int iSourceHeight = pSrcPic->picHeight;
   if (iSourceWidth != this->sSvcParam.iPicWidth || iSourceHeight != this->sSvcParam.iPicHeight)
   {
-    this->SetPicWidth(iSourceWidth);
-    this->SetPicHeight(iSourceHeight);
+    this->SetPicWidthAndHeight(iSourceWidth, iSourceHeight);
     this->InitializeEncoder();
   }
   if (this->initializationDone == true)
@@ -622,16 +627,8 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
       static igtl_uint32 messageID = -1;
       int frameSize = 0;
       int iLayer = 0;
-      SSourcePicture h264Pic;
-      for(int i = 0; i < 4; i++)
-      {
-        h264Pic.iStride[i] = pSrcPic->stride[i];
-        h264Pic.pData[i] = pSrcPic->data[i];
-      }
-      h264Pic.iColorFormat = pSrcPic->colorFormat;
-      h264Pic.iPicWidth = iSourceWidth;
-      h264Pic.iPicHeight = iSourceHeight;
-      encodeRet = pSVCEncoder->EncodeFrame(&h264Pic, &sFbi);
+      this->ConvertToLocalImageFormat(pSrcPic);
+      encodeRet = pSVCEncoder->EncodeFrame(&h264SrcPicture, &sFbi);
       videoMessage->SetBitStreamSize(sFbi.iFrameSizeInBytes);
       videoMessage->AllocateScalars();
       videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
@@ -673,10 +670,10 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
       videoMessage->SetEndian(igtl_is_little_endian()==true?IGTL_VIDEO_ENDIAN_LITTLE:IGTL_VIDEO_ENDIAN_BIG); //little endian is 2 big endian is 1
       videoMessage->SetWidth(pSrcPic->picWidth);
       videoMessage->SetHeight(pSrcPic->picHeight);
-      encodedFrameType = FrameTypeIDR;
+      encodedFrameType = H264FrameTypeIDR;
       if (isGrayImage)
       {
-        encodedFrameType = FrameTypeIDR<<8;
+        encodedFrameType = H264FrameTypeIDR<<8;
       }
       videoMessage->SetFrameType(encodedFrameType);
       messageID ++;

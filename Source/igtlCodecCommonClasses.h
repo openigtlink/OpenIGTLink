@@ -28,37 +28,13 @@
  * @brief Enumerate the type of video format
  */
 typedef enum {
-  FormatRGB        = 1,             ///< rgb color formats
-  FormatRGBA       = 2,
-  FormatRGB555     = 3,
-  FormatRGB565     = 4,
-  FormatBGR        = 5,
-  FormatBGRA       = 6,
-  FormatABGR       = 7,
-  FormatARGB       = 8,
-  
-  FormatYUY2       = 20,            ///< yuv color formats
-  FormatYVYU       = 21,
-  FormatUYVY       = 22,
-  FormatI420       = 23,            ///< the same as IYUV
-  FormatYV12       = 24,
-  FormatInternal   = 25,            ///< only used in SVC decoder testbed
-  
-  FormatNV12       = 26,            ///< new format for output by DXVA decoding
-  
-  FormatVFlip      = 0x80000000
+  FormatI420       = 1     //// only YUV420 is supported now
 } VideoFormatType;
 
-/**
- * @brief Enumerate  video frame type
- */
 typedef enum {
   FrameTypeInvalid,    ///< encoder not ready or parameters are invalidate
-  FrameTypeIDR,        ///< IDR frame in H.264
-  FrameTypeI,          ///< I frame type
-  FrameTypeP,          ///< P frame type
+  FrameTypeKey,        ///< Key Frame
   FrameTypeSkip,       ///< skip the frame based encoder kernel
-  FrameTypeIPMixed     ///< a frame where I and P slices are mixing, not supported yet
 } VideoFrameType;
 
 /**
@@ -75,7 +51,7 @@ typedef enum {
 
 class SourcePicture {
 public:
-  SourcePicture(){};
+  SourcePicture(){colorFormat = FormatI420;};
   int       colorFormat;          ///< color space type
   int       stride[4];            ///< stride for each plane pData
   unsigned char*  data[4];        ///< plane pData
@@ -110,9 +86,17 @@ public:
   GenericEncoder(){
     this->configFile = std::string("");
     
+    this->encodedFrameType = -1;
+    
     this->useCompress = true;
     
+    this->isLossLessLink  = true;
+    
     this->initializationDone = false;
+    
+    this->picWidth = 0;
+    
+    this->picHeight = 0;
   };
   ~GenericEncoder(){};
   //void UpdateHashFromFrame (SFrameBSInfo& info, SHA1Context* ctx);
@@ -151,10 +135,6 @@ public:
   
   virtual int GetVideoFrameType(){return encodedFrameType;};
   
-  virtual int SetPicWidth(unsigned int width){picWidth = width;return 0;};
-  
-  virtual int SetPicHeight(unsigned int height){picHeight = height;return 0;};
-  
   virtual unsigned int GetPicWidth(){return this->picWidth;};
   
   virtual unsigned int GetPicHeight(){return this->picHeight;};
@@ -174,6 +154,8 @@ public:
   virtual int SetQP(int maxQP, int minQP){return -1;};
   
   virtual int SetRCTaregetBitRate(unsigned int bitRate){return -1;};
+  
+  virtual int SetPicWidthAndHeight(unsigned int Width, unsigned int Height){return -1;};
   
 protected:
   unsigned int picWidth;

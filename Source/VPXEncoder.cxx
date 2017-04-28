@@ -24,6 +24,7 @@ VPXEncoder::VPXEncoder(char *configFile):GenericEncoder()
   encodedBuf = new vpx_fixed_buf_t();
   inputImage = new vpx_image_t();
   deadlineMode = VPX_DL_REALTIME;
+  isLossLessLink = true;
   FillSpecificParameters ();
 }
 
@@ -31,8 +32,14 @@ VPXEncoder::~VPXEncoder()
 {
   vpx_codec_encode(codec, NULL, -1, 1, 0, deadlineMode); //Flush the codec
   vpx_codec_destroy(codec);
-  delete inputImage;
-  this->encoder = NULL;
+  if (inputImage)
+  {
+    delete inputImage;
+  }
+  if(this->encoder)
+  {
+    this->encoder = NULL;
+  }
 }
 
 int VPXEncoder::FillSpecificParameters() {
@@ -41,7 +48,6 @@ int VPXEncoder::FillSpecificParameters() {
     die_codec(codec, "Failed to get default codec config.");
     return -1;
   }
-  cfg.g_lag_in_frames = 1;
   vpx_codec_enc_init(codec, encoder->codec_interface(), &cfg, 0);
   if(this->SetSpeed(FastestSpeed)!=0)
   {
@@ -65,11 +71,13 @@ int VPXEncoder::SetRCMode(int value)
 
 int VPXEncoder::SetRCTaregetBitRate(unsigned int bitRate)
 {
-  this->cfg.rc_target_bitrate = bitRate;
-  this->cfg.layer_target_bitrate[0] = bitRate;
+  // The bit rate in VPX is in Kilo
+  int bitRateInKilo = bitRate/1000;
+  this->cfg.rc_target_bitrate = bitRateInKilo;
+  this->cfg.layer_target_bitrate[0] = bitRateInKilo;
   for (int i = 0; i < this->cfg.ss_number_layers; i++)
   {
-    this->cfg.ss_target_bitrate[i] = bitRate/this->cfg.ss_number_layers;
+    this->cfg.ss_target_bitrate[i] = bitRateInKilo/this->cfg.ss_number_layers;
   }
   if (vpx_codec_enc_config_set(codec, &this->cfg))
   {
@@ -141,27 +149,17 @@ int VPXEncoder::InitializeEncoder()
   return 0;
 }
 
-
-int VPXEncoder::SetPicWidth(unsigned int width)
+int VPXEncoder::SetPicWidthAndHeight(unsigned int width, unsigned int height)
 {
   this->picWidth = width;
-  this->cfg.g_w = width;
-  if (vpx_codec_enc_config_set(codec, &this->cfg))
-  {
-    die_codec(codec, "Failed to set picture width");
-    return -1;
-  }
-  return 0;
-}
-
-int VPXEncoder::SetPicHeight(unsigned int height)
-{
   this->picHeight = height;
-  this->cfg.g_h = height;
-  if (vpx_codec_enc_config_set(codec, &this->cfg))
+  if(this->picHeight != this->cfg.g_h || this->picWidth != this->cfg.g_w )
   {
-    die_codec(codec, "Failed to set picture height");
-    return -1;
+    bool iRet = this->InitializeEncoder();
+    if(iRet==0)
+    {
+      return 0;
+    }
   }
   return 0;
 }
@@ -176,8 +174,7 @@ int VPXEncoder::ConvertToLocalImageFormat(SourcePicture* pSrcPic)
 {
   if (pSrcPic->picWidth != this->cfg.g_w || pSrcPic->picHeight != this->cfg.g_h)
   {
-    this->SetPicWidth(pSrcPic->picWidth);
-    this->SetPicHeight(pSrcPic->picHeight);
+    this->SetPicWidthAndHeight(pSrcPic->picWidth,pSrcPic->picHeight);
     this->InitializeEncoder();
   }
   int plane;
@@ -198,8 +195,7 @@ int VPXEncoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
   int iSourceHeight = pSrcPic->picHeight;
   if (iSourceWidth != this->cfg.g_w || iSourceHeight != this->cfg.g_h)
   {
-    this->SetPicWidth(iSourceWidth);
-    this->SetPicHeight(iSourceHeight);
+    this->SetPicWidthAndHeight(iSourceWidth,iSourceHeight);
   }
   if (this->initializationDone == true)
   {
@@ -218,7 +214,7 @@ int VPXEncoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
       iter = NULL;
       if((pkt = vpx_codec_get_cx_data(codec, &iter)) != NULL) {
         if (pkt->kind == VPX_CODEC_CX_FRAME_PKT) {
-          encodedFrameType = FrameTypeIDR;
+          encodedFrameType = FrameTypeKey;
           videoMessage->SetBitStreamSize(pkt->data.frame.sz);
           videoMessage->AllocateScalars();
           videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
@@ -247,10 +243,10 @@ int VPXEncoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
       videoMessage->SetEndian(igtl_is_little_endian()==true?IGTL_VIDEO_ENDIAN_LITTLE:IGTL_VIDEO_ENDIAN_BIG); //little endian is 2 big endian is 1
       videoMessage->SetWidth(pSrcPic->picWidth);
       videoMessage->SetHeight(pSrcPic->picHeight);
-      encodedFrameType = FrameTypeIDR;
+      encodedFrameType = FrameTypeKey;
       if (isGrayImage)
       {
-        encodedFrameType = FrameTypeIDR<<8;
+        encodedFrameType = FrameTypeKey<<8;
       }
       videoMessage->SetFrameType(encodedFrameType);
       messageID ++;
