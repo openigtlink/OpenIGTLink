@@ -25,6 +25,7 @@ VPXEncoder::VPXEncoder(char *configFile):GenericEncoder()
   inputImage = new vpx_image_t();
   deadlineMode = VPX_DL_REALTIME;
   isLossLessLink = true;
+  codecSpeed = 0;
   FillSpecificParameters ();
 }
 
@@ -131,6 +132,7 @@ int VPXEncoder::SetLosslessLink(bool linkMethod)
 
 int VPXEncoder::SetSpeed(int speed)
 {
+  this->codecSpeed = speed;
   if (speed>=SlowestSpeed && speed<=FastestSpeed)
   {
     vpx_codec_control(codec, VP8E_SET_CPUUSED, speed);
@@ -156,6 +158,15 @@ int VPXEncoder::InitializeEncoder()
   {
     die_codec(codec, "Failed to set lossless mode");
     return -1;
+  }
+
+  if (codecSpeed >= SlowestSpeed && codecSpeed <= FastestSpeed)
+  {
+    if (vpx_codec_control(codec, VP8E_SET_CPUUSED, codecSpeed))
+    {
+      die_codec(codec, "Failed to set Speed");
+      return -1;
+    }
   }
   this->initializationDone = true;
   return 0;

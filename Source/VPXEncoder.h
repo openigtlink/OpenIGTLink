@@ -105,6 +105,8 @@ private:
   const vpx_codec_cx_pkt_t *pkt;
   
   unsigned long deadlineMode;
+
+  int codecSpeed;
   
 };
 

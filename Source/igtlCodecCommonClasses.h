@@ -229,4 +229,4 @@ protected:
 
 float* SSIMCalculate();
 
-#endif /* CodecCommonClasses_h */
+#endif

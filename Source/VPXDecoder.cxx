@@ -83,6 +83,7 @@ int VPXDecoder::DecodeBitStreamIntoFrame(unsigned char* bitstream,igtl_uint8* ou
   }
   else
   {
+    vpx_codec_dec_init(&codec, decoder->codec_interface(), NULL, 0);
     std::cerr << "decode failed" << std::endl;
     //die_codec(&codec, "Failed to decode frame.");
   }

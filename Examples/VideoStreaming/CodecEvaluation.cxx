@@ -227,9 +227,9 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
 #endif
 #if defined(_WIN32) || defined(_WIN64)
 #if _MSC_VER >= 1400
-      _fseeki64(pFileSeek, startIndex*kiPicResSize*3/2, SEEK_SET); //fix the data range issue
+      _fseeki64(pFileYUV, startIndex*kiPicResSize * 3 / 2, SEEK_SET); //fix the data range issue
 #else
-      fseek(pFileSeek, startIndex*kiPicResSize*3/2, SEEK_SET); //fix the data range issue
+      fseek(pFileYUV, startIndex*kiPicResSize*3/2, SEEK_SET); //fix the data range issue
 #endif
 #else
       long pos = startIndex/100*kiPicResSize*3/2; // for large file, long type data is in the range of -2,147,483,648	2,147,483,647
@@ -430,7 +430,7 @@ void UltrasonixDecodingTest()
   fseeko (pFileBitStream, 0, SEEK_END);
   int i_size = ftello (pFileBitStream);
   fseek(pFileBitStream, 0, SEEK_SET);
-  unsigned char messageBitStream[i_size];
+  unsigned char* messageBitStream= new unsigned char[i_size];
   if (pFileBitStream != NULL) {
     fread (messageBitStream, 1, i_size, pFileBitStream);
     igtl::VideoMessage::Pointer videoMessageReceived = igtl::VideoMessage::New();
