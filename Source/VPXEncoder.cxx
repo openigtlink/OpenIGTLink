@@ -68,6 +68,18 @@ int VPXEncoder::SetRCMode(int value)
   return 0;
 }
 
+int VPXEncoder::SetKeyFrameDistance(int frameNum)
+{
+  this->cfg.kf_max_dist = frameNum;
+  this->cfg.kf_min_dist = frameNum;
+  if(vpx_codec_enc_config_set(codec, &this->cfg))
+  {
+    die_codec(codec, "Failed to key frame distance");
+    return -1;
+  }
+  return 0;
+}
+
 
 int VPXEncoder::SetRCTaregetBitRate(unsigned int bitRate)
 {

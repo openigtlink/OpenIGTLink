@@ -123,6 +123,8 @@ public:
    */
   virtual int SetRCMode(int value);
   
+  virtual int SetKeyFrameDistance(int frameNum){return -1;};
+  
   virtual int SetQP(int maxQP, int minQP);
   
   /**

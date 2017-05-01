@@ -63,6 +63,8 @@ public:
   
   virtual int SetRCMode(int value);
   
+  virtual int SetKeyFrameDistance(int frameNum);
+  
   virtual int SetQP(int maxQP, int minQP);
   
   virtual int SetRCTaregetBitRate(unsigned int bitRate);

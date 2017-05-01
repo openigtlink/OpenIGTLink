@@ -69,9 +69,9 @@ float compressionRate = 0.0;
 //int Width = 256;
 //int Height = 256;
 //std::string testFileName(OpenIGTLink_SOURCE_ROOTDIR);
-int Width = 1920;
-int Height = 1080;
-std::string testFileName("/Users/longquanchen/Documents/VideoStreaming/RoboticHysterectomy.yuv");
+int Width = 446;
+int Height = 460;
+std::string testFileName("/Users/longquanchen/Downloads/UltrasonixVideo.yuv");
 std::string evalFileName("EvalFile.txt");
 FILE* pEval = NULL;
 int startIndex = 100;
@@ -209,13 +209,13 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
       if (!_fseeki64 (pFileYUV, 0, SEEK_END)) {
         i_size = _ftelli64 (pFileYUV);
         _fseeki64 (pFileYUV, 0, SEEK_SET);
-        iFrameNumInFile = std::max((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
+        iFrameNumInFile = std::fmax((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
       }
 #else
       if (!fseek (pFileYUV, 0, SEEK_END)) {
         i_size = ftell (pFileYUV);
         fseek (pFileYUV, 0, SEEK_SET);
-        iFrameNumInFile = std::max((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
+        iFrameNumInFile = std::fmax((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
       }
 #endif
 #else
@@ -258,6 +258,15 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
           videoMessageReceived->SetMessageHeader(headerMsg);
           videoMessageReceived->AllocatePack();
           memcpy(videoMessageReceived->GetPackBodyPointer(), videoMessageSend->GetPackBodyPointer(), videoMessageSend->GetPackBodySize());
+          /*
+          std::string ultraSonixFile = "/Users/longquanchen/UltrasonixBitStream";
+          FILE *pFileBitStream = fopen (ultraSonixFile.c_str(), "rb");
+          unsigned char messageBitStream[41186];
+          fread (messageBitStream, 1, 41186, pFileBitStream);
+          videoMessageReceived = igtl::VideoMessage::New();
+          videoMessageReceived->SetBitStreamSize(41114);
+          videoMessageReceived->AllocatePack();
+          memcpy(videoMessageReceived->GetPackBodyPointer(), messageBitStream+IGTL_HEADER_SIZE, 41186-IGTL_HEADER_SIZE);*/
           videoMessageReceived->Unpack();
           bitstreamTotalLength += videoMessageReceived->GetBitStreamSize();
           startDecodeTime = videoStreamDecoder->getCurrentTime();
@@ -265,11 +274,11 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
           if(iRet)
           {
             totalFrame ++;
-            //igtl_uint32 dimension[2] = {Width, Height};
-            //igtl_uint32 stride[2] = {Width, Width/2};
-            //FILE* outFile = fopen("HDVideo.yuv", "a");
-            //videoStreamDecoder->Write2File(outFile, pDecodedPic->data, dimension, stride);
-            //fclose(outFile);
+            igtl_uint32 dimension[2] = {Width, Height};
+            igtl_uint32 stride[2] = {Width, Width/2};
+            FILE* outFile = fopen("HDVideo.yuv", "a");
+            videoStreamDecoder->Write2File(outFile, pDecodedPic->data, dimension, stride);
+            fclose(outFile);
             endDecodeTime = videoStreamDecoder->getCurrentTime();
             totalDecodeTime += (endDecodeTime - startDecodeTime);
             if(version == IGTL_HEADER_VERSION_2)
@@ -412,6 +421,36 @@ void H264CodecSpeedAndRateEval()
 #endif
 }
 
+void UltrasonixDecodingTest()
+{
+  VPXDecoder* videoStreamDecoder = new VPXDecoder();
+  FILE* pFileBitStream = NULL;
+  std::string ultraSonixFile = "/Users/longquanchen/UltrasonixBitStream";
+  pFileBitStream = fopen (ultraSonixFile.c_str(), "rb");
+  fseeko (pFileBitStream, 0, SEEK_END);
+  int i_size = ftello (pFileBitStream);
+  fseek(pFileBitStream, 0, SEEK_SET);
+  unsigned char messageBitStream[i_size];
+  if (pFileBitStream != NULL) {
+    fread (messageBitStream, 1, i_size, pFileBitStream);
+    igtl::VideoMessage::Pointer videoMessageReceived = igtl::VideoMessage::New();
+    igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
+    headerMsg->AllocatePack();
+    memcpy(headerMsg->GetPackPointer(), messageBitStream, IGTL_HEADER_SIZE);
+    headerMsg->Unpack();
+    videoMessageReceived->SetMessageHeader(headerMsg);
+    videoMessageReceived->SetBitStreamSize(i_size-72);
+    videoMessageReceived->AllocatePack();
+    memcpy(videoMessageReceived->GetPackBodyPointer(), messageBitStream+IGTL_HEADER_SIZE, i_size-IGTL_HEADER_SIZE);
+    videoMessageReceived->Unpack();
+    int bitstreamTotalLength = videoMessageReceived->GetBitStreamSize();
+    SourcePicture* pDecodedPic = new SourcePicture();
+    pDecodedPic->data[0] = new igtl_uint8[Width * Height *3/2];
+    memset(pDecodedPic->data[0], 0, Width * Height * 3 / 2);
+    int iRet= videoStreamDecoder->DecodeVideoMSGIntoSingleFrame(videoMessageReceived.GetPointer(), pDecodedPic);
+  }
+}
+
 void VP9CodecSpeedAndRateEval()
 {
 #if OpenIGTLink_BUILD_VPX
@@ -527,8 +566,9 @@ void VP9SpeedEvaluation()
 
 int main(int argc, char **argv)
 {
-  VP9SpeedEvaluation();
-  CodecOptimizationEval();
+  UltrasonixDecodingTest();
+  //VP9SpeedEvaluation();
+  //CodecOptimizationEval();
   return 0;
 }
 

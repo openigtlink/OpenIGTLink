@@ -67,17 +67,24 @@ void VPXDecoder::ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int 
   }
 }
 
-int VPXDecoder::DecodeBitStreamIntoFrame(unsigned char* bitstream,igtl_uint8* outputFrame, igtl_uint32 dimensions[2], igtl_uint64& iStreamSize) {
-  
-  if (vpx_codec_decode(&codec, bitstream, (unsigned int)iStreamSize, NULL, 0))
-    die_codec(&codec, "Failed to decode frame.");
-  iter = NULL;
-  if((outputImage = vpx_codec_get_frame(&codec, &iter)) != NULL) {
-    int stride[3] = {outputImage->stride[0], outputImage->stride[1],outputImage->stride[2]};
-    int convertedDimensions[2] = {vpx_img_plane_width(outputImage, 0) *
-      ((outputImage->fmt & VPX_IMG_FMT_HIGHBITDEPTH) ? 2 : 1), vpx_img_plane_height(outputImage, 0)};
-    ComposeByteSteam(outputImage->planes, convertedDimensions, stride, outputFrame);
-    return 2;
+
+int VPXDecoder::DecodeBitStreamIntoFrame(unsigned char* bitstream,igtl_uint8* outputFrame, igtl_uint32 dimensions[2], igtl_uint64& iStreamSize)
+{
+  if (!vpx_codec_decode(&codec, bitstream, (unsigned int)iStreamSize, NULL, 0))
+  {
+    iter = NULL;
+    if ((outputImage = vpx_codec_get_frame(&codec, &iter)) != NULL) {
+      int stride[3] = { outputImage->stride[0], outputImage->stride[1], outputImage->stride[2] };
+      int convertedDimensions[2] = { vpx_img_plane_width(outputImage, 0) *
+        ((outputImage->fmt & VPX_IMG_FMT_HIGHBITDEPTH) ? 2 : 1), vpx_img_plane_height(outputImage, 0) };
+      ComposeByteSteam(outputImage->planes, convertedDimensions, stride, outputFrame);
+      return 2;
+    }
   }
-  return 1;
+  else
+  {
+    std::cerr << "decode failed" << std::endl;
+    //die_codec(&codec, "Failed to decode frame.");
+  }
+  return -1;
 }

@@ -49,16 +49,14 @@ typedef enum {
   UnsupportedData
 } cmRETURN;
 
-class SourcePicture {
-public:
-  SourcePicture(){colorFormat = FormatI420;};
+typedef struct {
   int       colorFormat;          ///< color space type
   int       stride[4];            ///< stride for each plane pData
   unsigned char*  data[4];        ///< plane pData
   int       picWidth;             ///< luma picture width in x coordinate
   int       picHeight;            ///< luma picture height in y coordinate
   long long timeStamp;           ///< timestamp of the source picture, unit: millisecond
-} ;
+} SourcePicture;
 
 class ReadConfigFile {
 public:
@@ -150,6 +148,8 @@ public:
   virtual bool GetLosslessLink(){return this->isLossLessLink;};
   
   virtual int SetRCMode(int value){return -1;};
+  
+  virtual int SetKeyFrameDistance(int frameNum){return -1;};
   
   virtual int SetQP(int maxQP, int minQP){return -1;};
   
