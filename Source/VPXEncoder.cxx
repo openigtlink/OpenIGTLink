@@ -49,6 +49,7 @@ int VPXEncoder::FillSpecificParameters() {
     die_codec(codec, "Failed to get default codec config.");
     return -1;
   }
+  cfg.g_error_resilient = true;
   vpx_codec_enc_init(codec, encoder->codec_interface(), &cfg, 0);
   if(this->SetSpeed(FastestSpeed)!=0)
   {
@@ -235,7 +236,7 @@ int VPXEncoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
         return -1;
       }
       iter = NULL;
-      if((pkt = vpx_codec_get_cx_data(codec, &iter)) != NULL) {
+      while((pkt = vpx_codec_get_cx_data(codec, &iter)) != NULL) {
         if (pkt->kind == VPX_CODEC_CX_FRAME_PKT) {
           encodedFrameType = FrameTypeKey;
           videoMessage->SetBitStreamSize(pkt->data.frame.sz);
@@ -252,8 +253,11 @@ int VPXEncoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
           videoMessage->SetMessageID(messageID);
           memcpy(videoMessage->GetPackFragmentPointer(2), pkt->data.frame.buf, pkt->data.frame.sz);
           videoMessage->Pack();
-          return 0;
         }
+      }
+      if(videoMessage->GetBitStreamSize())
+      {
+        return 0;
       }
       return -1;
     }

@@ -66,16 +66,13 @@ int totalDecodeTime =0;
 double ssim = 0.0;
 float compressionRate = 0.0;
 
-//int Width = 256;
-//int Height = 256;
-//std::string testFileName(OpenIGTLink_SOURCE_ROOTDIR);
-int Width = 446;
-int Height = 460;
-std::string testFileName("/Users/longquanchen/Downloads/UltrasonixVideo.yuv");
+int Width = 256;
+int Height = 256;
+std::string testFileName(OpenIGTLink_SOURCE_ROOTDIR);
 std::string evalFileName("EvalFile.txt");
 FILE* pEval = NULL;
-int startIndex = 100;
-int  inputFrameNum = 100;
+int startIndex = 0;
+int  inputFrameNum = 225;
 
 template <typename T>
 std::string ToString(T variable)
@@ -199,7 +196,7 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
 #endif
     std::string imageIndexStr = static_cast< std::ostringstream & >(( std::ostringstream() << std::dec << (i%6+1))).str();
     std::string testIndexedFileName = std::string(testFileName);
-    //testIndexedFileName.append(sep).append("Testing").append(sep).append("img").append(sep).append("igtlTestImage").append(imageIndexStr).append(".raw");
+    testIndexedFileName.append(sep).append("Testing").append(sep).append("img").append(sep).append("igtlTestImage").append(imageIndexStr).append(".raw");
     FILE* pFileYUV = NULL;
     pFileYUV = fopen (testIndexedFileName.c_str(), "rb");
     if (pFileYUV != NULL) {
@@ -222,25 +219,25 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
       if (!fseeko (pFileYUV, 0, SEEK_END)) {
         i_size = ftello (pFileYUV);
         fseek(pFileYUV, 0, SEEK_SET);
-        iFrameNumInFile = std::max((igtl_int32) (i_size / (kiPicResSize*3/2)), iFrameNumInFile);
+        iFrameNumInFile = std::max((igtl_int32) (i_size / (kiPicResSize)), iFrameNumInFile);
       }
 #endif
 #if defined(_WIN32) || defined(_WIN64)
 #if _MSC_VER >= 1400
-      _fseeki64(pFileYUV, startIndex*kiPicResSize * 3 / 2, SEEK_SET); //fix the data range issue
+      _fseeki64(pFileYUV, startIndex*kiPicResSize , SEEK_SET); //fix the data range issue
 #else
-      fseek(pFileYUV, startIndex*kiPicResSize*3/2, SEEK_SET); //fix the data range issue
+      fseek(pFileYUV, startIndex*kiPicResSize, SEEK_SET); //fix the data range issue
 #endif
 #else
-      long pos = startIndex/100*kiPicResSize*3/2; // for large file, long type data is in the range of -2,147,483,648	2,147,483,647
+      long pos = startIndex/100*kiPicResSize; // for large file, long type data is in the range of -2,147,483,648	2,147,483,647
       for(int i = 0;i<100;i++)
       {
         fseek(pFileYUV, pos, SEEK_CUR);
       }
 #endif
-      while(fread (imagePointer, 1, kiPicResSize*3/2, pFileYUV ) == (kiPicResSize*3/2) && totalFrame<inputFrameNum)
+      while(fread (imagePointer, 1, kiPicResSize, pFileYUV ) == kiPicResSize && totalFrame<inputFrameNum)
       {
-        bool isGrayImage = false;
+        bool isGrayImage = true;
         igtl::VideoMessage::Pointer videoMessageSend = igtl::VideoMessage::New();
         videoMessageSend->SetHeaderVersion(version);
         startEncodeTime = videoStreamDecoder->getCurrentTime();
@@ -276,7 +273,7 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
             totalFrame ++;
             igtl_uint32 dimension[2] = {Width, Height};
             igtl_uint32 stride[2] = {Width, Width/2};
-            FILE* outFile = fopen("HDVideo.yuv", "a");
+            FILE* outFile = fopen("HDVideo.yuv", "ab");
             videoStreamDecoder->Write2File(outFile, pDecodedPic->data, dimension, stride);
             fclose(outFile);
             endDecodeTime = videoStreamDecoder->getCurrentTime();
@@ -421,36 +418,6 @@ void H264CodecSpeedAndRateEval()
 #endif
 }
 
-void UltrasonixDecodingTest()
-{
-  VPXDecoder* videoStreamDecoder = new VPXDecoder();
-  FILE* pFileBitStream = NULL;
-  std::string ultraSonixFile = "/Users/longquanchen/UltrasonixBitStream";
-  pFileBitStream = fopen (ultraSonixFile.c_str(), "rb");
-  fseeko (pFileBitStream, 0, SEEK_END);
-  int i_size = ftello (pFileBitStream);
-  fseek(pFileBitStream, 0, SEEK_SET);
-  unsigned char* messageBitStream= new unsigned char[i_size];
-  if (pFileBitStream != NULL) {
-    fread (messageBitStream, 1, i_size, pFileBitStream);
-    igtl::VideoMessage::Pointer videoMessageReceived = igtl::VideoMessage::New();
-    igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
-    headerMsg->AllocatePack();
-    memcpy(headerMsg->GetPackPointer(), messageBitStream, IGTL_HEADER_SIZE);
-    headerMsg->Unpack();
-    videoMessageReceived->SetMessageHeader(headerMsg);
-    videoMessageReceived->SetBitStreamSize(i_size-72);
-    videoMessageReceived->AllocatePack();
-    memcpy(videoMessageReceived->GetPackBodyPointer(), messageBitStream+IGTL_HEADER_SIZE, i_size-IGTL_HEADER_SIZE);
-    videoMessageReceived->Unpack();
-    int bitstreamTotalLength = videoMessageReceived->GetBitStreamSize();
-    SourcePicture* pDecodedPic = new SourcePicture();
-    pDecodedPic->data[0] = new igtl_uint8[Width * Height *3/2];
-    memset(pDecodedPic->data[0], 0, Width * Height * 3 / 2);
-    int iRet= videoStreamDecoder->DecodeVideoMSGIntoSingleFrame(videoMessageReceived.GetPointer(), pDecodedPic);
-  }
-}
-
 void VP9CodecSpeedAndRateEval()
 {
 #if OpenIGTLink_BUILD_VPX
@@ -566,9 +533,8 @@ void VP9SpeedEvaluation()
 
 int main(int argc, char **argv)
 {
-  UltrasonixDecodingTest();
-  //VP9SpeedEvaluation();
-  //CodecOptimizationEval();
+  VP9SpeedEvaluation();
+  CodecOptimizationEval();
   return 0;
 }
 
