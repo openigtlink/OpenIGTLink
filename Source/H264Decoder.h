@@ -45,35 +45,36 @@
 #ifndef __igtlH264Decoder_h
 #define __igtlH264Decoder_h
 
-#include <time.h>
-#if defined(_WIN32) /*&& defined(_DEBUG)*/
-  #include <windows.h>
-  #include <stdio.h>
-  #include <stdarg.h>
-  #include <sys/types.h>
-#else
-  #include <sys/time.h>
-#endif
 #include <vector>
-
-
+#include <limits.h>
+#include <string.h>
 #include "api/svc/codec_api.h"
 #include "api/svc/codec_app_def.h"
 #include "igtl_types.h"
+#include "igtlVideoMessage.h"
+#include "igtlCodecCommonClasses.h"
 
 #define NO_DELAY_DECODING
-class H264Decode
+class H264Decoder:public GenericDecoder
 {
 public: 
-  H264Decode();
-  void Write2File (FILE* pFp, unsigned char* pData[3], int iStride[2], int iWidth, int iHeight);
-
+  H264Decoder();
+  ~H264Decoder();
+  
+  virtual int DecodeBitStreamIntoFrame(unsigned char* bitStream,igtl_uint8* outputFrame, igtl_uint32 iDimensions[2], igtl_uint64 &iStreamSize);
+  
+  virtual int DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* pDecodedPic);
+  
   int Process (void* pDst[3], SBufferInfo* pInfo, FILE* pFp);
   
-  void ComposeByteSteam(igtl_uint8** inputData, SBufferInfo bufInfo, igtl_uint8 *outputByteStream,  int iWidth, int iHeight);
+private:
   
-  int DecodeSingleNal (ISVCDecoder* pDecoder, unsigned char* kpH264BitStream,igtl_uint8* outputByteStream, const char* kpOuputFileName,
-                                            igtl_int32& iWidth, igtl_int32& iHeight, igtl_int32& iStreamSize);
+  virtual void ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[2], igtl_uint8 *outputFrame);
+  
+  ISVCDecoder* pDecoder;
+  
+  SDecodingParam decParam;
+  
 };
 
 #endif

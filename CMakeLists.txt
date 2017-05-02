@@ -43,6 +43,24 @@ IF(BUILD_H264)
 	endif(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") 
 ENDIF()
 
+# VPX codec
+OPTION(BUILD_VPX "Build the VPX tree." OFF)
+SET(OpenIGTLink_BUILD_VPX "0")
+IF(BUILD_VPX)
+  SET(OpenIGTLink_BUILD_VPX "1")
+  configure_file(SuperBuild/CMakeListsVPX.txt.in
+  OpenVPX-download/CMakeLists.txt)
+  #Here the downloading project is triggered
+  execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+                  WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/OpenVPX-download" )
+  execute_process(COMMAND "${CMAKE_COMMAND}" --build .
+              WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/OpenVPX-download" )
+  if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    #execute_process(COMMAND "cd" "${PROJECT_BINARY_DIR}/OpenVPX/configure")
+    execute_process(COMMAND "${PROJECT_BINARY_DIR}/OpenVPX/configure" --disable-examples --disable-tools --disable-docs --disable-vp8 --disable-libyuv --disable-unit_tests --disable-postproc WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/OpenVPX" )
+    execute_process(COMMAND "make" WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/OpenVPX" )
+  endif(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+ENDIF()
 
 #-----------------------------------------------------------------------------
 # OpenIGTLink build configuration options.

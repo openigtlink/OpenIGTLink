@@ -108,22 +108,12 @@ int UDPServerSocket::WriteSocket(unsigned char* buffer, unsigned bufferSize)
   int numByteSend = 0;
   for(int i = 0; i < this->groups.size(); i++)
   {
-#if defined(OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T)
-    socklen_t addressLength = sizeof(this->groups[i].address);
-#else
-    int addressLength = sizeof(this->groups[i].address);
-#endif
     this->SetIPAddress((const char*)this->groups[i].address);
     this->SetPortNumber(this->groups[i].portNum);
     numByteSend = SendUDP((char*)buffer, bufferSize);
   }
   for(int i = 0; i < this->clients.size(); i++)
   {
-#if defined(OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T)
-    socklen_t addressLength = sizeof(this->clients[i].address);
-#else
-    int addressLength = sizeof(this->groups[i].address);
-#endif
     this->SetIPAddress((const char*)this->clients[i].address);
     this->SetPortNumber(this->clients[i].portNum);
     numByteSend = SendUDP((char*)buffer, bufferSize);

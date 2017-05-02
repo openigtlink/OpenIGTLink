@@ -12,6 +12,14 @@
 =========================================================================*/
 
 #include "VideoStreamIGTLinkServer.h"
+#if OpenIGTLink_BUILD_H264
+  #include "H264Encoder.h"
+#endif
+
+#if OpenIGTLink_BUILD_VPX
+  #include "VPXEncoder.h"
+#endif
+
 
 #if defined(ANDROID_NDK) || defined(APPLE_IOS) || defined (WINDOWS_PHONE)
 extern "C" int EncMain (int argc, char** argv)
@@ -26,8 +34,16 @@ int main (int argc, char** argv)
     std::cerr << "    <configurationfile> : file name "  << std::endl;
     exit(0);
   }
+  
   VideoStreamIGTLinkServer server(argv[1]);
-  server.InitializeServer();
+#if OpenIGTLink_BUILD_VPX
+  VPXEncoder* encoder = new VPXEncoder();
+#elif OpenIGTLink_BUILD_H264
+  H264Encoder* encoder = new H264Encoder();
+#endif
+  server.SetEncoder(encoder);
+  server.SetupServer();
+  server.InitializeEncoder();
   server.SetWaitSTTCommand(true);
   if(server.transportMethod==server.UseTCP)
   {
@@ -46,13 +62,17 @@ int main (int argc, char** argv)
     {
       if(server.GetServerConnectStatus())
       {
-        if (!server.GetInitializationStatus())
+        if (!server.GetServerSetStatus())
         {
-          server.InitializeServer();
+          server.SetupServer();
         }
         if(server.useCompress == 1)
         {
-          server.EncodeFile();
+          int iRet = server.EncodeFile();
+          if (iRet == -1)
+          {
+            break;
+          }
         }
         else
         {
@@ -62,13 +82,17 @@ int main (int argc, char** argv)
     }
     else if(server.transportMethod==server.UseUDP)
     {
-      if (!server.GetInitializationStatus())
+      if (!server.GetServerSetStatus())
       {
-        server.InitializeServer();
+        server.SetupServer();
       }
       if(server.useCompress == 1)
       {
-        server.EncodeFile();
+        int iRet = server.EncodeFile();
+        if (iRet == -1)
+        {
+          break;
+        }
       }
       else
       {

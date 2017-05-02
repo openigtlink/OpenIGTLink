@@ -14,3 +14,6 @@ target_link_libraries( VideoStreamReceiver OpenIGTLink)
 
 add_executable( VideoStreamServer VideoStreamServer.cxx)
 target_link_libraries( VideoStreamServer OpenIGTLink)
+
+add_executable( CodecEvaluation CodecEvaluation.cxx)
+target_link_libraries(CodecEvaluation OpenIGTLink)

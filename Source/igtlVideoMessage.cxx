@@ -92,27 +92,60 @@ VideoMessage::VideoMessage():
 
 VideoMessage::~VideoMessage()
 {
-  /*if (this->m_FrameHeader)
-    {
-    delete [] this->m_FrameHeader;
-    }
-  if (this->m_Frame && this->m_FrameHeader!= this->m_Body)
-  {
-    delete [] this->m_Frame;
-  }
-  if(this->m_Body)
-  {
-    delete [] this->m_Body;
-  }*/
 }
   
-void VideoMessage::AllocateBuffer()
+/// This should only be called when the data is unpacked
+int VideoMessage::GetBitStreamSize()
+{
+#if OpenIGTLink_HEADER_VERSION >= 2
+    if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
+    {
+      return GetPackBodySize()-IGTL_VIDEO_HEADER_SIZE - IGTL_EXTENDED_HEADER_SIZE - GetMetaDataHeaderSize() - GetMetaDataSize();
+    }
+    else
+    {
+      return GetPackBodySize()-IGTL_VIDEO_HEADER_SIZE;
+    }
+#else
+    return GetPackBodySize()-IGTL_VIDEO_HEADER_SIZE;
+#endif
+};
+
+void VideoMessage::SetBitStreamSize(int size)
+{
+  bitStreamSize = size;
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
+  {
+    m_MessageSize = IGTL_HEADER_SIZE + bitStreamSize + IGTL_EXTENDED_HEADER_SIZE + GetMetaDataHeaderSize() + GetMetaDataSize() + IGTL_VIDEO_HEADER_SIZE;
+  }
+  else
+  {
+    m_MessageSize = size + IGTL_VIDEO_HEADER_SIZE + IGTL_HEADER_SIZE;
+    
+  }
+#else
+  m_MessageSize = size + IGTL_HEADER_SIZE;
+  
+#endif
+  
+};
+
+// Get the packed bit stream size
+int VideoMessage::GetPackedBitStreamSize()
+{
+  if(m_IsBodyPacked)
+    return bitStreamSize;
+  return -1;
+}
+  
+void VideoMessage::AllocateScalars()
 {
   MessageBase::AllocateBuffer();
 #if OpenIGTLink_HEADER_VERSION >= 2
   if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
-    this->m_FrameHeader = &m_Body[sizeof(igtl_extended_header)];
+    this->m_FrameHeader = &m_Body[IGTL_EXTENDED_HEADER_SIZE];
   }
   else
   {
@@ -128,7 +161,7 @@ void VideoMessage::AllocateBuffer()
   
 int VideoMessage::CalculateContentBufferSize()
 {
-  return  IGTL_VIDEO_HEADER_SIZE + bitStreamSize;
+  return  IGTL_VIDEO_HEADER_SIZE + GetBitStreamSize();
 }
 
 unsigned char* VideoMessage::GetPackFragmentPointer(int id)
@@ -180,7 +213,12 @@ int VideoMessage::PackContent()
   frame_header->height            = this->height;
   frame_header->frameType         = this->videoFrameType;
   igtl_frame_convert_byte_order(frame_header);
-  m_MetaDataHeader = &m_Body[CalculateContentBufferSize()+sizeof(igtl_extended_header)];
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
+  {
+    m_MetaDataHeader = &m_Body[CalculateContentBufferSize()+IGTL_EXTENDED_HEADER_SIZE];
+  }
+#endif
   return 1;
 
 }
@@ -191,7 +229,7 @@ int VideoMessage::UnpackContent()
 #if OpenIGTLink_HEADER_VERSION >= 2
   if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
   {
-    this->m_FrameHeader = &m_Body[sizeof(igtl_extended_header)];
+    this->m_FrameHeader = &m_Body[IGTL_EXTENDED_HEADER_SIZE];
   }
   else
   {
@@ -224,36 +262,6 @@ int VideoMessage::UnpackContent()
       // Incompatible version.
       return 0;
   }
-}
-
-void VideoMessage::AllocatePack(int bodySize)
-{
-
-  if (bodySize <= 0)
-    {
-    bodySize = 0;
-    this->m_IsBodyUnpacked = 0;
-    }
-
-  int s = IGTL_HEADER_SIZE + bodySize;
-
-  m_IsHeaderUnpacked = 0;
-  m_IsBodyUnpacked = 0;
-
-  if (bodySize > 0)
-    {
-    if (this->m_FrameHeader)
-      {
-      delete [] this->m_FrameHeader;
-      this->m_FrameHeader = NULL;
-      }
-    if (this->m_Frame)
-      {
-      delete [] this->m_Frame;
-      this->m_Frame = NULL;
-      }
-    this->m_Body = new unsigned char [bodySize];
-    }
 }
 
 } // namespace igtl

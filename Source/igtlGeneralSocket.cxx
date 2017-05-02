@@ -78,8 +78,6 @@ namespace igtl
 #if defined(_WIN32) && !defined(__CYGWIN__)
     // Declare variables
     WSADATA wsaData;
-    //SOCKET ListenSocket;
-    //sockaddr_in service;
     
     //---------------------------------------
     // Initialize Winsock
@@ -108,8 +106,6 @@ namespace igtl
 #if defined(_WIN32) && !defined(__CYGWIN__)
     // Declare variables
     WSADATA wsaData;
-    //SOCKET ListenSocket;
-    //sockaddr_in service;
     
     //---------------------------------------
     // Initialize Winsock
@@ -171,8 +167,6 @@ namespace igtl
 #if defined(_WIN32) && !defined(__CYGWIN__)
     // Declare variables
     WSADATA wsaData;
-    //SOCKET ListenSocket;
-    //sockaddr_in service;
     
     //---------------------------------------
     // Initialize Winsock

@@ -59,6 +59,9 @@
 #include <fstream>
 #include <cstring>
 #include <stdlib.h>
+#include <iostream>
+
+#include "igtlCodecCommonClasses.h"
 #include "sha1.h"
 #include "igtl_header.h"
 #include "igtl_video.h"
@@ -71,7 +74,7 @@
 #include "read_config.h"
 #include "wels_const.h"
 
-#include <iostream>
+
 using namespace std;
 
 typedef struct LayerpEncCtx_s {
@@ -79,65 +82,80 @@ typedef struct LayerpEncCtx_s {
   SSliceArgument  sSliceArgument;
 } SLayerPEncCtx;
 
+/**
+ * @brief Enumerate  video frame type
+ * This is H264 related frame types.
+ */
+typedef enum {
+  H264FrameTypeInvalid,    ///< encoder not ready or parameters are invalidate
+  H264FrameTypeIDR,        ///< IDR frame in H.264
+  H264FrameTypeI,          ///< I frame type
+  H264FrameTypeP,          ///< P frame type
+  H264FrameTypeSkip,       ///< skip the frame based encoder kernel
+  H264FrameTypeIPMixed     ///< a frame where I and P slices are mixing, not supported yet
+} H264VideoFrameType;
+
+
 class ISVCEncoder;
 
-class H264Encoder
+class H264Encoder: public GenericEncoder
 {
 public:
   H264Encoder(char * configFile = NULL);
   ~H264Encoder();
+  
+  void UpdateHashFromFrame (SFrameBSInfo& info, SHA1Context* ctx);
+  
+  bool CompareHash (const unsigned char* digest, const char* hashStr);
 
-  int FillSpecificParameters(SEncParamExt& sParam);
-
-  void SetConfigurationFile(std::string configFile);
+  virtual int FillSpecificParameters();
+  
+  /**
+   * @brief Enumerate the type of rate control mode
+    typedef enum {
+      RC_QUALITY_MODE = 0,     ///< quality mode
+      RC_BITRATE_MODE = 1,     ///< bitrate mode
+      RC_BUFFERBASED_MODE = 2, ///< no bitrate control,only using buffer status,adjust the video quality
+      RC_TIMESTAMP_MODE = 3, //rate control based timestamp
+      RC_BITRATE_MODE_POST_SKIP = 4, ///< this is in-building RC MODE, WILL BE DELETED after algorithm tuning!
+      RC_OFF_MODE = -1,         ///< rate control off mode
+    } RC_MODES;
+   */
+  virtual int SetRCMode(int value);
+  
+  virtual int SetKeyFrameDistance(int frameNum){return -1;};
+  
+  virtual int SetQP(int maxQP, int minQP);
   
   /**
    Parse the configuration file to initialize the encoder and server.
    */
-  int InitializeEncoder();
+  virtual int InitializeEncoder();
+  
+  virtual int ConvertToLocalImageFormat(SourcePicture* pSrcPic);
   
   /**
    Encode a frame, for performance issue, before encode the frame, make sure the frame pointer is updated with a new frame.
    Otherwize, the old frame will be encoded.
    */
-  int EncodeSingleFrameIntoVideoMSG(SSourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage = false );
+  virtual int EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage = false );
   
-  /**
-   Get the encoder and server initialization status.
-   */
-  bool GetInitializationStatus(){return InitializationDone;};
+  virtual int SetPicWidthAndHeight(unsigned int Width, unsigned int Height);
   
-  /**
-   Get the type of encoded frame
-   */
-  int GetVideoFrameType(){return encodedFrameType;};
+  virtual unsigned int GetPicWidth(){return this->sSvcParam.iPicWidth;};
   
-  void SetCodecName(std::string name);
+  virtual unsigned int GetPicHeight(){return this->sSvcParam.iPicHeight;};
   
-  void SetDeviceName(std::string name);
+  virtual int SetLosslessLink(bool linkMethod);
   
-  void SetPicWidth(unsigned int width);
+  virtual int SetRCTaregetBitRate(unsigned int bitRate);
   
-  void SetPicHeight(unsigned int height);
-  
-  unsigned int GetPicWidth(){return this->sSvcParam.iPicWidth;};
-  
-  unsigned int GetPicHeight(){return this->sSvcParam.iPicHeight;};
-  
-  void SetUseCompression(bool useCompression);
-  
-  bool GetUseCompression(){return useCompress;};
-  
-  void SetLosslessLink(bool isLossLessLink);
-
-  bool GetLosslessLink(){return this->sSvcParam.bIsLosslessLink;};
+  virtual bool GetLosslessLink(){return this->sSvcParam.bIsLosslessLink;};
   
 private:
   int ParseLayerConfig (string strTag[], const int iLayer, SEncParamExt& pSvcParam);
   
   int ParseConfig();
-  
-  int encodedFrameType;
   
   ISVCEncoder*  pSVCEncoder;
   
@@ -146,17 +164,10 @@ private:
   std::string layerConfigFiles[MAX_DEPENDENCY_LAYER];
   // for configuration file
   
-  CReadConfig cRdCfg;
-  
   SFrameBSInfo sFbi;
   
-  bool  useCompress;
+  SSourcePicture h264SrcPicture;
   
-  char  codecName[IGTL_VIDEO_CODEC_NAME_SIZE];
-  
-  std::string configFile;
-    
-  bool InitializationDone;
 };
 
 #endif
