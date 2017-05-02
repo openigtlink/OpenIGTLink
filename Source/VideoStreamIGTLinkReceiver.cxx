@@ -426,7 +426,11 @@ int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream, int st
     pic.data[1] = this->decodedFrame+Width*Height;
     pic.data[2] = this->decodedFrame+Width*Height*5/4;
     //pic.data[0] =
-    decodeInstance->Write2File (pYuvFile, pic.data, dimensions, stride);
+    if(pYuvFile)
+    {
+      decodeInstance->Write2File (pYuvFile, pic.data, dimensions, stride);
+      fclose (pYuvFile);
+    }
     return status;
   }
   else

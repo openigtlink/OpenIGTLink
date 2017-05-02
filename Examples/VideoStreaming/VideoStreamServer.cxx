@@ -38,6 +38,7 @@ int main (int argc, char** argv)
   VideoStreamIGTLinkServer server(argv[1]);
 #if OpenIGTLink_BUILD_VPX
   VPXEncoder* encoder = new VPXEncoder();
+  encoder->SetSpeed(6);
 #elif OpenIGTLink_BUILD_H264
   H264Encoder* encoder = new H264Encoder();
 #endif

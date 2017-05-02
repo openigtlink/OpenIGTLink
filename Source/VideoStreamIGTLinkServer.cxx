@@ -395,7 +395,7 @@ int VideoStreamIGTLinkServer::SetupServer()
     goto INSIDE_MEM_FREE;
   }
   //fill default pSrcPic
-  pSrcPic->colorFormat = 23;//videoFormatI420;
+  pSrcPic->colorFormat = FormatI420;//videoFormatI420;
   pSrcPic->timeStamp = 0;
   
   // if configure file exit, reading configure file firstly
@@ -709,7 +709,7 @@ int VideoStreamIGTLinkServer::EncodeFile(void)
         this->CheckEncodedFrameMap();
         this->encodedFrames.insert(std::pair<igtlUint32, VideoStreamIGTLinkServer::encodedFrame*>(messageID, frame));
         this->glock->Unlock();
-        igtl::Sleep(1);
+        igtl::Sleep(5);
         iActualFrameEncodedCount ++;
       } else {
         fprintf (stderr, "EncodeFrame(), ret: %d, frame index: %d.\n", iEncFrames, iFrameIdx);

@@ -46,6 +46,50 @@ If all went OK you will have the executable and the library:
 * C:\Devel\OpenIGT\OpenIGTLink-build\bin\debug\igtlSocketTest.exe
 * C:\Devel\OpenIGT\OpenIGTLink-build\bin\debug\OpenIGTLink.lib
 
+VideoStreaming
+---------------
+You might want to use OpenIGTLink library to perform video streaming. Currently H264 and VP9 are supported in the OpenIGTLink
+
+* Prerequisites
+
+In the case of H264 build, NASM is needed for assembly code: workable version 2.10.06 or above for 32 bit, nasm can downloaded from http://www.nasm.us/ 
+
+For Mac OSX 64-bit NASM needed to be below version 2.11.08 as nasm 2.11.08 
+will introduce error when using RIP-relative addresses in Mac OSX 64-bit. If you have another NASM version installed, try to unlink the wrong version of NASM, 
+and link to the version to below 2.11.08. Afterwards, check the nasm version with comman "which nasm" and "nasm -v".
+In the case of VPX build, The Yasm assembler is required to build optimized libraries for x86 platforms. 
+Version 0.8.0 or newer is required, except Version 1.0.0.
+
+* Linux / Mac OS X
+
+In the case of Linux and Mac, after installing the required program in the Prerequisites section,
+the build of openigtlink with codec is very straightforward: 
+
+~~~~
+$ cmake -DBUILD_H264:BOOL=ON -DOpenIGTLink_PROTOCOL_VERSION_3:BOOL=ON ../OpenIGTLink
+$ make
+~~~~
+
+or for VP9 configuration:
+
+~~~~
+$ cmake -DBUILD_VPX:BOOL=ON -DOpenIGTLink_PROTOCOL_VERSION_3:BOOL=ON ../OpenIGTLink
+$ make
+~~~~
+
+* Windows Build
+
+In the case of windows build, please refer to the following websites for H264 and VP9 respectively
+
+Useful VP9 build instructions:
+
+https://www.webmproject.org/code/build-prerequisites/
+http://wiki.webmproject.org/ffmpeg/building-with-libvpx
+
+Useful H264 build instructions:
+
+https://github.com/cisco/openh264
+
 Other Platforms
 ---------------
 
