@@ -76,6 +76,7 @@ int main(int argc, char* argv[])
       for (int i = 0; i < 100; i ++)
         {
         std::cout << "Sending string: " << testString[i%N_STRINGS] << std::endl;
+        stringMsg->SetDeviceName("StringMessage");
         stringMsg->SetString(testString[i%N_STRINGS]);
         stringMsg->Pack();
         socket->Send(stringMsg->GetPackPointer(), stringMsg->GetPackSize());
