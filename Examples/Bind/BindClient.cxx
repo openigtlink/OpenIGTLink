@@ -70,33 +70,34 @@ int main(int argc, char* argv[])
 
   igtl::StringMessage::Pointer stringMsg;
   stringMsg = igtl::StringMessage::New();
-  stringMsg->SetDeviceName("StringMessage");
 
   igtl::TransformMessage::Pointer transMsg;
   transMsg = igtl::TransformMessage::New();
-  transMsg->SetDeviceName("Tracker");
 
   //------------------------------------------------------------
   // Allocate Bind message class
 
   igtl::BindMessage::Pointer bindMsg;
   bindMsg = igtl::BindMessage::New();
-  bindMsg->SetDeviceName("BindMessage");
+  
   
   //------------------------------------------------------------
   // loop
   int i = 0;
   while (1)
     {
+    stringMsg->SetDeviceName("StringMessage");
     stringMsg->SetString(testString[i]);
     stringMsg->Pack();
     
+    transMsg->SetDeviceName("Tracker");
     igtl::Matrix4x4 matrix;
     GetRandomTestMatrix(matrix);
     transMsg->SetMatrix(matrix);
     transMsg->Pack();
 
     bindMsg->Init();
+    bindMsg->SetDeviceName("BindMessage");
     bindMsg->AppendChildMessage(stringMsg);
     bindMsg->AppendChildMessage(transMsg);
     bindMsg->Pack();
