@@ -148,6 +148,15 @@ public:
   
   virtual int SetLosslessLink(bool linkMethod);
   
+  /**
+   typedef enum {
+   LOW_COMPLEXITY,             ///< the lowest compleixty,the fastest speed,
+   MEDIUM_COMPLEXITY,          ///< medium complexity, medium speed,medium quality
+   HIGH_COMPLEXITY             ///< high complexity, lowest speed, high quality
+   } ECOMPLEXITY_MODE;
+   */
+  virtual int SetSpeed(int speed);
+  
   virtual int SetRCTaregetBitRate(unsigned int bitRate);
   
   virtual bool GetLosslessLink(){return this->sSvcParam.bIsLosslessLink;};

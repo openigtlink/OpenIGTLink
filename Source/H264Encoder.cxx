@@ -515,6 +515,19 @@ int H264Encoder::SetLosslessLink(bool linkMethod)
   return 0;
 }
 
+int H264Encoder::SetSpeed(int speed)
+{
+  speed = speed>=LOW_COMPLEXITY?speed:LOW_COMPLEXITY;
+  speed = speed<=HIGH_COMPLEXITY?speed:HIGH_COMPLEXITY;
+  this->codecSpeed = speed;
+  this->sSvcParam.iComplexityMode = (ECOMPLEXITY_MODE)this->codecSpeed;
+  if (this->pSVCEncoder->InitializeExt (&sSvcParam)) {
+    fprintf (stderr, "Set speed mode failed.\n");
+    return -1;
+  }
+  return 0;
+}
+
 int H264Encoder::InitializeEncoder()
 {
   //------------------------------------------------------------

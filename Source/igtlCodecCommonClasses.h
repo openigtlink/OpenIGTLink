@@ -95,6 +95,8 @@ public:
     this->picWidth = 0;
     
     this->picHeight = 0;
+    
+    this->codecSpeed = 0;
   };
   ~GenericEncoder(){};
   //void UpdateHashFromFrame (SFrameBSInfo& info, SHA1Context* ctx);
@@ -147,6 +149,8 @@ public:
   
   virtual bool GetLosslessLink(){return this->isLossLessLink;};
   
+  virtual int SetSpeed(int speed){return -1;};
+  
   virtual int SetRCMode(int value){return -1;};
   
   virtual int SetKeyFrameDistance(int frameNum){return -1;};
@@ -173,6 +177,8 @@ protected:
   bool initializationDone;
   
   bool isLossLessLink;
+  
+  int codecSpeed;
   
 };
 

@@ -77,7 +77,7 @@ public:
     SlowestSpeed = -8,
     FastestSpeed = 8
   };
-  int SetSpeed(int speed);
+  virtual int SetSpeed(int speed);
   
   /*!\brief deadline parameter analogous to VPx REALTIME mode. */
   //#define VPX_DL_REALTIME (1)
@@ -105,8 +105,6 @@ private:
   const vpx_codec_cx_pkt_t *pkt;
   
   unsigned long deadlineMode;
-
-  int codecSpeed;
   
 };
 
