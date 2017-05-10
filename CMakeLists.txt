@@ -62,6 +62,24 @@ IF(BUILD_VPX)
   endif(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
 ENDIF()
 
+
+# VPX codec
+OPTION(LINK_X265 "Build the X265 tree." OFF)
+SET(OpenIGTLink_LINK_X265 "0")
+IF(LINK_X265)
+  SET(OpenIGTLink_LINK_X265 "1")
+  set(X265_SOURCE_DIR "${PARENT_DIR}/x265" CACHE STRING "X265 source directory")
+  set(HEVCDE_SOURCE_DIR "${PARENT_DIR}/openHEVC" CACHE STRING "HEVC decoder source directory")
+  include_directories("${X265_SOURCE_DIR}")
+  include_directories("${HEVCDE_SOURCE_DIR}")
+  set(X265_LIBRARY_DIR "${PARENT_DIR}/x265" CACHE STRING "X265 library directory")
+  set(HEVCDE_LIBRARY_DIR "${PARENT_DIR}/openHEVC" CACHE STRING "HEVC decoder library directory")
+  include_directories("${X265_LIBRARY_DIR}")
+  include_directories("${HEVCDE_LIBRARY_DIR}")
+  LINK_DIRECTORIES("${X265_LIBRARY_DIR}")
+  LINK_DIRECTORIES("${HEVCDE_LIBRARY_DIR}")
+ENDIF()
+
 #-----------------------------------------------------------------------------
 # OpenIGTLink build configuration options.
 

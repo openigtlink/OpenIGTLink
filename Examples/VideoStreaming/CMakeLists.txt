@@ -17,3 +17,9 @@ target_link_libraries( VideoStreamServer OpenIGTLink)
 
 add_executable( CodecEvaluation CodecEvaluation.cxx)
 target_link_libraries(CodecEvaluation OpenIGTLink)
+
+add_executable( X265EncodeTest X265EncodeTest.cxx)
+target_link_libraries(X265EncodeTest OpenIGTLink)
+
+add_executable( X265DecodeTest X265DecodeTest.cxx)
+target_link_libraries(X265DecodeTest OpenIGTLink )
