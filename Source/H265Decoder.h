@@ -192,13 +192,15 @@ namespace H265DecoderNameSpace
     
     int ReconstructDecodedPic(TComPic* picTop, igtl_uint8* outputFrame);
     
+    TDecTop* pDecoder;
+    
+    void xWriteOutput( TComList<TComPic*>* pcListPic, UInt tId );
+    
+    TComList<TComPic*>* pcListPic;
+    
   private:
     
     virtual void ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[2], igtl_uint8 *outputFrame);
-    
-    TDecTop* pDecoder;
-    
-    TComList<TComPic*>* pcListPic;
     
     InputByteStreamNoFile* bytestream;
     

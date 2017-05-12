@@ -46,7 +46,7 @@ static void GetNALUnitFromByteStream(
     this->pDecoder = new TDecTop();
     this->pDecoder->create();
     this->pDecoder->init();
-    pDecoder->setDecodedPictureHashSEIEnabled(0);
+    pDecoder->setDecodedPictureHashSEIEnabled(1);
     this->deviceName = "";
     pcListPic = NULL;
     bytestream = new InputByteStreamNoFile();
@@ -139,7 +139,7 @@ static void GetNALUnitFromByteStream(
 
   int H265Decoder::DecodeBitStreamIntoFrame(unsigned char* kpH265BitStream,igtl_uint8* outputFrame, igtl_uint32 dimensions[2], igtl_uint64& iStreamSize) {
     int m_iSkipFrame = 0;
-    int m_iPOCLastDisplay = m_iSkipFrame;
+    int m_iPOCLastDisplay = -MAX_INT;
     if(previousStreamSize)
     {
       bytestream->PrepareStreamWithProcessedNal(kpH265BitStream, &(previousStream[0]), iStreamSize, previousStreamSize);
@@ -187,10 +187,7 @@ static void GetNALUnitFromByteStream(
         previousStream = new igtl_uint8[previousStreamSize];
         bytestream->resetFutureBytes();
         memcpy(&previousStream[0], &nalu.getBitstream().getFifo()[0],  previousStreamSize);
-        if(pcListPic->size()>=5)
-        {
-          pcListPic->popFront();
-        }
+        this->xWriteOutput(pcListPic,nalu.m_temporalId);
         return iRet;
       }
     }
@@ -269,3 +266,121 @@ static void GetNALUnitFromByteStream(
     }
     return true;
   }
+
+void H265Decoder::xWriteOutput( TComList<TComPic*>* pcListPic, UInt tId )
+{
+  if (pcListPic->empty())
+  {
+    return;
+  }
+  TComList<TComPic*>::iterator iterPic   = pcListPic->begin();
+  int m_iPOCLastDisplay = -MAX_INT;
+  int numPicsNotYetDisplayed = 0;
+  Int dpbFullness = 0;
+  const TComSPS* activeSPS = &(pcListPic->front()->getPicSym()->getSPS());
+  UInt numReorderPicsHighestTid;
+  UInt maxDecPicBufferingHighestTid;
+  UInt maxNrSublayers = activeSPS->getMaxTLayers();
+  numReorderPicsHighestTid = activeSPS->getNumReorderPics(maxNrSublayers-1);
+  maxDecPicBufferingHighestTid =  activeSPS->getMaxDecPicBuffering(maxNrSublayers-1);
+  
+  while (iterPic != pcListPic->end())
+  {
+    TComPic* pcPic = *(iterPic);
+    if(pcPic->getOutputMark() && pcPic->getPOC() > m_iPOCLastDisplay)
+    {
+      numPicsNotYetDisplayed++;
+      dpbFullness++;
+    }
+    else if(pcPic->getSlice( 0 )->isReferenced())
+    {
+      dpbFullness++;
+    }
+    iterPic++;
+  }
+  
+  iterPic = pcListPic->begin();
+  
+  if (numPicsNotYetDisplayed>2)
+  {
+    iterPic++;
+  }
+  
+  TComPic* pcPic = *(iterPic);
+  if (numPicsNotYetDisplayed>2 && pcPic->isField()) //Field Decoding
+  {
+    TComList<TComPic*>::iterator endPic   = pcListPic->end();
+    endPic--;
+    iterPic   = pcListPic->begin();
+    while (iterPic != endPic)
+    {
+      TComPic* pcPicTop = *(iterPic);
+      iterPic++;
+      TComPic* pcPicBottom = *(iterPic);
+      
+      if ( pcPicTop->getOutputMark() && pcPicBottom->getOutputMark() &&
+          (numPicsNotYetDisplayed >  numReorderPicsHighestTid || dpbFullness > maxDecPicBufferingHighestTid) &&
+          (!(pcPicTop->getPOC()%2) && pcPicBottom->getPOC() == pcPicTop->getPOC()+1) &&
+          (pcPicTop->getPOC() == m_iPOCLastDisplay+1 || m_iPOCLastDisplay < 0))
+      {
+        // write to file
+        numPicsNotYetDisplayed = numPicsNotYetDisplayed-2;
+        // update POC of display order
+        m_iPOCLastDisplay = pcPicBottom->getPOC();
+        
+        // erase non-referenced picture in the reference picture list after display
+        if ( !pcPicTop->getSlice(0)->isReferenced() && pcPicTop->getReconMark() == true )
+        {
+          pcPicTop->setReconMark(false);
+          
+          // mark it should be extended later
+          pcPicTop->getPicYuvRec()->setBorderExtension( false );
+        }
+        if ( !pcPicBottom->getSlice(0)->isReferenced() && pcPicBottom->getReconMark() == true )
+        {
+          pcPicBottom->setReconMark(false);
+          
+          // mark it should be extended later
+          pcPicBottom->getPicYuvRec()->setBorderExtension( false );
+        }
+        pcPicTop->setOutputMark(false);
+        pcPicBottom->setOutputMark(false);
+      }
+    }
+  }
+  else if (!pcPic->isField()) //Frame Decoding
+  {
+    iterPic = pcListPic->begin();
+    
+    while (iterPic != pcListPic->end())
+    {
+      pcPic = *(iterPic);
+      
+      if(pcPic->getOutputMark() && pcPic->getPOC() > m_iPOCLastDisplay &&
+         (numPicsNotYetDisplayed >  numReorderPicsHighestTid || dpbFullness > maxDecPicBufferingHighestTid))
+      {
+        // write to file
+        numPicsNotYetDisplayed--;
+        if(pcPic->getSlice(0)->isReferenced() == false)
+        {
+          dpbFullness--;
+        }
+      
+        // update POC of display order
+        m_iPOCLastDisplay = pcPic->getPOC();
+        
+        // erase non-referenced picture in the reference picture list after display
+        if ( !pcPic->getSlice(0)->isReferenced() && pcPic->getReconMark() == true )
+        {
+          pcPic->setReconMark(false);
+          
+          // mark it should be extended later
+          pcPic->getPicYuvRec()->setBorderExtension( false );
+        }
+        pcPic->setOutputMark(false);
+      }
+      
+      iterPic++;
+    }
+  }
+}

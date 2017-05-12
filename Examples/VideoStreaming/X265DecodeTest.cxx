@@ -21,6 +21,124 @@
 #include "TLibDecoder/TDecTop.h"
 #include "H265Decoder.h"
 
+void xWriteOutput( TComList<TComPic*>* pcListPic, UInt tId )
+{
+  if (pcListPic->empty())
+  {
+    return;
+  }
+  TComList<TComPic*>::iterator iterPic   = pcListPic->begin();
+  int m_iPOCLastDisplay = -MAX_INT;
+  int numPicsNotYetDisplayed = 0;
+  Int dpbFullness = 0;
+  const TComSPS* activeSPS = &(pcListPic->front()->getPicSym()->getSPS());
+  UInt numReorderPicsHighestTid;
+  UInt maxDecPicBufferingHighestTid;
+  UInt maxNrSublayers = activeSPS->getMaxTLayers();
+  numReorderPicsHighestTid = activeSPS->getNumReorderPics(maxNrSublayers-1);
+  maxDecPicBufferingHighestTid =  activeSPS->getMaxDecPicBuffering(maxNrSublayers-1);
+  
+  while (iterPic != pcListPic->end())
+  {
+    TComPic* pcPic = *(iterPic);
+    if(pcPic->getOutputMark() && pcPic->getPOC() > m_iPOCLastDisplay)
+    {
+      numPicsNotYetDisplayed++;
+      dpbFullness++;
+    }
+    else if(pcPic->getSlice( 0 )->isReferenced())
+    {
+      dpbFullness++;
+    }
+    iterPic++;
+  }
+  
+  iterPic = pcListPic->begin();
+  
+  if (numPicsNotYetDisplayed>2)
+  {
+    iterPic++;
+  }
+  
+  TComPic* pcPic = *(iterPic);
+  if (numPicsNotYetDisplayed>2 && pcPic->isField()) //Field Decoding
+  {
+    TComList<TComPic*>::iterator endPic   = pcListPic->end();
+    endPic--;
+    iterPic   = pcListPic->begin();
+    while (iterPic != endPic)
+    {
+      TComPic* pcPicTop = *(iterPic);
+      iterPic++;
+      TComPic* pcPicBottom = *(iterPic);
+      
+      if ( pcPicTop->getOutputMark() && pcPicBottom->getOutputMark() &&
+          (numPicsNotYetDisplayed >  numReorderPicsHighestTid || dpbFullness > maxDecPicBufferingHighestTid) &&
+          (!(pcPicTop->getPOC()%2) && pcPicBottom->getPOC() == pcPicTop->getPOC()+1) &&
+          (pcPicTop->getPOC() == m_iPOCLastDisplay+1 || m_iPOCLastDisplay < 0))
+      {
+        // write to file
+        numPicsNotYetDisplayed = numPicsNotYetDisplayed-2;
+        // update POC of display order
+        m_iPOCLastDisplay = pcPicBottom->getPOC();
+        
+        // erase non-referenced picture in the reference picture list after display
+        if ( !pcPicTop->getSlice(0)->isReferenced() && pcPicTop->getReconMark() == true )
+        {
+          pcPicTop->setReconMark(false);
+          
+          // mark it should be extended later
+          pcPicTop->getPicYuvRec()->setBorderExtension( false );
+        }
+        if ( !pcPicBottom->getSlice(0)->isReferenced() && pcPicBottom->getReconMark() == true )
+        {
+          pcPicBottom->setReconMark(false);
+          
+          // mark it should be extended later
+          pcPicBottom->getPicYuvRec()->setBorderExtension( false );
+        }
+        pcPicTop->setOutputMark(false);
+        pcPicBottom->setOutputMark(false);
+      }
+    }
+  }
+  else if (!pcPic->isField()) //Frame Decoding
+  {
+    iterPic = pcListPic->begin();
+    
+    while (iterPic != pcListPic->end())
+    {
+      pcPic = *(iterPic);
+      
+      if(pcPic->getOutputMark() && pcPic->getPOC() > m_iPOCLastDisplay &&
+         (numPicsNotYetDisplayed >  numReorderPicsHighestTid || dpbFullness > maxDecPicBufferingHighestTid))
+      {
+        // write to file
+        numPicsNotYetDisplayed--;
+        if(pcPic->getSlice(0)->isReferenced() == false)
+        {
+          dpbFullness--;
+        }
+        
+        // update POC of display order
+        m_iPOCLastDisplay = pcPic->getPOC();
+        
+        // erase non-referenced picture in the reference picture list after display
+        if ( !pcPic->getSlice(0)->isReferenced() && pcPic->getReconMark() == true )
+        {
+          pcPic->setReconMark(false);
+          
+          // mark it should be extended later
+          pcPic->getPicYuvRec()->setBorderExtension( false );
+        }
+        pcPic->setOutputMark(false);
+      }
+      
+      iterPic++;
+    }
+  }
+}
+
 static void GetNALUnitFromByteStream(
                                      InputByteStreamNoFile& bs,
                                      vector<uint8_t>& nalUnit)
@@ -71,7 +189,7 @@ static void GetNALUnitFromByteStream(
 void video_decode_example(const char* fileName)
 {
   Int                 poc;
-  TComList<TComPic*>* pcListPic = NULL;
+  //TComList<TComPic*>* pcListPic = NULL;
   ifstream bitstreamFile(fileName, ifstream::in | ifstream::binary);
   if (!bitstreamFile)
   {
@@ -80,11 +198,11 @@ void video_decode_example(const char* fileName)
   }
   
   InputByteStream bytestream(bitstreamFile);
-  InputByteStreamNoFile bytestreamLocal = *(new InputByteStreamNoFile());
-  FILE* inputFile = fopen(fileName,"rb");
-  igtl_uint8 *bitStream = new igtl_uint8[300000];
-  fread(bitStream,1,300000,inputFile);
-  bytestreamLocal.SetByteStream(bitStream, 300000);
+  //InputByteStreamNoFile bytestreamLocal = *(new InputByteStreamNoFile());
+  //FILE* inputFile = fopen(fileName,"rb");
+  //igtl_uint8 *bitStream = new igtl_uint8[300000];
+  //fread(bitStream,1,300000,inputFile);
+  //bytestreamLocal.SetByteStream(bitStream, 300000);
   std::string   m_outputDecodedSEIMessagesFilename;
   std::ofstream                   m_seiMessageFileStream;
   if (!m_outputDecodedSEIMessagesFilename.empty() && m_outputDecodedSEIMessagesFilename!="-")
@@ -102,8 +220,9 @@ void video_decode_example(const char* fileName)
   m_cTDecTop.create();
   m_cTDecTop.init();
   m_cTDecTop.setDecodedPictureHashSEIEnabled(0);
+  H265Decoder* decoder = new H265Decoder();
   int m_iSkipFrame = 0;
-  int m_iPOCLastDisplay = m_iSkipFrame;      // set the last displayed POC correctly for skip forward.
+  int m_iPOCLastDisplay = -MAX_INT;      // set the last displayed POC correctly for skip forward.
   int m_iMaxTemporalLayer = 1;
   // main decoder loop
   Bool loopFiltered = false;
@@ -125,7 +244,7 @@ void video_decode_example(const char* fileName)
     InputNALUnit nalu;
     InputNALUnit nalu2;
     byteStreamNALUnit(bytestream, nalu.getBitstream().getFifo(), stats);
-    GetNALUnitFromByteStream(bytestreamLocal, nalu2.getBitstream().getFifo());
+    //GetNALUnitFromByteStream(bytestreamLocal, nalu2.getBitstream().getFifo());
     
     // call actual decoding function
     Bool bNewPicture = false;
@@ -141,18 +260,18 @@ void video_decode_example(const char* fileName)
     else
     {
       read(nalu);
-      read(nalu2);
-      std::cerr<<(int)bitstreamFile.tellg()-location<<" "<<nalu.getBitstream().getFifo().size()<<" "<<bytestreamLocal.GetPos()<<std::endl;
+      //read(nalu2);
+      std::cerr<<(int)bitstreamFile.tellg()-location<<" "<<nalu.getBitstream().getFifo().size()<<std::endl;
       if( (m_iMaxTemporalLayer >= 0 && nalu.m_temporalId > m_iMaxTemporalLayer) /*|| !isNaluWithinTargetDecLayerIdSet(&nalu)  */)
       {
         bNewPicture = false;
       }
       else
       {
-        bNewPicture = m_cTDecTop.decode(nalu2, m_iSkipFrame, m_iPOCLastDisplay);
+        //bNewPicture = m_cTDecTop.decode(nalu2, m_iSkipFrame, m_iPOCLastDisplay);
+        bNewPicture = decoder->pDecoder->decode(nalu, m_iSkipFrame, m_iPOCLastDisplay);
         if (bNewPicture)
         {
-          streampos locationtest = bitstreamFile.tellg();
           bitstreamFile.clear();
           /* location points to the current nalunit payload[1] due to the
            * need for the annexB parser to read three extra bytes.
@@ -164,8 +283,8 @@ void video_decode_example(const char* fileName)
           TComCodingStatistics::SetStatistics(backupStats);
 #else
           bitstreamFile.seekg(location-streamoff(3));
-          bytestreamLocal.SetPos((int)location-3);
-          bytestreamLocal.resetFutureBytes();
+          //bytestreamLocal.SetPos((int)location-3);
+          //bytestreamLocal.resetFutureBytes();
           bytestream.reset();
 #endif
         }
@@ -173,54 +292,20 @@ void video_decode_example(const char* fileName)
     }
     
     if ( (bNewPicture || !bitstreamFile || nalu.m_nalUnitType == NAL_UNIT_EOS) &&
-        !m_cTDecTop.getFirstSliceInSequence () )
+        !decoder->pDecoder->getFirstSliceInSequence () )
     {
       if (!loopFiltered || bitstreamFile)
       {
-        m_cTDecTop.executeLoopFilters(poc, pcListPic);
+        decoder->pDecoder->executeLoopFilters(poc, decoder->pcListPic);
       }
-      loopFiltered = (nalu.m_nalUnitType == NAL_UNIT_EOS);
-      if (nalu.m_nalUnitType == NAL_UNIT_EOS)
-      {
-        m_cTDecTop.setFirstSliceInSequence(true);
-      }
-    }
-    else if ( (bNewPicture || !bitstreamFile || nalu.m_nalUnitType == NAL_UNIT_EOS ) &&
-             m_cTDecTop.getFirstSliceInSequence () )
-    {
-      m_cTDecTop.setFirstSliceInPicture (true);
     }
     
-    if( pcListPic )
+    if( decoder->pcListPic )
     {
       // write reconstruction to file
       if( bNewPicture )
       {
-        //m_cTDecTop.xWriteOutput( pcListPic, nalu.m_temporalId );
-      }
-      if ( (bNewPicture || nalu.m_nalUnitType == NAL_UNIT_CODED_SLICE_CRA) && m_cTDecTop.getNoOutputPriorPicsFlag() )
-      {
-        m_cTDecTop.checkNoOutputPriorPics( pcListPic );
-        m_cTDecTop.setNoOutputPriorPicsFlag (false);
-      }
-      if ( bNewPicture &&
-          (   nalu.m_nalUnitType == NAL_UNIT_CODED_SLICE_IDR_W_RADL
-           || nalu.m_nalUnitType == NAL_UNIT_CODED_SLICE_IDR_N_LP
-           || nalu.m_nalUnitType == NAL_UNIT_CODED_SLICE_BLA_N_LP
-           || nalu.m_nalUnitType == NAL_UNIT_CODED_SLICE_BLA_W_RADL
-           || nalu.m_nalUnitType == NAL_UNIT_CODED_SLICE_BLA_W_LP ) )
-      {
-        //xFlushOutput( pcListPic );
-      }
-      if (nalu.m_nalUnitType == NAL_UNIT_EOS)
-      {
-        //xWriteOutput( pcListPic, nalu.m_temporalId );
-        m_cTDecTop.setFirstSliceInPicture (false);
-      }
-      // write reconstruction to file -- for additional bumping as defined in C.5.2.3
-      if(!bNewPicture && nalu.m_nalUnitType >= NAL_UNIT_CODED_SLICE_TRAIL_N && nalu.m_nalUnitType <= NAL_UNIT_RESERVED_VCL31)
-      {
-        //xWriteOutput( pcListPic, nalu.m_temporalId );
+        decoder->xWriteOutput( decoder->pcListPic, nalu.m_temporalId );
       }
     }
   }
