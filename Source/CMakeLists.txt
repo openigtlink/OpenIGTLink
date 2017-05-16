@@ -20,19 +20,11 @@ IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
   ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND LINK_X265)
     SET(LINK_X265_LIBRARY optimized ${X265_LIBRARY_DIR}/x265.lib debug ${X265_LIBRARY_DIR}/x265.lib)
-    SET(LINK_HEVCDE_LIBRARY1 optimized ${HEVCDE_LIBRARY_DIR}/TLibDecoderStatic.lib debug ${HEVCDE_LIBRARY_DIR}/TLibDecoderStaticd.lib)
-    SET(LINK_HEVCDE_LIBRARY2 optimized ${HEVCDE_LIBRARY_DIR}/TAppCommonStaticd.lib debug ${HEVCDE_LIBRARY_DIR}/TAppCommonStaticd.lib)
-    SET(LINK_HEVCDE_LIBRARY3 optimized ${HEVCDE_LIBRARY_DIR}/TLibCommonStaticd.lib debug ${HEVCDE_LIBRARY_DIR}/TLibCommonStaticd.lib)
-    SET(LINK_HEVCDE_LIBRARY4 optimized ${HEVCDE_LIBRARY_DIR}/TLibDecoderAnalyserStaticd.lib debug ${HEVCDE_LIBRARY_DIR}/TLibDecoderAnalyserStaticd.lib)
-    SET(LINK_HEVCDE_LIBRARY5 optimized ${HEVCDE_LIBRARY_DIR}/TLibVideoIOStaticd.lib debug ${HEVCDE_LIBRARY_DIR}/TLibVideoIOStaticd.lib)
+    SET(LINK_LIBDE265_LIBRARY ${LIBDE265_LIBRARY_DIR}/libde265/libde265.dylib)
     SET(LINK_LIBS
       ${LINK_LIBS}
       ${LINK_X265_LIBRARY}
-      ${LINK_HEVCDE_LIBRARY1}
-      ${LINK_HEVCDE_LIBRARY2}
-      ${LINK_HEVCDE_LIBRARY3}
-      ${LINK_HEVCDE_LIBRARY4}
-      ${LINK_HEVCDE_LIBRARY5}
+      ${LINK_LIBDE265_LIBRARY}
     )
   ENDIF()
   #For debug under win32 system, the run time check mode should be set to /RTCu for multithreading purpose
@@ -63,19 +55,11 @@ ELSE() # for POSIX-compatible OSs
   ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND LINK_X265)
     SET(LINK_X265_LIBRARY optimized ${X265_LIBRARY_DIR}/libx265.a debug ${X265_LIBRARY_DIR}/libx265.a)
-    SET(LINK_HEVCDE_LIBRARY1 optimized ${HEVCDE_LIBRARY_DIR}/libTLibDecoderStatic.a debug ${HEVCDE_LIBRARY_DIR}/libTLibDecoderStaticd.a)
-    SET(LINK_HEVCDE_LIBRARY2 optimized ${HEVCDE_LIBRARY_DIR}/libTAppCommonStaticd.a debug ${HEVCDE_LIBRARY_DIR}/libTAppCommonStaticd.a)
-    SET(LINK_HEVCDE_LIBRARY3 optimized ${HEVCDE_LIBRARY_DIR}/libTLibCommonStaticd.a debug ${HEVCDE_LIBRARY_DIR}/libTLibCommonStaticd.a)
-    SET(LINK_HEVCDE_LIBRARY4 optimized ${HEVCDE_LIBRARY_DIR}/libTLibDecoderAnalyserStaticd.a debug ${HEVCDE_LIBRARY_DIR}/libTLibDecoderAnalyserStaticd.a)
-    SET(LINK_HEVCDE_LIBRARY5 optimized ${HEVCDE_LIBRARY_DIR}/libTLibVideoIOStaticd.a debug ${HEVCDE_LIBRARY_DIR}/libTLibVideoIOStaticd.a)
+    SET(LINK_LIBDE265_LIBRARY ${LIBDE265_LIBRARY_DIR}/libde265/libde265.dylib)
     SET(LINK_LIBS
       ${LINK_LIBS}
       ${LINK_X265_LIBRARY}
-      ${LINK_HEVCDE_LIBRARY1}
-      ${LINK_HEVCDE_LIBRARY2}
-      ${LINK_HEVCDE_LIBRARY3}
-      ${LINK_HEVCDE_LIBRARY4}
-      ${LINK_HEVCDE_LIBRARY5}
+      ${LINK_LIBDE265_LIBRARY}
     )
   ENDIF()
   IF(OpenIGTLink_PLATFORM_SUNOS)
@@ -126,9 +110,8 @@ IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND LINK_X265)
     ${OpenIGTLink_INCLUDE_DIRS}
     "${X265_SOURCE_DIR}"
     "${X265_LIBRARY_DIR}"
-    "${HEVCDE_SOURCE_DIR}"
-    "${HEVCDE_SOURCE_DIR}/Lib"
-    "${HEVCDE_LIBRARY_DIR}"
+    "${LIBDE265_SOURCE_DIR}"
+    "${LIBDE265_LIBRARY_DIR}"
   )
 ENDIF()
 

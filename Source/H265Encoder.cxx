@@ -166,10 +166,8 @@
   {
     this->sSvcParam->sourceWidth = Width;
     this->sSvcParam->sourceHeight = Height;
-    if (x265_encoder_reconfig(this->pSVCEncoder, sSvcParam)<0) {
-      fprintf (stderr, "parse svc parameter config file failed.\n");
-      return -1;
-    }
+    pSVCEncoder=x265_encoder_open(this->sSvcParam);
+    H265SrcPicture = H265EncoderNameSpace::x265_picture_alloc();
     x265_picture_init(sSvcParam,H265SrcPicture);
     this->initializationDone = true;
     return 0;
