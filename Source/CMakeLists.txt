@@ -20,11 +20,11 @@ IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
   ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND LINK_X265)
     SET(LINK_X265_LIBRARY optimized ${X265_LIBRARY_DIR}/x265.lib debug ${X265_LIBRARY_DIR}/x265.lib)
-    SET(LINK_LIBDE265_LIBRARY ${LIBDE265_LIBRARY_DIR}/libde265/libde265.dylib)
+    SET(LINK_OPENHEVC_LIBRARY ${OPENHEVC_LIBRARY_DIR}/LibOpenHevcWrapper.lib)
     SET(LINK_LIBS
       ${LINK_LIBS}
       ${LINK_X265_LIBRARY}
-      ${LINK_LIBDE265_LIBRARY}
+      ${LINK_OPENHEVC_LIBRARY}
     )
   ENDIF()
   #For debug under win32 system, the run time check mode should be set to /RTCu for multithreading purpose
@@ -55,11 +55,11 @@ ELSE() # for POSIX-compatible OSs
   ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND LINK_X265)
     SET(LINK_X265_LIBRARY optimized ${X265_LIBRARY_DIR}/libx265.a debug ${X265_LIBRARY_DIR}/libx265.a)
-    SET(LINK_LIBDE265_LIBRARY ${LIBDE265_LIBRARY_DIR}/libde265/libde265.dylib)
+    SET(LINK_OPENHEVC_LIBRARY ${OPENHEVC_LIBRARY_DIR}/libLibOpenHevcWrapper.a)
     SET(LINK_LIBS
       ${LINK_LIBS}
       ${LINK_X265_LIBRARY}
-      ${LINK_LIBDE265_LIBRARY}
+      ${LINK_OPENHEVC_LIBRARY}
     )
   ENDIF()
   IF(OpenIGTLink_PLATFORM_SUNOS)
@@ -110,8 +110,8 @@ IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND LINK_X265)
     ${OpenIGTLink_INCLUDE_DIRS}
     "${X265_SOURCE_DIR}"
     "${X265_LIBRARY_DIR}"
-    "${LIBDE265_SOURCE_DIR}"
-    "${LIBDE265_LIBRARY_DIR}"
+    "${OPENHEVC_SOURCE_DIR}"
+    "${OPENHEVC_LIBRARY_DIR}"
   )
 ENDIF()
 

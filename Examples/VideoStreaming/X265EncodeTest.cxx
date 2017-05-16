@@ -78,11 +78,11 @@ float compressionRate = 0.0;
 
 int Width = 1280;
 int Height = 720;
-std::string testFileName("/Users/longquanchen/Desktop/Slicer/Slicer-Build/OpenIGTLink-xcodebuild/OpenH264/res/Cisco_Absolute_Power_1280x720_30fps.yuv");
+std::string testFileName("/Users/longquanchen/Desktop/Github/Slicer-build/OpenIGTLink-XcodeBuild/OpenH264/res/Cisco_Absolute_Power_1280x720_30fps.yuv");
 std::string evalFileName("EvalFile.txt");
 FILE* pEval = NULL;
 int startIndex = 0;
-int  inputFrameNum = 15;
+int  inputFrameNum = 100;
 
 template <typename T>
 std::string ToString(T variable)
@@ -281,8 +281,8 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
           if(iRet>=0)
           {
             totalFrame ++;
-            //igtl_uint32 dimension[2] = {Width, Height};
-            //igtl_uint32 stride[2] = {Width, Width/2};
+            igtl_uint32 dimension[2] = {Width, Height};
+            igtl_uint32 stride[2] = {Width, Width/2};
             //FILE* outFile = fopen("HDVideo.yuv", "ab");
             //videoStreamDecoder->Write2File(outFile, pDecodedPic->data, dimension, stride);
             //fclose(outFile);
@@ -356,7 +356,7 @@ void X265SpeedEvaluation()
       {
         videoStreamDecoder = new H265Decoder();
         videoStreamEncoder = new H265Encoder();
-        videoStreamEncoder->SetRCTaregetBitRate((int)(1280*720/100*8*20*j));
+        videoStreamEncoder->SetRCTaregetBitRate((int)(Width*Height/100*8*20*j));
         videoStreamEncoder->InitializeEncoder();
         videoStreamEncoder->SetSpeed(speed);
         TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);
