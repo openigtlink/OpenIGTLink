@@ -38,14 +38,6 @@
     H265Decoder();
     ~H265Decoder();
     
-    typedef struct OpenHevcWrapperContext {
-      AVCodec *codec;
-      AVCodecContext *c;
-      AVFrame *picture;
-      AVPacket avpkt;
-      AVCodecParserContext *parser;
-    } OpenHevcWrapperContext;
-    
     typedef struct Info {
       int NbFrame;
       int Poc;
@@ -63,21 +55,11 @@
     
     virtual void ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[2], igtl_uint8 *outputFrame);
     
-    int ReconstructFrame(OpenHevc_Frame *openHevcFrame,igtl_uint8* outputFrame);
-    
-    int get_next_nal(FILE* inpf, unsigned char* Buf);
-    
-    int find_start_code (unsigned char *Buf, int zeros_in_startcode);
-    
-    AVFormatContext *pFormatCtx;
-    
-    AVPacket*        packet;
+    int ReconstructFrame(OpenHevc_Frame_cpy *openHevcFrame,igtl_uint8* outputFrame);
     
     OpenHevc_Handle    openHevcHandle;
     
-    OpenHevc_Frame     openHevcFrame;
-    
-    OpenHevc_Frame_cpy openHevcFrameCpy;
+    OpenHevc_Frame_cpy     openHevcFrame;
     
     int nb_pthreads;
     

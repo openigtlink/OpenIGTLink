@@ -76,9 +76,9 @@ int totalDecodeTime =0;
 double ssim = 0.0;
 float compressionRate = 0.0;
 
-int Width = 1280;
-int Height = 720;
-std::string testFileName("/Users/longquanchen/Desktop/Github/Slicer-build/OpenIGTLink-XcodeBuild/OpenH264/res/Cisco_Absolute_Power_1280x720_30fps.yuv");
+int Width = 1920;
+int Height = 1080;
+std::string testFileName("/Users/longquanchen/Documents/VideoStreaming/RoboticHysterectomy.yuv");
 std::string evalFileName("EvalFile.txt");
 FILE* pEval = NULL;
 int startIndex = 0;
@@ -281,8 +281,8 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
           if(iRet>=0)
           {
             totalFrame ++;
-            igtl_uint32 dimension[2] = {Width, Height};
-            igtl_uint32 stride[2] = {Width, Width/2};
+            //igtl_uint32 dimension[2] = {Width, Height};
+            //igtl_uint32 stride[2] = {Width, Width/2};
             //FILE* outFile = fopen("HDVideo.yuv", "ab");
             //videoStreamDecoder->Write2File(outFile, pDecodedPic->data, dimension, stride);
             //fclose(outFile);
@@ -335,7 +335,7 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
 
 void X265SpeedEvaluation()
 {
-  for (int speed = 0; speed<=8;speed=speed+2)
+  for (int speed = 1; speed<=9;speed=speed+2)
   {
     for (int i = 0; i<22; i=i+2)
     {

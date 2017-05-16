@@ -17,20 +17,16 @@
     this->nb_pthreads = 4;
     openHevcHandle = libOpenHevcInit(this->nb_pthreads, FF_THREAD_SLICE/*, pFormatCtx*/);
     libOpenHevcSetCheckMD5(openHevcHandle, false);
-    //av_register_all();
-    //pFormatCtx = avformat_alloc_context();
-    libOpenHevcSetDebugMode(openHevcHandle, 1);
+    libOpenHevcSetDebugMode(openHevcHandle, 0);
     libOpenHevcStartDecoder(openHevcHandle);
-    //avformat_open_input(&pFormatCtx, filename, NULL, NULL)!=0)
-    //av_read_frame(pFormatCtx, &packet)<0)
-    openHevcFrameCpy.pvY = NULL;
-    openHevcFrameCpy.pvU = NULL;
-    openHevcFrameCpy.pvV = NULL;
+    openHevcFrame.pvY = NULL;
+    openHevcFrame.pvU = NULL;
+    openHevcFrame.pvV = NULL;
   }
 
   H265Decoder::~H265Decoder()
   {
-    
+    libOpenHevcClose(openHevcHandle);
   }
 
   void H265Decoder::ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[2], igtl_uint8 *outputFrame)
@@ -97,50 +93,32 @@
 
   int H265Decoder::DecodeBitStreamIntoFrame(unsigned char* kpH265BitStream,igtl_uint8* outputFrame, igtl_uint32 dimensions[2], igtl_uint64& iStreamSize)
   {
-    /*packet->data = NULL;
-    packet->size = 0;
-    av_init_packet(packet);
-    packet->data = kpH265BitStream;
-    packet->size = iStreamSize;*/
     static int timePts = 0;
     timePts++;
     int got_picture = libOpenHevcDecode(openHevcHandle, kpH265BitStream, iStreamSize, timePts);
     if (got_picture > 0) {
-      libOpenHevcGetOutput(openHevcHandle, 1, &openHevcFrame);
-      FILE *fout  = fopen("HDVideo.yuv", "ab");
-      if (fout) {
-        
-        int format = openHevcFrame.frameInfo.chromat_format == YUV420 ? 1 : 0;
-        libOpenHevcGetPictureInfo(openHevcHandle, &openHevcFrameCpy.frameInfo);
-        
-        if(openHevcFrameCpy.pvY==NULL) {
-          openHevcFrameCpy.pvY = calloc (openHevcFrameCpy.frameInfo.nYPitch * openHevcFrameCpy.frameInfo.nHeight, sizeof(unsigned char));
-          openHevcFrameCpy.pvU = calloc (openHevcFrameCpy.frameInfo.nUPitch * openHevcFrameCpy.frameInfo.nHeight >> format, sizeof(unsigned char));
-          openHevcFrameCpy.pvV = calloc (openHevcFrameCpy.frameInfo.nVPitch * openHevcFrameCpy.frameInfo.nHeight >> format, sizeof(unsigned char));
-        }
-        format = openHevcFrameCpy.frameInfo.chromat_format == YUV420 ? 1 : 0;
-        libOpenHevcGetOutputCpy(openHevcHandle, 1, &openHevcFrameCpy);
-        fwrite( openHevcFrameCpy.pvY , sizeof(uint8_t) , openHevcFrameCpy.frameInfo.nYPitch * openHevcFrameCpy.frameInfo.nHeight, fout);
-        fwrite( openHevcFrameCpy.pvU , sizeof(uint8_t) , openHevcFrameCpy.frameInfo.nUPitch * openHevcFrameCpy.frameInfo.nHeight >> format, fout);
-        fwrite( openHevcFrameCpy.pvV , sizeof(uint8_t) , openHevcFrameCpy.frameInfo.nVPitch * openHevcFrameCpy.frameInfo.nHeight >> format, fout);
-        fclose(fout);
-        /*if(openHevcFrame.pvY) {
+      libOpenHevcGetPictureInfo(openHevcHandle, &openHevcFrame.frameInfo);
+      if ((dimensions[0] != openHevcFrame.frameInfo.nWidth) || (dimensions[1] != openHevcFrame.frameInfo.nHeight) || openHevcFrame.pvY==NULL) {
+        openHevcFrame.frameInfo.nWidth = dimensions[0];
+        openHevcFrame.frameInfo.nHeight = dimensions[1];
+        if(openHevcFrame.pvY) {
           free(openHevcFrame.pvY);
           free(openHevcFrame.pvU);
           free(openHevcFrame.pvV);
         }
-        *(openHevcFrame.pvY) = calloc (openHevcFrame.frameInfo.nYPitch * openHevcFrame.frameInfo.nHeight, sizeof(unsigned char));
-        *(openHevcFrame.pvU) = calloc (openHevcFrame.frameInfo.nUPitch * openHevcFrame.frameInfo.nHeight >> format, sizeof(unsigned char));
-        *(openHevcFrame.pvV) = calloc (openHevcFrame.frameInfo.nVPitch * openHevcFrame.frameInfo.nHeight >> format, sizeof(unsigned char));*/
+        int format = openHevcFrame.frameInfo.chromat_format == YUV420 ? 1 : 0;
+        openHevcFrame.pvY = calloc (openHevcFrame.frameInfo.nYPitch * openHevcFrame.frameInfo.nHeight, sizeof(unsigned char));
+        openHevcFrame.pvU = calloc (openHevcFrame.frameInfo.nUPitch * openHevcFrame.frameInfo.nHeight >> format, sizeof(unsigned char));
+        openHevcFrame.pvV = calloc (openHevcFrame.frameInfo.nVPitch * openHevcFrame.frameInfo.nHeight >> format, sizeof(unsigned char));
       }
-      
-      //ReconstructFrame(&openHevcFrame, outputFrame);
+      libOpenHevcGetOutputCpy(openHevcHandle, 1, &openHevcFrame);
+      ReconstructFrame(&openHevcFrame, outputFrame);
       return 1;
     }
     return -1;
   }
 
-int H265Decoder::ReconstructFrame(OpenHevc_Frame *openHevcFrame,igtl_uint8* outputFrame)
+int H265Decoder::ReconstructFrame(OpenHevc_Frame_cpy *openHevcFrame,igtl_uint8* outputFrame)
 {
   int y;
   int y_offset, y_offset2;
@@ -175,39 +153,4 @@ int H265Decoder::ReconstructFrame(OpenHevc_Frame *openHevcFrame,igtl_uint8* outp
   }
   return 1;
 }
-
-int H265Decoder::find_start_code (unsigned char *Buf, int zeros_in_startcode)
-  {
-    int i;
-    for (i = 0; i < zeros_in_startcode; i++)
-      if(Buf[i] != 0)
-        return 0;
-    return Buf[i];
-  }
-
-  int H265Decoder::get_next_nal(FILE* inpf, unsigned char* Buf)
-  {
-    int pos = 0;
-    int StartCodeFound = 0;
-    int info2 = 0;
-    int info3 = 0;
-    while(!feof(inpf)&&(/*Buf[pos++]=*/fgetc(inpf))==0);
-    
-    while (pos < 3) Buf[pos++] = fgetc (inpf);
-    while (!StartCodeFound)
-    {
-      if (feof (inpf))
-      {
-        //            return -1;
-        return pos-1;
-      }
-      Buf[pos++] = fgetc (inpf);
-      info3 = find_start_code(&Buf[pos-4], 3);
-      if(info3 != 1)
-        info2 = find_start_code(&Buf[pos-3], 2);
-      StartCodeFound = (info2 == 1 || info3 == 1);
-    }
-    fseek (inpf, - 4 + info2, SEEK_CUR);
-    return pos - 4 + info2;
-  }
 

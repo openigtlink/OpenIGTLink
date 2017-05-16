@@ -60,8 +60,8 @@ int H265Encoder::FillSpecificParameters() {
   this->sSvcParam->bRepeatHeaders=1;//write sps,pps before keyframe
   this->sSvcParam->fpsNum=200;
   this->sSvcParam->fpsDenom=1;
-  this->sSvcParam->sourceWidth=1280;
-  this->sSvcParam->sourceHeight=720;
+  this->sSvcParam->sourceWidth=1920;
+  this->sSvcParam->sourceHeight=1080;
   this->sSvcParam->bEnableTemporalSubLayers = false;
   this->sSvcParam->maxNumReferences = 1;
   this->sSvcParam->maxNumMergeCand = 1;
