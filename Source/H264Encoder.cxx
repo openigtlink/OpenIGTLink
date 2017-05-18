@@ -520,7 +520,7 @@ int H264Encoder::SetSpeed(int speed)
   speed = speed>=LOW_COMPLEXITY?speed:LOW_COMPLEXITY;
   speed = speed<=HIGH_COMPLEXITY?speed:HIGH_COMPLEXITY;
   this->codecSpeed = speed;
-  this->sSvcParam.iComplexityMode = (ECOMPLEXITY_MODE)this->codecSpeed;
+  this->sSvcParam.iComplexityMode = (ECOMPLEXITY_MODE)(2-this->codecSpeed);
   if (this->pSVCEncoder->InitializeExt (&sSvcParam)) {
     fprintf (stderr, "Set speed mode failed.\n");
     return -1;

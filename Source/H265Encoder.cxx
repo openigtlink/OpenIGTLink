@@ -141,7 +141,7 @@ int H265Encoder::SetSpeed(int speed)
   H265EncoderNameSpace::x265_param* previousSetting = H265EncoderNameSpace::x265_param_alloc();
   
   this->CopySettingToAnother(this->sSvcParam, previousSetting);
-  x265_param_default_preset(this->sSvcParam,ToString(speed).c_str(),"zerolatency");
+  x265_param_default_preset(this->sSvcParam,ToString(9-speed).c_str(),"zerolatency"); // In OpenIGTLink, lower speed value corresponding to slower coding speed. In x265, the speed setting is reversed.
   this->CopySettingToAnother(previousSetting, this->sSvcParam);
   x265_param_free(previousSetting);
   if (x265_encoder_reconfig(this->pSVCEncoder, sSvcParam)<0) {
@@ -262,7 +262,7 @@ int H265Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
         for(int j=0;j<iNal;j++){
           memcpy(&(videoMessage->GetPackFragmentPointer(2)[nalSize]), pNals[j].payload, pNals[j].sizeBytes);
           nalSize += pNals[j].sizeBytes;
-          fwrite(pNals[j].payload, 1 , pNals[j].sizeBytes, testFile);
+          //fwrite(pNals[j].payload, 1 , pNals[j].sizeBytes, testFile);
         }
         fclose(testFile);
         videoMessage->Pack();

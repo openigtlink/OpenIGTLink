@@ -27,6 +27,11 @@
   H265Decoder::~H265Decoder()
   {
     libOpenHevcClose(openHevcHandle);
+    if(openHevcFrame.pvY) {
+      free(openHevcFrame.pvY);
+      free(openHevcFrame.pvU);
+      free(openHevcFrame.pvV);
+    }
   }
 
   void H265Decoder::ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[2], igtl_uint8 *outputFrame)

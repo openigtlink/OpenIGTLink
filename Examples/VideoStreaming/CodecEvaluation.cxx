@@ -308,7 +308,7 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
   float framePerSecondDecode = 1e6/((float)totalDecodeTime)*inputFrameNum;
   ssim/=static_cast<float>(inputFrameNum);
   std::cerr<<"SSIM Value: "<<ssim<<" Total Encoding Time: "<<totalEncodeTime/1e6<<std::endl;
-  compressionRate = (float)bitstreamTotalLength/(Width*Height*totalFrame);
+  compressionRate = (float)(Width*Height*totalFrame*3/2)/bitstreamTotalLength;
   std::cerr<<"Compression Ratio: "<<compressionRate<< "  Total Frame Number: "<< totalFrame<< std::endl;
   std::string localline = std::string("");
   localline.append(ToString(ssim));
@@ -401,7 +401,7 @@ void H264CodecSpeedAndRateEval()
   std::map<std::string, std::string> values, times;
   for (int i = 1; i<=20; i++)
   {
-    videoStreamEncoder->SetRCTaregetBitRate(2073600/100*8*20*i);
+    videoStreamEncoder->SetRCTaregetBitRate(Width*Height/100*8*20*i);
     videoStreamEncoder->InitializeEncoder();
     TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);
     float framePerSecondEncode = 1e6/((float)totalEncodeTime)*inputFrameNum;
@@ -441,7 +441,7 @@ void VP9CodecSpeedAndRateEval()
   videoStreamEncoder->SetRCMode(1); // 1 is VPX_CBR
   for (int i = 1; i<=20; i++) // The original frame bits per second is 256*256*20*8, the compression ratio is set from 0.5% to 8%
   {
-    videoStreamEncoder->SetRCTaregetBitRate((int)(2073600/100*8*20*i));
+    videoStreamEncoder->SetRCTaregetBitRate((int)(Width*Height/100*8*20*i));
     videoStreamEncoder->InitializeEncoder();
     videoStreamEncoder->SetSpeed(8);
     TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);
@@ -496,7 +496,7 @@ void VP9SpeedEvaluation()
 {
   for (int speed = 0; speed<=8;speed=speed+2)
   {
-    for (int i = 0; i<22; i=i+2)
+    for (int i = 12; i<22; i=i+2)
     {
 #if OpenIGTLink_BUILD_VPX
       startIndex = i*100;
@@ -513,7 +513,7 @@ void VP9SpeedEvaluation()
       videoStreamEncoder->SetRCMode(1); // 1 is VPX_CBR
       for (int j = 1; j<=20; j=j+4) // The original frame bits per second is 256*256*20*8, the compression ratio is set from 0.5% to 8%
       {
-        videoStreamEncoder->SetRCTaregetBitRate((int)(256*256/100*8*20*j));
+        videoStreamEncoder->SetRCTaregetBitRate((int)(1920*1080/100*8*20*j));
         videoStreamEncoder->InitializeEncoder();
         videoStreamEncoder->SetSpeed(speed);
         TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);
@@ -556,9 +556,10 @@ void H264SpeedEvaluation()
       videoStreamEncoder->SetLosslessLink(false);
       videoStreamEncoder->SetSpeed(speed);
       videoStreamEncoder->SetRCMode(1); // 1 is VPX_CBR
-      for (int j = 1; j<=20; j=j+2) // The original frame bits per second is 255*255*20*8, the compression ratio is set from 0.5% to 8%
+      int BitRateFactor = 3;
+      for (int j = 1; j<=20; j=j+4) // The original frame bits per second is 255*255*20*8, the compression ratio is set from 0.5% to 8%
       {
-        videoStreamEncoder->SetRCTaregetBitRate((int)(1920*1080/100*8*20*j));
+        videoStreamEncoder->SetRCTaregetBitRate((int)(1920*1080/100*8*20*j)*BitRateFactor);
         videoStreamEncoder->InitializeEncoder();
         TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);
         float framePerSecondEncode = 1e6/((float)totalEncodeTime)*inputFrameNum;
@@ -582,7 +583,8 @@ void H264SpeedEvaluation()
 
 int main(int argc, char **argv)
 {
-  H264SpeedEvaluation();
+  //H264SpeedEvaluation();
+  VP9SpeedEvaluation();
   //CodecOptimizationEval();
   return 0;
 }
