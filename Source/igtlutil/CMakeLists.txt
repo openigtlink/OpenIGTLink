@@ -3,7 +3,6 @@
 
 if(OpenIGTLink_BUILD_SHARED_LIBS)
   set(igtlutil_BUILD_SHARED_LIBS ${OpenIGTLink_BUILD_SHARED_LIBS})
-
 endif(OpenIGTLink_BUILD_SHARED_LIBS)
 
 if(OpenIGTLink_BUILD_GENERATE_PIC)
@@ -31,7 +30,6 @@ SET(igtlutil_SOURCES
   igtl_capability.c
   igtl_video.c
   )
-
 
 if (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1")
   SET(igtlutil_HEADS
