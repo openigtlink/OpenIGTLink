@@ -11,27 +11,28 @@
 
 
 # Thread parameters
+STRING(FIND ${CMAKE_SYSTEM_NAME} "Windows" _win_string_pos)
 # Use pthread in default except Windows
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if(NOT _win_string_pos EQUAL -1)
   SET(OpenIGTLink_USE_WIN32_THREADS 1)
-else(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+else()
   SET(OpenIGTLink_USE_PTHREADS 1)  
-endif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+endif()
 
 # Windows
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if(NOT _win_string_pos EQUAL -1)
   SET(OpenIGTLink_PLATFORM_WIN32 1)
-endif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+endif()
 
 # Mac OS X
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   SET(OpenIGTLink_PLATFORM_MACOSX 1)
-endif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+endif()
 
 # Linux
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
   SET(OpenIGTLink_PLATFORM_LINUX 1)
-endif(CMAKE_SYSTEM_NAME MATCHES "Linux")
+endif()
 
 # Sun OS
 if(CMAKE_SYSTEM_NAME MATCHES "SunOS")
@@ -71,7 +72,7 @@ endif(CMAKE_SYSTEM_NAME MATCHES "SunOS")
 # QNX
 if(CMAKE_SYSTEM_NAME STREQUAL "QNX")
   SET(OpenIGTLink_PLATFORM_QNX 1)
-endif(CMAKE_SYSTEM_NAME STREQUAL "QNX")
+endif()
 
 
 #-----------------------------------------------------------------------------
@@ -113,5 +114,3 @@ check_type_size("int64_t"   CMAKE_SIZEOF_INT64_T)
 #    ENDIF(CMAKE_SIZEOF_INT64_T)
 #  ENDIF(CMAKE_SIZEOF___INT64)
 #ENDIF(CMAKE_SIZEOF_LONG_LONG)
-
-
