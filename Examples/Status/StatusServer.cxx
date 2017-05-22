@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
   igtl::StatusMessage::Pointer statusMsg;
   statusMsg = igtl::StatusMessage::New();
   statusMsg->SetDeviceName("Device");
-
+  
   igtl::ServerSocket::Pointer serverSocket;
   serverSocket = igtl::ServerSocket::New();
   int r = serverSocket->CreateServer(port);
@@ -67,6 +67,7 @@ int main(int argc, char* argv[])
       // loop
       for (int i = 0; i < 100; i ++)
         {
+        statusMsg->SetDeviceName("Device");
         statusMsg->SetCode(igtl::StatusMessage::STATUS_OK);
         statusMsg->SetSubCode(128);
         statusMsg->SetErrorName("OK!");

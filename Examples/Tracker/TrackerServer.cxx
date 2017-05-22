@@ -69,6 +69,7 @@ int main(int argc, char* argv[])
         {
         igtl::Matrix4x4 matrix;
         GetRandomTestMatrix(matrix);
+        transMsg->SetDeviceName("Tracker");
         transMsg->SetMatrix(matrix);
         transMsg->Pack();
         socket->Send(transMsg->GetPackPointer(), transMsg->GetPackSize());

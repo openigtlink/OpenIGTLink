@@ -235,10 +235,16 @@ int TrajectoryMessage::AddTrajectoryElement(TrajectoryElement::Pointer& elem)
 
 void TrajectoryMessage::ClearTrajectoryElement(TrajectoryElement::Pointer& elem)
 {
+  igtlLegacyReplaceBodyMacro(TrajectoryMessage::ClearTrajectoryElement, 3.0, TrajectoryMessage::ClearAllTrajectoryElements);
   (void)(elem); // Unused variable
   this->m_TrajectoryList.clear();
 }
 
+  
+void TrajectoryMessage::ClearAllTrajectoryElements()
+{
+  this->m_TrajectoryList.clear();
+}
 
 int TrajectoryMessage::GetNumberOfTrajectoryElement()
 {
