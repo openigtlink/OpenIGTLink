@@ -27,7 +27,6 @@
 #include "igtlCodecCommonClasses.h"
 
 #include "gpac/modules/openhevc_dec/openHevcWrapper.h"
-#include <libavformat/avformat.h>
 
 #define FRAME_CONCEALMENT   0
 

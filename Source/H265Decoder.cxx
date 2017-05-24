@@ -12,6 +12,7 @@
  =========================================================================*/
 
 #include "H265Decoder.h"
+#include <libavformat/avformat.h>
   H265Decoder::H265Decoder()
   {
     this->nb_pthreads = 4;

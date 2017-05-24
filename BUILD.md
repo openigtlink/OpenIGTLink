@@ -79,16 +79,20 @@ $ make
 
 * Windows Build
 
-In the case of windows build, please refer to the following websites for H264 and VP9 respectively
-
-Useful VP9 build instructions:
-
-https://www.webmproject.org/code/build-prerequisites/
-http://wiki.webmproject.org/ffmpeg/building-with-libvpx
-
+In the case of windows build, please refer to the following websites for H264, X265 and VP9 respectively.
+Make sure the build are 32 bit.
 Useful H264 build instructions:
 
 https://github.com/cisco/openh264
+
+Useful VP9 build instructions:
+
+https://www.webmproject.org/code/build-prerequisites/ 
+http://wiki.webmproject.org/ffmpeg/building-with-libvpx
+
+Useful X265 build intructions:
+
+https://bitbucket.org/multicoreware/x265/wiki/CrossCompile
 
 Other Platforms
 ---------------

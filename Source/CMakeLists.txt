@@ -332,13 +332,12 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" )
   ENDIF()
   IF(LINK_X265)
     LIST(APPEND OpenIGTLink_SOURCES
-      #H265Decoder.cxx
+      H265Decoder.cxx
       H265Encoder.cxx
-      #${X265_SOURCE_DIR}/common/common.cpp
     )
     IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
     LIST(APPEND OpenIGTLink_INCLUDE_FILES
-      #H265Decoder.h
+      H265Decoder.h
       H265Encoder.h
     )
     ENDIF()
