@@ -234,12 +234,12 @@ int H265Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
     {
       static igtl_uint32 messageID = -1;
       this->ConvertToLocalImageFormat(pSrcPic);
-      uint32_t iNal = 0;
+      igtl_uint32 iNal = 0;
       encodeRet =x265_encoder_encode(this->pSVCEncoder,&pNals,&iNal,this->H265SrcPicture,NULL);
       //encodeRet =x265_encoder_encode(this->pSVCEncoder,&pNals,&iNal,NULL,NULL);
       if (encodeRet>=1)
       {
-        uint64_t totalBitStreamSize = 0;
+        igtl_uint64 totalBitStreamSize = 0;
         for(int j=0;j<iNal;j++){
           totalBitStreamSize += pNals[j].sizeBytes;
         }

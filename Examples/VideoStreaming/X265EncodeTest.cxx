@@ -63,7 +63,7 @@
 #if OpenIGTLink_LINK_X265
 
   #include "H265Encoder.h"
-  #include "H265Decoder.h"
+  //#include "H265Decoder.h"
 
 #endif
 
@@ -348,22 +348,22 @@ void X265SpeedEvaluation()
       fclose(pEval);
       std::map<std::string, std::string> values, times;
       H265Encoder* videoStreamEncoder = new H265Encoder();
-      H265Decoder* videoStreamDecoder = new H265Decoder();
+      //H265Decoder* videoStreamDecoder = new H265Decoder();
       videoStreamEncoder->SetPicWidthAndHeight(Width, Height);
       videoStreamEncoder->SetLosslessLink(false);
       videoStreamEncoder->SetRCMode(1); // 1 is VPX_CBR
-      videoStreamDecoder->~H265Decoder();
+      //videoStreamDecoder->~H265Decoder();
       videoStreamEncoder->~H265Encoder();
       int bitRateFactor = 1;
       for (int j = 1; j<=20; j=j+4) // The original frame bits per second is 256*256*20*8, the compression ratio is set from 0.5% to 8%
       {
-        videoStreamDecoder = new H265Decoder();
+        //videoStreamDecoder = new H265Decoder();
         videoStreamEncoder = new H265Encoder();
         videoStreamEncoder->SetRCTaregetBitRate((int)(Width*Height/100*8*20*j)*bitRateFactor);
         videoStreamEncoder->InitializeEncoder();
         videoStreamEncoder->SetSpeed(speed);
-        TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);
-        videoStreamDecoder->~H265Decoder();
+        TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, NULL, false);
+        //videoStreamDecoder->~H265Decoder();
         videoStreamEncoder->~H265Encoder();
         float framePerSecondEncode = 1e6/((float)totalEncodeTime)*inputFrameNum;
         float framePerSecondDecode = 1e6/((float)totalDecodeTime)*inputFrameNum;

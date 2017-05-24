@@ -19,12 +19,12 @@ IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
     )
   ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND LINK_X265)
-    SET(LINK_X265_LIBRARY optimized ${X265_LIBRARY_DIR}/x265.lib debug ${X265_LIBRARY_DIR}/x265.lib)
-    SET(LINK_OPENHEVC_LIBRARY ${OPENHEVC_LIBRARY_DIR}/LibOpenHevcWrapper.lib)
+    SET(LINK_X265_LIBRARY optimized ${X265_LIBRARY_DIR}\\Release\\x265-static.lib debug ${X265_LIBRARY_DIR}\\Debug\\x265-static.lib)
+    SET(LINK_OPENHEVC_LIBRARY ${OPENHEVC_LIBRARY_DIR}\\libLibOpenHevcWrapper.dll)
     SET(LINK_LIBS
       ${LINK_LIBS}
       ${LINK_X265_LIBRARY}
-      ${LINK_OPENHEVC_LIBRARY}
+      #${LINK_OPENHEVC_LIBRARY}
     )
   ENDIF()
   #For debug under win32 system, the run time check mode should be set to /RTCu for multithreading purpose
@@ -104,13 +104,13 @@ IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND BUILD_VPX)
   )
 ENDIF()
 
-
 IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND LINK_X265)
   SET(OpenIGTLink_INCLUDE_DIRS
     ${OpenIGTLink_INCLUDE_DIRS}
     "${X265_SOURCE_DIR}"
     "${X265_LIBRARY_DIR}"
     "${OPENHEVC_SOURCE_DIR}"
+	"${OPENHEVC_SOURCE_DIR}/platform/arm"
     "${OPENHEVC_LIBRARY_DIR}"
   )
 ENDIF()
@@ -332,13 +332,13 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" )
   ENDIF()
   IF(LINK_X265)
     LIST(APPEND OpenIGTLink_SOURCES
-      H265Decoder.cxx
+      #H265Decoder.cxx
       H265Encoder.cxx
       #${X265_SOURCE_DIR}/common/common.cpp
     )
     IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
     LIST(APPEND OpenIGTLink_INCLUDE_FILES
-      H265Decoder.h
+      #H265Decoder.h
       H265Encoder.h
     )
     ENDIF()

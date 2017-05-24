@@ -100,54 +100,6 @@ TEST(MessageRTPWrapperTest, WrapMessageFormatVersion2)
   //TestDebugCharArrayCmp(bufferedMsg.pBsBuf.data(), (igtlUint8*)test_RTPWrapper_PacketBuffer , bufferedMsg.totalLength);
 }
 
-void Validation()
-{
-  EXPECT_EQ(messageWrapperReceiverSide->unWrappedMessages.size(),1);
-  igtl::ImageMessage::Pointer imageReceiveMsg = igtl::ImageMessage::New();
-  std::map<igtl_uint32, igtl::UnWrappedMessage*>::iterator it = messageWrapperReceiverSide->unWrappedMessages.begin();
-  igtl::MessageHeader::Pointer header = igtl::MessageHeader::New();
-  header->InitPack();
-  memcpy(header->GetPackPointer(), it->second->messagePackPointer, IGTL_HEADER_SIZE);
-  header->Unpack();
-  imageReceiveMsg->SetMessageHeader(header);
-  imageReceiveMsg->AllocateBuffer();
-  memcpy(imageReceiveMsg->GetPackBodyPointer(), it->second->messagePackPointer+IGTL_HEADER_SIZE, it->second->messageDataLength-IGTL_HEADER_SIZE);
-  int c = imageReceiveMsg->Unpack(1);
-  EXPECT_EQ(c,2);
-  igtl_header *messageHeader = (igtl_header *)imageReceiveMsg->GetPackPointer();
-  EXPECT_STREQ(messageHeader->device_name, "DeviceName");
-  EXPECT_STREQ(messageHeader->name, "IMAGE");
-  EXPECT_EQ(messageHeader->header_version, IGTL_HEADER_VERSION_2);
-  EXPECT_EQ(messageHeader->timestamp, 1234567892);
-  EXPECT_EQ(messageHeader->body_size, imageReceiveMsg->GetPackBodySize());
-  
-  int returnSize[3] = {0,0,0};
-  imageReceiveMsg->GetDimensions(returnSize);
-  EXPECT_THAT(returnSize,testing::ElementsAreArray(size));
-  float returnSpacing[3] = {0.0f,0.0f,0.0f};
-  imageReceiveMsg->GetSpacing(returnSpacing);
-  EXPECT_TRUE(ArrayFloatComparison(returnSpacing, spacing, 3, ABS_ERROR));
-  int returnSvsize[3] = {0,0,0}, returnSvoffset[3] = {0,0,0};
-  imageReceiveMsg->GetSubVolume(returnSvsize, returnSvoffset);
-  EXPECT_THAT(returnSvsize,testing::ElementsAreArray(svsize));
-  EXPECT_THAT(returnSvoffset,testing::ElementsAreArray(svoffset));
-  EXPECT_EQ(imageReceiveMsg->GetScalarType(), IGTL_IMAGE_STYPE_TYPE_UINT8);
-  EXPECT_EQ(imageReceiveMsg->GetEndian(), IGTL_IMAGE_ENDIAN_LITTLE);
-  EXPECT_EQ(imageReceiveMsg->GetCoordinateSystem(), IGTL_IMAGE_COORD_RAS);
-  EXPECT_EQ(imageReceiveMsg->GetMessageID(), 1);
-  
-  
-  igtl::Matrix4x4 outMatrix = {{0.0,0.0,0.0,0.0},
-    {0.0,0.0,0.0,0.0},
-    {0.0,0.0,0.0,0.0},
-    {0.0,0.0,0.0,0.0}};
-  imageReceiveMsg->GetMatrix(outMatrix);
-  EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
-  //The imageHeader is byte-wized converted, so we skip the comparison of the image header.
-  int r = memcmp((const char*)imageReceiveMsg->GetPackBodyPointer()+IGTL_IMAGE_HEADER_SIZE+IGTL_EXTENDED_HEADER_SIZE, (const void*)(test_image), (size_t)(TEST_IMAGE_MESSAGE_SIZE));
-  EXPECT_EQ(r, 0);
-}
-
 TEST(MessageRTPWrapperTest, UnwrapMessageFormatVersion2)
 {
   BuildUp();
@@ -166,7 +118,50 @@ TEST(MessageRTPWrapperTest, UnwrapMessageFormatVersion2)
     if(iRet == 0)
       break;
   }
-  Validation();
+  EXPECT_EQ(messageWrapperReceiverSide->unWrappedMessages.size(), 1);
+  igtl::ImageMessage::Pointer imageReceiveMsg = igtl::ImageMessage::New();
+  std::map<igtl_uint32, igtl::UnWrappedMessage*>::iterator it = messageWrapperReceiverSide->unWrappedMessages.begin();
+  igtl::MessageHeader::Pointer header = igtl::MessageHeader::New();
+  header->InitPack();
+  memcpy(header->GetPackPointer(), it->second->messagePackPointer, IGTL_HEADER_SIZE);
+  header->Unpack();
+  imageReceiveMsg->SetMessageHeader(header);
+  imageReceiveMsg->AllocateBuffer();
+  memcpy(imageReceiveMsg->GetPackBodyPointer(), it->second->messagePackPointer + IGTL_HEADER_SIZE, it->second->messageDataLength - IGTL_HEADER_SIZE);
+  int c = imageReceiveMsg->Unpack(1);
+  EXPECT_EQ(c, 2);
+  igtl_header *messageHeader = (igtl_header *)imageReceiveMsg->GetPackPointer();
+  EXPECT_STREQ(messageHeader->device_name, "DeviceName");
+  EXPECT_STREQ(messageHeader->name, "IMAGE");
+  EXPECT_EQ(messageHeader->header_version, IGTL_HEADER_VERSION_2);
+  EXPECT_EQ(messageHeader->timestamp, 1234567892);
+  EXPECT_EQ(messageHeader->body_size, imageReceiveMsg->GetPackBodySize());
+
+  int returnSize[3] = { 0, 0, 0 };
+  imageReceiveMsg->GetDimensions(returnSize);
+  EXPECT_THAT(returnSize, testing::ElementsAreArray(size));
+  float returnSpacing[3] = { 0.0f, 0.0f, 0.0f };
+  imageReceiveMsg->GetSpacing(returnSpacing);
+  EXPECT_TRUE(ArrayFloatComparison(returnSpacing, spacing, 3, ABS_ERROR));
+  int returnSvsize[3] = { 0, 0, 0 }, returnSvoffset[3] = { 0, 0, 0 };
+  imageReceiveMsg->GetSubVolume(returnSvsize, returnSvoffset);
+  EXPECT_THAT(returnSvsize, testing::ElementsAreArray(svsize));
+  EXPECT_THAT(returnSvoffset, testing::ElementsAreArray(svoffset));
+  EXPECT_EQ(imageReceiveMsg->GetScalarType(), IGTL_IMAGE_STYPE_TYPE_UINT8);
+  EXPECT_EQ(imageReceiveMsg->GetEndian(), IGTL_IMAGE_ENDIAN_LITTLE);
+  EXPECT_EQ(imageReceiveMsg->GetCoordinateSystem(), IGTL_IMAGE_COORD_RAS);
+  EXPECT_EQ(imageReceiveMsg->GetMessageID(), 1);
+
+
+  igtl::Matrix4x4 outMatrix = { { 0.0, 0.0, 0.0, 0.0 },
+  { 0.0, 0.0, 0.0, 0.0 },
+  { 0.0, 0.0, 0.0, 0.0 },
+  { 0.0, 0.0, 0.0, 0.0 } };
+  imageReceiveMsg->GetMatrix(outMatrix);
+  EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
+  //The imageHeader is byte-wized converted, so we skip the comparison of the image header.
+  int r = memcmp((const char*)imageReceiveMsg->GetPackBodyPointer() + IGTL_IMAGE_HEADER_SIZE + IGTL_EXTENDED_HEADER_SIZE, (const void*)(test_image), (size_t)(TEST_IMAGE_MESSAGE_SIZE));
+  EXPECT_EQ(r, 0);
   // Test the packet reorder function of the RTP Wrapper. In the following lines, we reverse the order of received UDPPackets.
   messageWrapperReceiverSide = igtl::MessageRTPWrapper::New();
   messageWrapperReceiverSide->SetRTPPayloadLength(UDPPacketLength);
@@ -182,7 +177,47 @@ TEST(MessageRTPWrapperTest, UnwrapMessageFormatVersion2)
     if(iRet == 0)
       break;
   }
-  Validation();
+  EXPECT_EQ(messageWrapperReceiverSide->unWrappedMessages.size(), 1);
+  imageReceiveMsg = igtl::ImageMessage::New();
+  it = messageWrapperReceiverSide->unWrappedMessages.begin();
+  header = igtl::MessageHeader::New();
+  header->InitPack();
+  memcpy(header->GetPackPointer(), it->second->messagePackPointer, IGTL_HEADER_SIZE);
+  header->Unpack();
+  imageReceiveMsg->SetMessageHeader(header);
+  imageReceiveMsg->AllocateBuffer();
+  memcpy(imageReceiveMsg->GetPackBodyPointer(), it->second->messagePackPointer + IGTL_HEADER_SIZE, it->second->messageDataLength - IGTL_HEADER_SIZE);
+  c = imageReceiveMsg->Unpack(1);
+  EXPECT_EQ(c, 2);
+  messageHeader = (igtl_header *)imageReceiveMsg->GetPackPointer();
+  EXPECT_STREQ(messageHeader->device_name, "DeviceName");
+  EXPECT_STREQ(messageHeader->name, "IMAGE");
+  EXPECT_EQ(messageHeader->header_version, IGTL_HEADER_VERSION_2);
+  EXPECT_EQ(messageHeader->timestamp, 1234567892);
+  EXPECT_EQ(messageHeader->body_size, imageReceiveMsg->GetPackBodySize());
+
+  imageReceiveMsg->GetDimensions(returnSize);
+  EXPECT_THAT(returnSize, testing::ElementsAreArray(size));
+  imageReceiveMsg->GetSpacing(returnSpacing);
+  EXPECT_TRUE(ArrayFloatComparison(returnSpacing, spacing, 3, ABS_ERROR));
+  imageReceiveMsg->GetSubVolume(returnSvsize, returnSvoffset);
+  EXPECT_THAT(returnSvsize, testing::ElementsAreArray(svsize));
+  EXPECT_THAT(returnSvoffset, testing::ElementsAreArray(svoffset));
+  EXPECT_EQ(imageReceiveMsg->GetScalarType(), IGTL_IMAGE_STYPE_TYPE_UINT8);
+  EXPECT_EQ(imageReceiveMsg->GetEndian(), IGTL_IMAGE_ENDIAN_LITTLE);
+  EXPECT_EQ(imageReceiveMsg->GetCoordinateSystem(), IGTL_IMAGE_COORD_RAS);
+  EXPECT_EQ(imageReceiveMsg->GetMessageID(), 1);
+
+
+  igtl::Matrix4x4 outMatrix2 = { { 0.0, 0.0, 0.0, 0.0 },
+  { 0.0, 0.0, 0.0, 0.0 },
+  { 0.0, 0.0, 0.0, 0.0 },
+  { 0.0, 0.0, 0.0, 0.0 } };
+  imageReceiveMsg->GetMatrix(outMatrix2);
+  EXPECT_TRUE(MatrixComparison(outMatrix2, inMatrix, ABS_ERROR));
+  //The imageHeader is byte-wized converted, so we skip the comparison of the image header.
+  r = memcmp((const char*)imageReceiveMsg->GetPackBodyPointer() + IGTL_IMAGE_HEADER_SIZE + IGTL_EXTENDED_HEADER_SIZE, (const void*)(test_image), (size_t)(TEST_IMAGE_MESSAGE_SIZE));
+  EXPECT_EQ(r, 0);
 }
 #endif
 

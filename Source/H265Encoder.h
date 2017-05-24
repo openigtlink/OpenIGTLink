@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <sys/types.h>
+#include <signal.h>
 #else
 #include <sys/time.h>
 #endif
