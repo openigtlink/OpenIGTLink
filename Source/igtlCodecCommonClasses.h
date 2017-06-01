@@ -160,7 +160,9 @@ public:
   virtual int SetRCTaregetBitRate(unsigned int bitRate){return -1;};
   
   virtual int SetPicWidthAndHeight(unsigned int Width, unsigned int Height){return -1;};
-  
+   
+  int PackUncompressedData(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage);
+
 protected:
   unsigned int picWidth;
   
