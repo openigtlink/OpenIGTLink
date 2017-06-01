@@ -130,6 +130,36 @@ void GenericDecoder::Write2File (FILE* pFp, unsigned char* pData[], igtl_uint32 
   }
 }
 
+int GenericDecoder::UnpackUncompressedData(igtl::VideoMessage* videoMessage, SourcePicture* decodedPic)
+{
+  if(!this->isCompressed)
+  {
+    igtl_int32 iWidth = videoMessage->GetWidth();
+    igtl_int32 iHeight = videoMessage->GetHeight();
+    if ((iWidth*iHeight*3>>1) != videoMessage->GetBitStreamSize())
+    {
+      return -1;
+    }
+    igtl_uint16 frameType = videoMessage->GetFrameType();
+    isGrayImage = false;
+    if (frameType>0X00FF)
+    {
+      frameType= frameType>>8;
+      isGrayImage = true;
+    }
+    decodedPic->picWidth = iWidth;
+    decodedPic->picHeight = iHeight;
+    decodedPic->data[1]= decodedPic->data[0] + iWidth*iHeight;
+    decodedPic->data[2]= decodedPic->data[1] + iWidth*iHeight/4;
+    decodedPic->stride[0] = iWidth;
+    decodedPic->stride[1] = decodedPic->stride[2] = iWidth>>1;
+    decodedPic->stride[3] = 0;
+    memcpy(decodedPic->data[0], videoMessage->GetPackFragmentPointer(2), iWidth*iHeight*3>>1);
+    return 1;
+  }
+  return -1;
+}
+
 igtl_int64 GenericDecoder::getCurrentTime()
 {
 #if defined(_WIN32)

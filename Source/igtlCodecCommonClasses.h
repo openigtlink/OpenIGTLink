@@ -185,7 +185,7 @@ protected:
 class GenericDecoder
 {
 public:
-  GenericDecoder(){deviceName = ""; isGrayImage = false;};
+  GenericDecoder(){deviceName = ""; isGrayImage = false; isCompressed = true;};
   ~GenericDecoder(){};
   
   virtual int DecodeBitStreamIntoFrame(unsigned char* bitStream,igtl_uint8* outputFrame,igtl_uint32 iDimensions[], igtl_uint64 &iStreamSize) = 0;
@@ -220,6 +220,10 @@ public:
   
   int ConvertYUVToGrayImage(igtl_uint8 * YUV420Frame, igtl_uint8 *GrayFrame, int iHeight, int iWidth);
   
+  int UnpackUncompressedData(igtl::VideoMessage* videoMessage, SourcePicture* decodedPic);
+  
+  void SetIsCompressedData(int datatype){this->isCompressed = datatype;};
+  
 protected:
   
   virtual void ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[2], igtl_uint8 *outputFrame){};
@@ -227,6 +231,8 @@ protected:
   std::string deviceName;
   
   bool isGrayImage;
+  
+  bool isCompressed;
   
 };
 

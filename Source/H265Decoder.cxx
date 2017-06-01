@@ -91,8 +91,15 @@
       pDecodedPic->stride[1] = pDecodedPic->stride[2] = iWidth>>1;
       pDecodedPic->stride[3] = 0;
       igtl_uint32 dimensions[2] = {iWidth, iHeight};
-      int iRet = this->DecodeBitStreamIntoFrame(videoMessage->GetPackFragmentPointer(2), pDecodedPic->data[0], dimensions, iStreamSize);
-      return iRet;
+      int iRet = -1;
+      if (this->isCompressed)
+      {
+        iRet = this->DecodeBitStreamIntoFrame(videoMessage->GetPackFragmentPointer(2), pDecodedPic->data[0], dimensions, iStreamSize);
+      }
+      else
+      {
+        iRet = this->UnpackUncompressedData(videoMessage, pDecodedPic);
+      }
     }
     return -1;
   }
