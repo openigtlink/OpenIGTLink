@@ -253,3 +253,28 @@ int GenericDecoder::ConvertYUVToGrayImage(igtl_uint8 * YUV420Frame, igtl_uint8 *
   return 1;
 }
 
+int GenericEncoder::PackUncompressedData(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage)
+{
+  if(!this->useCompress)
+  {
+    int iSourceWidth = pSrcPic->picWidth;
+    int iSourceHeight = pSrcPic->picHeight;
+    long kiPicResSize = iSourceWidth*iSourceHeight * 3 >> 1;
+    videoMessage->SetBitStreamSize(kiPicResSize);
+    videoMessage->AllocateScalars();
+    videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
+    videoMessage->SetEndian(igtl_is_little_endian() == true ? IGTL_VIDEO_ENDIAN_LITTLE : IGTL_VIDEO_ENDIAN_BIG); //little endian is 2 big endian is 1
+    videoMessage->SetWidth(pSrcPic->picWidth);
+    videoMessage->SetHeight(pSrcPic->picHeight);
+    encodedFrameType = FrameTypeKey;
+    if (isGrayImage)
+    {
+      encodedFrameType = FrameTypeKey << 8;
+    }
+    videoMessage->SetFrameType(encodedFrameType);
+    memcpy(videoMessage->GetPackFragmentPointer(2), pSrcPic->data[0], kiPicResSize);
+    videoMessage->Pack();
+    return 0;
+  }
+  return -1;
+}

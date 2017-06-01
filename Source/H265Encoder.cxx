@@ -38,7 +38,7 @@ H265Encoder::H265Encoder(char *configFile):GenericEncoder()
   H265SrcPicture = H265EncoderNameSpace::x265_picture_alloc();
   H265EncoderNameSpace::x265_picture_init(sSvcParam,H265SrcPicture);
   pNals = NULL;
-  this->codecSpeed = 4;
+  this->codecSpeed = 9;
 }
 
 H265Encoder::~H265Encoder()
@@ -55,7 +55,7 @@ H265Encoder::~H265Encoder()
 int H265Encoder::FillSpecificParameters() {
   /* Test for temporal, spatial, SNR scalability */
   
-  H265EncoderNameSpace::x265_param_default_preset(this->sSvcParam,ToString(this->codecSpeed).c_str(),"zerolatency");// second parameter is the speed.
+  H265EncoderNameSpace::x265_param_default_preset(this->sSvcParam,ToString(9-this->codecSpeed).c_str(),"zerolatency");// second parameter is the speed.
   this->sSvcParam->internalCsp=X265_CSP_I420;
   this->sSvcParam->bRepeatHeaders=1;//write sps,pps before keyframe
   this->sSvcParam->fpsNum=200;
@@ -230,10 +230,9 @@ int H265Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
     pSrcPic->stride[0] = iSourceWidth;
     pSrcPic->stride[1] = pSrcPic->stride[2] = pSrcPic->stride[0] >> 1;
     int kiPicResSize = iSourceWidth * iSourceHeight * 3 >> 1;
-    if(this->useCompress)
-    {
-      static igtl_uint32 messageID = -1;
-      this->ConvertToLocalImageFormat(pSrcPic);
+    this->ConvertToLocalImageFormat(pSrcPic);
+    if (this->useCompress)
+    { 
       igtl_uint32 iNal = 0;
       encodeRet =x265_encoder_encode(this->pSVCEncoder,&pNals,&iNal,this->H265SrcPicture,NULL);
       //encodeRet =x265_encoder_encode(this->pSVCEncoder,&pNals,&iNal,NULL,NULL);
@@ -255,8 +254,6 @@ int H265Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
           encodedFrameType = pNals[iNal-1].type<<8;
         }
         videoMessage->SetFrameType(encodedFrameType);
-        messageID ++;
-        videoMessage->SetMessageID(messageID);
         int nalSize = 0;
         FILE* testFile = fopen("Test.265", "a");
         for(int j=0;j<iNal;j++){
@@ -271,24 +268,7 @@ int H265Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
     }
     else
     {
-      static igtl_uint32 messageID = -1;
-      videoMessage->SetBitStreamSize(kiPicResSize);
-      videoMessage->AllocateScalars();
-      videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
-      videoMessage->SetEndian(igtl_is_little_endian()==true?IGTL_VIDEO_ENDIAN_LITTLE:IGTL_VIDEO_ENDIAN_BIG); //little endian is 2 big endian is 1
-      videoMessage->SetWidth(pSrcPic->picWidth);
-      videoMessage->SetHeight(pSrcPic->picHeight);
-      encodedFrameType = H265FrameTypeIDR;
-      if (isGrayImage)
-      {
-        encodedFrameType = H265FrameTypeIDR<<8;
-      }
-      videoMessage->SetFrameType(encodedFrameType);
-      messageID ++;
-      videoMessage->SetMessageID(messageID);
-      memcpy(videoMessage->GetPackFragmentPointer(2), pSrcPic->data[0], kiPicResSize);
-      videoMessage->Pack();
-      return 0;
+      return this->PackUncompressedData(pSrcPic, videoMessage, isGrayImage);
     }
   }
   return -1;
