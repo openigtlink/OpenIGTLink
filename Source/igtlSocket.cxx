@@ -48,7 +48,11 @@
 #define WSA_VERSION MAKEWORD(1,1)
 #define igtlCloseSocketMacro(sock) (closesocket(sock))
 #else
-#define igtlCloseSocketMacro(sock) (shutdown(sock, 2))
+#define igtlCloseSocketMacro(sock) \
+      {                            \
+        shutdown(sock, 2);         \
+        close(sock);               \
+      }
 #endif
 
 namespace igtl
