@@ -18,5 +18,8 @@ target_link_libraries( VideoStreamServer OpenIGTLink)
 add_executable( CodecEvaluation CodecEvaluation.cxx)
 target_link_libraries(CodecEvaluation OpenIGTLink)
 
+add_executable( UltrasonixEval UltrasonixEval.cxx)
+target_link_libraries(UltrasonixEval OpenIGTLink)
+
 add_executable( X265EncodeTest X265EncodeTest.cxx)
 target_link_libraries(X265EncodeTest OpenIGTLink)

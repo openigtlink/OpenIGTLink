@@ -49,7 +49,8 @@ int VPXDecoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, 
     else
     {
       iRet = this->UnpackUncompressedData(videoMessage, pDecodedPic);
-    }return iRet;
+    }
+    return iRet;
   }
   return -1;
 }

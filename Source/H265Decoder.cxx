@@ -100,6 +100,7 @@
       {
         iRet = this->UnpackUncompressedData(videoMessage, pDecodedPic);
       }
+      return iRet;
     }
     return -1;
   }
