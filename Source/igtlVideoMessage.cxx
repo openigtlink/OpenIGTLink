@@ -212,6 +212,7 @@ int VideoMessage::PackContent()
   frame_header->width             = this->width;
   frame_header->height            = this->height;
   frame_header->frameType         = this->videoFrameType;
+  frame_header->useCompress       = this->useCompress;
   igtl_frame_convert_byte_order(frame_header);
 #if OpenIGTLink_HEADER_VERSION >= 2
   if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
@@ -252,6 +253,7 @@ int VideoMessage::UnpackContent()
       this->width            = frame_header->width;
       this->height           = frame_header->height;
       this->videoFrameType   = frame_header->frameType;
+      this->useCompress      = frame_header->useCompress;
       this->m_Frame = this->m_FrameHeader;
       this->m_Frame += IGTL_VIDEO_HEADER_SIZE;
       

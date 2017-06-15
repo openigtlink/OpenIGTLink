@@ -22,7 +22,7 @@
 #define  IGTL_STT_VIDEO_SIZE               9
 #define IGTL_VIDEO_CODEC_NAME_SIZE      4
 #define IGTL_VIDEO_HEADER_VERSION         1
-#define IGTL_VIDEO_HEADER_SIZE          14
+#define IGTL_VIDEO_HEADER_SIZE          15
 
 
 /* Data type */
@@ -71,6 +71,7 @@ typedef struct {
     igtl_uint32    width;
     igtl_uint32    height;
     igtl_uint16    frameType;
+    igtl_int8 useCompress;
   } igtl_frame_header;
   
 #pragma pack()

@@ -218,6 +218,12 @@ public:
   /// Gets the frame type of the encoded image
   int GetFrameType(){return videoFrameType;}
   
+  /// Sets the frame type of the encoded image
+  void SetUseCompress(bool e){useCompress = e;}
+  
+  /// Gets the frame type of the encoded image
+  bool GetUseCompress(){return useCompress;}
+  
   /// This should only be called when the data is unpacked
   int  GetBitStreamSize();
   
@@ -272,6 +278,9 @@ private:
   
   /// The frame type of the encoded image
   int  videoFrameType;
+  
+  /// If the video is compressed or uncompressed
+  bool useCompress;
   
   /// A variable for the allocate the message body
   int    bitStreamSize;
