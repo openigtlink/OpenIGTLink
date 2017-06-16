@@ -59,7 +59,7 @@ protected:
   StartVideoDataMessage() : MessageBase()
   {
     this->m_SendMessageType  = "STT_VIDEO";
-    this->m_CodecType = "H264";
+    this->m_CodecType = CodecNameForVPX;
   };
   ~StartVideoDataMessage();
   
@@ -73,7 +73,7 @@ protected:
   
 protected:
   
-  /// codec is define here, "H264" is the default
+  /// codec is define here, "VP9" is the default
   /// A variable for codec protocal
   std::string   m_CodecType;
   /// Minimum time between two frames (ms). Use 0 for as fast as possible.
@@ -212,6 +212,12 @@ public:
   /// Gets the height of the image scalars.
   int  GetHeight()             { return height; };
   
+  /// Sets the additionalZDimension of the image.
+  void SetAdditionalZDimension(int zDimension)        { additionalZDimension = zDimension; };
+  
+  /// Gets the additionalZDimension of the image.
+  int  GetAdditionalZDimension()             { return additionalZDimension; };
+  
   /// Sets the frame type of the encoded image
   void SetFrameType(int e){videoFrameType = e;}
   
@@ -223,6 +229,11 @@ public:
   
   /// Gets the frame type of the encoded image
   bool GetUseCompress(){return useCompress;}
+  
+  /// Sets the codec type, e.g. H264, VP9, X265
+  int    SetCodecType(const char codecType[]);
+  
+  std::string    GetCodecType()               { return this->m_CodecType; };
   
   /// This should only be called when the data is unpacked
   int  GetBitStreamSize();
@@ -276,6 +287,9 @@ private:
   /// The Height of the picture
   int    height;
   
+  /// The additional Z dimension if the image is 3D.
+  int additionalZDimension;
+  
   /// The frame type of the encoded image
   int  videoFrameType;
   
@@ -293,6 +307,8 @@ private:
 
   /// A table to look up the size of a given scalar type.
   int ScalarSizeTable[12];
+  
+  std::string m_CodecType;
 };
 
 

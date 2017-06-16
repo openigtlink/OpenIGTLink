@@ -335,7 +335,7 @@ void TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDec
 
 void X265SpeedEvaluation()
 {
-  for (int speed = 9; speed<=9;speed=speed+2)
+  for (int speed = 0; speed<=0;speed=speed+2)
   {
     for (int i = 0; i<22; i=i+2)
     {
@@ -355,11 +355,12 @@ void X265SpeedEvaluation()
       videoStreamDecoder->~H265Decoder();
       videoStreamEncoder->~H265Encoder();
       int bitRateFactor = 7;
-      for (int j = 1; j<=20; j=j+4) // The original frame bits per second is 256*256*20*8, the compression ratio is set from 0.5% to 8%
+      float percents[5] ={0.01, 0.02, 0.04, 0.06, 0.09};
+      for (int j = 0; j<5; j=j+1) // The original frame bits per second is 256*256*20*8, the compression ratio is set from 0.5% to 8%
       {
         videoStreamDecoder = new H265Decoder();
         videoStreamEncoder = new H265Encoder();
-        videoStreamEncoder->SetRCTaregetBitRate((int)(Width*Height/100*8*20*j)*bitRateFactor);
+        videoStreamEncoder->SetRCTaregetBitRate((int)(Width*Height*8*20*percents[j])*bitRateFactor);
         videoStreamEncoder->InitializeEncoder();
         videoStreamEncoder->SetSpeed(speed);
         TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);

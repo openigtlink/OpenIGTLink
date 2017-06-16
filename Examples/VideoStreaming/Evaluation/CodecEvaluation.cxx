@@ -494,9 +494,9 @@ void CodecOptimizationEval()
 
 void VP9SpeedEvaluation()
 {
-  for (int speed = 0; speed<=8;speed=speed+2)
+  for (int speed = 2; speed<=8;speed=speed+2)
   {
-    for (int i = 12; i<22; i=i+2)
+    for (int i = 0; i<22; i=i+2)
     {
 #if OpenIGTLink_BUILD_VPX
       startIndex = i*100;
@@ -511,9 +511,10 @@ void VP9SpeedEvaluation()
       videoStreamEncoder->SetPicWidthAndHeight(Width, Height);
       videoStreamEncoder->SetLosslessLink(false);
       videoStreamEncoder->SetRCMode(1); // 1 is VPX_CBR
-      for (int j = 1; j<=20; j=j+4) // The original frame bits per second is 256*256*20*8, the compression ratio is set from 0.5% to 8%
+      float percents[5] ={0.01, 0.02, 0.04, 0.06, 0.09};
+      for (int j = 0; j<5; j=j+1) // The original frame bits per second is 256*256*20*8, the compression ratio is set from 0.5% to 8%
       {
-        videoStreamEncoder->SetRCTaregetBitRate((int)(1920*1080/100*8*20*j));
+        videoStreamEncoder->SetRCTaregetBitRate((int)(Width*Height*8*20*percents[j]));
         videoStreamEncoder->InitializeEncoder();
         videoStreamEncoder->SetSpeed(speed);
         TestWithVersion(IGTL_HEADER_VERSION_1, videoStreamEncoder, videoStreamDecoder, false);

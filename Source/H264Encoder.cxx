@@ -634,10 +634,10 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
   {
     pSrcPic->stride[0] = iSourceWidth;
     pSrcPic->stride[1] = pSrcPic->stride[2] = pSrcPic->stride[0] >> 1;
-    int kiPicResSize = iSourceWidth * iSourceHeight * 3 >> 1;
     int frameSize = 0;
     int iLayer = 0;
     this->ConvertToLocalImageFormat(pSrcPic);
+    videoMessage->SetUseCompress(this->useCompress);
     if(this->useCompress)
     {
         encodeRet = pSVCEncoder->EncodeFrame(&h264SrcPicture, &sFbi);

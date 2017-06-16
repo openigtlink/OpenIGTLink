@@ -229,7 +229,7 @@ int H265Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
   {
     pSrcPic->stride[0] = iSourceWidth;
     pSrcPic->stride[1] = pSrcPic->stride[2] = pSrcPic->stride[0] >> 1;
-    int kiPicResSize = iSourceWidth * iSourceHeight * 3 >> 1;
+    videoMessage->SetUseCompress(this->useCompress);
     this->ConvertToLocalImageFormat(pSrcPic);
     if (this->useCompress)
     { 

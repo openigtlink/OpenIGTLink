@@ -471,7 +471,7 @@ void VP9SpeedEvaluation()
       videoStreamEncoder->SetPicWidthAndHeight(Width, Height);
       videoStreamEncoder->SetLosslessLink(false);
       videoStreamEncoder->SetRCMode(1); // 1 is VPX_CBR
-      float percents[5] ={0.01, 0.015, 0.03, 0.06, 0.09};
+      float percents[5] ={0.01, 0.02, 0.04, 0.06, 0.09};;
       for (int j = 0; j<5; j=j+1) // The original frame bits per second is 256*256*20*8, the compression ratio is set from 0.5% to 8%
       {
         videoStreamEncoder->SetRCTaregetBitRate((int)(Width*Height*8*20*percents[j]));
@@ -506,9 +506,9 @@ void H265SpeedEvaluation()
     title.append(ToString(speed)).append("\r\n");
     fwrite(title.c_str(),1, title.size(),pEval);
     fclose(pEval);
-    float percents[5] ={0.01, 0.015, 0.03, 0.06, 0.09};
+    float percents[5] ={0.01, 0.02, 0.04, 0.06, 0.09};
     std::map<std::string, std::string> values, times;
-    int BitRateFactor = 5;
+    int BitRateFactor = 7;
     for (int j = 0; j<5; j=j+1) // The original frame bits per second is 256*256*20*8, the compression ratio is set from 0.5% to 8%
     {
       H265Encoder* videoStreamEncoder = new H265Encoder();
@@ -587,7 +587,7 @@ void H264SpeedEvaluation()
 int main(int argc, char **argv)
 {
   //H264SpeedEvaluation();
-  VP9SpeedEvaluation();
+  //VP9SpeedEvaluation();
   H265SpeedEvaluation();
   //CodecOptimizationEval();
   return 0;

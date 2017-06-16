@@ -142,7 +142,7 @@ int H264Decoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage,
     pDecodedPic->stride[3] = 0;
     igtl_uint32 dimensions[2] = {iWidth, iHeight};
     int iRet = -1;
-    if (this->isCompressed)
+    if (videoMessage->GetUseCompress())
     {
       iRet = this->DecodeBitStreamIntoFrame(videoMessage->GetPackFragmentPointer(2), pDecodedPic->data[0], dimensions, iStreamSize);
     }

@@ -223,10 +223,10 @@ int VPXEncoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
   }
   if (this->initializationDone == true)
   {
-    int kiPicResSize = iSourceWidth * iSourceHeight * 3 >> 1;
     static igtl_uint32 messageID = 6;
     messageID ++;
     this->ConvertToLocalImageFormat(pSrcPic);
+    videoMessage->SetUseCompress(this->useCompress);
     if (this->useCompress)
     {
       const vpx_codec_err_t res2 = vpx_codec_encode(codec, inputImage, messageID, 1, 0, this->deadlineMode);
