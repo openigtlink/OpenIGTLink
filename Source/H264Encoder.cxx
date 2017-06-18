@@ -520,7 +520,7 @@ int H264Encoder::SetSpeed(int speed)
   speed = speed>=LOW_COMPLEXITY?speed:LOW_COMPLEXITY;
   speed = speed<=HIGH_COMPLEXITY?speed:HIGH_COMPLEXITY;
   this->codecSpeed = speed;
-  this->sSvcParam.iComplexityMode = (ECOMPLEXITY_MODE)this->codecSpeed;
+  this->sSvcParam.iComplexityMode = (ECOMPLEXITY_MODE)(2-this->codecSpeed);
   if (this->pSVCEncoder->InitializeExt (&sSvcParam)) {
     fprintf (stderr, "Set speed mode failed.\n");
     return -1;
@@ -634,67 +634,48 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
   {
     pSrcPic->stride[0] = iSourceWidth;
     pSrcPic->stride[1] = pSrcPic->stride[2] = pSrcPic->stride[0] >> 1;
-    int kiPicResSize = iSourceWidth * iSourceHeight * 3 >> 1;
+    int frameSize = 0;
+    int iLayer = 0;
+    this->ConvertToLocalImageFormat(pSrcPic);
+    videoMessage->SetUseCompress(this->useCompress);
     if(this->useCompress)
     {
-      static igtl_uint32 messageID = -1;
-      int frameSize = 0;
-      int iLayer = 0;
-      this->ConvertToLocalImageFormat(pSrcPic);
-      encodeRet = pSVCEncoder->EncodeFrame(&h264SrcPicture, &sFbi);
-      videoMessage->SetBitStreamSize(sFbi.iFrameSizeInBytes);
-      videoMessage->AllocateScalars();
-      videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
-      videoMessage->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
-      videoMessage->SetWidth(pSrcPic->picWidth);
-      videoMessage->SetHeight(pSrcPic->picHeight);
-      encodedFrameType = sFbi.eFrameType;
-      if (isGrayImage)
-      {
-        encodedFrameType = sFbi.eFrameType<<8;
-      }
-      videoMessage->SetFrameType(encodedFrameType);
-      messageID ++;
-      videoMessage->SetMessageID(messageID);
-      while (iLayer < sFbi.iLayerNum) {
-        SLayerBSInfo* pLayerBsInfo = &sFbi.sLayerInfo[iLayer];
-        if (pLayerBsInfo != NULL) {
-          int iLayerSize = 0;
-          int iNalIdx = pLayerBsInfo->iNalCount - 1;
-          do {
-            iLayerSize += pLayerBsInfo->pNalLengthInByte[iNalIdx];
-            -- iNalIdx;
-          } while (iNalIdx >= 0);
-          frameSize += iLayerSize;
-          for (int i = 0; i < iLayerSize ; i++)
-          {
-            videoMessage->GetPackFragmentPointer(2)[frameSize-iLayerSize+i] = pLayerBsInfo->pBsBuf[i];
-          }
+        encodeRet = pSVCEncoder->EncodeFrame(&h264SrcPicture, &sFbi);
+        videoMessage->SetBitStreamSize(sFbi.iFrameSizeInBytes);
+        videoMessage->AllocateScalars();
+        videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
+        videoMessage->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
+        videoMessage->SetWidth(pSrcPic->picWidth);
+        videoMessage->SetHeight(pSrcPic->picHeight);
+        encodedFrameType = sFbi.eFrameType;
+        if (isGrayImage)
+        {
+          encodedFrameType = sFbi.eFrameType<<8;
         }
-        ++ iLayer;
-      }
+        videoMessage->SetFrameType(encodedFrameType);
+        while (iLayer < sFbi.iLayerNum) {
+          SLayerBSInfo* pLayerBsInfo = &sFbi.sLayerInfo[iLayer];
+          if (pLayerBsInfo != NULL) {
+            int iLayerSize = 0;
+            int iNalIdx = pLayerBsInfo->iNalCount - 1;
+            do {
+              iLayerSize += pLayerBsInfo->pNalLengthInByte[iNalIdx];
+              -- iNalIdx;
+            } while (iNalIdx >= 0);
+            frameSize += iLayerSize;
+            for (int i = 0; i < iLayerSize ; i++)
+            {
+              videoMessage->GetPackFragmentPointer(2)[frameSize-iLayerSize+i] = pLayerBsInfo->pBsBuf[i];
+            }
+          }
+          ++ iLayer;
+        }
+        videoMessage->Pack();
     }
     else
     {
-      static igtl_uint32 messageID = -1;
-      videoMessage->SetBitStreamSize(kiPicResSize);
-      videoMessage->AllocateScalars();
-      videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
-      videoMessage->SetEndian(igtl_is_little_endian()==true?IGTL_VIDEO_ENDIAN_LITTLE:IGTL_VIDEO_ENDIAN_BIG); //little endian is 2 big endian is 1
-      videoMessage->SetWidth(pSrcPic->picWidth);
-      videoMessage->SetHeight(pSrcPic->picHeight);
-      encodedFrameType = H264FrameTypeIDR;
-      if (isGrayImage)
-      {
-        encodedFrameType = H264FrameTypeIDR<<8;
-      }
-      videoMessage->SetFrameType(encodedFrameType);
-      messageID ++;
-      videoMessage->SetMessageID(messageID);
-      memcpy(videoMessage->GetPackFragmentPointer(2), pSrcPic->data[0], kiPicResSize);
+      return this->PackUncompressedData(pSrcPic, videoMessage,  isGrayImage);
     }
-    videoMessage->Pack();
-    
   }
   return encodeRet;
 }

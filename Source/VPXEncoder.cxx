@@ -223,12 +223,12 @@ int VPXEncoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
   }
   if (this->initializationDone == true)
   {
-    int kiPicResSize = iSourceWidth * iSourceHeight * 3 >> 1;
-    if(this->useCompress)
+    static igtl_uint32 messageID = 6;
+    messageID ++;
+    this->ConvertToLocalImageFormat(pSrcPic);
+    videoMessage->SetUseCompress(this->useCompress);
+    if (this->useCompress)
     {
-      static igtl_uint32 messageID = 6;
-      messageID ++;
-      this->ConvertToLocalImageFormat(pSrcPic);
       const vpx_codec_err_t res2 = vpx_codec_encode(codec, inputImage, messageID, 1, 0, this->deadlineMode);
       if (res2 != VPX_CODEC_OK)
       {
@@ -236,51 +236,34 @@ int VPXEncoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
         return -1;
       }
       iter = NULL;
-      while((pkt = vpx_codec_get_cx_data(codec, &iter)) != NULL) {
+      while ((pkt = vpx_codec_get_cx_data(codec, &iter)) != NULL) {
         if (pkt->kind == VPX_CODEC_CX_FRAME_PKT) {
           encodedFrameType = FrameTypeKey;
           videoMessage->SetBitStreamSize(pkt->data.frame.sz);
           videoMessage->AllocateScalars();
           videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
-          videoMessage->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
+          videoMessage->SetEndian(igtl_is_little_endian() == true ? 2 : 1); //little endian is 2 big endian is 1
           videoMessage->SetWidth(pSrcPic->picWidth);
           videoMessage->SetHeight(pSrcPic->picHeight);
           if (isGrayImage)
           {
-            encodedFrameType = encodedFrameType<<8;
+            encodedFrameType = encodedFrameType << 8;
           }
           videoMessage->SetFrameType(encodedFrameType);
-          videoMessage->SetMessageID(messageID);
           memcpy(videoMessage->GetPackFragmentPointer(2), pkt->data.frame.buf, pkt->data.frame.sz);
           videoMessage->Pack();
         }
       }
-      if(videoMessage->GetBitStreamSize())
+      if (videoMessage->GetBitStreamSize())
       {
         return 0;
       }
-      return -1;
     }
     else
     {
-      static igtl_uint32 messageID = -1;
-      videoMessage->SetBitStreamSize(kiPicResSize);
-      videoMessage->AllocateScalars();
-      videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
-      videoMessage->SetEndian(igtl_is_little_endian()==true?IGTL_VIDEO_ENDIAN_LITTLE:IGTL_VIDEO_ENDIAN_BIG); //little endian is 2 big endian is 1
-      videoMessage->SetWidth(pSrcPic->picWidth);
-      videoMessage->SetHeight(pSrcPic->picHeight);
-      encodedFrameType = FrameTypeKey;
-      if (isGrayImage)
-      {
-        encodedFrameType = FrameTypeKey<<8;
-      }
-      videoMessage->SetFrameType(encodedFrameType);
-      messageID ++;
-      videoMessage->SetMessageID(messageID);
-      memcpy(videoMessage->GetPackFragmentPointer(2), pSrcPic->data[0], kiPicResSize);
-      videoMessage->Pack();
+      return this->PackUncompressedData(pSrcPic, videoMessage,  isGrayImage);
     }
+    return -1;
   }
   return -1;
 }

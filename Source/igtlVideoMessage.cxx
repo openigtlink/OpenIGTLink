@@ -72,6 +72,9 @@ VideoMessage::VideoMessage():
   m_Frame       = NULL;
 
   m_SendMessageType  = "VIDEO";
+  this->m_CodecType = CodecNameForVPX;
+  this->useCompress = true;
+  this->additionalZDimension = 1;
   ScalarSizeTable[0] = 0;
   ScalarSizeTable[1] = 0;
   ScalarSizeTable[2] = sizeof(igtlInt8);    // TYPE_INT8
@@ -92,6 +95,18 @@ VideoMessage::VideoMessage():
 
 VideoMessage::~VideoMessage()
 {
+}
+  
+int VideoMessage::SetCodecType(const char codecType[])
+{
+  if (strcmp(codecType, CodecNameForX265)==0 || strcmp(codecType, CodecNameForVPX)==0 || strcmp(codecType, CodecNameForH264)==0)
+  {
+    return 0;
+  }
+  else
+  {
+    return -1;
+  }
 }
   
 /// This should only be called when the data is unpacked
@@ -207,11 +222,13 @@ int VideoMessage::PackContent()
   igtl_frame_header* frame_header = (igtl_frame_header*)this->m_FrameHeader;
 
   frame_header->version           = IGTL_VIDEO_HEADER_VERSION;
+  strncpy(frame_header->codec, this->m_CodecType.c_str(), IGTL_VIDEO_CODEC_NAME_SIZE);
   frame_header->scalar_type       = this->scalarType;
   frame_header->endian            = this->endian;
   frame_header->width             = this->width;
   frame_header->height            = this->height;
   frame_header->frameType         = this->videoFrameType;
+  frame_header->useCompress       = this->useCompress;
   igtl_frame_convert_byte_order(frame_header);
 #if OpenIGTLink_HEADER_VERSION >= 2
   if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
@@ -248,10 +265,12 @@ int VideoMessage::UnpackContent()
   {
       // Video format version 1
       this->scalarType       = frame_header->scalar_type;
+      this->m_CodecType = std::string(frame_header->codec);
       this->endian           = frame_header->endian;
       this->width            = frame_header->width;
       this->height           = frame_header->height;
       this->videoFrameType   = frame_header->frameType;
+      this->useCompress      = frame_header->useCompress;
       this->m_Frame = this->m_FrameHeader;
       this->m_Frame += IGTL_VIDEO_HEADER_SIZE;
       

@@ -22,7 +22,7 @@
 #define  IGTL_STT_VIDEO_SIZE               9
 #define IGTL_VIDEO_CODEC_NAME_SIZE      4
 #define IGTL_VIDEO_HEADER_VERSION         1
-#define IGTL_VIDEO_HEADER_SIZE          14
+#define IGTL_VIDEO_HEADER_SIZE          23
 
 
 /* Data type */
@@ -40,6 +40,10 @@
 /* Endian */
 #define IGTL_VIDEO_ENDIAN_BIG           1
 #define IGTL_VIDEO_ENDIAN_LITTLE        2
+
+#define CodecNameForH264 "H264"
+#define CodecNameForVPX "VP9"
+#define CodecNameForX265 "X265"
 
 #ifdef __cplusplus
 extern "C" {
@@ -64,13 +68,16 @@ typedef struct {
    */
   typedef struct {
     igtl_uint16    version;          /* data format version number(1)   */
+    char     codec[IGTL_VIDEO_CODEC_NAME_SIZE];         /* codec protocal                  */
     igtl_uint8     scalar_type;      /* scalar type                     */
     /*2:int8 3:uint8 4:int16 5:uint16 6:int32 7:uint32 10:float32 11:float64) */
     igtl_uint8     endian;           /* endian type of image data       */
     /* (1:big, 2:little)               */
     igtl_uint32    width;
     igtl_uint32    height;
+    igtl_uint32    additionalZDimension;
     igtl_uint16    frameType;
+    igtl_int8      useCompress;
   } igtl_frame_header;
   
 #pragma pack()

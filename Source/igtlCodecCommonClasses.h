@@ -160,7 +160,9 @@ public:
   virtual int SetRCTaregetBitRate(unsigned int bitRate){return -1;};
   
   virtual int SetPicWidthAndHeight(unsigned int Width, unsigned int Height){return -1;};
-  
+   
+  int PackUncompressedData(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage);
+
 protected:
   unsigned int picWidth;
   
@@ -219,6 +221,8 @@ public:
   int ConvertYUVToRGB(igtl_uint8 *YUVFrame, igtl_uint8* RGBFrame, int iHeight, int iWidth);
   
   int ConvertYUVToGrayImage(igtl_uint8 * YUV420Frame, igtl_uint8 *GrayFrame, int iHeight, int iWidth);
+  
+  int UnpackUncompressedData(igtl::VideoMessage* videoMessage, SourcePicture* decodedPic);
   
 protected:
   

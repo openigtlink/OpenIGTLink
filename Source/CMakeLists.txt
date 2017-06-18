@@ -18,6 +18,15 @@ IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
       ${LINK_VP9_LIBRARY}
     )
   ENDIF()
+  IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND LINK_X265)
+    SET(LINK_X265_LIBRARY optimized ${X265_LIBRARY_DIR}\\Release\\x265-static.lib debug ${X265_LIBRARY_DIR}\\Debug\\x265-static.lib)
+    SET(LINK_OPENHEVC_LIBRARY ${OPENHEVC_LIBRARY_DIR}\\libLibOpenHevcWrapper.dll)
+    SET(LINK_LIBS
+      ${LINK_LIBS}
+      ${LINK_X265_LIBRARY}
+      #${LINK_OPENHEVC_LIBRARY}
+    )
+  ENDIF()
   #For debug under win32 system, the run time check mode should be set to /RTCu for multithreading purpose
   STRING(REPLACE "/RTC1" "/RTCu" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
   SET(OpenIGTLink_REQUIRED_CXX_FLAGS ${OpenIGTLink_REQUIRED_CXX_FLAGS})
@@ -42,6 +51,15 @@ ELSE() # for POSIX-compatible OSs
     SET(LINK_LIBS
     ${LINK_LIBS}
     "${CMAKE_BINARY_DIR}/OpenVPX/libvpx.a"
+    )
+  ENDIF()
+  IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND LINK_X265)
+    SET(LINK_X265_LIBRARY optimized ${X265_LIBRARY_DIR}/libx265.a debug ${X265_LIBRARY_DIR}/libx265.a)
+    SET(LINK_OPENHEVC_LIBRARY ${OPENHEVC_LIBRARY_DIR}/libLibOpenHevcWrapper.a)
+    SET(LINK_LIBS
+      ${LINK_LIBS}
+      ${LINK_X265_LIBRARY}
+      ${LINK_OPENHEVC_LIBRARY}
     )
   ENDIF()
   IF(OpenIGTLink_PLATFORM_SUNOS)
@@ -83,6 +101,17 @@ IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND BUILD_VPX)
     "${CMAKE_BINARY_DIR}/OpenVPX/vpx"
     "${CMAKE_BINARY_DIR}/OpenVPX/vp9"
     "${CMAKE_BINARY_DIR}/OpenVPX/vp9/common"
+  )
+ENDIF()
+
+IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND LINK_X265)
+  SET(OpenIGTLink_INCLUDE_DIRS
+    ${OpenIGTLink_INCLUDE_DIRS}
+    "${X265_SOURCE_DIR}"
+    "${X265_LIBRARY_DIR}"
+    "${OPENHEVC_SOURCE_DIR}"
+	"${OPENHEVC_SOURCE_DIR}/platform/arm"
+    "${OPENHEVC_LIBRARY_DIR}"
   )
 ENDIF()
 
@@ -299,6 +328,18 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" )
         ${CMAKE_BINARY_DIR}/OpenVPX/video_reader.h
         ${CMAKE_BINARY_DIR}/OpenVPX/ivfdec.h
       )
+    ENDIF()
+  ENDIF()
+  IF(LINK_X265)
+    LIST(APPEND OpenIGTLink_SOURCES
+      H265Decoder.cxx
+      H265Encoder.cxx
+    )
+    IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
+    LIST(APPEND OpenIGTLink_INCLUDE_FILES
+      H265Decoder.h
+      H265Encoder.h
+    )
     ENDIF()
   ENDIF()
 ENDIF()

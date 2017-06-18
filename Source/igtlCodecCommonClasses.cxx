@@ -130,6 +130,32 @@ void GenericDecoder::Write2File (FILE* pFp, unsigned char* pData[], igtl_uint32 
   }
 }
 
+int GenericDecoder::UnpackUncompressedData(igtl::VideoMessage* videoMessage, SourcePicture* decodedPic)
+{
+  igtl_int32 iWidth = videoMessage->GetWidth();
+  igtl_int32 iHeight = videoMessage->GetHeight();
+  if ((iWidth*iHeight*3>>1) != videoMessage->GetBitStreamSize())
+  {
+    return -1;
+  }
+  igtl_uint16 frameType = videoMessage->GetFrameType();
+  isGrayImage = false;
+  if (frameType>0X00FF)
+  {
+    frameType= frameType>>8;
+    isGrayImage = true;
+  }
+  decodedPic->picWidth = iWidth;
+  decodedPic->picHeight = iHeight;
+  decodedPic->data[1]= decodedPic->data[0] + iWidth*iHeight;
+  decodedPic->data[2]= decodedPic->data[1] + iWidth*iHeight/4;
+  decodedPic->stride[0] = iWidth;
+  decodedPic->stride[1] = decodedPic->stride[2] = iWidth>>1;
+  decodedPic->stride[3] = 0;
+  memcpy(decodedPic->data[0], videoMessage->GetPackFragmentPointer(2), iWidth*iHeight*3>>1);
+  return 1;
+}
+
 igtl_int64 GenericDecoder::getCurrentTime()
 {
 #if defined(_WIN32)
@@ -223,3 +249,28 @@ int GenericDecoder::ConvertYUVToGrayImage(igtl_uint8 * YUV420Frame, igtl_uint8 *
   return 1;
 }
 
+int GenericEncoder::PackUncompressedData(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage)
+{
+  if(!this->useCompress)
+  {
+    int iSourceWidth = pSrcPic->picWidth;
+    int iSourceHeight = pSrcPic->picHeight;
+    long kiPicResSize = iSourceWidth*iSourceHeight * 3 >> 1;
+    videoMessage->SetBitStreamSize(kiPicResSize);
+    videoMessage->AllocateScalars();
+    videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
+    videoMessage->SetEndian(igtl_is_little_endian() == true ? IGTL_VIDEO_ENDIAN_LITTLE : IGTL_VIDEO_ENDIAN_BIG); //little endian is 2 big endian is 1
+    videoMessage->SetWidth(pSrcPic->picWidth);
+    videoMessage->SetHeight(pSrcPic->picHeight);
+    encodedFrameType = FrameTypeKey;
+    if (isGrayImage)
+    {
+      encodedFrameType = FrameTypeKey << 8;
+    }
+    videoMessage->SetFrameType(encodedFrameType);
+    memcpy(videoMessage->GetPackFragmentPointer(2), pSrcPic->data[0], kiPicResSize);
+    videoMessage->Pack();
+    return 0;
+  }
+  return -1;
+}
