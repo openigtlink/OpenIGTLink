@@ -34,8 +34,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include "igtlCommandMessage.h"
 #endif // OpenIGTLink_PROTOCOL_VERSION >= 3
 
-#if OpenIGTLink_BUILD_H264 >=1 || OpenIGTLink_BUILD_VPX >=1 || OpenIGTLink_LINK_X265 >=1
-  #include "igtlVideoMessage.h"
+#if OpenIGTLink_PROTOCOL_VERSION >= 3 && OpenIGTLink_LINK_H264 >=1 || OpenIGTLink_LINK_VP9 >=1 || OpenIGTLink_LINK_X265 >=1 || OpenIGTLink_LINK_OPENHEVC >=1
+  #include "VideoStreaming/igtlVideoMessage.h"
 #endif
 
 #include "igtl_header.h"
@@ -80,7 +80,7 @@ namespace igtl
     this->AddMessageType("COMMAND", (PointerToMessageBaseNew)&igtl::CommandMessage::New);
     this->AddMessageType("RTS_COMMAND", (PointerToMessageBaseNew)&igtl::RTSCommandMessage::New);
 #endif
-#if (OpenIGTLink_BUILD_H264 >= 1 || OpenIGTLink_BUILD_VPX >=1 || OpenIGTLink_LINK_X265 >=1) && (OpenIGTLink_PROTOCOL_VERSION >= 3)
+#if (OpenIGTLink_LINK_H264 >= 1 || OpenIGTLink_LINK_VP9 >=1 || OpenIGTLink_LINK_X265 >=1) && (OpenIGTLink_PROTOCOL_VERSION >= 3)
     this->AddMessageType("VIDEO", (PointerToMessageBaseNew)&igtl::VideoMessage::New);
 #endif
   }

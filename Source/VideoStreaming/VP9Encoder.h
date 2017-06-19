@@ -10,8 +10,8 @@
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __igtlVPXEncoder_h
-#define __igtlVPXEncoder_h
+#ifndef __igtlVP9Encoder_h
+#define __igtlVP9Encoder_h
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,11 +34,11 @@
 
 using namespace std;
 
-class VPXEncoder: public GenericEncoder
+class VP9Encoder: public GenericEncoder
 {
 public:
-  VPXEncoder(char * configFile = NULL);
-  ~VPXEncoder();
+  VP9Encoder(char * configFile = NULL);
+  ~VP9Encoder();
 
   virtual int FillSpecificParameters();
   

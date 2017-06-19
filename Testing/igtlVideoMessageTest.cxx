@@ -37,14 +37,14 @@
   #include "igtlMessageFormat2TestMacro.h"
 #endif
 
-#if OpenIGTLink_BUILD_H264
+#if OpenIGTLink_LINK_H264
   #include "H264Encoder.h"
   #include "H264Decoder.h"
 #endif
 
-#if OpenIGTLink_BUILD_VPX
-  #include "VPXEncoder.h"
-  #include "VPXDecoder.h"
+#if OpenIGTLink_LINK_VP9
+  #include "VP9Encoder.h"
+  #include "VP9Decoder.h"
   #include "../video_reader.h"
   #include "./vpx_config.h"
   #include "vpx_dsp_rtcd.h"
@@ -155,7 +155,7 @@ int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDeco
             }
             if (compareImage)
             {
-              TestDebugCharArrayCmp(pDecodedPic->data[0], imagePointer, kiPicResSize * 3 / 2);
+              //TestDebugCharArrayCmp(pDecodedPic->data[0], imagePointer, kiPicResSize * 3 / 2);
               if (memcmp(pDecodedPic->data[0], imagePointer, kiPicResSize * 3 / 2) != 0)
               {
                 return -1;
@@ -184,11 +184,11 @@ int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDeco
 
 TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
   {
-  #if OpenIGTLink_BUILD_VPX
+  #if OpenIGTLink_LINK_VP9
     std::cerr<<"--------------------------- "<<std::endl;
     std::cerr<<"Begin of VPX tests "<<std::endl;
-    VPXEncoder* VPXStreamEncoder = new VPXEncoder();
-    VPXDecoder* VPXStreamDecoder = new VPXDecoder();
+    VP9Encoder* VPXStreamEncoder = new VP9Encoder();
+    VP9Decoder* VPXStreamDecoder = new VP9Decoder();
     VPXStreamEncoder->SetPicWidthAndHeight(Width,Height);
     VPXStreamEncoder->SetLosslessLink(true);
     VPXStreamEncoder->InitializeEncoder();
@@ -200,7 +200,7 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
     std::cerr<<"End of VPX tests "<<std::endl;
     std::cerr<<"--------------------------- "<<std::endl;
   #endif
-  #if OpenIGTLink_BUILD_H264
+  #if OpenIGTLink_LINK_H264
     std::cerr<<"--------------------------- "<<std::endl;
     std::cerr<<"Begin of H264 tests "<<std::endl;
     H264Encoder* H264StreamEncoder = new H264Encoder();
@@ -218,11 +218,11 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
 
   TEST(VideoMessageTest, EncodeAndDecodeFormatVersion2)
   {
-  #if OpenIGTLink_BUILD_VPX
+  #if OpenIGTLink_LINK_VP9
     std::cerr<<"--------------------------- "<<std::endl;
     std::cerr<<"Begin of VPX tests "<<std::endl;
-    VPXEncoder* VPXStreamEncoder = new VPXEncoder();
-    VPXDecoder* VPXStreamDecoder = new VPXDecoder();
+    VP9Encoder* VPXStreamEncoder = new VP9Encoder();
+    VP9Decoder* VPXStreamDecoder = new VP9Decoder();
     VPXStreamEncoder->SetPicWidthAndHeight(Width,Height);
     VPXStreamEncoder->InitializeEncoder();
     VPXStreamEncoder->SetLosslessLink(true);
@@ -234,7 +234,7 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
     std::cerr<<"End of VPX tests "<<std::endl;
     std::cerr<<"--------------------------- "<<std::endl;
   #endif
-  #if OpenIGTLink_BUILD_H264
+  #if OpenIGTLink_LINK_H264
     std::cerr<<"--------------------------- "<<std::endl;
     std::cerr<<"Begin of H264 tests "<<std::endl;
     H264Encoder* H264StreamEncoder = new H264Encoder();

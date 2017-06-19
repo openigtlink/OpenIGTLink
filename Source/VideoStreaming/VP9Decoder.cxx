@@ -11,22 +11,22 @@
  
  =========================================================================*/
 
-#include "VPXDecoder.h"
+#include "VP9Decoder.h"
 
-VPXDecoder::VPXDecoder()
+VP9Decoder::VP9Decoder()
 {
   decoder = get_vpx_decoder_by_name("vp9");
   vpx_codec_dec_init(&codec, decoder->codec_interface(), NULL, 0);
   this->deviceName = "";
 }
 
-VPXDecoder::~VPXDecoder()
+VP9Decoder::~VP9Decoder()
 {
   vpx_codec_destroy(&codec);
   decoder = NULL;
 }
 
-int VPXDecoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* pDecodedPic)
+int VP9Decoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* pDecodedPic)
 {
   if(videoMessage->GetBitStreamSize())
   {
@@ -55,7 +55,7 @@ int VPXDecoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, 
   return -1;
 }
 
-void VPXDecoder::ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[3], igtl_uint8 *outputFrame)
+void VP9Decoder::ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[3], igtl_uint8 *outputFrame)
 {
   int plane;
   int dimensionW [3] = {dimension[0],dimension[0]/2,dimension[0]/2};
@@ -76,7 +76,7 @@ void VPXDecoder::ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int 
 }
 
 
-int VPXDecoder::DecodeBitStreamIntoFrame(unsigned char* bitstream,igtl_uint8* outputFrame, igtl_uint32 dimensions[2], igtl_uint64& iStreamSize)
+int VP9Decoder::DecodeBitStreamIntoFrame(unsigned char* bitstream,igtl_uint8* outputFrame, igtl_uint32 dimensions[2], igtl_uint64& iStreamSize)
 {
   if (!vpx_codec_decode(&codec, bitstream, (unsigned int)iStreamSize, NULL, 0))
   {

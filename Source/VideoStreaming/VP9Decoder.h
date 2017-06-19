@@ -11,8 +11,8 @@
  
  =========================================================================*/
 
-#ifndef __igtlVPXDecoder_h
-#define __igtlVPXDecoder_h
+#ifndef __igtlVP9Decoder_h
+#define __igtlVP9Decoder_h
 
 #include <time.h>
 #if defined(_WIN32) /*&& defined(_DEBUG)*/
@@ -36,11 +36,11 @@
 #include "OpenVPX/vpx_config.h"
 
 #define NO_DELAY_DECODING
-class VPXDecoder:public GenericDecoder
+class VP9Decoder:public GenericDecoder
 {
 public: 
-  VPXDecoder();
-  ~VPXDecoder();
+  VP9Decoder();
+  ~VP9Decoder();
   
   virtual int DecodeBitStreamIntoFrame(unsigned char* bitStream,igtl_uint8* outputFrame, igtl_uint32 iDimensions[2], igtl_uint64 &iStreamSize);
   
