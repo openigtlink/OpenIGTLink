@@ -216,7 +216,11 @@ ADD_SUBDIRECTORY(VideoStreaming)
 #-----------------------------------------------------------------------------
 # Configure WebSocket
 # Create the link to the WebSocket libraries
-ADD_SUBDIRECTORY(WebSocket)
+IF(BUILD_WEBSOCKET)
+  ADD_SUBDIRECTORY(WebSocket)
+  ADD_SUBDIRECTORY(${PROJECT_BINARY_DIR}/websocketpp ${PROJECT_BINARY_DIR})
+  include(${PROJECT_BINARY_DIR}/websocketpp/WebSocketConfig.cmake)
+ENDIF()
 #-----------------------------------------------------------------------------
 
 ADD_LIBRARY(OpenIGTLink ${OpenIGTLink_SOURCES} ${OpenIGTLink_INCLUDE_FILES})

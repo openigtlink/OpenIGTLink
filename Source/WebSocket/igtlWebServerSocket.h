@@ -80,7 +80,7 @@ class webSocketServer{
     bool serverCreated;
     uint16_t port;
   private:
-    typedef std::set<connection_hdl,std::owner_less<connection_hdl>> con_list;
+    typedef std::set<connection_hdl,std::owner_less<connection_hdl> > con_list;
     int run(std::string docroot, uint16_t port);
   
     con_list m_connections;

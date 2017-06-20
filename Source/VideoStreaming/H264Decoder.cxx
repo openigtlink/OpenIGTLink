@@ -75,7 +75,7 @@ int H264Decoder::Process (void* pDst[3], SBufferInfo* pInfo, FILE* pFp) {
     iStride[1] = pInfo->UsrData.sSystemBuffer.iStride[1];
     if(pFp)
     {
-      igtl_uint32 dimensions[2] = {iWidth, iHeight};
+      igtl_uint32 dimensions[2] = {static_cast<igtl_uint32>(iWidth), static_cast<igtl_uint32>(iHeight)};
       Write2File (pFp, (unsigned char**)pDst, dimensions, iStride);
     }
   }
@@ -140,7 +140,7 @@ int H264Decoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage,
     pDecodedPic->stride[0] = iWidth;
     pDecodedPic->stride[1] = pDecodedPic->stride[2] = iWidth>>1;
     pDecodedPic->stride[3] = 0;
-    igtl_uint32 dimensions[2] = {iWidth, iHeight};
+    igtl_uint32 dimensions[2] = {static_cast<igtl_uint32>(iWidth), static_cast<igtl_uint32>(iHeight)};
     int iRet = -1;
     if (videoMessage->GetUseCompress())
     {
@@ -247,7 +247,7 @@ int H264Decoder::DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_ui
     iTotal = iEnd - iStart;
     if (sDstBufInfo.iBufferStatus == 1) {
       Process ((void**)pData, &sDstBufInfo, NULL);
-      int dimension[2] = {iWidth, iHeight};
+      int dimension[2] = {static_cast<int>(iWidth), static_cast<int>(iHeight)};
       int stride[2] = {sDstBufInfo.UsrData.sSystemBuffer.iStride[0],sDstBufInfo.UsrData.sSystemBuffer.iStride[1]};
       ComposeByteSteam(pData, dimension, stride, outputFrame);
       iWidth  = sDstBufInfo.UsrData.sSystemBuffer.iWidth;

@@ -90,7 +90,7 @@
       pDecodedPic->stride[0] = iWidth;
       pDecodedPic->stride[1] = pDecodedPic->stride[2] = iWidth>>1;
       pDecodedPic->stride[3] = 0;
-      igtl_uint32 dimensions[2] = {iWidth, iHeight};
+      igtl_uint32 dimensions[2] = {static_cast<igtl_uint32>(iWidth), static_cast<igtl_uint32>(iHeight)};
       int iRet = -1;
       if (videoMessage->GetUseCompress())
       {
