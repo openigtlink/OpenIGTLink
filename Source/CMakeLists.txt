@@ -210,7 +210,7 @@ ENDIF()
 #-----------------------------------------------------------------------------
 # Configure VideoStreaming
 # Create the link to the VideoStreaming libraries
-ADD_SUBDIRECTORY(VideoStreaming)
+include(${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VideoStreaming.cmake)
 #-----------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------
