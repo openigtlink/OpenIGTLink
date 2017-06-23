@@ -98,7 +98,9 @@ int main(int argc, char* argv[])
 #if defined(_WIN32) || defined(_WIN64)
       sep = "\\";
 #endif
-      std::string imageIndexStr = static_cast< std::ostringstream & >(( std::ostringstream() << std::dec << (i%6+1))).str();
+      stringstream stream;
+      stream << (i%6+1);
+      std::string imageIndexStr = stream.str();
       std::string testIndexedFileName = std::string(testFileName);
       testIndexedFileName.append(sep).append("Testing").append(sep).append("img").append(sep).append("igtlTestImage").append(imageIndexStr).append(".raw");
       FILE* pFileYUV = NULL;

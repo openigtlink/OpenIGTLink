@@ -30,10 +30,10 @@
 #include "igtl_types.h"
 #include "igtlVideoMessage.h"
 #include "igtlCodecCommonClasses.h"
-#include "OpenVPX/vpx/vpx_decoder.h"
-#include "OpenVPX/tools_common.h"
-#include "OpenVPX/video_reader.h"
-#include "OpenVPX/vpx_config.h"
+#include "vpx/vpx_decoder.h"
+#include "tools_common.h"
+#include "video_reader.h"
+#include "vpx_config.h"
 
 #define NO_DELAY_DECODING
 class VP9Decoder:public GenericDecoder

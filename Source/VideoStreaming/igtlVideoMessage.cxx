@@ -101,6 +101,7 @@ int VideoMessage::SetCodecType(const char codecType[])
 {
   if (strcmp(codecType, CodecNameForX265)==0 || strcmp(codecType, CodecNameForVPX)==0 || strcmp(codecType, CodecNameForH264)==0)
   {
+    this->m_CodecType = codecType;
     return 0;
   }
   else
