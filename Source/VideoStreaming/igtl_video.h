@@ -42,7 +42,7 @@
 #define IGTL_VIDEO_ENDIAN_LITTLE        2
 
 #define CodecNameForH264 "H264"
-#define CodecNameForVPX "VP9"
+#define CodecNameForVPX "VP9 "
 #define CodecNameForX265 "X265"
 
 #ifdef __cplusplus
