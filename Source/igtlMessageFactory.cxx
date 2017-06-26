@@ -44,141 +44,141 @@ PURPOSE.  See the above copyright notices for more information.
 namespace igtl
 {
 
-  //-----------------------------------------------------------------------------
-  MessageFactory::MessageFactory()
-  {
-    this->AddMessageType("TRANSFORM", (PointerToMessageBaseNew)&igtl::TransformMessage::New);
-    this->AddMessageType("GET_TRANS", (PointerToMessageBaseNew)&igtl::GetTransformMessage::New);
-    this->AddMessageType("POSITION", (PointerToMessageBaseNew)&igtl::PositionMessage::New);
-    this->AddMessageType("IMAGE", (PointerToMessageBaseNew)&igtl::ImageMessage::New);
-    this->AddMessageType("GET_IMAGE", (PointerToMessageBaseNew)&igtl::GetImageMessage::New);
-    this->AddMessageType("STATUS", (PointerToMessageBaseNew)&igtl::StatusMessage::New);
-    this->AddMessageType("GET_STATUS", (PointerToMessageBaseNew)&igtl::GetStatusMessage::New);
-    this->AddMessageType("CAPABILITY", (PointerToMessageBaseNew)&igtl::CapabilityMessage::New);
+//-----------------------------------------------------------------------------
+MessageFactory::MessageFactory()
+{
+  this->AddMessageType("TRANSFORM", (PointerToMessageBaseNew)&igtl::TransformMessage::New);
+  this->AddMessageType("GET_TRANS", (PointerToMessageBaseNew)&igtl::GetTransformMessage::New);
+  this->AddMessageType("POSITION", (PointerToMessageBaseNew)&igtl::PositionMessage::New);
+  this->AddMessageType("IMAGE", (PointerToMessageBaseNew)&igtl::ImageMessage::New);
+  this->AddMessageType("GET_IMAGE", (PointerToMessageBaseNew)&igtl::GetImageMessage::New);
+  this->AddMessageType("STATUS", (PointerToMessageBaseNew)&igtl::StatusMessage::New);
+  this->AddMessageType("GET_STATUS", (PointerToMessageBaseNew)&igtl::GetStatusMessage::New);
+  this->AddMessageType("CAPABILITY", (PointerToMessageBaseNew)&igtl::CapabilityMessage::New);
 #if OpenIGTLink_PROTOCOL_VERSION >= 2
-    this->AddMessageType("POINT", (PointerToMessageBaseNew)&igtl::PointMessage::New);
-    this->AddMessageType("GET_POINT", (PointerToMessageBaseNew)&igtl::GetPointMessage::New);
-    this->AddMessageType("TRAJ", (PointerToMessageBaseNew)&igtl::TrajectoryMessage::New);
-    this->AddMessageType("GET_TRAJ", (PointerToMessageBaseNew)&igtl::GetTrajectoryMessage::New);
-    this->AddMessageType("STRING", (PointerToMessageBaseNew)&igtl::StringMessage::New);
-    this->AddMessageType("TDATA", (PointerToMessageBaseNew)&igtl::TrackingDataMessage::New);
-    this->AddMessageType("RTS_TDATA", (PointerToMessageBaseNew)&igtl::RTSTrackingDataMessage::New);
-    this->AddMessageType("STT_TDATA", (PointerToMessageBaseNew)&igtl::StartTrackingDataMessage::New);
-    this->AddMessageType("STP_TDATA", (PointerToMessageBaseNew)&igtl::StopTrackingDataMessage::New);
-    this->AddMessageType("QTDATA", (PointerToMessageBaseNew)&igtl::QuaternionTrackingDataMessage::New);
-    this->AddMessageType("RTS_QTDATA", (PointerToMessageBaseNew)&igtl::RTSQuaternionTrackingDataMessage::New);
-    this->AddMessageType("STT_QTDATA", (PointerToMessageBaseNew)&igtl::StartQuaternionTrackingDataMessage::New);
-    this->AddMessageType("STP_QTDATA", (PointerToMessageBaseNew)&igtl::StopQuaternionTrackingDataMessage::New);
+  this->AddMessageType("POINT", (PointerToMessageBaseNew)&igtl::PointMessage::New);
+  this->AddMessageType("GET_POINT", (PointerToMessageBaseNew)&igtl::GetPointMessage::New);
+  this->AddMessageType("TRAJ", (PointerToMessageBaseNew)&igtl::TrajectoryMessage::New);
+  this->AddMessageType("GET_TRAJ", (PointerToMessageBaseNew)&igtl::GetTrajectoryMessage::New);
+  this->AddMessageType("STRING", (PointerToMessageBaseNew)&igtl::StringMessage::New);
+  this->AddMessageType("TDATA", (PointerToMessageBaseNew)&igtl::TrackingDataMessage::New);
+  this->AddMessageType("RTS_TDATA", (PointerToMessageBaseNew)&igtl::RTSTrackingDataMessage::New);
+  this->AddMessageType("STT_TDATA", (PointerToMessageBaseNew)&igtl::StartTrackingDataMessage::New);
+  this->AddMessageType("STP_TDATA", (PointerToMessageBaseNew)&igtl::StopTrackingDataMessage::New);
+  this->AddMessageType("QTDATA", (PointerToMessageBaseNew)&igtl::QuaternionTrackingDataMessage::New);
+  this->AddMessageType("RTS_QTDATA", (PointerToMessageBaseNew)&igtl::RTSQuaternionTrackingDataMessage::New);
+  this->AddMessageType("STT_QTDATA", (PointerToMessageBaseNew)&igtl::StartQuaternionTrackingDataMessage::New);
+  this->AddMessageType("STP_QTDATA", (PointerToMessageBaseNew)&igtl::StopQuaternionTrackingDataMessage::New);
 #endif
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
-    this->AddMessageType("COMMAND", (PointerToMessageBaseNew)&igtl::CommandMessage::New);
-    this->AddMessageType("RTS_COMMAND", (PointerToMessageBaseNew)&igtl::RTSCommandMessage::New);
+  this->AddMessageType("COMMAND", (PointerToMessageBaseNew)&igtl::CommandMessage::New);
+  this->AddMessageType("RTS_COMMAND", (PointerToMessageBaseNew)&igtl::RTSCommandMessage::New);
 #endif
-  }
+}
 
 
-  //-----------------------------------------------------------------------------
-  MessageFactory::~MessageFactory()
-  {
-  }
+//-----------------------------------------------------------------------------
+MessageFactory::~MessageFactory()
+{
+}
 
-  //-----------------------------------------------------------------------------
-  void MessageFactory::AddMessageType(const std::string& messageTypeName, MessageFactory::PointerToMessageBaseNew messageTypeNewPointer )
-  {
-    this->IgtlMessageTypes[messageTypeName] = messageTypeNewPointer; 
-  }
+//-----------------------------------------------------------------------------
+void MessageFactory::AddMessageType(const std::string& messageTypeName, MessageFactory::PointerToMessageBaseNew messageTypeNewPointer )
+{
+  this->IgtlMessageTypes[messageTypeName] = messageTypeNewPointer; 
+}
 
-  //----------------------------------------------------------------------------
-  MessageFactory::PointerToMessageBaseNew MessageFactory::GetMessageTypeNewPointer(const std::string& messageTypeName) const
-  {
-    if ( this->IgtlMessageTypes.find(messageTypeName) != this->IgtlMessageTypes.end() )
+//----------------------------------------------------------------------------
+MessageFactory::PointerToMessageBaseNew MessageFactory::GetMessageTypeNewPointer(const std::string& messageTypeName) const
+{
+  if ( this->IgtlMessageTypes.find(messageTypeName) != this->IgtlMessageTypes.end() )
     {
-      return this->IgtlMessageTypes.find(messageTypeName)->second;
+    return this->IgtlMessageTypes.find(messageTypeName)->second;
     }
 
+  std::ostringstream oss;
+  oss << "Error: In " __FILE__ ", line " << __LINE__ << ", unknown message type constructor requested." << std::endl;
+  throw std::invalid_argument(oss.str());
+
+  return NULL; 
+}
+
+//-----------------------------------------------------------------------------
+bool MessageFactory::IsValid(igtl::MessageHeader::Pointer headerMsg)
+{
+  bool result = false;
+
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (headerMsg.IsNotNull() && IgtlMessageTypes.find(headerMsg->GetMessageType()) != IgtlMessageTypes.end() )
+#else
+    if (headerMsg.IsNotNull() && IgtlMessageTypes.find(headerMsg->GetDeviceType()) != IgtlMessageTypes.end())
+#endif
+      {
+      result = true;
+      }
+  return result;
+}
+
+//----------------------------------------------------------------------------
+bool MessageFactory::IsValid(igtl::MessageHeader::Pointer headerMsg) const
+{
+  bool result = false;
+
+#if OpenIGTLink_HEADER_VERSION >= 2
+  if (headerMsg.IsNotNull() && IgtlMessageTypes.find(headerMsg->GetMessageType()) != IgtlMessageTypes.end() )
+#else
+    if (headerMsg.IsNotNull() && IgtlMessageTypes.find(headerMsg->GetDeviceType()) != IgtlMessageTypes.end())
+#endif
+      {
+      result = true;
+      }
+  return result;
+}
+
+//-----------------------------------------------------------------------------
+igtl::MessageBase::Pointer MessageFactory::GetMessage(igtl::MessageHeader::Pointer headerMsg)
+{
+  if (headerMsg.IsNull())
+    {
     std::ostringstream oss;
-    oss << "Error: In " __FILE__ ", line " << __LINE__ << ", unknown message type constructor requested." << std::endl;
+    oss << "Error: In " __FILE__ ", line " << __LINE__ << ", header is NULL." << std::endl;
     throw std::invalid_argument(oss.str());
-
-    return NULL; 
-  }
-
-  //-----------------------------------------------------------------------------
-  bool MessageFactory::IsValid(igtl::MessageHeader::Pointer headerMsg)
-  {
-    bool result = false;
-
-#if OpenIGTLink_HEADER_VERSION >= 2
-    if (headerMsg.IsNotNull() && IgtlMessageTypes.find(headerMsg->GetMessageType()) != IgtlMessageTypes.end() )
-#else
-    if (headerMsg.IsNotNull() && IgtlMessageTypes.find(headerMsg->GetDeviceType()) != IgtlMessageTypes.end())
-#endif
-    {
-      result = true;
-    }
-    return result;
-  }
-
-  //----------------------------------------------------------------------------
-  bool MessageFactory::IsValid(igtl::MessageHeader::Pointer headerMsg) const
-  {
-    bool result = false;
-
-#if OpenIGTLink_HEADER_VERSION >= 2
-    if (headerMsg.IsNotNull() && IgtlMessageTypes.find(headerMsg->GetMessageType()) != IgtlMessageTypes.end() )
-#else
-    if (headerMsg.IsNotNull() && IgtlMessageTypes.find(headerMsg->GetDeviceType()) != IgtlMessageTypes.end())
-#endif
-    {
-      result = true;
-    }
-    return result;
-  }
-
-  //-----------------------------------------------------------------------------
-  igtl::MessageBase::Pointer MessageFactory::GetMessage(igtl::MessageHeader::Pointer headerMsg)
-  {
-    if (headerMsg.IsNull())
-    {
-      std::ostringstream oss;
-      oss << "Error: In " __FILE__ ", line " << __LINE__ << ", header is NULL." << std::endl;
-      throw std::invalid_argument(oss.str());
     }
 
 #if OpenIGTLink_HEADER_VERSION >= 2
-    std::string messageType(headerMsg->GetMessageType());
+  std::string messageType(headerMsg->GetMessageType());
 #else
-    std::string messageType(headerMsg->GetDeviceType());
+  std::string messageType(headerMsg->GetDeviceType());
 #endif
 
-    if (!this->IsValid(headerMsg))
+  if (!this->IsValid(headerMsg))
     {
-      std::ostringstream oss;
-      oss << "Error: In " __FILE__ ", line " << __LINE__ << ", receiving message of type:" << messageType << std::endl;
-      throw std::invalid_argument(oss.str());
+    std::ostringstream oss;
+    oss << "Error: In " __FILE__ ", line " << __LINE__ << ", receiving message of type:" << messageType << std::endl;
+    throw std::invalid_argument(oss.str());
     }
 
-    std::string messageTypeUpper(messageType);
-    std::transform(messageTypeUpper.begin(), messageTypeUpper.end(), messageTypeUpper.begin(), ::toupper);
+  std::string messageTypeUpper(messageType);
+  std::transform(messageTypeUpper.begin(), messageTypeUpper.end(), messageTypeUpper.begin(), ::toupper);
 
-    igtl::MessageBase::Pointer result = NULL;
-    if( GetMessageTypeNewPointer(messageTypeUpper) == NULL )
+  igtl::MessageBase::Pointer result = NULL;
+  if( GetMessageTypeNewPointer(messageTypeUpper) == NULL )
     {
-      std::ostringstream oss;
-      oss << "Error: In " __FILE__ ", line " << __LINE__ << ", unable to create message of type:" << messageTypeUpper << std::endl;
-      throw std::invalid_argument(oss.str());
+    std::ostringstream oss;
+    oss << "Error: In " __FILE__ ", line " << __LINE__ << ", unable to create message of type:" << messageTypeUpper << std::endl;
+    throw std::invalid_argument(oss.str());
     }
-    result = GetMessageTypeNewPointer(messageTypeUpper)();
+  result = GetMessageTypeNewPointer(messageTypeUpper)();
 
-    // Must have a valid message at this point, otherwise its a programming bug.
-    assert(result.IsNotNull());
+  // Must have a valid message at this point, otherwise its a programming bug.
+  assert(result.IsNotNull());
 
-    result->SetMessageHeader(headerMsg);
-    result->InitBuffer();
+  result->SetMessageHeader(headerMsg);
+  result->InitBuffer();
 
-    return result;
-  }
+  return result;
+}
 
 //----------------------------------------------------------------------------
 igtl::MessageHeader::Pointer MessageFactory::CreateHeaderMessage(int headerVersion) const
@@ -194,11 +194,11 @@ igtl::MessageHeader::Pointer MessageFactory::CreateHeaderMessage(int headerVersi
 igtl::MessageBase::Pointer MessageFactory::CreateReceiveMessage(igtl::MessageHeader::Pointer headerMsg) const
 {
   if (headerMsg.IsNull())
-  {
+    {
     std::ostringstream oss;
     oss << "Error: In " __FILE__ ", line " << __LINE__ << ", header is NULL." << std::endl;
     throw std::invalid_argument(oss.str());
-  }
+    }
 
 #if OpenIGTLink_HEADER_VERSION >= 2
   std::string messageType(headerMsg->GetMessageType());
@@ -209,19 +209,19 @@ igtl::MessageBase::Pointer MessageFactory::CreateReceiveMessage(igtl::MessageHea
   std::transform(messageTypeUpper.begin(), messageTypeUpper.end(), messageTypeUpper.begin(), ::toupper);
 
   if (!this->IsValid(headerMsg))
-  {
+    {
     std::ostringstream oss;
     oss << "Error: In " __FILE__ ", line " << __LINE__ << ", receiving message of type:" << messageTypeUpper << std::endl;
     throw std::invalid_argument(oss.str());
-  }
+    }
 
   igtl::MessageBase::Pointer result = NULL;
   if( GetMessageTypeNewPointer(messageTypeUpper) == NULL )
-  {
+    {
     std::ostringstream oss;
     oss << "Error: In " __FILE__ ", line " << __LINE__ << ", unable to create message of type:" << messageTypeUpper << std::endl;
     throw std::invalid_argument(oss.str());
-  }
+    }
   result = GetMessageTypeNewPointer(messageTypeUpper)();
 
   // Must have a valid message at this point, otherwise its a programming bug.
@@ -237,22 +237,22 @@ igtl::MessageBase::Pointer MessageFactory::CreateReceiveMessage(igtl::MessageHea
 igtl::MessageBase::Pointer MessageFactory::CreateSendMessage(const std::string& messageType, int headerVersion) const
 {
   if (messageType.empty())
-  {
+    {
     std::ostringstream oss;
     oss << "Error: In " __FILE__ ", line " << __LINE__ << ", message type is undefined." << std::endl;
     throw std::invalid_argument(oss.str());
-  }
+    }
 
   std::string messageTypeUpper(messageType);
   std::transform(messageTypeUpper.begin(), messageTypeUpper.end(), messageTypeUpper.begin(), ::toupper);
 
   igtl::MessageBase::Pointer result = NULL;
   if( GetMessageTypeNewPointer(messageTypeUpper) == NULL )
-  {
+    {
     std::ostringstream oss;
     oss << "Error: In " __FILE__ ", line " << __LINE__ << ", unable to create message of type:" << messageTypeUpper << std::endl;
     throw std::invalid_argument(oss.str());
-  }
+    }
   result = GetMessageTypeNewPointer(messageTypeUpper)();
 
   // Must have a valid message at this point, otherwise its a programming bug.
@@ -269,9 +269,9 @@ void MessageFactory::GetAvailableMessageTypes(std::vector<std::string>& types) c
 {
   types.clear();
   for( std::map<std::string, PointerToMessageBaseNew>::const_iterator it = IgtlMessageTypes.begin(); it != IgtlMessageTypes.end(); ++it )
-  {
+    {
     types.push_back(it->first);
-  }
+    }
 
   return;
 }

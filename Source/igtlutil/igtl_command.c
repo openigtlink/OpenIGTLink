@@ -24,9 +24,9 @@ void igtl_export igtl_command_convert_byte_order(igtl_command_header* header)
 
   if (igtl_is_little_endian()) 
     {
-      header->commandId   = BYTE_SWAP_INT32(header->commandId);
-      header->encoding = BYTE_SWAP_INT16(header->encoding);
-      header->length   = BYTE_SWAP_INT32(header->length);
+    header->commandId   = BYTE_SWAP_INT32(header->commandId);
+    header->encoding = BYTE_SWAP_INT16(header->encoding);
+    header->length   = BYTE_SWAP_INT32(header->length);
     }
 }
 

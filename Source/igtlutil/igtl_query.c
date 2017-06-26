@@ -24,8 +24,8 @@ void igtl_export igtl_query_convert_byte_order(igtl_query_header* header)
 
   if (igtl_is_little_endian()) 
     {
-      header->queryID   = BYTE_SWAP_INT32(header->queryID);
-      header->deviceUIDLength   = BYTE_SWAP_INT16(header->deviceUIDLength);
+    header->queryID   = BYTE_SWAP_INT32(header->queryID);
+    header->deviceUIDLength   = BYTE_SWAP_INT16(header->deviceUIDLength);
     }
 }
 

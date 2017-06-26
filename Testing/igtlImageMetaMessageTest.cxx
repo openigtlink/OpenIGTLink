@@ -151,7 +151,7 @@ TEST(ImageMetaMessageTest, Unpack)
   nanoSecond[2]=287445242;
   
   for (int i = 0; i<3;++i)
-  {
+    {
     igtl::ImageMetaElement::Pointer elem = igtl::ImageMetaElement::New();
     imageMetaSendMsg->GetImageMetaElement(i, elem);
     EXPECT_EQ(strncmp((char*)(elem->GetName()), name[i], 19),0);
@@ -168,7 +168,7 @@ TEST(ImageMetaMessageTest, Unpack)
     elem->GetSize(returnedSize);
     EXPECT_THAT(returnedSize, testing::ElementsAreArray(groundTruthSize[i]));
     EXPECT_EQ(elem->GetScalarType(), (int)IGTL_IMAGE_STYPE_TYPE_UINT16);
-  }
+    }
 }
 
 

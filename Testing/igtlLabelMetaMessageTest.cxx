@@ -58,7 +58,7 @@ TEST(LabelMetaMessageTest, Pack)
 {
   BuildUpLabelElements();
   int r = memcmp((const void*)labelMetaSendMsg->GetPackPointer(), (const void*)test_lbmeta_message,
-         (size_t)(IGTL_HEADER_SIZE));
+                 (size_t)(IGTL_HEADER_SIZE));
   //The header comparison, however, the crc is different. because the igtl_lbmeta_get_crc() is different from the crc generation in MessageBase::Pack()
   EXPECT_EQ(r, 0);
   r = memcmp((const void*)labelMetaSendMsg->GetPackBodyPointer(), (const void*)(test_lbmeta_message+(size_t)(IGTL_HEADER_SIZE)), IGTL_LBMETA_ELEMENT_SIZE*3 );
@@ -102,7 +102,7 @@ TEST(LabelMetaMessageTest, Unpack)
   label.push_back((char*)"LABEL_1");
   label.push_back((char*)"LABEL_2");
   for (int i = 0; i<3;++i)
-  {
+    {
     igtl::LabelMetaElement::Pointer elem = igtl::LabelMetaElement::New();
     labelMetaReceiveMsg->GetLabelMetaElement(i, elem);
     EXPECT_EQ(strncmp((char*)(elem->GetName()), labelDescription[i], 19),0);
@@ -114,7 +114,7 @@ TEST(LabelMetaMessageTest, Unpack)
     elem->GetSize(returnedSize);
     EXPECT_THAT(returnedSize, testing::ElementsAreArray(groundTruthSize));
     EXPECT_EQ(strncmp((char*)elem->GetOwner(), "IMAGE_0", 7),0);
-  }
+    }
 }
 
 

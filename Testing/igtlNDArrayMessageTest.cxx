@@ -34,15 +34,15 @@ void BuildUpArrayElements()
   int i,j,k;
   igtl_float64 arrayFloat[120];
   for (i = 0; i < size[0]; i ++)
-  {
-    for (j = 0; j < size[1]; j ++)
     {
-      for (k = 0; k < size[2]; k ++)
+    for (j = 0; j < size[1]; j ++)
       {
+      for (k = 0; k < size[2]; k ++)
+        {
         arrayFloat[i*(4*3) + j*3 + k] = (igtl_float64) (i*(4*3) + j*3 + k);
+        }
       }
     }
-  }
   array.SetArray((void*) arrayFloat);
   NDArraySendMsg = igtl::NDArrayMessage::New();
   NDArraySendMsg->SetDeviceName("DeviceName");
@@ -95,15 +95,15 @@ TEST(NDArrayMessageTest, Unpack)
   igtl_float64* arraytemp = (igtl_float64 *)tempArrayBase->GetRawArray();
   int i,j,k;
   for (i = 0; i < size[0]; i ++)
-  {
-    for (j = 0; j < size[1]; j ++)
     {
-      for (k = 0; k < size[2]; k ++)
+    for (j = 0; j < size[1]; j ++)
       {
+      for (k = 0; k < size[2]; k ++)
+        {
         EXPECT_EQ(i*(4*3) + j*3 + k, (igtl_float64)(*(arraytemp+i*(4*3) + j*3 + k)));
+        }
       }
     }
-  }
   
 }
 
