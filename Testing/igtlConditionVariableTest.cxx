@@ -49,7 +49,10 @@ TEST(ConditionVariableTest, SingleChildThreadTest)
   threader->SpawnThread((igtl::ThreadFunctionType) &TestThreadCounter, &td);
   
   while (td.threads[0] == false)
+    {
     igtl::Sleep(20);
+    }
+  
   std::cerr<<"The child thread is released";
   EXPECT_EQ(td.iFinalCount, 10);
 }
@@ -103,11 +106,15 @@ TEST(ConditionVariableTest, Broadcast)
 void* TestThreadWaiting1(void* ptr)
 {
   igtl::MultiThreader::ThreadInfo* info =
-  static_cast<igtl::MultiThreader::ThreadInfo*>(ptr);
+    static_cast<igtl::MultiThreader::ThreadInfo*>(ptr);
   ThreadData* td = static_cast<ThreadData*>(info->UserData);
   td->glock->Lock();
+
   while(!td->condition)
+    {
     td->conditionVar->Wait(td->glock);
+    }
+
   td->threads[0]= true;
   td->glock->Unlock();
   return NULL;
@@ -117,11 +124,15 @@ void* TestThreadWaiting1(void* ptr)
 void* TestThreadWaiting2(void* ptr)
 {
   igtl::MultiThreader::ThreadInfo* info =
-  static_cast<igtl::MultiThreader::ThreadInfo*>(ptr);
+    static_cast<igtl::MultiThreader::ThreadInfo*>(ptr);
   ThreadData* td = static_cast<ThreadData*>(info->UserData);
   td->glock->Lock();
+  
   while(!td->condition)
+    {
     td->conditionVar->Wait(td->glock);
+    }
+  
   td->threads[1]= true;
   td->glock->Unlock();
   return NULL;
@@ -132,25 +143,25 @@ void* TestThreadCounter(void* ptr)
   //------------------------------------------------------------
   // Get thread information
   igtl::MultiThreader::ThreadInfo* info =
-  static_cast<igtl::MultiThreader::ThreadInfo*>(ptr);
+    static_cast<igtl::MultiThreader::ThreadInfo*>(ptr);
   ThreadData* td = static_cast<ThreadData*>(info->UserData);
   //igtl::SimpleMutexLock *glock = td->glocks[0];
   int i = 0;
   while(++i <=10)
-  {
+    {
     std::cerr<<i<<" in the first child thread"<<std::endl;
     igtl::Sleep(200);
     td->iFinalCount++;
-  };
+    };
   td->condition = true;
   if (td->isBroadCast)
-  {
+    {
     td->conditionVar->Broadcast();
-  }
+    }
   else
-  {
+    {
     td->conditionVar->Signal();
-  }
+    }
   return NULL;
 }
 

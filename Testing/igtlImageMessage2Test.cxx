@@ -29,9 +29,9 @@ float inS[4] = {-0.196632f, 0.142857f, 0.970014f, 0.0};
 float inN[4] = {0.222525f, 0.970014f, -0.0977491f, 0.0};
 float inOrigin[4] = {46.0531f,19.4709f,46.0531f, 1.0};
 igtl::Matrix4x4 inMatrix = {{inT[0],inS[0],inN[0],inOrigin[0]},
-  {inT[1],inS[1],inN[1],inOrigin[1]},
-  {inT[2],inS[2],inN[2],inOrigin[2]},
-  {inT[3],inS[3],inN[3],inOrigin[3]}};
+                            {inT[1],inS[1],inN[1],inOrigin[1]},
+                            {inT[2],inS[2],inN[2],inOrigin[2]},
+                            {inT[3],inS[3],inN[3],inOrigin[3]}};
 int   size[3]     = {50, 50, 1};       // image dimension
 float spacing[3]  = {1.0f, 1.0f, 1.0f};     // spacing (mm/pixel)
 int   svsize[3]   = {50, 50, 1};       // sub-volume size
@@ -97,9 +97,9 @@ TEST(ImageMessage2Test, Unpack)
   float returnSpacing[3] = {0.0f,0.0f,0.0f};
   imageReceiveMsg2->GetSpacing(returnSpacing);
   for(int i=0;i < 3; i++)
-  {
+    {
     EXPECT_NEAR(returnSpacing[i], spacing[i], ABS_ERROR);
-  }
+    }
   int returnSvsize[3] = {0,0,0}, returnSvoffset[3] = {0,0,0};
   imageReceiveMsg2->GetSubVolume(returnSvsize, returnSvoffset);
   EXPECT_THAT(returnSvsize,testing::ElementsAreArray(svsize));
@@ -108,9 +108,9 @@ TEST(ImageMessage2Test, Unpack)
   EXPECT_EQ(imageReceiveMsg2->GetEndian(), IGTL_IMAGE_ENDIAN_LITTLE);
   EXPECT_EQ(imageReceiveMsg2->GetCoordinateSystem(), IGTL_IMAGE_COORD_RAS);
   igtl::Matrix4x4 outMatrix = {{0.0,0.0,0.0,0.0},
-    {0.0,0.0,0.0,0.0},
-    {0.0,0.0,0.0,0.0},
-    {0.0,0.0,0.0,0.0}};
+                               {0.0,0.0,0.0,0.0},
+                               {0.0,0.0,0.0,0.0},
+                               {0.0,0.0,0.0,0.0}};
   imageReceiveMsg2->GetMatrix(outMatrix);
   EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
   int r = memcmp(imageReceiveMsg2->GetPackFragmentPointer(2), (unsigned char*)test_image, TEST_IMAGE_MESSAGE_SIZE);
@@ -121,16 +121,16 @@ TEST(ImageMessage2Test, FragmentImageTest)
 {
   EXPECT_TRUE(true);
   /*
-  int TEST_FRAGMENTIMAGE_MESSAGE_SIZE = TEST_IMAGE_MESSAGE_SIZE/2;
-  unsigned char test_fragmentImage[TEST_FRAGMENTIMAGE_MESSAGE_SIZE];
-  memcpy(test_fragmentImage, test_image_message+IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE+TEST_FRAGMENTIMAGE_MESSAGE_SIZE, TEST_FRAGMENTIMAGE_MESSAGE_SIZE); // copy the last half of the image
-  unsigned char * charwholeImagePointer = (unsigned char *)imageSendMsg2->GetScalarPointer();
-  EXPECT_EQ(strcmp((const char *)charwholeImagePointer, (const char *)test_image), 0);
-  imageSendMsg2->SetScalarPointer((void*)test_fragmentImage);
-  unsigned char * fragmentImagePointer = (unsigned char *)imageSendMsg2->GetScalarPointer();
-  EXPECT_NE(strcmp((const char *)charwholeImagePointer, (const char *)fragmentImagePointer),0);
-  EXPECT_EQ(strcmp((const char *)fragmentImagePointer, (const char *)(test_image_message+IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE+TEST_FRAGMENTIMAGE_MESSAGE_SIZE)),0);
-   */
+    int TEST_FRAGMENTIMAGE_MESSAGE_SIZE = TEST_IMAGE_MESSAGE_SIZE/2;
+    unsigned char test_fragmentImage[TEST_FRAGMENTIMAGE_MESSAGE_SIZE];
+    memcpy(test_fragmentImage, test_image_message+IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE+TEST_FRAGMENTIMAGE_MESSAGE_SIZE, TEST_FRAGMENTIMAGE_MESSAGE_SIZE); // copy the last half of the image
+    unsigned char * charwholeImagePointer = (unsigned char *)imageSendMsg2->GetScalarPointer();
+    EXPECT_EQ(strcmp((const char *)charwholeImagePointer, (const char *)test_image), 0);
+    imageSendMsg2->SetScalarPointer((void*)test_fragmentImage);
+    unsigned char * fragmentImagePointer = (unsigned char *)imageSendMsg2->GetScalarPointer();
+    EXPECT_NE(strcmp((const char *)charwholeImagePointer, (const char *)fragmentImagePointer),0);
+    EXPECT_EQ(strcmp((const char *)fragmentImagePointer, (const char *)(test_image_message+IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE+TEST_FRAGMENTIMAGE_MESSAGE_SIZE)),0);
+  */
 }
 
 int main(int argc, char **argv)

@@ -9,7 +9,7 @@
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.  See the above copyright notices for more information.
 
-=========================================================================*/
+  =========================================================================*/
 
 #include "igtlServerSocket.h"
 #include "igtlImageMessage2.h"
@@ -38,13 +38,13 @@ public:
     real_ = pointer;
     // By default, all calls are delegated to the real object.
     ON_CALL(*this, CreateServer(_))
-        .WillByDefault(Invoke(real_.GetPointer(), &ServerSocket::CreateServer));
+      .WillByDefault(Invoke(real_.GetPointer(), &ServerSocket::CreateServer));
     ON_CALL(*this, GetServerPort())
-        .WillByDefault(Invoke(real_.GetPointer(), &ServerSocket::GetServerPort));
+      .WillByDefault(Invoke(real_.GetPointer(), &ServerSocket::GetServerPort));
     ON_CALL(*this, WaitForConnection(_))
       .WillByDefault(Invoke(real_.GetPointer(), &ServerSocket::WaitForConnection));
     ON_CALL(*this, Send(_,_))
-    .WillByDefault(Invoke(real_.GetPointer(), &ServerSocket::Send));
+      .WillByDefault(Invoke(real_.GetPointer(), &ServerSocket::Send));
   }
   ~ServerSocketMock(){real_.~SmartPointer();};
   ServerSocket::Pointer getPointer(){return real_;};
@@ -53,8 +53,8 @@ public:
   MOCK_METHOD1(CreateServer, int(int port));
   MOCK_METHOD1(WaitForConnection, igtl::ClientSocket::Pointer(unsigned long msec));
   MOCK_METHOD2(Send, int(const void* data, int length));
- private:
-   ServerSocket::Pointer real_;
+private:
+  ServerSocket::Pointer real_;
   
 };
 void* ThreadFunction(void* ptr);
@@ -141,9 +141,9 @@ TEST(ServerSocketTest, ConnectionAndSending)
   int bCreation = mockServerSocket.CreateServer(port);
   EXPECT_EQ(bCreation,0);
   if(1==0)
-  {
+    {
     igtl::ClientSocket::Pointer returnSocket = mockServerSocket.WaitForConnection(waitingTime);
-     /**Connecting to a established server, however, time out happened, return NULL */
+    /**Connecting to a established server, however, time out happened, return NULL */
     EXPECT_TRUE(returnSocket.IsNull());
     //EXPECT_EQ(mockServerSocket->CreateServer(port),-1);
     //-----------------------
@@ -156,51 +156,51 @@ TEST(ServerSocketTest, ConnectionAndSending)
     clientSocket = igtl::ClientSocket::New();
     bool notConnected = true;
     while(notConnected)
-    {
+      {
       int r = clientSocket->ConnectToServer("localhost", port);
       if(r!=0)
-      {
+        {
         continue;
-      }
+        }
       else
-      {
+        {
         notConnected=false;
+        }
       }
-    }
     StartImageSendingMessage::Pointer StartImageSending;
     StartImageSending = StartImageSendingMessage::New();
     StartImageSending->Pack();
     clientSocket->Send(StartImageSending->GetPackPointer(), StartImageSending->GetPackSize());
 
     while(1)
-    {
+      {
       igtl::MessageHeader::Pointer headerMsg;
       headerMsg = igtl::MessageHeader::New();
       headerMsg->InitPack();
       int rs = clientSocket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
       if (rs == 0)
-      {
+        {
         std::cerr << "Connection closed." << std::endl;
         clientSocket->CloseSocket();
         exit(0);
-      }
+        }
       if (rs != headerMsg->GetPackSize())
-      {
+        {
         continue;
-      }
+        }
       
       headerMsg->Unpack();
       if (strcmp(headerMsg->GetDeviceName(),"Image")== 0)
-      {
+        {
         ReceiveImageData(clientSocket, headerMsg);
-      }
+        }
       else
-      {
+        {
         EXPECT_TRUE(false)<< "Receiving : " << headerMsg->GetDeviceName() << std::endl;
         clientSocket->Skip(headerMsg->GetBodySizeToRead(), 0);
-      }
+        }
       if (++loop >= 10) // if received 10 times
-      {
+        {
         StopImageSendingMessage::Pointer StopImageSending;
         StopImageSending = StopImageSendingMessage::New();
         StopImageSending->Pack();
@@ -208,13 +208,13 @@ TEST(ServerSocketTest, ConnectionAndSending)
         threadID = -1;
         break;
         //----------------------------------------
+        }
       }
     }
-  }
   else
-  {
+    {
     mockServerSocket.getPointer()->CloseSocket();
-  }
+    }
   //delete mockServerSocket;
   //clientSocket::send
 }
@@ -240,11 +240,11 @@ int ReceiveImageData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::P
   int c = imageData->Unpack();
   
   if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
-  {
+    {
     std::cout << "================================" << std::endl;
     std::cout << " Name       : " << imageData->GetDeviceType();
     std::cout << "================================" << std::endl;
-  }
+    }
   return 1;
 }
 
@@ -254,7 +254,7 @@ void* ThreadFunction(void* ptr)
   //------------------------------------------------------------
   // Get the server socket
   igtl::MultiThreader::ThreadInfo* info =
-  static_cast<igtl::MultiThreader::ThreadInfo*>(ptr);
+    static_cast<igtl::MultiThreader::ThreadInfo*>(ptr);
   ServerSocketMock* mockServerSocket = static_cast<ServerSocketMock*>(info->UserData);
   
   //------------------------------------------------------------
@@ -267,51 +267,51 @@ void* ThreadFunction(void* ptr)
   igtl::MultiThreader::Pointer threader = igtl::MultiThreader::New();
   socket = mockServerSocket->WaitForConnection(10000);
   if (socket.IsNotNull())
-  {
+    {
     igtl::MessageHeader::Pointer headerMsg;
     headerMsg = igtl::MessageHeader::New();
     for (;;)
-    {
+      {
       headerMsg->InitPack();
       int rs = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
       if (rs == 0)
-      {
+        {
         EXPECT_TRUE(false) << "Disconnecting the client.";
         socket->CloseSocket();
         break;
-      }
+        }
       if (rs != headerMsg->GetPackSize())
-      {
+        {
         continue;
-      }
+        }
       
       // Deserialize the header
       headerMsg->Unpack();
       if (strcmp(headerMsg->GetDeviceType(), "StartSending") == 0)
-      {
-        while(!(threadID==-1))
         {
+        while(!(threadID==-1))
+          {
           glock->Lock();
           for (int i = 0; i < imageMessage2Test->GetNumberOfPackFragments(); i ++)
-          {
+            {
             socket->Send(imageMessage2Test->GetPackFragmentPointer(i), imageMessage2Test->GetPackFragmentSize(i));
-          }
+            }
           glock->Unlock();
           igtl::Sleep(interval);
+          }
         }
-      }
       else if (strcmp(headerMsg->GetDeviceType(), "StopSending") == 0)
-      {
+        {
         std::cerr << "Received a stop message." << std::endl;
         socket->CloseSocket();
         break;
+        }
       }
     }
-  }
   else
-  {
+    {
     EXPECT_TRUE(false) << "No client connected.";
-  }
+    }
   delete mockServerSocket;
   return NULL;
 }

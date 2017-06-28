@@ -30,23 +30,24 @@ igtl_uint64 igtl_export igtl_image_get_data_size(igtl_image_header * header)
   sj = header->subvol_size[1];
   sk = header->subvol_size[2];
 
-  switch (header->scalar_type) {
-  case IGTL_IMAGE_STYPE_TYPE_INT8:
-  case IGTL_IMAGE_STYPE_TYPE_UINT8:
-    sp = 1;
-    break;
-  case IGTL_IMAGE_STYPE_TYPE_INT16:
-  case IGTL_IMAGE_STYPE_TYPE_UINT16:
-    sp = 2;
-    break;
-  case IGTL_IMAGE_STYPE_TYPE_INT32:
-  case IGTL_IMAGE_STYPE_TYPE_UINT32:
-    sp = 4;
-    break;
-  default:
-    sp = 0;
-    break;
-  }
+  switch (header->scalar_type)
+    {
+    case IGTL_IMAGE_STYPE_TYPE_INT8:
+    case IGTL_IMAGE_STYPE_TYPE_UINT8:
+      sp = 1;
+      break;
+    case IGTL_IMAGE_STYPE_TYPE_INT16:
+    case IGTL_IMAGE_STYPE_TYPE_UINT16:
+      sp = 2;
+      break;
+    case IGTL_IMAGE_STYPE_TYPE_INT32:
+    case IGTL_IMAGE_STYPE_TYPE_UINT32:
+      sp = 4;
+      break;
+    default:
+      sp = 0;
+      break;
+    }
 
   data_size = si*sj*sk*sp;
   return data_size;
@@ -54,8 +55,8 @@ igtl_uint64 igtl_export igtl_image_get_data_size(igtl_image_header * header)
 
 
 void igtl_export igtl_image_set_matrix(float spacing[3], float origin[3],
-                            float norm_i[3], float norm_j[3], float norm_k[3],
-                            igtl_image_header * header)
+                                       float norm_i[3], float norm_j[3], float norm_k[3],
+                                       igtl_image_header * header)
 {
   header->matrix[0]  = (igtl_float32) (norm_i[0] * spacing[0]);
   header->matrix[1]  = (igtl_float32) (norm_i[1] * spacing[0]);
@@ -88,8 +89,8 @@ void igtl_export igtl_image_set_matrix_4x4(float _matrix [4][4], igtl_image_head
 }
 
 void igtl_export igtl_image_get_matrix(float spacing[3], float origin[3],
-                            float norm_i[3], float norm_j[3], float norm_k[3],
-                            igtl_image_header * header)
+                                       float norm_i[3], float norm_j[3], float norm_k[3],
+                                       igtl_image_header * header)
 {
   float tx;
   float ty;
@@ -122,23 +123,23 @@ void igtl_export igtl_image_get_matrix(float spacing[3], float origin[3],
   spacing[2] = sqrtf(nx*nx + ny*ny + nz*nz);
 
   if (spacing[0] != 0)
-  {
+    {
     norm_i[0] = header->matrix[0]  / spacing[0];
     norm_i[1] = header->matrix[1]  / spacing[0];
     norm_i[2] = header->matrix[2]  / spacing[0];
-  }
+    }
   if (spacing[1] != 0)
-  {
+    {
     norm_j[0] = header->matrix[3] / spacing[1];
     norm_j[1] = header->matrix[4] / spacing[1];
     norm_j[2] = header->matrix[5] / spacing[1];
-  }
+    }
   if (spacing[2] != 0)
-  {
+    {
     norm_k[0] = header->matrix[6] / spacing[2];
     norm_k[1] = header->matrix[7] / spacing[2];
     norm_k[2] = header->matrix[8] / spacing[2];
-  }
+    }
 
   origin[0] = header->matrix[9];
   origin[1] = header->matrix[10];
@@ -201,7 +202,7 @@ void igtl_export igtl_image_convert_byte_order(igtl_image_header * header)
       }
     memcpy(header->matrix, tmp, sizeof(igtl_uint32)*12);
 
-  }
+    }
 }
 
 

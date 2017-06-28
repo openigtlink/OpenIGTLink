@@ -1,15 +1,15 @@
 /*=========================================================================
  
- Program:   OpenIGTLink Library
- Language:  C++
+  Program:   OpenIGTLink Library
+  Language:  C++
  
- Copyright (c) Insight Software Consortium. All rights reserved.
+  Copyright (c) Insight Software Consortium. All rights reserved.
  
- This software is distributed WITHOUT ANY WARRANTY; without even
- the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- PURPOSE.  See the above copyright notices for more information.
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.  See the above copyright notices for more information.
  
- =========================================================================*/
+  =========================================================================*/
 
 #include "igtlSensorMessage.h"
 #include "igtlutil/igtl_test_data_sensor.h"
@@ -46,9 +46,9 @@ TEST(SensorMessageTest, Pack)
   
   sensorDataSendMsg->SetUnit(unit);
   for (int i =0; i < 6; i++)
-  {
+    {
     sensorDataSendMsg->SetValue(i, sensorValues[i]);
-  }
+    }
   sensorDataSendMsg->Pack();
   int r = memcmp((const void*)sensorDataSendMsg->GetPackPointer(), (const void*)test_sensor_message,
                  (size_t)(IGTL_HEADER_SIZE));

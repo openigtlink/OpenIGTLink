@@ -1,15 +1,15 @@
 /*=========================================================================
  
- Program:   OpenIGTLink Library
- Language:  C++
+  Program:   OpenIGTLink Library
+  Language:  C++
  
- Copyright (c) Insight Software Consortium. All rights reserved.
+  Copyright (c) Insight Software Consortium. All rights reserved.
  
- This software is distributed WITHOUT ANY WARRANTY; without even
- the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- PURPOSE.  See the above copyright notices for more information.
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.  See the above copyright notices for more information.
  
- =========================================================================*/
+  =========================================================================*/
 
 #include "igtlColorTableMessage.h"
 #include "igtlutil/igtl_test_data_colortable2.h"
@@ -57,9 +57,9 @@ TEST(ColorTableMessageTest, Unpack)
   EXPECT_EQ(colorTableReceiveMsg->GetMapType(),IGTL_COLORTABLE_MAP_UINT8);
   EXPECT_EQ(colorTableReceiveMsg->GetIndexType(),IGTL_COLORTABLE_INDEX_UINT8);
   for (int i = 0; i < 256; i ++)
-  {
+    {
     EXPECT_EQ(((unsigned char*)colorTableReceiveMsg->GetTablePointer())[i], i);
-  }
+    }
   
 }
 

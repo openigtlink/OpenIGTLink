@@ -52,9 +52,9 @@ float inS[4] = {-0.196632f, 0.142857f, 0.970014f, 0.0};
 float inN[4] = {0.222525f, 0.970014f, -0.0977491f, 0.0};
 float inOrigin[4] = {46.0531f,19.4709f,46.0531f, 1.0};
 igtl::Matrix4x4 inMatrix = {{inT[0],inS[0],inN[0],inOrigin[0]},
-  {inT[1],inS[1],inN[1],inOrigin[1]},
-  {inT[2],inS[2],inN[2],inOrigin[2]},
-  {inT[3],inS[3],inN[3],inOrigin[3]}};
+                            {inT[1],inS[1],inN[1],inOrigin[1]},
+                            {inT[2],inS[2],inN[2],inOrigin[2]},
+                            {inT[3],inS[3],inN[3],inOrigin[3]}};
 int   size[3]     = {50, 50, 1};       // image dimension
 float spacing[3]  = {1.0f, 1.0f, 1.0f};     // spacing (mm/pixel)
 int   svsize[3]   = {50, 50, 1};       // sub-volume size
@@ -104,9 +104,9 @@ void BuildUpElements()
   unit->Pack();
   sensorDataSendMsg->SetUnit(unit);
   for (int i =0; i < 6; i++)
-  {
+    {
     sensorDataSendMsg->SetValue(i, sensorValues[i]);
-  }
+    }
   sensorDataSendMsg->Pack();
   
   sensorDataReceiveMsg->AllocatePack();
@@ -201,9 +201,9 @@ TEST(BindMessageTest, Unpack)
   EXPECT_EQ(transformHeader->body_size, IGTL_TRANSFORM_SIZE);
  
   igtl::Matrix4x4 outMatrix = {{0.0,0.0,0.0,0.0},
-    {0.0,0.0,0.0,0.0},
-    {0.0,0.0,0.0,0.0},
-    {0.0,0.0,0.0,0.0}};
+                               {0.0,0.0,0.0,0.0},
+                               {0.0,0.0,0.0,0.0},
+                               {0.0,0.0,0.0,0.0}};
   transformReceiveMsg->GetMatrix(outMatrix);
   EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
   

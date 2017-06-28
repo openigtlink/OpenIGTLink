@@ -110,7 +110,7 @@ TEST(PointMessageTest, Unpack)
   pointDescription.push_back((char*)"POINT_DESCRIPTION_2");
   
   for (int i = 0; i<3;++i)
-  {
+    {
     igtl::PointElement::Pointer elem = igtl::PointElement::New();
     pointReceiveMsg->GetPointElement(i, elem);
     EXPECT_EQ(strncmp((char*)(elem->GetName()), pointDescription[i], 19),0);
@@ -122,7 +122,7 @@ TEST(PointMessageTest, Unpack)
     EXPECT_THAT(returnedPosition, testing::ElementsAreArray(groundTruthPos[i]));
     EXPECT_EQ(elem->GetRadius(), groundTruthRadius[i]);
     EXPECT_EQ(strncmp((char*)elem->GetOwner(), "IMAGE_0", 7),0);
-  }
+    }
 }
 
 

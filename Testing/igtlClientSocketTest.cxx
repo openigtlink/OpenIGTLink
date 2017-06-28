@@ -41,7 +41,7 @@ public:
     real_ = pointer;
     // By default, all calls are delegated to the real object.
     ON_CALL(*this, ConnectToServer(_,_,_))
-    .WillByDefault(Invoke(real_.GetPointer(), &ClientSocket::ConnectToServer));
+      .WillByDefault(Invoke(real_.GetPointer(), &ClientSocket::ConnectToServer));
   }
   ClientSocketMock(){real_.~SmartPointer();};
   
