@@ -443,21 +443,21 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
     ptr32_src = (igtl_uint32*)ptr;
     ptr32_src_end = ptr32_src + n;
     if (igtl_is_little_endian())
-    {
-      while (ptr32_src < ptr32_src_end)
       {
+      while (ptr32_src < ptr32_src_end)
+        {
         *ptr32_dst = BYTE_SWAP_INT32(*ptr32_src);
         ptr32_dst ++;
         ptr32_src ++;
+        }
       }
-    }
     else
-    {
+      {
       memcpy(ptr32_dst, ptr32_src, s);
-    }
+      }
     ptr += s;
     }
-
+  
   return 1;
 }
 

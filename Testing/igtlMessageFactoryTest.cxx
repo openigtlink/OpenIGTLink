@@ -38,51 +38,51 @@ int main(int , char * [] )
   igtl::MessageHeader::Pointer header = NULL;
 
   if (factory->IsValid(header))
-  {
+    {
     std::cerr << "A null header is not valid." << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   header = igtl::MessageHeader::New();
 
   if (factory->IsValid(header))
-  {
+    {
     std::cerr << "A header without a DeviceType e.g. STRING, TRANSFORM is invalid." << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   igtl::TransformMessage::Pointer transformMessage = igtl::TransformMessage::New();
 
   if (!factory->IsValid(transformMessage.GetPointer()))
-  {
+    {
     std::cerr << "The IsValid method should check for not null, and a valid DeviceType. TRANSFORM should be valid." << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   // Test with an invalid message.
   try
-  {
+    {
     igtl::BananaMessage::Pointer bananaMessage = igtl::BananaMessage::New();
 
     // Check firstly its not valid.
     if (factory->IsValid(bananaMessage.GetPointer()))
-    {
+      {
       std::cerr << "The IsValid method should fail for BANANA messages." << std::endl;
       return EXIT_FAILURE;
-    }
+      }
 
     factory->GetMessage(bananaMessage.GetPointer());
     throw std::logic_error("Should not reach this line, as the previous line should throw invalid_argument, as BANANA messages are not valid.");
-  }
+    }
   catch (const std::invalid_argument& e)
-  {
+    {
     std::cerr << "Caught exception e=" << e.what() << std::endl;
-  }
+    }
   catch (const std::exception& e)
-  {
+    {
     std::cerr << "Caught std::exception, which should not happen. e=" << e.what() << std::endl;
     throw e;
-  }
+    }
 
 
   return EXIT_SUCCESS;

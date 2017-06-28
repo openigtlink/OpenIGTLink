@@ -1,15 +1,15 @@
 /*=========================================================================
  
- Program:   OpenIGTLink Library
- Language:  C++
+  Program:   OpenIGTLink Library
+  Language:  C++
  
- Copyright (c) Insight Software Consortium. All rights reserved.
+  Copyright (c) Insight Software Consortium. All rights reserved.
  
- This software is distributed WITHOUT ANY WARRANTY; without even
- the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- PURPOSE.  See the above copyright notices for more information.
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.  See the above copyright notices for more information.
  
- =========================================================================*/
+  =========================================================================*/
 
 #include "igtlPositionMessage.h"
 #include "igtlutil/igtl_test_data_position.h"
@@ -80,9 +80,9 @@ TEST(PositionMessageTest, PackFormatVersion2)
   igtlMetaDataAddElementMacro(positionSendMsg);
   positionSendMsg->Pack();
   /*FILE *fp;
-  fp = fopen("position.bin", "w");
-  fwrite(positionSendMsg->GetPackPointer(), positionSendMsg->GetPackBodySize()+IGTL_HEADER_SIZE, 1, fp);
-  fclose(fp);*/
+    fp = fopen("position.bin", "w");
+    fwrite(positionSendMsg->GetPackPointer(), positionSendMsg->GetPackBodySize()+IGTL_HEADER_SIZE, 1, fp);
+    fclose(fp);*/
   int r = memcmp((const void*)positionSendMsg->GetPackPointer(), (const void*)test_position_messageFormat2,
                  (size_t)(IGTL_HEADER_SIZE));
   EXPECT_EQ(r, 0);
@@ -107,13 +107,18 @@ TEST(PositionMessageTest, UnpackFormatVersion2)
   igtl_float32 position[3] = {0.0,0.0,0.0};
   positionReceiveMsg->GetPosition(position);
   for(int i = 0; i<3 ; i++)
+    {
     EXPECT_FLOAT_EQ(position_Truth[i], position[i]);
+    }
   
   igtl_float32 quaternion_Truth[4] = {0.0f, 0.5773502691f, 0.5773502692f, 0.3333333333f};
   igtl_float32 quaternion[4] = {0.0,0.0,0.0,0.0};
   positionReceiveMsg->GetQuaternion(quaternion);
   for(int i = 0; i<4 ; i++)
+    {
     EXPECT_FLOAT_EQ(quaternion_Truth[i], quaternion[i]);
+    }
+  
   igtlMetaDataComparisonMacro(positionReceiveMsg);
 }
 

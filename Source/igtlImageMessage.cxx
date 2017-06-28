@@ -25,17 +25,17 @@ ImageMessage::ImageMessage():
 {
   for (int i = 0; i < 3; i ++)
     {
-      dimensions[i] = 0;
-      spacing[i]    = 0.0;
-      subDimensions[i] = 0;
-      subOffset[i] = 0;
+    dimensions[i] = 0;
+    spacing[i]    = 0.0;
+    subDimensions[i] = 0;
+    subOffset[i] = 0;
     }
   for (int i = 0; i < 4; i ++)
     {
-      for (int j = 0; j < 4; j ++)
-        {
-	   matrix[i][j] = (i == j ? 1.0 : 0.0);
-        }
+    for (int j = 0; j < 4; j ++)
+      {
+      matrix[i][j] = (i == j ? 1.0 : 0.0);
+      }
     }
 
   endian        = ENDIAN_BIG;
@@ -116,17 +116,17 @@ int ImageMessage::SetSubVolume(int dim[3], int off[3])
       off[1] + dim[1] <= dimensions[1] &&
       off[2] + dim[2] <= dimensions[2])
     {
-      subDimensions[0] = dim[0];
-      subDimensions[1] = dim[1];
-      subDimensions[2] = dim[2];
-      subOffset[0] = off[0];
-      subOffset[1] = off[1];
-      subOffset[2] = off[2];
-      return 1;
+    subDimensions[0] = dim[0];
+    subDimensions[1] = dim[1];
+    subDimensions[2] = dim[2];
+    subOffset[0] = off[0];
+    subOffset[1] = off[1];
+    subOffset[2] = off[2];
+    return 1;
     }
   else
     {
-      return 0;
+    return 0;
     }
 }
 
@@ -137,17 +137,17 @@ int ImageMessage::SetSubVolume(int dimi, int dimj, int dimk, int offi, int offj,
       offj + dimj <= dimensions[1] &&
       offk + dimk <= dimensions[2])
     {
-      subDimensions[0] = dimi;
-      subDimensions[1] = dimj;
-      subDimensions[2] = dimk;
-      subOffset[0] = offi;
-      subOffset[1] = offj;
-      subOffset[2] = offk;
-      return 1;
+    subDimensions[0] = dimi;
+    subDimensions[1] = dimj;
+    subDimensions[2] = dimk;
+    subOffset[0] = offi;
+    subOffset[1] = offj;
+    subOffset[2] = offk;
+    return 1;
     }
   else
     {
-      return 0;
+    return 0;
     }
 }
 
@@ -378,12 +378,13 @@ int ImageMessage::PackContent()
   float norm_j[3];
   float norm_k[3];
 
-  for (int i = 0; i < 3; i ++) {
+  for (int i = 0; i < 3; i ++)
+    {
     norm_i[i] = matrix[i][0];
     norm_j[i] = matrix[i][1];
     norm_k[i] = matrix[i][2];
     origin[i] = matrix[i][3];
-  }
+    }
 
   igtl_image_set_matrix(this->spacing, origin,
                         norm_i, norm_j, norm_k,
@@ -408,53 +409,54 @@ int ImageMessage::UnpackContent()
 
   if (image_header->header_version == IGTL_IMAGE_HEADER_VERSION)
     {
-      // Image format version 1
-      this->scalarType       = image_header->scalar_type;
-      this->numComponents    = image_header->num_components;
-      this->endian           = image_header->endian;
-      this->coordinate       = image_header->coord;
-      this->dimensions[0]    = image_header->size[0];
-      this->dimensions[1]    = image_header->size[1];
-      this->dimensions[2]    = image_header->size[2];
-      this->subOffset[0]     = image_header->subvol_offset[0];
-      this->subOffset[1]     = image_header->subvol_offset[1];
-      this->subOffset[2]     = image_header->subvol_offset[2];
-      this->subDimensions[0] = image_header->subvol_size[0];
-      this->subDimensions[1] = image_header->subvol_size[1];
-      this->subDimensions[2] = image_header->subvol_size[2];
+    // Image format version 1
+    this->scalarType       = image_header->scalar_type;
+    this->numComponents    = image_header->num_components;
+    this->endian           = image_header->endian;
+    this->coordinate       = image_header->coord;
+    this->dimensions[0]    = image_header->size[0];
+    this->dimensions[1]    = image_header->size[1];
+    this->dimensions[2]    = image_header->size[2];
+    this->subOffset[0]     = image_header->subvol_offset[0];
+    this->subOffset[1]     = image_header->subvol_offset[1];
+    this->subOffset[2]     = image_header->subvol_offset[2];
+    this->subDimensions[0] = image_header->subvol_size[0];
+    this->subDimensions[1] = image_header->subvol_size[1];
+    this->subDimensions[2] = image_header->subvol_size[2];
 
-      // Set image orientation
-      float rspacing[3];
-      float origin[3];
-      float norm_i[3];
-      float norm_j[3];
-      float norm_k[3];
+    // Set image orientation
+    float rspacing[3];
+    float origin[3];
+    float norm_i[3];
+    float norm_j[3];
+    float norm_k[3];
 
-      igtl_image_get_matrix(rspacing, origin,
-                            norm_i, norm_j, norm_k,
-                            image_header);
+    igtl_image_get_matrix(rspacing, origin,
+                          norm_i, norm_j, norm_k,
+                          image_header);
 
-      for (int i = 0; i < 3; i ++) {
-        this->spacing[i] = rspacing[i];
-        matrix[i][0] = norm_i[i];
-        matrix[i][1] = norm_j[i];
-        matrix[i][2] = norm_k[i];
-        matrix[i][3] = origin[i];
+    for (int i = 0; i < 3; i ++)
+      {
+      this->spacing[i] = rspacing[i];
+      matrix[i][0] = norm_i[i];
+      matrix[i][1] = norm_j[i];
+      matrix[i][2] = norm_k[i];
+      matrix[i][3] = origin[i];
       }
 
-      matrix[3][0] = 0.0;
-      matrix[3][1] = 0.0;
-      matrix[3][2] = 0.0;
-      matrix[3][3] = 1.0;
+    matrix[3][0] = 0.0;
+    matrix[3][1] = 0.0;
+    matrix[3][2] = 0.0;
+    matrix[3][3] = 1.0;
       
-      m_Image  = &m_ImageHeader[IGTL_IMAGE_HEADER_SIZE];
+    m_Image  = &m_ImageHeader[IGTL_IMAGE_HEADER_SIZE];
 
-      return 1;
+    return 1;
     }
   else
     {
-      // Incompatible version. 
-      return 0;
+    // Incompatible version. 
+    return 0;
     }
 }
 

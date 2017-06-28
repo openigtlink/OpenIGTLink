@@ -32,26 +32,26 @@ namespace igtl
 
 MessageBase::MessageBase()
   : Object()
-  , m_MessageSize(0)
-  , m_Header(NULL)
-  , m_Body(NULL)
-  , m_Content(NULL)
-  , m_BodySizeToRead(0)
-  , m_SendMessageType("")
-  , m_ReceiveMessageType("")
-  , m_HeaderVersion(IGTL_HEADER_VERSION_1)
-  , m_DeviceName("")
-  , m_TimeStampSec(0)
-  , m_TimeStampSecFraction(0)
-  , m_IsHeaderUnpacked(false)
-  , m_IsBodyUnpacked(false)
-  , m_IsBodyPacked(false)
+    , m_MessageSize(0)
+    , m_Header(NULL)
+    , m_Body(NULL)
+    , m_Content(NULL)
+    , m_BodySizeToRead(0)
+    , m_SendMessageType("")
+    , m_ReceiveMessageType("")
+    , m_HeaderVersion(IGTL_HEADER_VERSION_1)
+    , m_DeviceName("")
+    , m_TimeStampSec(0)
+    , m_TimeStampSecFraction(0)
+    , m_IsHeaderUnpacked(false)
+    , m_IsBodyUnpacked(false)
+    , m_IsBodyPacked(false)
 #if OpenIGTLink_HEADER_VERSION >= 2
-  , m_ExtendedHeader(NULL)
-  , m_IsExtendedHeaderUnpacked(false)
-  , m_MetaData(NULL)
-  , m_MessageId(0)
-  , m_MetaDataMap(MetaDataMap())
+    , m_ExtendedHeader(NULL)
+    , m_IsExtendedHeaderUnpacked(false)
+    , m_MetaData(NULL)
+    , m_MessageId(0)
+    , m_MetaDataMap(MetaDataMap())
 #endif
 {
 }
@@ -59,7 +59,7 @@ MessageBase::MessageBase()
 MessageBase::~MessageBase()
 {
   if (this->m_MessageSize > 0 && this->m_Header != NULL)
-  {
+    {
     delete [] m_Header;
     m_MessageSize = 0;
     m_Header      = NULL;
@@ -70,7 +70,7 @@ MessageBase::~MessageBase()
     m_MetaDataHeader = NULL;
     m_MetaData = NULL;
 #endif
-  }
+    }
 }
 
 int MessageBase::CalculateContentBufferSize()
@@ -81,27 +81,27 @@ int MessageBase::CalculateContentBufferSize()
 igtl::MessageBase::Pointer MessageBase::Clone()
 {
   igtl::MessageBase::Pointer clone;
-  {
+    {
     igtl::MessageFactory::Pointer factory = igtl::MessageFactory::New();
     clone = factory->CreateSendMessage(this->GetMessageType(), this->GetHeaderVersion());
-  }
+    }
 
-  int bodySize = this->m_MessageSize - IGTL_HEADER_SIZE;
-  clone->InitBuffer();
-  clone->CopyHeader(this);
-  clone->AllocateBuffer(bodySize);
-  if (bodySize > 0)
-  {
-    clone->CopyBody(this);
-  }
+    int bodySize = this->m_MessageSize - IGTL_HEADER_SIZE;
+    clone->InitBuffer();
+    clone->CopyHeader(this);
+    clone->AllocateBuffer(bodySize);
+    if (bodySize > 0)
+      {
+      clone->CopyBody(this);
+      }
 
 #if OpenIGTLink_HEADER_VERSION >= 2
-  clone->m_MetaDataHeader = this->m_MetaDataHeader;
-  clone->m_MetaDataMap = this->m_MetaDataMap;
-  clone->m_IsExtendedHeaderUnpacked = this->m_IsExtendedHeaderUnpacked;
+    clone->m_MetaDataHeader = this->m_MetaDataHeader;
+    clone->m_MetaDataMap = this->m_MetaDataMap;
+    clone->m_IsExtendedHeaderUnpacked = this->m_IsExtendedHeaderUnpacked;
 #endif
 
-  return clone;
+    return clone;
 }
 
 void MessageBase::SetHeaderVersion(unsigned short version)
@@ -118,9 +118,9 @@ unsigned short MessageBase::GetHeaderVersion() const
 void MessageBase::SetDeviceName(const char* name)
 {
   if (name == NULL)
-  {
+    {
     return;
-  }
+    }
   SetDeviceName(std::string(name));
 }
 
@@ -149,56 +149,56 @@ const char* MessageBase::GetDeviceName()
 const char* MessageBase::GetDeviceType()
 {
   if (m_SendMessageType.length() > 0)
-  {
+    {
     return m_SendMessageType.c_str();
-  }
+    }
   else
-  {
+    {
     return m_ReceiveMessageType.c_str();
-  }
+    }
 }
 
 std::string MessageBase::GetMessageType() const
 {
   if (m_SendMessageType.length() > 0)
-  {
+    {
     return m_SendMessageType;
-  }
+    }
   else
-  {
+    {
     return m_ReceiveMessageType;
-  }
+    }
 }
 
 #if OpenIGTLink_HEADER_VERSION >= 2
 igtlUint32 MessageBase::GetMetaDataSize()
 {
   if( m_HeaderVersion >= IGTL_HEADER_VERSION_2 )
-  {
+    {
     igtlUint32 metaDataSize(0);
     for (MetaDataMap::const_iterator it = m_MetaDataMap.begin(); it != m_MetaDataMap.end(); ++it)
-    {
+      {
       metaDataSize += it->first.length() + it->second.second.length();
-    }
+      }
 
     return metaDataSize;
-  }
+    }
   else
-  {
+    {
     return 0;
-  }
+    }
 }
 
 igtlUint16 MessageBase::GetMetaDataHeaderSize()
 {
   if( m_HeaderVersion >= IGTL_HEADER_VERSION_2 )
-  {
+    {
     return (m_MetaDataMap.size()*sizeof(igtl_metadata_header_entry)) + sizeof(igtlUint16); // index_count is at beginning of header
-  }
+    }
   else
-  {
+    {
     return 0;
-  }
+    }
 }
 
 igtlUint32 MessageBase::GetMessageID()
@@ -216,9 +216,9 @@ bool MessageBase::SetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE 
 {
   igtl_metadata_header_entry entry;
   if (key.length() > std::numeric_limits<igtl_uint16>::max())
-  {
+    {
     return false;
-  }
+    }
   entry.key_size = static_cast<igtl_uint16>(key.length());
   entry.value_encoding = static_cast<igtlUint16>(encodingScheme);
   entry.value_size = value.length();
@@ -309,11 +309,11 @@ bool MessageBase::GetMetaDataElement(const std::string& key, std::string& value)
 bool MessageBase::GetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE& encoding, std::string& value) const
 {
   if (m_MetaDataMap.find(key) != m_MetaDataMap.end())
-  {
+    {
     encoding = m_MetaDataMap.find(key)->second.first;
     value = m_MetaDataMap.find(key)->second.second;
     return true;
-  }
+    }
 
   return false;
 }
@@ -326,23 +326,23 @@ const MessageBase::MetaDataMap& MessageBase::GetMetaData() const
 bool MessageBase::PackExtendedHeader()
 {
   if( m_HeaderVersion == IGTL_HEADER_VERSION_2 )
-  {
-    int aSize = m_MessageSize - IGTL_HEADER_SIZE - IGTL_EXTENDED_HEADER_SIZE;
-    if( aSize < 0 )
     {
+    int aSize = m_MessageSize - IGTL_HEADER_SIZE - sizeof(igtl_extended_header);
+    if( aSize < 0 )
+      {
       // Ensure we have enough space to write the header
       AllocateBuffer(0);
-    }
+      }
 
     igtl_extended_header* extended_header   = (igtl_extended_header*) m_ExtendedHeader;
-    extended_header->extended_header_size   = IGTL_EXTENDED_HEADER_SIZE;
+    extended_header->extended_header_size   = sizeof(igtl_extended_header);
     extended_header->meta_data_header_size  = this->GetMetaDataHeaderSize();
     extended_header->meta_data_size         = this->GetMetaDataSize();
     extended_header->message_id             = this->GetMessageID();
     igtl_extended_header_convert_byte_order(extended_header);
 
     return true;
-  }
+    }
 
   return false;
 }
@@ -350,42 +350,42 @@ bool MessageBase::PackExtendedHeader()
 bool MessageBase::PackMetaData()
 {
   if( m_HeaderVersion == IGTL_HEADER_VERSION_2 )
-  {
-    if (m_MetaDataMap.size() > std::numeric_limits<igtl_uint16>::max())
     {
+    if (m_MetaDataMap.size() > std::numeric_limits<igtl_uint16>::max())
+      {
       return false;
-    }
+      }
     igtl_uint16 index_count = static_cast<igtl_uint16>(m_MetaDataMap.size()); // first two byte are the total number of meta data
     if(igtl_is_little_endian())
-    {
+      {
       index_count = BYTE_SWAP_INT16(index_count);
-    }
+      }
 
     // Pack meta data header key/encoding/value trios
     memcpy(m_MetaDataHeader, &index_count, META_DATA_INDEX_COUNT_SIZE);
 
     if (m_MetaDataMap.size() > 0)
-    {
+      {
       unsigned char* entryPointer = &m_MetaDataHeader[META_DATA_INDEX_COUNT_SIZE];
       for (MetaDataMap::const_iterator it = m_MetaDataMap.begin(); it != m_MetaDataMap.end();++it)
-      {
+        {
         igtl_metadata_header_entry entry;
         entry.key_size = it->first.length();
         entry.value_encoding = it->second.first;
         entry.value_size = it->second.second.length();
 
         if(igtl_is_little_endian())
-        {
+          {
           entry.key_size = BYTE_SWAP_INT16(entry.key_size);
           entry.value_encoding = BYTE_SWAP_INT16(entry.value_encoding);
           entry.value_size = BYTE_SWAP_INT32(entry.value_size);
-        }
+          }
         memcpy(&entryPointer[0], &entry.key_size, sizeof(igtlUint16));
         memcpy(&entryPointer[2], &entry.value_encoding, sizeof(igtlUint16));
         memcpy(&entryPointer[4], &entry.value_size, sizeof(igtlUint32));
 
         entryPointer += sizeof(igtl_metadata_header_entry);
-      }
+        }
 
       // Pack meta data key/value pairs
       std::string key("");
@@ -394,20 +394,20 @@ bool MessageBase::PackMetaData()
       unsigned char* metaDataPointer = m_MetaData;
       int i(0);
       for (MetaDataMap::iterator it = m_MetaDataMap.begin(); it != m_MetaDataMap.end(); ++it, ++i)
-      {
+        {
         memcpy(metaDataPointer, it->first.c_str(), it->first.length());
         metaDataPointer += it->first.length();
         memcpy(metaDataPointer, it->second.second.c_str(), it->second.second.length());
         metaDataPointer += it->second.second.length();
-      }
+        }
 
       return true;
-    }
+      }
     else
-    {
+      {
       return true;
+      }
     }
-  }
 
   return false;
 }
@@ -415,14 +415,14 @@ bool MessageBase::PackMetaData()
 bool MessageBase::UnpackExtendedHeader()
 {
   if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
-  {
+    {
     igtl_extended_header* extended_header = (igtl_extended_header*)m_ExtendedHeader;
     igtl_extended_header_convert_byte_order(extended_header);
-    if( extended_header->extended_header_size != IGTL_EXTENDED_HEADER_SIZE)
-    {
+    if( extended_header->extended_header_size != sizeof(igtl_extended_header) )
+      {
       // any extra data will be dropped, if the order of variables is changed, this will be seriously broken
       // TODO : add error reporting?
-    }
+      }
     this->m_MessageId           = extended_header->message_id;
 
     m_Content = &m_Body[extended_header->extended_header_size];
@@ -432,7 +432,7 @@ bool MessageBase::UnpackExtendedHeader()
     m_IsExtendedHeaderUnpacked = true;
 
     return true;
-  }
+    }
 
   return false;
 }
@@ -440,45 +440,45 @@ bool MessageBase::UnpackExtendedHeader()
 bool MessageBase::UnpackMetaData()
 {
   if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
-  {
+    {
     // Parse the header
     igtl_uint16 index_count = 0; // first two byte are the total number of meta data
     memcpy(&index_count, m_MetaDataHeader, META_DATA_INDEX_COUNT_SIZE);
     if(igtl_is_little_endian())
-    {
+      {
       index_count = BYTE_SWAP_INT16(index_count);
-    }
+      }
 
     if( index_count == 0 )
-    {
+      {
       return true;
-    }
+      }
 
     std::vector<igtl_metadata_header_entry> metaDataEntries;
     igtl_metadata_header_entry entry;
     unsigned char* entryPointer = &m_MetaDataHeader[META_DATA_INDEX_COUNT_SIZE];
     for (int i = 0; i < index_count; i++)
-    {
+      {
       memcpy(&entry.key_size, &entryPointer[0], sizeof(igtlUint16));
       memcpy(&entry.value_encoding, &entryPointer[2], sizeof(igtlUint16));
       memcpy(&entry.value_size, &entryPointer[4], sizeof(igtlUint32));
       if(igtl_is_little_endian())
-      {
+        {
         entry.key_size = BYTE_SWAP_INT16(entry.key_size);
         entry.value_encoding = BYTE_SWAP_INT16(entry.value_encoding);
         entry.value_size = BYTE_SWAP_INT32(entry.value_size);
-      }
+        }
       metaDataEntries.push_back(entry);
 
       entryPointer += sizeof(igtl_metadata_header_entry);
-    }
+      }
 
     // Parse the meta data
     m_MetaDataMap.clear();
 
     unsigned char* metaDataPointer = m_MetaData;
     for (int i = 0; i < index_count; i++)
-    {
+      {
       std::string key;
       key.assign(metaDataPointer, metaDataPointer + metaDataEntries[i].key_size);
       metaDataPointer += metaDataEntries[i].key_size;
@@ -486,10 +486,10 @@ bool MessageBase::UnpackMetaData()
       value.assign(metaDataPointer, metaDataPointer + metaDataEntries[i].value_size);
       metaDataPointer += metaDataEntries[i].value_size;
       m_MetaDataMap[key] = std::pair<IANA_ENCODING_TYPE, std::string>((IANA_ENCODING_TYPE)metaDataEntries[i].value_encoding, value);
-    }
+      }
 
     return true;
-  }
+    }
 
   return false;
 }
@@ -526,17 +526,17 @@ void MessageBase::GetTimeStamp(igtl::TimeStamp::Pointer& ts)
 int MessageBase::Pack()
 {
   if (m_IsBodyPacked)
-  {
+    {
     // Allow for multiple packs
     return 1;
-  }
+    }
 
   if( m_SendMessageType.empty() )
-  {
+    {
     // We do not allow sending of base class messages, aka igtl::MessageBase
     // TODO : error reporting?
     return 0;
-  }
+    }
 
 #if OpenIGTLink_HEADER_VERSION >= 2
   PackExtendedHeader();
@@ -579,31 +579,31 @@ int MessageBase::Unpack(int crccheck)
 
   // Check if the pack exists and if it has not been unpacked.
   if (m_Header != NULL && m_MessageSize >= IGTL_HEADER_SIZE && !m_IsHeaderUnpacked )
-  {
+    {
     InitBuffer();
     UnpackHeader(r);
-  }
+    }
 
 #if OpenIGTLink_HEADER_VERSION >= 2
   // Check if the body exists and it has not been unpacked
   // The extended header is technically located inside the body, so we have to check to see if the remaining body size
-  // is > 0, or if full body size > IGTL_EXTENDED_HEADER_SIZE
+  // is > 0, or if full body size > sizeof(igtl_extended_header)
   if( m_HeaderVersion >= IGTL_HEADER_VERSION_2 )
-  {
-    if (GetBufferBodySize() > (IGTL_EXTENDED_HEADER_SIZE + META_DATA_INDEX_COUNT_SIZE) && !m_IsBodyUnpacked)
     {
+    if (GetBufferBodySize() > static_cast<int>(sizeof(igtl_extended_header)) + META_DATA_INDEX_COUNT_SIZE && !m_IsBodyUnpacked)
+      {
       UnpackBody(crccheck, r);
+      }
     }
-  }
   else
-  {
+    {
 #endif
     if(GetBufferBodySize() > 0 && !m_IsBodyUnpacked)
-    {
+      {
       UnpackBody(crccheck, r);
-    }
+      }
 #if OpenIGTLink_HEADER_VERSION >= 2
-  }
+    }
 #endif
 
   return r;
@@ -633,21 +633,21 @@ int MessageBase::CalculateReceiveContentSize()
 {
 #if OpenIGTLink_HEADER_VERSION >= 2
   if( m_HeaderVersion >= IGTL_HEADER_VERSION_2 )
-  {
-    if( !m_IsExtendedHeaderUnpacked )
     {
+    if( !m_IsExtendedHeaderUnpacked )
+      {
       // TODO : would like to throw an error, which method to do to report errors?
       return -1;
-    }
+      }
     igtl_extended_header* header = (igtl_extended_header*)m_ExtendedHeader;
     return GetBufferSize() - IGTL_HEADER_SIZE - header->extended_header_size - header->meta_data_header_size - header->meta_data_size;
-  }
+    }
   else
-  {
+    {
 #endif
     return m_BodySizeToRead;
 #if OpenIGTLink_HEADER_VERSION >= 2
-  }
+    }
 #endif
 }
 
@@ -669,15 +669,15 @@ int MessageBase::UnpackContent()
 void MessageBase::AllocateBuffer()
 {
   if( m_BodySizeToRead > 0 )
-  {
+    {
     // called after receiving general header
     AllocateUnpack(m_BodySizeToRead);
-  }
+    }
   else
-  {
+    {
     // called for creating pack to send
     AllocateBuffer(CalculateContentBufferSize());
-  }
+    }
 }
 
 void MessageBase::InitBuffer()
@@ -694,14 +694,14 @@ void MessageBase::InitBuffer()
   int message_size = IGTL_HEADER_SIZE;
 
   if (m_Header == NULL)
-  {
+    {
     // For the first time
     m_Header = new unsigned char [message_size];
     m_IsHeaderUnpacked = false;
     m_IsBodyUnpacked = false;
-  }
+    }
   else if (m_MessageSize != message_size)
-  {
+    {
     // If the pack area exists but needs to be reallocated
     // m_IsHeaderUnpacked status is not changed in this case.
     unsigned char* old = m_Header;
@@ -709,18 +709,18 @@ void MessageBase::InitBuffer()
     memcpy(m_Header, old, std::min<int>(m_MessageSize, message_size));
     delete [] old;
     m_IsBodyUnpacked = false;
-  }
+    }
   m_Body   = &m_Header[IGTL_HEADER_SIZE];
 #if OpenIGTLink_HEADER_VERSION >= 2
   if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
-  {
+    {
     m_ExtendedHeader = m_Body;
     // Other members can't be populated until the message is unpacked
-  }
+    }
   else
-  {
+    {
     m_Content = m_Body;
-  }
+    }
 #else
   m_Content = m_Body;
 #endif
@@ -732,27 +732,27 @@ void MessageBase::AllocateBuffer(int contentSize)
 #if OpenIGTLink_HEADER_VERSION >= 2
   int message_size(-1);
   if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
-  {
-    message_size = IGTL_HEADER_SIZE + contentSize + IGTL_EXTENDED_HEADER_SIZE + GetMetaDataHeaderSize() + GetMetaDataSize();
-  }
+    {
+    message_size = IGTL_HEADER_SIZE + contentSize + sizeof(igtl_extended_header) + GetMetaDataHeaderSize() + GetMetaDataSize();
+    }
   else
-  {
+    {
     message_size = IGTL_HEADER_SIZE + contentSize;
-  }
+    }
 #else
   int message_size = IGTL_HEADER_SIZE + contentSize;
 #endif
 
   if (m_Header == NULL)
-  {
+    {
     // For the first time
     m_Header = new unsigned char [message_size];
     m_IsHeaderUnpacked = false;
     m_IsBodyUnpacked = false;
     m_IsBodyPacked = false;
-  }
+    }
   else if (m_MessageSize != message_size)
-  {
+    {
     // If the pack area exists but needs to be reallocated
     // m_IsHeaderUnpacked status is not changed in this case.
     unsigned char* old = m_Header;
@@ -760,23 +760,23 @@ void MessageBase::AllocateBuffer(int contentSize)
     memcpy(m_Header, old, std::min<int>(m_MessageSize, message_size));
     delete [] old;
     m_IsBodyUnpacked = false;
-  }
+    }
   m_Body   = &m_Header[IGTL_HEADER_SIZE];
 
 #if OpenIGTLink_HEADER_VERSION >= 2
   if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
-  {
+    {
     m_ExtendedHeader = m_Body;
-    m_Content = &m_Body[IGTL_EXTENDED_HEADER_SIZE];
-    m_MetaDataHeader = &m_Body[IGTL_EXTENDED_HEADER_SIZE+contentSize];
-    m_MetaData = &m_Body[IGTL_EXTENDED_HEADER_SIZE+contentSize+GetMetaDataHeaderSize()];
-  }
+    m_Content = &m_Body[sizeof(igtl_extended_header)];
+    m_MetaDataHeader = &m_Body[sizeof(igtl_extended_header)+contentSize];
+    m_MetaData = &m_Body[sizeof(igtl_extended_header)+contentSize+GetMetaDataHeaderSize()];
+    }
   else
-  {
+    {
 #endif
     m_Content = m_Body;
 #if OpenIGTLink_HEADER_VERSION >= 2
-  }
+    }
 #endif
 
   m_MessageSize = message_size;
@@ -785,14 +785,14 @@ void MessageBase::AllocateBuffer(int contentSize)
 int MessageBase::CopyHeader(const MessageBase* mb)
 {
   if (m_Header != NULL && mb->m_Header != NULL)
-  {
+    {
     memcpy(m_Header, mb->m_Header, IGTL_HEADER_SIZE);
     m_Body = &m_Header[IGTL_HEADER_SIZE];
     if (mb->m_HeaderVersion < IGTL_HEADER_VERSION_2)
-    {
+      {
       m_Content = m_Body;
+      }
     }
-  }
   m_MessageSize          = mb->m_MessageSize;
   m_ReceiveMessageType   = mb->m_ReceiveMessageType;
   m_DeviceName           = mb->m_DeviceName;
@@ -811,32 +811,32 @@ int MessageBase::CopyBody(const MessageBase *mb)
 {
   int bodySize = m_MessageSize - IGTL_HEADER_SIZE;
   if (m_Body != NULL && mb->m_Body != NULL && bodySize > 0)
-  {
+    {
     memcpy(m_Body, mb->m_Body, bodySize);
 
 #if OpenIGTLink_HEADER_VERSION >= 2
     if( m_HeaderVersion == IGTL_HEADER_VERSION_2 )
-    {
-      igtl_extended_header* other_ext_header = (igtl_extended_header*)(mb->m_ExtendedHeader);
-      if( other_ext_header->extended_header_size != IGTL_EXTENDED_HEADER_SIZE )
       {
+      igtl_extended_header* other_ext_header = (igtl_extended_header*)(mb->m_ExtendedHeader);
+      if( other_ext_header->extended_header_size != sizeof(igtl_extended_header) )
+        {
         return 0;
-      }
+        }
       m_ExtendedHeader = m_Body;
       m_Content = &m_Body[other_ext_header->extended_header_size];
       m_MetaDataHeader = &m_Body[bodySize - other_ext_header->meta_data_header_size - other_ext_header->meta_data_size];
       m_MetaData = &m_Body[bodySize - other_ext_header->meta_data_size];
-    }
+      }
     else
-    {
+      {
 #endif
       m_Content = m_Body;
 #if OpenIGTLink_HEADER_VERSION >= 2
-    }
+      }
 #endif
 
     return 1;
-  }
+    }
 
   return 0;
 }
@@ -861,10 +861,10 @@ void MessageBase::UnpackHeader(int& r)
 
   m_ReceiveMessageType = bodyType;
   if( m_ReceiveMessageType.empty() )
-  {
+    {
     // MessageBase class has been sent, this can't be good
     // TODO : how to report an error
-  }
+    }
   m_DeviceName = deviceName;
 
   // Mark as unpacked.
@@ -878,17 +878,17 @@ void MessageBase::UnpackBody(int crccheck, int& r)
   igtl_uint64  crc = crc64(0, 0, 0LL); // initial crc
 
   if (crccheck)
-  {
+    {
     // Calculate CRC of the body
     crc = crc64((unsigned char*)m_Body, m_BodySizeToRead, crc);
-  }
+    }
   else
-  {
+    {
     crc = h->crc;
-  }
+    }
 
   if (crc == h->crc)
-  {
+    {
     // Unpack (deserialize) the Body
 #if OpenIGTLink_HEADER_VERSION >= 2
     UnpackExtendedHeader();
@@ -899,33 +899,33 @@ void MessageBase::UnpackBody(int crccheck, int& r)
 #endif
     m_IsBodyUnpacked = true;
     r |= UNPACK_BODY;
-  }
+    }
   else
-  {
+    {
     m_IsBodyUnpacked = false;
-  }
+    }
 }
 
 void MessageBase::AllocateUnpack(int bodySizeToRead)
 {
   if (bodySizeToRead <= 0)
-  {
+    {
     bodySizeToRead = 0;
     m_IsBodyUnpacked = false;
-  }
+    }
 
   int message_size = IGTL_HEADER_SIZE + bodySizeToRead;
 
   if (m_Header == NULL)
-  {
+    {
     // For the first time
     m_Header = new unsigned char [message_size];
     m_IsHeaderUnpacked = false;
     m_IsBodyUnpacked = false;
     m_IsBodyPacked = false;
-  }
+    }
   else if (m_MessageSize != message_size)
-  {
+    {
     // If the pack area exists but needs to be reallocated
     // m_IsHeaderUnpacked status is not changed in this case.
     unsigned char* old = m_Header;
@@ -933,21 +933,21 @@ void MessageBase::AllocateUnpack(int bodySizeToRead)
     memcpy(m_Header, old, std::min<int>(m_MessageSize, message_size));
     delete [] old;
     m_IsBodyUnpacked = false;
-  }
+    }
   m_Body   = &m_Header[IGTL_HEADER_SIZE];
 
 #if OpenIGTLink_HEADER_VERSION >= 2
   if (m_HeaderVersion >= IGTL_HEADER_VERSION_2)
-  {
+    {
     m_ExtendedHeader = m_Body;
     // Other members can't be populated until the message is unpacked
-  }
+    }
   else
-  {
+    {
 #endif
     m_Content = m_Body;
 #if OpenIGTLink_HEADER_VERSION >= 2
-  }
+    }
 #endif
 
   m_MessageSize = message_size;
@@ -956,16 +956,16 @@ void MessageBase::AllocateUnpack(int bodySizeToRead)
 int MessageBase::Copy(const MessageBase* mb)
 {
   if (this == mb)
-  {
+    {
     return 0;
-  }
+    }
 
   // Check if the destination (this class) is MessageBase or
   // the source and destination class are the same type.
   // The pack size is also checked if it is larger than the header size.
   if ((m_SendMessageType.length() == 0 || m_SendMessageType == mb->m_ReceiveMessageType)
       && mb->m_MessageSize >= IGTL_HEADER_SIZE)
-  {
+    {
     // Set the header version before calling any functions, as it determines later behavior
     m_HeaderVersion = mb->m_HeaderVersion;
 
@@ -973,15 +973,15 @@ int MessageBase::Copy(const MessageBase* mb)
     AllocateBuffer(bodySize);
     CopyHeader(mb);
     if (bodySize > 0)
-    {
+      {
       CopyBody(mb);
-    }
+      }
     return 1;
-  }
+    }
   else
-  {
+    {
     return 0;
-  }
+    }
 }
 
 int MessageBase::SetMessageHeader(const MessageHeader* mb)

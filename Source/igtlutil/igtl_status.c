@@ -21,7 +21,8 @@
 void igtl_export igtl_status_convert_byte_order(igtl_status_header* status)
 {
 
-  if (igtl_is_little_endian()) {
+  if (igtl_is_little_endian())
+    {
     status->code    = BYTE_SWAP_INT16(status->code);
     status->subcode = BYTE_SWAP_INT64(status->subcode);
   }

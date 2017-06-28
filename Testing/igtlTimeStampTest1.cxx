@@ -30,10 +30,10 @@ int main(int, char * [] )
 
   igtlUint64 totalNanosSinceEpochAfter = ts->GetTimeStampInNanoseconds();
   if (totalNanosSinceEpochAfter != totalNanosSinceEpochBefore)
-  {
+    {
     std::cerr << "Expected totalNanosSinceEpochBefore=" << totalNanosSinceEpochBefore << " to equal totalNanosSinceEpochAfter=" << totalNanosSinceEpochAfter << std::endl;
     return EXIT_FAILURE;
-  }
+    }
 
   return EXIT_SUCCESS;
 }

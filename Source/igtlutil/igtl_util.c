@@ -175,17 +175,17 @@ igtl_uint32 igtl_export igtl_nanosec_to_frac(igtl_uint32 nanosec)
 
   do
     {
-      base++;
-      base >>= 1;
-      if (nanosec >= base)
-        {
-          r |= mask;
-          nanosec -= base;
-        }
-      mask >>= 1;
+    base++;
+    base >>= 1;
+    if (nanosec >= base)
+      {
+      r |= mask;
+      nanosec -= base;
+      }
+    mask >>= 1;
     }
   while (mask);
-
+  
   return r;
 }
 
