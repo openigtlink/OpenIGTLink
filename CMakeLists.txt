@@ -25,62 +25,42 @@ ELSE()
   SET(OpenIGTLink_PROTOCOL_VERSION "1")
 ENDIF()
 
+
 #-----------------------------------------------------------------------------
-# OpenH264
-OPTION(BUILD_H264 "Build the OpenH264 tree." OFF)
-SET(OpenIGTLink_BUILD_H264 "0")
-IF(BUILD_H264)
-	SET(OpenIGTLink_BUILD_H264 "1")
-  configure_file(SuperBuild/CMakeListsOpenH264.txt.in
-  OpenH264-download/CMakeLists.txt)
-	#Here the downloading project is triggered                                                               
-	execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" . 
-									WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/OpenH264-download" )
-	execute_process(COMMAND "${CMAKE_COMMAND}" --build . 
-									WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/OpenH264-download" )                   
-	if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")             
-					execute_process(COMMAND "make" WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/OpenH264" )                     
-	endif(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") 
+# Configure VideoStreaming
+OPTION(LINK_H264 "Link the OpenH264 tree." OFF)
+SET(OpenIGTLink_LINK_H264 "0")
+IF(LINK_H264)
+  SET(OpenIGTLink_LINK_H264 "1")
 ENDIF()
 
-# VPX codec
-OPTION(BUILD_VPX "Build the VPX tree." OFF)
-SET(OpenIGTLink_BUILD_VPX "0")
-IF(BUILD_VPX)
-  SET(OpenIGTLink_BUILD_VPX "1")
-  configure_file(SuperBuild/CMakeListsVPX.txt.in
-  OpenVPX-download/CMakeLists.txt)
-  #Here the downloading project is triggered
-  execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
-                  WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/OpenVPX-download" )
-  execute_process(COMMAND "${CMAKE_COMMAND}" --build .
-              WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/OpenVPX-download" )
-  if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    #execute_process(COMMAND "cd" "${PROJECT_BINARY_DIR}/OpenVPX/configure")
-    execute_process(COMMAND "${PROJECT_BINARY_DIR}/OpenVPX/configure" --disable-examples --disable-tools --disable-docs --disable-vp8 --disable-libyuv --disable-unit_tests --disable-postproc WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/OpenVPX" )
-    execute_process(COMMAND "make" WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/OpenVPX" )
-  endif(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+OPTION(LINK_VP9 "Link the VP9 tree." OFF)
+SET(OpenIGTLink_LINK_VP9 "0")
+IF(LINK_VP9)
+  SET(OpenIGTLink_LINK_VP9 "1")
 ENDIF()
 
-
-# VPX codec
-OPTION(LINK_X265 "Build the X265 tree." OFF)
+OPTION(LINK_X265 "Link the X265 tree." OFF)
 SET(OpenIGTLink_LINK_X265 "0")
 IF(LINK_X265)
   SET(OpenIGTLink_LINK_X265 "1")
-  set(X265_SOURCE_DIR "${PARENT_DIR}/x265" CACHE STRING "X265 source directory")
-  set(OPENHEVC_SOURCE_DIR "${PARENT_DIR}/openHEVC" CACHE STRING "HEVC decoder source directory")
-  include_directories("${X265_SOURCE_DIR}")
-  include_directories("${OPENHEVC_SOURCE_DIR}")
-  set(X265_LIBRARY_DIR "${PARENT_DIR}/x265" CACHE STRING "X265 library directory")
-  set(OPENHEVC_LIBRARY_DIR "${PARENT_DIR}/openHEVC" CACHE STRING "HEVC decoder library directory")
-  include_directories("${X265_LIBRARY_DIR}")
-  include_directories("${OPENHEVC_LIBRARY_DIR}")
-  LINK_DIRECTORIES("${X265_LIBRARY_DIR}")
-  LINK_DIRECTORIES("${OPENHEVC_LIBRARY_DIR}")
 ENDIF()
 
+OPTION(LINK_OPENHEVC "Link the OpenHevc tree." OFF)
+SET(OpenIGTLink_LINK_OPENHEVC "0")
+IF(LINK_OPENHEVC)
+  SET(OpenIGTLink_LINK_OPENHEVC "1")
+ENDIF()
 #-----------------------------------------------------------------------------
+
+#Configure WebSocket
+OPTION(BUILD_WEBSOCKET "Build the Websocket." OFF)
+SET(OpenIGTLink_BUILD_WEBSOCKET "0")
+IF(BUILD_WEBSOCKET)
+  SET(OpenIGTLink_BUILD_WEBSOCKET "1")  
+ENDIF()
+#-----------------------------------------------------------------------------
+
 # OpenIGTLink build configuration options.
 
 OPTION(BUILD_SHARED_LIBS "Build OpenIGTLink with shared libraries." OFF)

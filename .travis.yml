@@ -41,7 +41,7 @@ before_script:
   - cd    build
 
 script:
-  - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=ON -DBUILD_VPX=ON ..
+  - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=ON -DLINK_VP9=ON ..
   - make
   - cd ..
   - mkdir TestBuild

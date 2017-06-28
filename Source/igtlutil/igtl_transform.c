@@ -24,13 +24,15 @@ void igtl_export igtl_transform_convert_byte_order(igtl_float32* transform)
   int i;
   igtl_uint32 tmp[12];
 
-  if (igtl_is_little_endian()) {
+  if (igtl_is_little_endian())
+    {
     memcpy(tmp, transform, sizeof(igtl_uint32)*12);
-    for (i = 0; i < 12; i ++) {
+    for (i = 0; i < 12; i ++)
+      {
       tmp[i] = BYTE_SWAP_INT32(tmp[i]);
-    }
+      }
     memcpy(transform, tmp, sizeof(igtl_uint32)*12);
-  }
+    }
 }
 
 

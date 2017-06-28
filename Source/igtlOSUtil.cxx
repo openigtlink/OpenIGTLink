@@ -40,9 +40,9 @@ void Sleep(int milliseconds)
   req.tv_nsec = (milliseconds % 1000) * 1000000;
 
   while ((nanosleep(&req, &req) == -1) && (errno == EINTR))
-  {
+    {
     continue;
-  }
+    }
   
 #endif
 }
@@ -56,9 +56,10 @@ size_t Strnlen(const char* s, size_t maxlen)
 
   size_t i;
  
-  for(i = 0; i < maxlen; i++) {
+  for(i = 0; i < maxlen; i++)
+    {
     if(s[i] == '\0') return i;
-  }
+    }
   
   return maxlen;
 

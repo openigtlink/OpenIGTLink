@@ -10,18 +10,18 @@
   PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __igtlVPXEncoder_h
-#define __igtlVPXEncoder_h
+#ifndef __igtlVP9Encoder_h
+#define __igtlVP9Encoder_h
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "OpenVPX/vpx/vpx_encoder.h"
-#include "OpenVPX/vpx/vp8cx.h"
-#include "OpenVPX/vp9/common/vp9_common.h"
-#include "OpenVPX/tools_common.h"
-#include "OpenVPX/video_writer.h"
+#include "vpx/vpx_encoder.h"
+#include "vpx/vp8cx.h"
+#include "vp9/common/vp9_common.h"
+#include "tools_common.h"
+#include "video_writer.h"
 
 #include "igtlCodecCommonClasses.h"
 #include "igtl_header.h"
@@ -34,11 +34,11 @@
 
 using namespace std;
 
-class VPXEncoder: public GenericEncoder
+class VP9Encoder: public GenericEncoder
 {
 public:
-  VPXEncoder(char * configFile = NULL);
-  ~VPXEncoder();
+  VP9Encoder(char * configFile = NULL);
+  ~VP9Encoder();
 
   virtual int FillSpecificParameters();
   

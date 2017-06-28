@@ -33,14 +33,14 @@
 #include <cstring>
 #include <string>
 
-#if OpenIGTLink_BUILD_H264
+#if OpenIGTLink_LINK_H264
   #include "H264Encoder.h"
   #include "H264Decoder.h"
 #endif
 
-#if OpenIGTLink_BUILD_VPX
-  #include "VPXEncoder.h"
-  #include "VPXDecoder.h"
+#if OpenIGTLink_LINK_VP9
+  #include "VP9Encoder.h"
+  #include "VP9Decoder.h"
 #endif
 
 int Width = 256;
@@ -53,19 +53,19 @@ int main(int argc, char* argv[])
   {
     GenericEncoder * encoder = NULL;
     GenericDecoder * decoder = NULL;
-  #if OpenIGTLink_BUILD_VPX
+  #if OpenIGTLink_LINK_VP9
     std::cerr<<"--------------------------- "<<std::endl;
-    std::cerr<<"Begin of VPX tests "<<std::endl;
-    VPXEncoder* VPXStreamEncoder = new VPXEncoder();
-    VPXDecoder* VPXStreamDecoder = new VPXDecoder();
-    VPXStreamEncoder->SetPicWidthAndHeight(Width,Height);
-    VPXStreamEncoder->InitializeEncoder();
-    VPXStreamEncoder->SetLosslessLink(false);
-    VPXStreamEncoder->SetSpeed(VPXStreamEncoder->FastestSpeed);
-    encoder = VPXStreamEncoder;
-    decoder = VPXStreamDecoder;
+    std::cerr<<"Begin of VP9 tests "<<std::endl;
+    VP9Encoder* VP9StreamEncoder = new VP9Encoder();
+    VP9Decoder* VP9StreamDecoder = new VP9Decoder();
+    VP9StreamEncoder->SetPicWidthAndHeight(Width,Height);
+    VP9StreamEncoder->InitializeEncoder();
+    VP9StreamEncoder->SetLosslessLink(false);
+    VP9StreamEncoder->SetSpeed(VP9StreamEncoder->FastestSpeed);
+    encoder = VP9StreamEncoder;
+    decoder = VP9StreamDecoder;
   #endif
-  #if OpenIGTLink_BUILD_H264
+  #if OpenIGTLink_LINK_H264
     H264Encoder* H264StreamEncoder = new H264Encoder();
     H264Decoder* H264StreamDecoder = new H264Decoder();
     H264StreamEncoder->SetPicWidthAndHeight(Width,Height);
@@ -98,7 +98,9 @@ int main(int argc, char* argv[])
 #if defined(_WIN32) || defined(_WIN64)
       sep = "\\";
 #endif
-      std::string imageIndexStr = static_cast< std::ostringstream & >(( std::ostringstream() << std::dec << (i%6+1))).str();
+      stringstream stream;
+      stream << (i%6+1);
+      std::string imageIndexStr = stream.str();
       std::string testIndexedFileName = std::string(testFileName);
       testIndexedFileName.append(sep).append("Testing").append(sep).append("img").append(sep).append("igtlTestImage").append(imageIndexStr).append(".raw");
       FILE* pFileYUV = NULL;

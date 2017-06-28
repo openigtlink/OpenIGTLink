@@ -408,7 +408,7 @@ int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream, int st
   if (useCompress)
   {
     this->InitializeDecodedFrame();
-    igtl_uint32 dimensions[2] = {Width, Height};
+    igtl_uint32 dimensions[2] = {static_cast<igtl_uint32>(Width), static_cast<igtl_uint32>(Height)};
     igtl_uint64 bitStreamLength = streamLength;
     int status = decodeInstance->DecodeBitStreamIntoFrame(bitStream, this->decodedFrame, dimensions , bitStreamLength);
     // return 2 for succefully decode one frame
@@ -420,7 +420,7 @@ int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream, int st
         fprintf (stderr, "Can not open yuv file to output result of decoding..\n");
       }
     }
-    igtl_uint32 stride[2] = {Width, Width/2};
+    igtl_uint32 stride[2] = {static_cast<igtl_uint32>(Width), static_cast<igtl_uint32>(Width/2)};
     SourcePicture pic;
     pic.data[0] = this->decodedFrame;
     pic.data[1] = this->decodedFrame+Width*Height;
@@ -439,11 +439,11 @@ int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream, int st
     FILE* pYuvFile    = NULL;
     pYuvFile = fopen (kpOuputFileName.c_str(), "ab");
     unsigned char* pData[3];
-    igtl_uint32 iStride[2] = {Width, Width/2};
+    igtl_uint32 iStride[2] = {static_cast<igtl_uint32>(Width), static_cast<igtl_uint32>(Width/2)};
     pData[0] = bitStream;
     pData[1] = pData[0] + Width * Height;
     pData[2] = pData[1] + Width * Height/4;
-    igtl_uint32 dimensions[2] = {Width, Height};
+    igtl_uint32 dimensions[2] = {static_cast<igtl_uint32>(Width), static_cast<igtl_uint32>(Height)};
     decodeInstance->Write2File (pYuvFile, pData, dimensions, iStride);
     fclose (pYuvFile);
     pYuvFile = NULL;

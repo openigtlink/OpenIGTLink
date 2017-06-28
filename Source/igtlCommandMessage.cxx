@@ -25,26 +25,30 @@
 
 namespace
 {
-  bool isEncodingValid(int encoding)
-  {
-    for( int i = 0; i < NUM_ENCODINGS-1; ++i )
+  
+bool isEncodingValid(int encoding)
+{
+  for( int i = 0; i < NUM_ENCODINGS-1; ++i )
     {
-      if( encoding == igtl::CommandMessage::validEncodings[i] )
+    if( encoding == igtl::CommandMessage::validEncodings[i] )
       {
-        return true;
+      return true;
       }
     }
-    return false;
-  }
+  return false;
 }
+
+}
+
+
 namespace igtl {
 
 const int CommandMessage::validEncodings[NUM_ENCODINGS] = {3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,109,110,111,112,113,114,115,116,117,118,119,1000,1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016,1017,1018,1019,1020,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040,2041,2042,2043,2011,2044,2045,2010,2046,2047,2048,2049,2050,2051,2052,2053,2054,2055,2056,2057,2058,2059,2060,2061,2062,2063,2064,2065,2066,2067,2068,2069,2070,2071,2072,2073,2074,2075,2076,2077,2078,2079,2080,2081,2082,2083,2084,2085,2086,2087,2088,2089,2090,2091,2092,2093,2094,2095,2096,2097,2098,2099,2100,2101,2102,2103,2104,2105,2106,2107,2108,2109,2250,2251,2252,2253,2254,2255,2256,2257,2258,2259,2260};
 
 CommandMessage::CommandMessage()
   : MessageBase()
-  , m_CommandId(0)
-  , m_Encoding(3)
+    , m_CommandId(0)
+    , m_Encoding(3)
 {
   memset(m_CommandName, 0, IGTL_COMMAND_NAME_SIZE);
   this->m_HeaderVersion = IGTL_HEADER_VERSION_2;
@@ -56,8 +60,8 @@ CommandMessage::CommandMessage()
 CommandMessage::~CommandMessage()
 {
 }
-
-
+  
+  
 int CommandMessage::SetCommandId(igtlUint32 aId)
 {
   this->m_CommandId = aId;
@@ -68,9 +72,9 @@ int CommandMessage::SetCommandId(igtlUint32 aId)
 int CommandMessage::SetCommandName(const char* aCommandName)
 {
   if (strlen(aCommandName) > IGTL_COMMAND_NAME_SIZE) /* If the length is beyond the range specified by the spec */
-  {
+    {
     return 0;
-  }
+    }
   strcpy((char*)m_CommandName, aCommandName);
   return 1;
 }
@@ -107,9 +111,9 @@ int CommandMessage::SetCommandContent(const std::string & string)
 int CommandMessage::SetContentEncoding(igtlUint16 enc)
 {
   if( !isEncodingValid(enc) )
-  {
+    {
     return 0;
-  }
+    }
   this->m_Encoding = enc;
   return 1;
 }
@@ -211,9 +215,9 @@ int CommandMessage::UnpackContent()
 int RTSCommandMessage::SetCommandErrorString(const char* anErrorString)
 {
   if (strlen(anErrorString) > IGTL_COMMAND_NAME_SIZE) /* If the length is beyond the range specified by the spec */
-  {
+    {
     return 0;
-  }
+    }
   strcpy((char*)m_CommandName, anErrorString);
   return 1;
 }
@@ -222,9 +226,9 @@ int RTSCommandMessage::SetCommandErrorString(const char* anErrorString)
 int RTSCommandMessage::SetCommandErrorString(const std::string& anErrorString)
 {
   if( anErrorString.length() > IGTL_COMMAND_NAME_SIZE )
-  {
+    {
     return 0;
-  }
+    }
   strcpy((char*)m_CommandName, anErrorString.c_str());
   return 1;
 }

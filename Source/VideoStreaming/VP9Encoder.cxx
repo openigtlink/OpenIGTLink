@@ -1,6 +1,6 @@
 /*=========================================================================
  
- Program:   VPXEncoder
+ Program:   VP9Encoder
  Language:  C++
  
  Copyright (c) Insight Software Consortium. All rights reserved.
@@ -12,12 +12,12 @@
  =========================================================================*/
 
 
-#include "VPXEncoder.h"
+#include "VP9Encoder.h"
 #include "igtlVideoMessage.h"
 
 void usage_exit(void) {exit(EXIT_FAILURE);};
 
-VPXEncoder::VPXEncoder(char *configFile):GenericEncoder()
+VP9Encoder::VP9Encoder(char *configFile):GenericEncoder()
 {
   this->encoder = get_vpx_encoder_by_name("vp9");
   codec = new vpx_codec_ctx_t();
@@ -29,7 +29,7 @@ VPXEncoder::VPXEncoder(char *configFile):GenericEncoder()
   FillSpecificParameters ();
 }
 
-VPXEncoder::~VPXEncoder()
+VP9Encoder::~VP9Encoder()
 {
   vpx_codec_encode(codec, NULL, -1, 1, 0, deadlineMode); //Flush the codec
   vpx_codec_destroy(codec);
@@ -43,7 +43,7 @@ VPXEncoder::~VPXEncoder()
   }
 }
 
-int VPXEncoder::FillSpecificParameters() {
+int VP9Encoder::FillSpecificParameters() {
   if (vpx_codec_enc_config_default(encoder->codec_interface(), &cfg, 0))
   {
     die_codec(codec, "Failed to get default codec config.");
@@ -59,7 +59,7 @@ int VPXEncoder::FillSpecificParameters() {
   return 0;
 }
 
-int VPXEncoder::SetRCMode(int value)
+int VP9Encoder::SetRCMode(int value)
 {
   this->cfg.rc_end_usage = (vpx_rc_mode) value;
   if(vpx_codec_enc_config_set(codec, &this->cfg))
@@ -70,7 +70,7 @@ int VPXEncoder::SetRCMode(int value)
   return 0;
 }
 
-int VPXEncoder::SetKeyFrameDistance(int frameNum)
+int VP9Encoder::SetKeyFrameDistance(int frameNum)
 {
   this->cfg.kf_max_dist = frameNum;
   this->cfg.kf_min_dist = frameNum;
@@ -83,7 +83,7 @@ int VPXEncoder::SetKeyFrameDistance(int frameNum)
 }
 
 
-int VPXEncoder::SetRCTaregetBitRate(unsigned int bitRate)
+int VP9Encoder::SetRCTaregetBitRate(unsigned int bitRate)
 {
   // The bit rate in VPX is in Kilo
   int bitRateInKilo = bitRate/1000;
@@ -102,7 +102,7 @@ int VPXEncoder::SetRCTaregetBitRate(unsigned int bitRate)
   return 0;
 }
 
-int VPXEncoder::SetQP(int maxQP, int minQP)
+int VP9Encoder::SetQP(int maxQP, int minQP)
 {
   this->cfg.rc_max_quantizer = maxQP<63?maxQP:63;
   this->cfg.rc_min_quantizer = minQP>0?minQP:0;
@@ -116,7 +116,7 @@ int VPXEncoder::SetQP(int maxQP, int minQP)
   return 0;
 }
 
-int VPXEncoder::SetLosslessLink(bool linkMethod)
+int VP9Encoder::SetLosslessLink(bool linkMethod)
 {
   this->isLossLessLink = linkMethod;
   if (vpx_codec_control_(codec, VP9E_SET_LOSSLESS, linkMethod))
@@ -131,7 +131,7 @@ int VPXEncoder::SetLosslessLink(bool linkMethod)
   }
 }
 
-int VPXEncoder::SetSpeed(int speed)
+int VP9Encoder::SetSpeed(int speed)
 {
   this->codecSpeed = speed;
   if (speed>=SlowestSpeed && speed<=FastestSpeed)
@@ -142,7 +142,7 @@ int VPXEncoder::SetSpeed(int speed)
   return -1;
 }
 
-int VPXEncoder::InitializeEncoder()
+int VP9Encoder::InitializeEncoder()
 {
   cfg.g_lag_in_frames = 0;
   cfg.g_w = this->GetPicWidth();
@@ -173,7 +173,7 @@ int VPXEncoder::InitializeEncoder()
   return 0;
 }
 
-int VPXEncoder::SetPicWidthAndHeight(unsigned int width, unsigned int height)
+int VP9Encoder::SetPicWidthAndHeight(unsigned int width, unsigned int height)
 {
   this->picWidth = width;
   this->picHeight = height;
@@ -188,13 +188,13 @@ int VPXEncoder::SetPicWidthAndHeight(unsigned int width, unsigned int height)
   return 0;
 }
 
-int VPXEncoder::SetDeadlineMode(unsigned long mode)
+int VP9Encoder::SetDeadlineMode(unsigned long mode)
 {
   this->deadlineMode = mode;
   return 0;
 }
 
-int VPXEncoder::ConvertToLocalImageFormat(SourcePicture* pSrcPic)
+int VP9Encoder::ConvertToLocalImageFormat(SourcePicture* pSrcPic)
 {
   if (pSrcPic->picWidth != this->cfg.g_w || pSrcPic->picHeight != this->cfg.g_h)
   {
@@ -213,7 +213,7 @@ int VPXEncoder::ConvertToLocalImageFormat(SourcePicture* pSrcPic)
   return 1;
 }
 
-int VPXEncoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage)
+int VP9Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage)
 {
   int iSourceWidth = pSrcPic->picWidth;
   int iSourceHeight = pSrcPic->picHeight;
@@ -242,6 +242,7 @@ int VPXEncoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
           videoMessage->SetBitStreamSize(pkt->data.frame.sz);
           videoMessage->AllocateScalars();
           videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
+          videoMessage->SetCodecType(CodecNameForVPX);
           videoMessage->SetEndian(igtl_is_little_endian() == true ? 2 : 1); //little endian is 2 big endian is 1
           videoMessage->SetWidth(pSrcPic->picWidth);
           videoMessage->SetHeight(pSrcPic->picHeight);

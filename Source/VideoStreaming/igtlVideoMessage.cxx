@@ -101,6 +101,7 @@ int VideoMessage::SetCodecType(const char codecType[])
 {
   if (strcmp(codecType, CodecNameForX265)==0 || strcmp(codecType, CodecNameForVPX)==0 || strcmp(codecType, CodecNameForH264)==0)
   {
+    this->m_CodecType = std::string(codecType);
     return 0;
   }
   else
@@ -265,7 +266,8 @@ int VideoMessage::UnpackContent()
   {
       // Video format version 1
       this->scalarType       = frame_header->scalar_type;
-      this->m_CodecType = std::string(frame_header->codec);
+      this->m_CodecType.clear();
+      this->m_CodecType.append(frame_header->codec, IGTL_VIDEO_CODEC_NAME_SIZE);
       this->endian           = frame_header->endian;
       this->width            = frame_header->width;
       this->height           = frame_header->height;

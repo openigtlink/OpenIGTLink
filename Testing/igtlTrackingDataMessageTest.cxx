@@ -1,15 +1,15 @@
 /*=========================================================================
  
- Program:   OpenIGTLink Library
- Language:  C++
+  Program:   OpenIGTLink Library
+  Language:  C++
  
- Copyright (c) Insight Software Consortium. All rights reserved.
+  Copyright (c) Insight Software Consortium. All rights reserved.
  
- This software is distributed WITHOUT ANY WARRANTY; without even
- the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- PURPOSE.  See the above copyright notices for more information.
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.  See the above copyright notices for more information.
  
- =========================================================================*/
+  =========================================================================*/
 
 #include "igtlTrackingDataMessage.h"
 #include "igtlutil/igtl_test_data_tdata.h"
@@ -31,9 +31,9 @@ float inS[4] = {-0.196632f, 0.142857f, 0.970014f, 0.0};
 float inN[4] = {0.222525f, 0.970014f, -0.0977491f, 0.0};
 float inOrigin[4] = {46.0531f,19.4709f,46.0531f, 1.0};
 igtl::Matrix4x4 inMatrix = {{inT[0],inS[0],inN[0],inOrigin[0]},
-  {inT[1],inS[1],inN[1],inOrigin[1]},
-  {inT[2],inS[2],inN[2],inOrigin[2]},
-  {inT[3],inS[3],inN[3],inOrigin[3]}};
+                            {inT[1],inS[1],inN[1],inOrigin[1]},
+                            {inT[2],inS[2],inN[2],inOrigin[2]},
+                            {inT[3],inS[3],inN[3],inOrigin[3]}};
 
 void BuildUpElements()
 {
@@ -95,17 +95,17 @@ TEST(TrackingMessageTest, Unpack)
   trackerDescription.push_back((char*)"Tracker2");
   
   for (int i = 0; i<3;++i)
-  {
+    {
     igtl::TrackingDataElement::Pointer elem = igtl::TrackingDataElement::New();
     trackingReceiveMsg->GetTrackingDataElement(i, elem);
     EXPECT_EQ(strncmp((char*)(elem->GetName()), trackerDescription[i], 8),0);
     igtl::Matrix4x4 outMatrix = {{0.0,0.0,0.0,0.0},
-      {0.0,0.0,0.0,0.0},
-      {0.0,0.0,0.0,0.0},
-      {0.0,0.0,0.0,0.0}};
+                                 {0.0,0.0,0.0,0.0},
+                                 {0.0,0.0,0.0,0.0},
+                                 {0.0,0.0,0.0,0.0}};
     elem->GetMatrix(outMatrix);
     EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
-  }
+    }
 }
 
 
@@ -119,9 +119,9 @@ TEST(TrackingMessageTest, PackFormatVersion2)
   igtlMetaDataAddElementMacro(trackingSendMsg);
   trackingSendMsg->Pack();
   FILE *fp;
-   fp = fopen("TrackingData.bin", "w");
-   fwrite(trackingSendMsg->GetPackPointer(), trackingSendMsg->GetPackBodySize()+IGTL_HEADER_SIZE, 1, fp);
-   fclose(fp);
+  fp = fopen("TrackingData.bin", "w");
+  fwrite(trackingSendMsg->GetPackPointer(), trackingSendMsg->GetPackBodySize()+IGTL_HEADER_SIZE, 1, fp);
+  fclose(fp);
   int r = memcmp((const void*)trackingSendMsg->GetPackPointer(), (const void*)test_tdata_messageFormat2,
                  (size_t)(IGTL_HEADER_SIZE));
   EXPECT_EQ(r, 0);
@@ -155,17 +155,17 @@ TEST(TrackingMessageTest, UnpackFormatVersion2)
   trackerDescription.push_back((char*)"Tracker2");
   
   for (int i = 0; i<3;++i)
-  {
+    {
     igtl::TrackingDataElement::Pointer elem = igtl::TrackingDataElement::New();
     trackingReceiveMsg->GetTrackingDataElement(i, elem);
     EXPECT_EQ(strncmp((char*)(elem->GetName()), trackerDescription[i], 8),0);
     igtl::Matrix4x4 outMatrix = {{0.0,0.0,0.0,0.0},
-      {0.0,0.0,0.0,0.0},
-      {0.0,0.0,0.0,0.0},
-      {0.0,0.0,0.0,0.0}};
+                                 {0.0,0.0,0.0,0.0},
+                                 {0.0,0.0,0.0,0.0},
+                                 {0.0,0.0,0.0,0.0}};
     elem->GetMatrix(outMatrix);
     EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
-  }
+    }
   
   igtlMetaDataComparisonMacro(trackingReceiveMsg);
 }

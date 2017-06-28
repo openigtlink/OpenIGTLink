@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 2.8.2)
+ 
+project(WebSocket-download NONE)
+include(ExternalProject)
+
+set(ConfigureCommand "")
+set(BuildCommand "")
+
+if (NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        set(ConfigureCommand "${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF ${CMAKE_BINARY_DIR}/websocketpp")
+        set(BuildCommand "make")
+endif(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+
+ExternalProject_Add(WebSocketpp
+  GIT_REPOSITORY https://github.com/leochan2009/websocketpp.git
+  GIT_TAG e50fb00bec150fc1e377cab272a918c8b4453a82
+  SOURCE_DIR        "${PROJECT_BINARY_DIR}/websocketpp"
+  BINARY_DIR        "${PROJECT_BINARY_DIR}/websocketpp"
+  CONFIGURE_COMMAND ConfigureCommand
+  BUILD_COMMAND     BuildCommand
+  INSTALL_COMMAND   ""
+  TEST_COMMAND      ""
+)
