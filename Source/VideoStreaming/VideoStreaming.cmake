@@ -211,7 +211,7 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (LINK_H264 OR LINK_VP9 OR LI
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Decoder.cxx
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.cxx
       ${H264_SOURCE_DIR}/test/api/sha1.c
-      ${H264_SOURCE_DIR}/OpenH264/codec/console/common/src/read_config.cpp
+      ${H264_SOURCE_DIR}/codec/console/common/src/read_config.cpp
     )
     IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
       SET(OpenIGTLink_INCLUDE_FILES
