@@ -249,6 +249,49 @@ int GenericDecoder::ConvertYUVToGrayImage(igtl_uint8 * YUV420Frame, igtl_uint8 *
   return 1;
 }
 
+void GenericEncoder::ConvertRGBToYUV(igtlUint8 *rgb, igtlUint8 *destination, unsigned int width, unsigned int height)
+{
+  size_t image_size = width * height;
+  size_t upos = image_size;
+  size_t vpos = upos + upos / 4;
+  size_t i = 0;
+  
+  for (size_t line = 0; line < height; ++line)
+  {
+    if (!(line % 2))
+    {
+      for (size_t x = 0; x < width; x += 2)
+      {
+        igtlUint8 r = rgb[3 * i];
+        igtlUint8 g = rgb[3 * i + 1];
+        igtlUint8 b = rgb[3 * i + 2];
+        
+        destination[i++] = ((66 * r + 129 * g + 25 * b) >> 8) + 16;
+        
+        destination[upos++] = ((-38 * r + -74 * g + 112 * b) >> 8) + 128;
+        destination[vpos++] = ((112 * r + -94 * g + -18 * b) >> 8) + 128;
+        
+        r = rgb[3 * i];
+        g = rgb[3 * i + 1];
+        b = rgb[3 * i + 2];
+        
+        destination[i++] = ((66 * r + 129 * g + 25 * b) >> 8) + 16;
+      }
+    }
+    else
+    {
+      for (size_t x = 0; x < width; x += 1)
+      {
+        igtlUint8 r = rgb[3 * i];
+        igtlUint8 g = rgb[3 * i + 1];
+        igtlUint8 b = rgb[3 * i + 2];
+        
+        destination[i++] = ((66 * r + 129 * g + 25 * b) >> 8) + 16;
+      }
+    }
+  }
+}
+
 int GenericEncoder::PackUncompressedData(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage)
 {
   if(!this->useCompress)
