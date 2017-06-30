@@ -98,7 +98,7 @@ public:
     
     this->codecSpeed = 0;
   };
-  ~GenericEncoder(){};
+  virtual ~GenericEncoder(){};
   //void UpdateHashFromFrame (SFrameBSInfo& info, SHA1Context* ctx);
   
   //bool CompareHash (const unsigned char* digest, const char* hashStr);
@@ -191,7 +191,7 @@ class GenericDecoder
 {
 public:
   GenericDecoder(){deviceName = ""; isGrayImage = false;};
-  ~GenericDecoder(){};
+  virtual ~GenericDecoder(){};
   
   virtual int DecodeBitStreamIntoFrame(unsigned char* bitStream,igtl_uint8* outputFrame,igtl_uint32 iDimensions[], igtl_uint64 &iStreamSize) = 0;
   
