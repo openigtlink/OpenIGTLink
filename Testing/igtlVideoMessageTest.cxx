@@ -155,7 +155,7 @@ int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDeco
             }
             if (compareImage)
             {
-              //TestDebugCharArrayCmp(pDecodedPic->data[0], imagePointer, kiPicResSize * 3 / 2);
+              TestDebugCharArrayCmp(pDecodedPic->data[0], imagePointer, kiPicResSize * 3 / 2);
               if (memcmp(pDecodedPic->data[0], imagePointer, kiPicResSize * 3 / 2) != 0)
               {
                 return -1;
@@ -192,7 +192,7 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
     VPXStreamEncoder->SetPicWidthAndHeight(Width,Height);
     VPXStreamEncoder->SetLosslessLink(true);
     VPXStreamEncoder->InitializeEncoder();
-    EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, VPXStreamEncoder, VPXStreamDecoder,false),0);
+    EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, VPXStreamEncoder, VPXStreamDecoder,true),0);
     VPXStreamEncoder->SetSpeed(VPXStreamEncoder->FastestSpeed);
     VPXStreamEncoder->SetLosslessLink(false);
     std::cerr<<"Encoding Time Using Maximum Speed: "<<std::endl;

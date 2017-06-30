@@ -118,6 +118,7 @@ int VP9Encoder::SetQP(int maxQP, int minQP)
 
 int VP9Encoder::SetLosslessLink(bool linkMethod)
 {
+  this->SetDeadlineMode(VPX_DL_GOOD_QUALITY);
   this->isLossLessLink = linkMethod;
   if (vpx_codec_control_(codec, VP9E_SET_LOSSLESS, linkMethod))
   {
@@ -133,6 +134,7 @@ int VP9Encoder::SetLosslessLink(bool linkMethod)
 
 int VP9Encoder::SetSpeed(int speed)
 {
+  this->SetDeadlineMode(VPX_DL_REALTIME);
   this->codecSpeed = speed;
   if (speed>=SlowestSpeed && speed<=FastestSpeed)
   {
