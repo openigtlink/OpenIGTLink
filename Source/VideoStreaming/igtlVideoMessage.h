@@ -28,17 +28,17 @@
 namespace igtl
 {  
   /// A class for the STT_TDATA message type.
-class IGTLCommon_EXPORT StartVideoDataMessage: public MessageBase
+class IGTLCommon_EXPORT StartVideoMessage: public MessageBase
 {
   
 public:
-  typedef StartVideoDataMessage        Self;
+  typedef StartVideoMessage        Self;
   typedef MessageBase                     Superclass;
   typedef SmartPointer<Self>              Pointer;
   typedef SmartPointer<const Self>        ConstPointer;
   
-  igtlTypeMacro(igtl::StartVideoDataMessage, igtl::MessageBase);
-  igtlNewMacro(igtl::StartVideoDataMessage);
+  igtlTypeMacro(igtl::StartVideoMessage, igtl::MessageBase);
+  igtlNewMacro(igtl::StartVideoMessage);
   
 public:
   /// Sets the time resolution for streaming of QTDATA messages
@@ -56,12 +56,14 @@ public:
   std::string    GetCodecType()               { return this->m_CodecType; };
   
 protected:
-  StartVideoDataMessage() : MessageBase()
+  StartVideoMessage() : MessageBase()
   {
     this->m_SendMessageType  = "STT_VIDEO";
+    this->m_TimeInterval = 50;
+    this->m_UseCompress = true;
     this->m_CodecType = CodecNameForVPX;
   };
-  ~StartVideoDataMessage();
+  ~StartVideoMessage();
   
   /// Gets the size of the serialized content.
   virtual int  CalculateContentBufferSize();
@@ -119,11 +121,10 @@ protected:
   StopVideoMessage() : MessageBase() { this->m_SendMessageType  = "STP_VIDEO"; };
   ~StopVideoMessage() {};
 protected:
-  virtual int  GetBodyPackSize() { return 0; };
-  virtual int  PackBody()        { AllocatePack(); return 1; };
-  virtual int  UnpackBody()      { return 1; };
+  virtual int  CalculateContentBufferSize() { return 0; };
+  virtual int  PackContent()        { AllocateBuffer(); return 1; };
+  virtual int  UnpackContent()      { return 1; };
 };
-
 
 class IGTLCommon_EXPORT VideoMessage: public MessageBase
 {

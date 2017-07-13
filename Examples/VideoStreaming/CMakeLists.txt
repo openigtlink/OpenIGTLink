@@ -12,6 +12,14 @@ include(${OpenIGTLink_USE_FILE})
 add_executable( VideoCompressionExample VideoCompressionExample.cxx)
 target_link_libraries( VideoCompressionExample OpenIGTLink)
 
+
+add_executable( VideoServer VideoServer.cxx)
+target_link_libraries( VideoServer OpenIGTLink)
+
+add_executable( VideoClient VideoClient.cxx)
+target_link_libraries( VideoClient OpenIGTLink)
+
+
 if(0 EQUAL 1)
   add_executable( VideoStreamReceiver Evaluation/VideoStreamReceiver.cxx)
   target_link_libraries( VideoStreamReceiver OpenIGTLink)

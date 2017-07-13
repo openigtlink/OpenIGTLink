@@ -121,8 +121,8 @@ int VideoStreamIGTLinkReceiver::RunOnTCPSocket()
   //------------------------------------------------------------
   // Ask the server to start pushing tracking data
   std::cerr << "Sending STT_VIDEO message....." << std::endl;
-  igtl::StartVideoDataMessage::Pointer startVideoMsg;
-  startVideoMsg = igtl::StartVideoDataMessage::New();
+  igtl::StartVideoMessage::Pointer startVideoMsg;
+  startVideoMsg = igtl::StartVideoMessage::New();
   startVideoMsg->AllocatePack();
   startVideoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
   startVideoMsg->SetDeviceName("MacCamera5");

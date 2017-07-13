@@ -19,21 +19,21 @@
 namespace igtl {
 
   
-StartVideoDataMessage::~StartVideoDataMessage()
+StartVideoMessage::~StartVideoMessage()
 {
 }
 
-int StartVideoDataMessage::GetBodyPackSize()
+int StartVideoMessage::GetBodyPackSize()
 {
   return IGTL_STT_VIDEO_SIZE;
 }
 
-int StartVideoDataMessage::CalculateContentBufferSize()
+int StartVideoMessage::CalculateContentBufferSize()
 {
   return IGTL_STT_VIDEO_SIZE;
 }
   
-int StartVideoDataMessage::PackContent()
+int StartVideoMessage::PackContent()
 {
   AllocatePack();
   
@@ -49,7 +49,7 @@ int StartVideoDataMessage::PackContent()
 }
 
 
-int StartVideoDataMessage::UnpackContent()
+int StartVideoMessage::UnpackContent()
 {
   igtl_stt_video* stt_video = (igtl_stt_video*)this->m_Content;
   

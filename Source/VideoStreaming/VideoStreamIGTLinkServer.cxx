@@ -324,8 +324,8 @@ static void* ThreadFunctionServer(void* ptr)
           {
             std::cerr << "Received a STT_VIDEO message." << std::endl;
             
-            igtl::StartVideoDataMessage::Pointer startVideoMsg;
-            startVideoMsg = igtl::StartVideoDataMessage::New();
+            igtl::StartVideoMessage::Pointer startVideoMsg;
+            startVideoMsg = igtl::StartVideoMessage::New();
             startVideoMsg->SetMessageHeader(headerMsg);
             startVideoMsg->AllocatePack();
             parentObj->glock->Lock();
