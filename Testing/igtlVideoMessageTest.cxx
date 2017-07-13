@@ -55,7 +55,7 @@ int Width = 256;
 int Height = 256;
 std::string testFileName(OpenIGTLink_SOURCE_ROOTDIR);
 int startIndex = 0;
-int  inputFrameNum = 100;
+int  inputFrameNum = 20;
 
 int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDecoder* videoStreamDecoder, bool compareImage)
 {
@@ -99,18 +99,20 @@ int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDeco
         iFrameNumInFile =std::fmax((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
       }
 #else
-      if (!fseek (pFileYUV, 0, SEEK_END)) {
+      if (!fseek (pFileYUV, 0, SEEK_END))
+        {
         i_size = ftell (pFileYUV);
         fseek (pFileYUV, 0, SEEK_SET);
         iFrameNumInFile = std::max((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
-      }
+        }
 #endif
 #else
-      if (!fseeko (pFileYUV, 0, SEEK_END)) {
+      if (!fseeko (pFileYUV, 0, SEEK_END))
+        {
         i_size = ftello (pFileYUV);
         fseek(pFileYUV, 0, SEEK_SET);
         iFrameNumInFile = std::max((igtl_int32) (i_size / (kiPicResSize)), iFrameNumInFile);
-      }
+        }
 #endif
 #if defined(_WIN32) || defined(_WIN64)
   #if _MSC_VER >= 1400
@@ -122,7 +124,7 @@ int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDeco
       fseek(pFileYUV, startIndex*kiPicResSize, SEEK_SET);
 #endif
       while(fread (imagePointer, 1, kiPicResSize, pFileYUV ) == (kiPicResSize) && totalFrame<inputFrameNum)
-      {
+        {
         bool isGrayImage = true;
         igtl::VideoMessage::Pointer videoMessageSend = igtl::VideoMessage::New();
         videoMessageSend->SetHeaderVersion(version);
@@ -130,7 +132,7 @@ int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDeco
           igtlMetaDataAddElementMacro(videoMessageSend);
         int iEncFrames = videoStreamEncoder->EncodeSingleFrameIntoVideoMSG(pSrcPic, videoMessageSend, isGrayImage);
         if(iEncFrames == 0)
-        {
+          {
           igtl::VideoMessage::Pointer videoMessageReceived = igtl::VideoMessage::New();
           igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
           headerMsg->AllocatePack();
@@ -182,42 +184,75 @@ int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDeco
   return 0;
 }
 
+
+TEST(VideoMessageTest, YUVandRGBConversion)
+{
+#if OpenIGTLink_LINK_VP9
+  VP9Encoder * encoder = new VP9Encoder();
+  VP9Decoder * decoder = new VP9Decoder();
+  int width = 400, height = 400;
+  int yuvDataLen = width*height*3/2;
+  igtlUint8* yuv_a = new igtlUint8[yuvDataLen];
+  igtlUint8* yuv_a2 = new igtlUint8[yuvDataLen];
+  igtlUint8* rgbPointer = new igtlUint8[yuvDataLen*2];
+  igtlUint8* rgbPointer2 = new igtlUint8[yuvDataLen*2];
+  unsigned char color = 108;
+  for(int i = 0 ; i< width*height*3; i++)
+    {
+    *rgbPointer = color%256;
+    color++;
+    rgbPointer++;
+    }
+  rgbPointer -=yuvDataLen*2;
+  //------------
+  //Test of the data lost in RGB->YUV->RGB conversion
+  encoder->ConvertRGBToYUV(rgbPointer, yuv_a, width, height);
+  decoder->ConvertYUVToRGB(yuv_a, rgbPointer2, width,height);
+  encoder->ConvertRGBToYUV((igtlUint8*)rgbPointer2, yuv_a2, width,height);
+  int iReturn = memcmp(yuv_a2, yuv_a,yuvDataLen);// The conversion is not valid. Image is not the same after conversion.
+  //-------------
+  //igtlUint8* yuv_b = new igtlUint8[b->GetDimensions()[0]*b->GetDimensions()[1]*3/2];
+  //encoder->ConvertRGBToYUV((igtlUint8*)b->GetScalarPointer(), yuv_b, b->GetDimensions()[0], b->GetDimensions()[1]);
+  //iReturn = memcmp(yuv_b, yuv_a, a->GetDimensions()[0]*a->GetDimensions()[1]*3/2);
+#endif
+}
+
 TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
   {
-  #if OpenIGTLink_LINK_VP9
-    std::cerr<<"--------------------------- "<<std::endl;
-    std::cerr<<"Begin of VPX tests "<<std::endl;
-    VP9Encoder* VPXStreamEncoder = new VP9Encoder();
-    VP9Decoder* VPXStreamDecoder = new VP9Decoder();
-    VPXStreamEncoder->SetPicWidthAndHeight(Width,Height);
-    VPXStreamEncoder->SetLosslessLink(true);
-    VPXStreamEncoder->InitializeEncoder();
-    EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, VPXStreamEncoder, VPXStreamDecoder,true),0);
-    VPXStreamEncoder->SetSpeed(VPXStreamEncoder->FastestSpeed);
-    VPXStreamEncoder->SetLosslessLink(false);
-    std::cerr<<"Encoding Time Using Maximum Speed: "<<std::endl;
-    EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, VPXStreamEncoder, VPXStreamDecoder, false),0);
-    std::cerr<<"End of VPX tests "<<std::endl;
-    std::cerr<<"--------------------------- "<<std::endl;
-  #endif
-  #if OpenIGTLink_LINK_H264
-    std::cerr<<"--------------------------- "<<std::endl;
-    std::cerr<<"Begin of H264 tests "<<std::endl;
-    H264Encoder* H264StreamEncoder = new H264Encoder();
-    H264Decoder* H264StreamDecoder = new H264Decoder();
-    H264StreamEncoder->SetPicWidthAndHeight(Width,Height);
-    H264StreamEncoder->InitializeEncoder();
-    TestWithVersion(IGTL_HEADER_VERSION_1, H264StreamEncoder, H264StreamDecoder,false);
-    std::cerr<<"End of H264 tests "<<std::endl;
-    std::cerr<<"--------------------------- "<<std::endl;
-  #endif
+#if OpenIGTLink_LINK_VP9
+  std::cerr<<"--------------------------- "<<std::endl;
+  std::cerr<<"Begin of VPX tests "<<std::endl;
+  VP9Encoder* VPXStreamEncoder = new VP9Encoder();
+  VP9Decoder* VPXStreamDecoder = new VP9Decoder();
+  VPXStreamEncoder->SetPicWidthAndHeight(Width,Height);
+  VPXStreamEncoder->SetLosslessLink(true);
+  VPXStreamEncoder->InitializeEncoder();
+  EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, VPXStreamEncoder, VPXStreamDecoder,true),0);
+  VPXStreamEncoder->SetSpeed(VPXStreamEncoder->FastestSpeed);
+  VPXStreamEncoder->SetLosslessLink(false);
+  std::cerr<<"Encoding Time Using Maximum Speed: "<<std::endl;
+  EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, VPXStreamEncoder, VPXStreamDecoder, false),0);
+  std::cerr<<"End of VPX tests "<<std::endl;
+  std::cerr<<"--------------------------- "<<std::endl;
+#endif
+#if OpenIGTLink_LINK_H264
+  std::cerr<<"--------------------------- "<<std::endl;
+  std::cerr<<"Begin of H264 tests "<<std::endl;
+  H264Encoder* H264StreamEncoder = new H264Encoder();
+  H264Decoder* H264StreamDecoder = new H264Decoder();
+  H264StreamEncoder->SetPicWidthAndHeight(Width,Height);
+  H264StreamEncoder->InitializeEncoder();
+  TestWithVersion(IGTL_HEADER_VERSION_1, H264StreamEncoder, H264StreamDecoder,false);
+  std::cerr<<"End of H264 tests "<<std::endl;
+  std::cerr<<"--------------------------- "<<std::endl;
+#endif
   }
 
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
 
   TEST(VideoMessageTest, EncodeAndDecodeFormatVersion2)
-  {
+    {
   #if OpenIGTLink_LINK_VP9
     std::cerr<<"--------------------------- "<<std::endl;
     std::cerr<<"Begin of VPX tests "<<std::endl;
@@ -245,7 +280,7 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
     std::cerr<<"End of H264 tests "<<std::endl;
     std::cerr<<"--------------------------- "<<std::endl;
   #endif
-  }
+    }
 #endif
 
 int main(int argc, char **argv)
