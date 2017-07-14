@@ -198,11 +198,11 @@ int GenericDecoder::ConvertYUVToRGB(igtl_uint8 *YUVFrame, igtl_uint8* RGBFrame, 
   const int yOffset = 16;
   const int cZero = 128;
   int yMult, rvMult, guMult, gvMult, buMult;
-  yMult =   76309;
-  rvMult = 117489;
-  guMult = -13975;
-  gvMult = -34925;
-  buMult = 138438;
+  yMult =   298;
+  rvMult = 409;
+  guMult = -100;
+  gvMult = -208;
+  buMult = 517;
   
   static unsigned char clp_buf[384+256+384];
   static unsigned char *clip_buf = clp_buf+384;
@@ -222,9 +222,9 @@ int GenericDecoder::ConvertYUVToRGB(igtl_uint8 *YUVFrame, igtl_uint8* RGBFrame, 
     const int U_tmp = (int)dstU[i] - cZero;
     const int V_tmp = (int)dstV[i] - cZero;
     
-    const int R_tmp = (Y_tmp                  + V_tmp * rvMult ) >> 16;//32 to 16 bit conversion by left shifting
-    const int G_tmp = (Y_tmp + U_tmp * guMult + V_tmp * gvMult ) >> 16;
-    const int B_tmp = (Y_tmp + U_tmp * buMult                  ) >> 16;
+    const int R_tmp = (Y_tmp                  + V_tmp * rvMult ) >> 8;//32 to 16 bit conversion by left shifting
+    const int G_tmp = (Y_tmp + U_tmp * guMult + V_tmp * gvMult ) >> 8;
+    const int B_tmp = (Y_tmp + U_tmp * buMult                  ) >> 8;
     
     RGBFrame[3*i]   = clip_buf[R_tmp];
     RGBFrame[3*i+1] = clip_buf[G_tmp];
@@ -268,8 +268,8 @@ void GenericEncoder::ConvertRGBToYUV(igtlUint8 *rgb, igtlUint8 *destination, uns
         
         destination[i++] = ((66 * r + 129 * g + 25 * b) >> 8) + 16;
         
-        destination[upos++] = ((-38 * r + -74 * g + 112 * b) >> 8) + 128;
-        destination[vpos++] = ((112 * r + -94 * g + -18 * b) >> 8) + 128;
+        destination[upos++] = ((-38 * r - 74 * g + 112 * b) >> 8) + 128;
+        destination[vpos++] = ((112 * r - 94 * g -18 * b) >> 8) + 128;
         
         r = rgb[3 * i];
         g = rgb[3 * i + 1];

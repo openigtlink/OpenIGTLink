@@ -221,6 +221,56 @@ public:
     this->isGrayImage = grayImage;
   };
   
+  /**
+   The conversion equations between RGB and YUV is Keith Jack's book "Video Demystified" (ISBN 1-878707-09-4). The equations are:
+   RGB to YUV Conversion
+   Y  = (0.257 * R) + (0.504 * G) + (0.098 * B) + 16
+   
+   U = -(0.148 * R) - (0.291 * G) + (0.439 * B) + 128
+   
+   V =  (0.439 * R) - (0.368 * G) - (0.071 * B) + 128
+   
+   YUV to RGB Conversion
+   R = 1.164(Y - 16)                  + 1.596(V - 128)
+   
+   G = 1.164(Y - 16) - 0.391(U - 128) - 0.813(V - 128)
+   
+   B = 1.164(Y - 16) + 2.018(U - 128)
+   
+   To speed up the computation, float point multiplication is achieved via bitwise operator
+   RGB to YUV Conversion
+   Y  = (16843 * R + 33030 * G + 6423 * B) >> 16 + 16
+   
+   U = -(9699 * R - 19071 * G + 28770 * B) >> 16 + 128
+   
+   V =  (28770 * R - 24117 * G - 4653 * B) >> 16 + 128
+   
+   Or
+   
+   Y  = (66 * R + 129 * G + 25 * B) >> 8 + 16
+   
+   U = (-38 * R - 74 * G + 112 * B) >> 8 + 128
+   
+   V =  (112 * R - 94 * G - 18 * B) >> 8 + 128
+   
+   YUV to RGB Conversion
+   R = (76284 * (Y - 16) + 104595 * (V - 128)) >> 16
+   
+   G = (76284 * (Y - 16) - 25625 * (U - 128) - 53280 * (V - 128)) >> 16
+   
+   B = (76284 * (Y - 16) + 132252 * (U - 128)) >> 16
+   
+   Or
+   
+   R = (298 * (Y - 16) + 409 * (V - 128)) >> 8
+   
+   G = (298 * (Y - 16) - 100 * (U - 128) - 208 * (V - 128)) >> 8
+   
+   B = (298 * (Y - 16) + 517 * (U - 128)) >> 8
+   
+   To do, use the latest conversion Scheme from ITU. 
+   https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.2020-2-201510-I!!PDF-E.pdf
+   */
   int ConvertYUVToRGB(igtl_uint8 *YUVFrame, igtl_uint8* RGBFrame, int iHeight, int iWidth);
   
   int ConvertYUVToGrayImage(igtl_uint8 * YUV420Frame, igtl_uint8 *GrayFrame, int iHeight, int iWidth);
