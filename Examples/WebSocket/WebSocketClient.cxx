@@ -30,7 +30,7 @@
  * telemetry setup using threads rather than timers.
  *
  * This example also includes an example simple HTTP server that serves a web
- * dashboard displaying the count. This simple design is suitable for use 
+ * dashboard displaying the count. This simple design is suitable for use
  * delivering a small number of files to a small number of clients. It is ideal
  * for cases like embedded dashboards that don't want the complexity of an extra
  * HTTP server to serve static files.
@@ -49,10 +49,10 @@ int ReceiveTrackingData(igtl::TrackingDataMessage::Pointer trackingData)
   int c = trackingData->Unpack(1);
   
   if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
-  {
+    {
     int nElements = trackingData->GetNumberOfTrackingDataElements();
     for (int i = 0; i < nElements; i ++)
-    {
+      {
       igtl::TrackingDataElement::Pointer trackingElement;
       trackingData->GetTrackingDataElement(i, trackingElement);
       
@@ -66,45 +66,45 @@ int ReceiveTrackingData(igtl::TrackingDataMessage::Pointer trackingData)
       std::cerr << " Matrix : " << std::endl;
       igtl::PrintMatrix(matrix);
       std::cerr << "================================" << std::endl;
-    }
+      }
     return 1;
-  }
+    }
   return 0;
 }
 
 int main(int argc, char* argv[]) {
-    webSocketClient s;
-
-    if (argc == 1) {
-      std::cerr << "Usage: " << argv[0] << " <hostname> <port> <fps>"    << std::endl;
-      std::cerr << "    <hostname> : IP or host name"                    << std::endl;
-      std::cerr << "    <port>     : Port # (18944 in Slicer default)"   << std::endl;
-      return 1;
-    }
-    
-    const char*  hostname = argv[1];
-    int    port     = atoi(argv[2]);
-    // Create a thread to recevie the message
-    igtl::TrackingDataMessage::Pointer trackingData;
-    websocketpp::lib::thread client_thread(websocketpp::lib::bind(&webSocketClient::ConnectToServer, &s, hostname, port));
-
-    void* data;
-    int length;
-    while(1)
+  webSocketClient s;
+  
+  if (argc == 1) {
+    std::cerr << "Usage: " << argv[0] << " <hostname> <port> <fps>"    << std::endl;
+    std::cerr << "    <hostname> : IP or host name"                    << std::endl;
+    std::cerr << "    <port>     : Port # (18944 in Slicer default)"   << std::endl;
+    return 1;
+  }
+  
+  const char*  hostname = argv[1];
+  int    port     = atoi(argv[2]);
+  // Create a thread to recevie the message
+  igtl::TrackingDataMessage::Pointer trackingData;
+  websocketpp::lib::thread client_thread(websocketpp::lib::bind(&webSocketClient::ConnectToServer, &s, hostname, port));
+  
+  void* data;
+  int length;
+  while(1)
     {
-      length = IGTL_HEADER_SIZE;
-      data = malloc(length);
-      igtl::MessageHeader::Pointer headerMsg;
-      headerMsg = igtl::MessageHeader::New();
-      headerMsg->InitPack();
-      s.Receive(headerMsg->GetPackPointer(), length);
-      headerMsg->Unpack();
-      trackingData = igtl::TrackingDataMessage::New();
-      trackingData->SetMessageHeader(headerMsg);
-      trackingData->AllocatePack();
-      length = trackingData->GetPackBodySize();
-      s.Receive(trackingData->GetPackBodyPointer(), length);
-      ReceiveTrackingData(trackingData);
+    length = IGTL_HEADER_SIZE;
+    data = malloc(length);
+    igtl::MessageHeader::Pointer headerMsg;
+    headerMsg = igtl::MessageHeader::New();
+    headerMsg->InitPack();
+    s.Receive(headerMsg->GetPackPointer(), length);
+    headerMsg->Unpack();
+    trackingData = igtl::TrackingDataMessage::New();
+    trackingData->SetMessageHeader(headerMsg);
+    trackingData->AllocatePack();
+    length = trackingData->GetPackBodySize();
+    s.Receive(trackingData->GetPackBodyPointer(), length);
+    ReceiveTrackingData(trackingData);
     }
-    return 0;
+  return 0;
 }

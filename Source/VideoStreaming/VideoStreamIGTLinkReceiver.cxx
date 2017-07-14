@@ -1,6 +1,6 @@
 /*=========================================================================
  
- Program:   VideoStreamIGTLinkReceiver 
+ Program:   VideoStreamIGTLinkReceiver
  Modified based on the OpenH264/codec/console/dec/src/h264dec.cpp
  Language:  C++
  
@@ -37,9 +37,9 @@ void* ThreadFunctionUnWrap(void* ptr)
   Wrapper parentObj = *(static_cast<Wrapper*>(info->UserData));
   const char * videoDeviceName = parentObj.receiver->GetDeviceName().c_str();
   while(1)
-  {
+    {
     parentObj.wrapper->UnWrapPacketWithTypeAndName(deviceType, videoDeviceName);
-  }
+    }
 }
 
 void WriteTimeInfo(unsigned char * UDPPacket, int totMsgLen, VideoStreamIGTLinkReceiver* receiver)
@@ -50,10 +50,10 @@ void WriteTimeInfo(unsigned char * UDPPacket, int totMsgLen, VideoStreamIGTLinkR
   memcpy(&fragmentField, (void*)(UDPPacket + RTP_HEADER_LENGTH+IGTL_HEADER_SIZE+extendedHeaderLength-2),2);
   memcpy(&messageID, (void*)(UDPPacket + RTP_HEADER_LENGTH+IGTL_HEADER_SIZE+extendedHeaderLength-6),4);
   if(igtl_is_little_endian())
-  {
+    {
     fragmentField = BYTE_SWAP_INT16(fragmentField);
     messageID = BYTE_SWAP_INT32(messageID);
-  }
+    }
   
 }
 
@@ -67,15 +67,15 @@ void* ThreadFunctionReadSocket(void* ptr)
   ReadSocketAndPush parentObj = *(static_cast<ReadSocketAndPush*>(info->UserData));
   unsigned char UDPPacket[RTP_PAYLOAD_LENGTH+RTP_HEADER_LENGTH];
   while(1)
-  {
+    {
     int totMsgLen = parentObj.clientSocket->ReadSocket(UDPPacket, RTP_PAYLOAD_LENGTH+RTP_HEADER_LENGTH);
     
     WriteTimeInfo(UDPPacket, totMsgLen, parentObj.receiver);
     if (totMsgLen>0)
-    {
+      {
       parentObj.wrapper->PushDataIntoPacketBuffer(UDPPacket, totMsgLen);
+      }
     }
-  }
 }
 
 VideoStreamIGTLinkReceiver::VideoStreamIGTLinkReceiver(char *fileName)
@@ -113,10 +113,10 @@ int VideoStreamIGTLinkReceiver::RunOnTCPSocket()
   int r = socket->ConnectToServer(TCPServerIPAddress, TCPServerPort);
   
   if (r != 0)
-  {
+    {
     std::cerr << "Cannot connect to the server." << std::endl;
     exit(0);
-  }
+    }
   
   //------------------------------------------------------------
   // Ask the server to start pushing tracking data
@@ -132,7 +132,7 @@ int VideoStreamIGTLinkReceiver::RunOnTCPSocket()
   startVideoMsg->Pack();
   socket->Send(startVideoMsg->GetPackPointer(), startVideoMsg->GetPackSize());
   while (1)
-  {
+    {
     //------------------------------------------------------------
     // Wait for a reply
     igtl::MessageHeader::Pointer headerMsg;
@@ -140,20 +140,20 @@ int VideoStreamIGTLinkReceiver::RunOnTCPSocket()
     headerMsg->InitPack();
     int rs = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
     if (rs == 0)
-    {
+      {
       std::cerr << "Connection closed." << std::endl;
       socket->CloseSocket();
       exit(0);
-    }
+      }
     if (rs != headerMsg->GetPackSize())
-    {
+      {
       std::cerr << rs <<"Message size information and actual data size don't match." <<headerMsg->GetPackSize()<< std::endl;
       continue;
-    }
+      }
     
     headerMsg->Unpack();
     if (strcmp(headerMsg->GetDeviceName(), this->deviceName.c_str()) == 0)
-    {
+      {
       //------------------------------------------------------------
       // Allocate Video Message Class
       
@@ -168,39 +168,39 @@ int VideoStreamIGTLinkReceiver::RunOnTCPSocket()
       int c = videoMsg->Unpack(1);
       
       if (c==0) // if CRC check fails
-      {
+        {
         // TODO: error handling
         return 0;
-      }
+        }
       this->SetWidth(videoMsg->GetWidth());
       this->SetHeight(videoMsg->GetHeight());
       int streamLength = videoMsg->GetBitStreamSize();
       if (!(this->videoMessageBuffer==NULL))
-      {
+        {
         delete[] this->videoMessageBuffer;
-      }
+        }
       this->videoMessageBuffer = new igtl_uint8[streamLength];
       memcpy(this->videoMessageBuffer, videoMsg->GetPackFragmentPointer(2), streamLength);
       static int frameNum = 0;
       int status = this->ProcessVideoStream(this->videoMessageBuffer,streamLength);
       
       if (status == 0)
-      {
+        {
         this->SendStopMessage();
         break;
-      }
+        }
       else if(status == 2)
-      {
+        {
         frameNum ++;
+        }
       }
-    }
     else
-    {
+      {
       std::cerr << "Receiving : " << headerMsg->GetDeviceType() << std::endl;
       socket->Skip(headerMsg->GetBodySizeToRead(), 0);
-    }
+      }
     igtl::Sleep(20);
-  }
+    }
   return 1;
 }
 
@@ -236,12 +236,12 @@ int VideoStreamIGTLinkReceiver::RunOnUDPSocket()
   threader->SpawnThread((igtl::ThreadFunctionType)&ThreadFunctionReadSocket, &info);
   threader->SpawnThread((igtl::ThreadFunctionType)&ThreadFunctionUnWrap, &infoWrapper);
   while(1)
-  {
+    {
     glock->Lock();
     unsigned int messageNum = rtpWrapper->unWrappedMessages.size();
     glock->Unlock();
     if(messageNum)// to do: glock this session
-    {
+      {
       igtl::VideoMessage::Pointer videoMultiPKTMSG = igtl::VideoMessage::New();
       glock->Lock();
       std::map<igtl_uint32, igtl::UnWrappedMessage*>::iterator it = rtpWrapper->unWrappedMessages.begin();
@@ -260,33 +260,33 @@ int VideoStreamIGTLinkReceiver::RunOnUDPSocket()
       videoMultiPKTMSG->SetMessageHeader(header);
       videoMultiPKTMSG->AllocateBuffer();
       if (MSGLength == videoMultiPKTMSG->GetPackSize())
-      {
+        {
         memcpy(videoMultiPKTMSG->GetPackPointer(), message, MSGLength);
         videoMultiPKTMSG->Unpack(0);
         int streamLength = videoMultiPKTMSG->GetBitStreamSize();
         this->SetWidth(videoMultiPKTMSG->GetWidth());
         this->SetHeight(videoMultiPKTMSG->GetHeight());
         if (!(this->videoMessageBuffer==NULL))
-        {
+          {
           delete[] this->videoMessageBuffer;
-        }
+          }
         this->videoMessageBuffer = new igtl_uint8[streamLength];
         memcpy(this->videoMessageBuffer, videoMultiPKTMSG->GetPackFragmentPointer(2), streamLength);
         
         int status = this->ProcessVideoStream(this->videoMessageBuffer,streamLength);
         
         if (status == 0)
-        {
+          {
           break;
-        }
+          }
         else if(status == 2)
-        {
+          {
           frameNum ++;
+          }
         }
-      }
       delete [] message;
+      }
     }
-  }
   return 0;
 }
 
@@ -294,15 +294,15 @@ bool VideoStreamIGTLinkReceiver::InitializeClient()
 {
   // if configure file exit, reading configure file firstly
   if(strcmp(this->configFile.c_str(),"")==0)
-  {
+    {
     fprintf (stdout, "The udp/tcp selection is upto the application.\n");
     return true;
-  }
+    }
   else
-  {
+    {
     cRdCfg.OpenFile(this->configFile.c_str());// to do get the first configFile from this->configFile.
     if (cRdCfg.ExistFile())
-    {
+      {
       cRdCfg.OpenFile (this->configFile.c_str());// reset the file read pointer to the beginning.
       int iRet = ParseConfigForClient();
       if (iRet == -1) {
@@ -310,69 +310,71 @@ bool VideoStreamIGTLinkReceiver::InitializeClient()
         return false;
       }
       return true;
-    }
+      }
     else
-    {
+      {
       fprintf (stderr, "Specified file: %s not exist, maybe invalid path or parameter settting.\n",
                cRdCfg.GetFileName().c_str());
       return false;
+      }
     }
-  }
 }
 
 int VideoStreamIGTLinkReceiver::ParseConfigForClient()
 {
   std::string strTag[4];
-  while (!cRdCfg.EndOfFile()) {
+  while (!cRdCfg.EndOfFile())
+    {
     strTag->clear();
     long iRd = cRdCfg.ReadLine (&strTag[0]);
-    if (iRd > 0) {
+    if (iRd > 0)
+      {
       if (strTag[0].empty())
         continue;
       if (strTag[0].compare ("TCPServerPortNumber") == 0) {
         this->TCPServerPort = atoi (strTag[1].c_str());
         if(this->TCPServerPort<0 || this->TCPServerPort>65535)
-        {
+          {
           fprintf (stderr, "Invalid parameter for server port number should between 0 and 65525.");
           return 1;
-        }
+          }
       }
       if (strTag[0].compare ("TCPServerIPAddress") == 0) {
         this->TCPServerIPAddress = new char[IP4AddressStrLen];
         memcpy(this->TCPServerIPAddress, strTag[1].c_str(), IP4AddressStrLen);
         if(!inet_addr(this->TCPServerIPAddress))
-        {
+          {
           fprintf (stderr, "Invalid parameter for IP address");
           return 1;
-        }
+          }
       }
       if (strTag[0].compare ("UDPClientPortNumber") == 0) {
         this->UDPClientPort = atoi (strTag[1].c_str());
         if(this->UDPClientPort<0 || this->UDPClientPort>65535)
-        {
+          {
           fprintf (stderr, "Invalid parameter for server port number should between 0 and 65525.");
           return 1;
-        }
+          }
       }
       if (strTag[0].compare ("DeviceName") == 0)
-      {
+        {
         this->deviceName =strTag[1].c_str();
-      }
+        }
       if (strTag[0].compare ("TransportMethod") == 0)
-      {
+        {
         this->transportMethod = atoi(strTag[1].c_str());
-      }
+        }
       if (strTag[0].compare ("UseCompress") == 0)
-      {
+        {
         this->useCompress = atoi(strTag[1].c_str());
-      }
+        }
       
       if (strTag[0].compare ("DecodedFile") == 0)
-      {
+        {
         this->kpOuputFileName = std::string(strTag[1].c_str());
+        }
       }
     }
-  }
   return 0;
 }
 
@@ -389,9 +391,9 @@ void VideoStreamIGTLinkReceiver::SetHeight(int iHeight)
 void VideoStreamIGTLinkReceiver::InitializeDecodedFrame()
 {
   if (!(this->decodedFrame == NULL))
-  {
+    {
     delete[] this->decodedFrame;
-  }
+    }
   this->decodedFrame = NULL;
   this->decodedFrame = new unsigned char[this->Width*this->Height*3>>1];
 }
@@ -402,11 +404,11 @@ int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream, int st
   //this->videoMessageBuffer = new igtl_uint8[StreamLength];
   //memcpy(this->videoMessageBuffer, bitStream, StreamLength);// copy slow down the process, however, the videoMsg is a smart pointer, it gets deleted unpredictable.
   if(!decodeInstance)
-  {
+    {
     return 0;
-  }
+    }
   if (useCompress)
-  {
+    {
     this->InitializeDecodedFrame();
     igtl_uint32 dimensions[2] = {static_cast<igtl_uint32>(Width), static_cast<igtl_uint32>(Height)};
     igtl_uint64 bitStreamLength = streamLength;
@@ -427,14 +429,14 @@ int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream, int st
     pic.data[2] = this->decodedFrame+Width*Height*5/4;
     //pic.data[0] =
     if(pYuvFile)
-    {
+      {
       decodeInstance->Write2File (pYuvFile, pic.data, dimensions, stride);
       fclose (pYuvFile);
-    }
+      }
     return status;
-  }
+    }
   else
-  {
+    {
     //std::cerr << "No using compression, data size in byte is: " << Width*Height*3/2  <<std::endl;
     FILE* pYuvFile    = NULL;
     pYuvFile = fopen (kpOuputFileName.c_str(), "ab");
@@ -448,7 +450,7 @@ int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream, int st
     fclose (pYuvFile);
     pYuvFile = NULL;
     return 2;
-  }
+    }
   return 0;
 }
 

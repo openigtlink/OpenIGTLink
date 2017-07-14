@@ -135,16 +135,16 @@ int GenericDecoder::UnpackUncompressedData(igtl::VideoMessage* videoMessage, Sou
   igtl_int32 iWidth = videoMessage->GetWidth();
   igtl_int32 iHeight = videoMessage->GetHeight();
   if ((iWidth*iHeight*3>>1) != videoMessage->GetBitStreamSize())
-  {
+    {
     return -1;
-  }
+    }
   igtl_uint16 frameType = videoMessage->GetFrameType();
   isGrayImage = false;
   if (frameType>0X00FF)
-  {
+    {
     frameType= frameType>>8;
     isGrayImage = true;
-  }
+    }
   decodedPic->picWidth = iWidth;
   decodedPic->picHeight = iHeight;
   decodedPic->data[1]= decodedPic->data[0] + iWidth*iHeight;
@@ -185,14 +185,16 @@ int GenericDecoder::ConvertYUVToRGB(igtl_uint8 *YUVFrame, igtl_uint8* RGBFrame, 
   const int halfWidth = iWidth/2;
   
 #pragma omp parallel for default(none) shared(dstV,dstU,srcV,srcU,iWidth)
-  for (int y = 0; y < halfHeight; y++) {
-    for (int x = 0; x < halfWidth; x++) {
+  for (int y = 0; y < halfHeight; y++)
+    {
+    for (int x = 0; x < halfWidth; x++)
+      {
       dstU[2 * x + 2 * y*iWidth] = dstU[2 * x + 1 + 2 * y*iWidth] = srcU[x + y*iWidth/2];
       dstV[2 * x + 2 * y*iWidth] = dstV[2 * x + 1 + 2 * y*iWidth] = srcV[x + y*iWidth/2];
-    }
+      }
     memcpy(&dstU[(2 * y + 1)*iWidth], &dstU[(2 * y)*iWidth], iWidth);
     memcpy(&dstV[(2 * y + 1)*iWidth], &dstV[(2 * y)*iWidth], iWidth);
-  }
+    }
   
   
   const int yOffset = 16;
@@ -210,14 +212,16 @@ int GenericDecoder::ConvertYUVToRGB(igtl_uint8 *YUVFrame, igtl_uint8* RGBFrame, 
   // initialize clipping table
   memset(clp_buf, 0, 384);
   
-  for (int i = 0; i < 256; i++) {
+  for (int i = 0; i < 256; i++)
+    {
     clp_buf[384+i] = i;
-  }
+    }
   memset(clp_buf+384+256, 255, 384);
   
   
 #pragma omp parallel for default(none) shared(dstY,dstU,dstV,RGBFrame,yMult,rvMult,guMult,gvMult,buMult,clip_buf,componentLength)// num_threads(2)
-  for (int i = 0; i < componentLength; ++i) {
+  for (int i = 0; i < componentLength; ++i)
+    {
     const int Y_tmp = ((int)dstY[i] - yOffset) * yMult;
     const int U_tmp = (int)dstU[i] - cZero;
     const int V_tmp = (int)dstV[i] - cZero;
@@ -229,7 +233,7 @@ int GenericDecoder::ConvertYUVToRGB(igtl_uint8 *YUVFrame, igtl_uint8* RGBFrame, 
     RGBFrame[3*i]   = clip_buf[R_tmp];
     RGBFrame[3*i+1] = clip_buf[G_tmp];
     RGBFrame[3*i+2] = clip_buf[B_tmp];
-  }
+    }
   delete [] YUV444;
   YUV444 = NULL;
   dstY = NULL;
@@ -257,11 +261,11 @@ void GenericEncoder::ConvertRGBToYUV(igtlUint8 *rgb, igtlUint8 *destination, uns
   size_t i = 0;
   
   for (size_t line = 0; line < height; ++line)
-  {
-    if (!(line % 2))
     {
-      for (size_t x = 0; x < width; x += 2)
+    if (!(line % 2))
       {
+      for (size_t x = 0; x < width; x += 2)
+        {
         igtlUint8 r = rgb[3 * i];
         igtlUint8 g = rgb[3 * i + 1];
         igtlUint8 b = rgb[3 * i + 2];
@@ -276,26 +280,26 @@ void GenericEncoder::ConvertRGBToYUV(igtlUint8 *rgb, igtlUint8 *destination, uns
         b = rgb[3 * i + 2];
         
         destination[i++] = ((66 * r + 129 * g + 25 * b) >> 8) + 16;
+        }
       }
-    }
     else
-    {
-      for (size_t x = 0; x < width; x += 1)
       {
+      for (size_t x = 0; x < width; x += 1)
+        {
         igtlUint8 r = rgb[3 * i];
         igtlUint8 g = rgb[3 * i + 1];
         igtlUint8 b = rgb[3 * i + 2];
         
         destination[i++] = ((66 * r + 129 * g + 25 * b) >> 8) + 16;
+        }
       }
     }
-  }
 }
 
 int GenericEncoder::PackUncompressedData(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage)
 {
   if(!this->useCompress)
-  {
+    {
     int iSourceWidth = pSrcPic->picWidth;
     int iSourceHeight = pSrcPic->picHeight;
     long kiPicResSize = iSourceWidth*iSourceHeight * 3 >> 1;
@@ -307,13 +311,13 @@ int GenericEncoder::PackUncompressedData(SourcePicture* pSrcPic, igtl::VideoMess
     videoMessage->SetHeight(pSrcPic->picHeight);
     encodedFrameType = FrameTypeKey;
     if (isGrayImage)
-    {
+      {
       encodedFrameType = FrameTypeKey << 8;
-    }
+      }
     videoMessage->SetFrameType(encodedFrameType);
     memcpy(videoMessage->GetPackFragmentPointer(2), pSrcPic->data[0], kiPicResSize);
     videoMessage->Pack();
     return 0;
-  }
+    }
   return -1;
 }

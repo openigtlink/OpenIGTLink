@@ -74,10 +74,10 @@ int H264Decoder::Process (void* pDst[3], SBufferInfo* pInfo, FILE* pFp) {
     iStride[0] = pInfo->UsrData.sSystemBuffer.iStride[0];
     iStride[1] = pInfo->UsrData.sSystemBuffer.iStride[1];
     if(pFp)
-    {
+      {
       igtl_uint32 dimensions[2] = {static_cast<igtl_uint32>(iWidth), static_cast<igtl_uint32>(iHeight)};
       Write2File (pFp, (unsigned char**)pDst, dimensions, iStride);
-    }
+      }
   }
   return iRet;
 }
@@ -91,48 +91,48 @@ void H264Decoder::ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int
   int iHeight = dimension[1];
 #pragma omp parallel for default(none) shared(outputByteStream,inputData, iStride, iHeight, iWidth)
   for (int i = 0; i < iHeight; i++)
-  {
+    {
     igtl_uint8* pPtr = inputData[0]+i*iStride[0];
     for (int j = 0; j < iWidth; j++)
-    {
+      {
       outputFrame[i*iWidth + j] = pPtr[j];
+      }
     }
-  }
 #pragma omp parallel for default(none) shared(outputByteStream,inputData, iStride, iHeight, iWidth)
   for (int i = 0; i < iHeight/2; i++)
-  {
+    {
     igtl_uint8* pPtr = inputData[1]+i*iStride[1];
     for (int j = 0; j < iWidth/2; j++)
-    {
+      {
       outputFrame[i*iWidth/2 + j + iHeight*iWidth] = pPtr[j];
+      }
     }
-  }
 #pragma omp parallel for default(none) shared(outputByteStream, inputData, iStride, iHeight, iWidth)
   for (int i = 0; i < iHeight/2; i++)
-  {
+    {
     igtl_uint8* pPtr = inputData[2]+i*iStride[1];
     for (int j = 0; j < iWidth/2; j++)
-    {
+      {
       outputFrame[i*iWidth/2 + j + iHeight*iWidth*5/4] = pPtr[j];
+      }
     }
-  }
 }
 
 
 int H264Decoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* pDecodedPic)
 {
   if(videoMessage->GetBitStreamSize())
-  {
+    {
     igtl_int32 iWidth = videoMessage->GetWidth();
     igtl_int32 iHeight = videoMessage->GetHeight();
     igtl_uint64 iStreamSize = videoMessage->GetBitStreamSize();
     igtl_uint16 frameType = videoMessage->GetFrameType();
     isGrayImage = false;
     if (frameType>0X00FF)
-    {
+      {
       frameType= frameType>>8;
       isGrayImage = true;
-    }
+      }
     pDecodedPic->picWidth = iWidth;
     pDecodedPic->picHeight = iHeight;
     pDecodedPic->data[1]= pDecodedPic->data[0] + iWidth*iHeight;
@@ -143,15 +143,15 @@ int H264Decoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage,
     igtl_uint32 dimensions[2] = {static_cast<igtl_uint32>(iWidth), static_cast<igtl_uint32>(iHeight)};
     int iRet = -1;
     if (videoMessage->GetUseCompress())
-    {
+      {
       iRet = this->DecodeBitStreamIntoFrame(videoMessage->GetPackFragmentPointer(2), pDecodedPic->data[0], dimensions, iStreamSize);
-    }
+      }
     else
-    {
+      {
       iRet = this->UnpackUncompressedData(videoMessage, pDecodedPic);
-    }
+      }
     return iRet;
-  }
+    }
   return -1;
 }
 
@@ -180,36 +180,43 @@ int H264Decoder::DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_ui
   //~end for
   double dElapsed = 0;
   
-  if (iStreamSize <= 0) {
+  if (iStreamSize <= 0)
+    {
     //fprintf (stderr, "Current Bit Stream File is too small, read error!!!!\n");
     goto label_exit;
-  }
+    }
   pBuf = new unsigned char[iStreamSize + 5];
-  if (pBuf == NULL) {
+  if (pBuf == NULL)
+    {
     //fprintf (stderr, "new buffer failed!\n");
     goto label_exit;
-  }
+    }
   memcpy (pBuf, kpH264BitStream, iStreamSize);
   memcpy (pBuf + iStreamSize, &uiStartCode[0], 4); //confirmed_safe_unsafe_usage
   
-  while (true) {
-    if (iBufPos >= iStreamSize) {
+  while (true)
+    {
+    if (iBufPos >= iStreamSize)
+      {
       iEndOfStreamFlag = true;
       if (iEndOfStreamFlag)
         pDecoder->SetOption (DECODER_OPTION_END_OF_STREAM, (void*)&iEndOfStreamFlag);
       break;
-    }
-    for (i = 0; i < iStreamSize; i++) {
-      if ((pBuf[iBufPos + i] == 0 && pBuf[iBufPos + i + 1] == 0 && pBuf[iBufPos + i + 2] == 0 && pBuf[iBufPos + i + 3] == 1
-           && i > 0) || (pBuf[iBufPos + i] == 0 && pBuf[iBufPos + i + 1] == 0 && pBuf[iBufPos + i + 2] == 1 && i > 0)) {
-        break;
       }
-    }
+    for (i = 0; i < iStreamSize; i++)
+      {
+      if ((pBuf[iBufPos + i] == 0 && pBuf[iBufPos + i + 1] == 0 && pBuf[iBufPos + i + 2] == 0 && pBuf[iBufPos + i + 3] == 1
+           && i > 0) || (pBuf[iBufPos + i] == 0 && pBuf[iBufPos + i + 1] == 0 && pBuf[iBufPos + i + 2] == 1 && i > 0))
+        {
+        break;
+        }
+      }
     iSliceSize = i;
-    if (iSliceSize < 4) { //too small size, no effective data, ignore
-      iBufPos += iSliceSize;
-      continue;
-    }
+    if (iSliceSize < 4)
+      { //too small size, no effective data, ignore
+        iBufPos += iSliceSize;
+        continue;
+      }
     
     iStart = getCurrentTime();
     pData[0] = NULL;
@@ -228,12 +235,12 @@ int H264Decoder::DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_ui
     iEnd    = getCurrentTime();
     iTotal  = iEnd - iStart;
     if (sDstBufInfo.iBufferStatus == 1)
-    {
+      {
       Process ((void**)pData, &sDstBufInfo, NULL);
       iWidth  = sDstBufInfo.UsrData.sSystemBuffer.iWidth;
       iHeight = sDstBufInfo.UsrData.sSystemBuffer.iHeight;
       ++ iFrameCount;
-    }
+      }
     
 #ifdef NO_DELAY_DECODING
     iStart = getCurrentTime();
@@ -245,7 +252,8 @@ int H264Decoder::DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_ui
     pDecoder->DecodeFrame2 (NULL, 0, pData, &sDstBufInfo);
     iEnd    = getCurrentTime();
     iTotal = iEnd - iStart;
-    if (sDstBufInfo.iBufferStatus == 1) {
+    if (sDstBufInfo.iBufferStatus == 1)
+      {
       Process ((void**)pData, &sDstBufInfo, NULL);
       int dimension[2] = {static_cast<int>(iWidth), static_cast<int>(iHeight)};
       int stride[2] = {sDstBufInfo.UsrData.sSystemBuffer.iStride[0],sDstBufInfo.UsrData.sSystemBuffer.iStride[1]};
@@ -253,19 +261,19 @@ int H264Decoder::DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_ui
       iWidth  = sDstBufInfo.UsrData.sSystemBuffer.iWidth;
       iHeight = sDstBufInfo.UsrData.sSystemBuffer.iHeight;
       ++ iFrameCount;
-    }
+      }
 #endif
     if (iFrameCount)
-    {
+      {
       dElapsed = iTotal / 1e6;
       //fprintf (stderr, "-------------------------------------------------------\n");
-       //fprintf (stderr, "iWidth:\t\t%d\nheight:\t\t%d\nFrames:\t\t%d\ndecode time:\t%f sec\nFPS:\t\t%f fps\n",
-       //iWidth, iHeight, ++iFrameCountTotal, dElapsed, (iFrameCount * 1.0) / dElapsed);
-       //fprintf (stderr, "-------------------------------------------------------\n");
-    }
+      //fprintf (stderr, "iWidth:\t\t%d\nheight:\t\t%d\nFrames:\t\t%d\ndecode time:\t%f sec\nFPS:\t\t%f fps\n",
+      //iWidth, iHeight, ++iFrameCountTotal, dElapsed, (iFrameCount * 1.0) / dElapsed);
+      //fprintf (stderr, "-------------------------------------------------------\n");
+      }
     iBufPos += iSliceSize;
     ++ iSliceIndex;
-  }
+    }
   // coverity scan uninitial
 label_exit:
   if (pBuf) {
@@ -273,8 +281,8 @@ label_exit:
     pBuf = NULL;
   }
   if (iFrameCount)
-  {
+    {
     return 2;
-  }
+    }
   return 1;
 }

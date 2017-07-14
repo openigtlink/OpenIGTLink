@@ -29,7 +29,7 @@
  * telemetry setup using threads rather than timers.
  *
  * This example also includes an example simple HTTP server that serves a web
- * dashboard displaying the count. This simple design is suitable for use 
+ * dashboard displaying the count. This simple design is suitable for use
  * delivering a small number of files to a small number of clients. It is ideal
  * for cases like embedded dashboards that don't want the complexity of an extra
  * HTTP server to serve static files.
@@ -133,53 +133,54 @@ void GetRandomTestMatrix(igtl::Matrix4x4& matrix, float phi, float theta)
 
 int main(int argc, char* argv[]) {
   
-
-    std::string docroot;
-    uint16_t port = 9002;
-
-    if (argc == 1) {
-        std::cout << "Usage: telemetry_server [documentroot] [port]" << std::endl;
-        return 1;
+  
+  std::string docroot;
+  uint16_t port = 9002;
+  
+  if (argc == 1) {
+    std::cout << "Usage: telemetry_server [documentroot] [port]" << std::endl;
+    return 1;
+  }
+  
+  if (argc >= 2) {
+    docroot = std::string(argv[1]);
+  }
+  
+  if (argc >= 3) {
+    int i = atoi(argv[2]);
+    if (i <= 0 || i > 65535) {
+      std::cout << "invalid port" << std::endl;
+      return 1;
     }
     
-    if (argc >= 2) {
-        docroot = std::string(argv[1]);
-    }
-        
-    if (argc >= 3) {
-        int i = atoi(argv[2]);
-        if (i <= 0 || i > 65535) {
-            std::cout << "invalid port" << std::endl;
-            return 1;
-        }
-        
-        port = uint16_t(i);
+    port = uint16_t(i);
+  }
+  
+  if(strcmp(&docroot.back(),"/") != 0)
+    {
+    docroot.append("/");
     }
   
-   if(strcmp(&docroot.back(),"/") != 0)
-   {
-     docroot.append("/");
-   }
-  
-    //s.CreateHTTPServer(docroot, port); // 100 ms interval
-    webSocketServer s;
-    s.m_docroot = docroot;
-    s.port = port;
-    try{
-        websocketpp::lib::thread t(websocketpp::lib::bind(&webSocketServer::CreateHTTPServer, &s, docroot, port));
-        while (1)
-        {
-          igtl::TrackingDataMessage::Pointer trackingMsg;
-          trackingMsg = igtl::TrackingDataMessage::New();
-          trackingMsg->SetDeviceName("Tracker");
-          PackTrackingData(trackingMsg);
-          s.Send(trackingMsg->GetPackPointer(), trackingMsg->GetPackSize());
-          igtl::Sleep(200);
-        }
-        t.join();
-      }
-    catch (websocketpp::exception const & e) {
-      std::cout << e.what() << std::endl;
+  //s.CreateHTTPServer(docroot, port); // 100 ms interval
+  webSocketServer s;
+  s.m_docroot = docroot;
+  s.port = port;
+  try
+  {
+  websocketpp::lib::thread t(websocketpp::lib::bind(&webSocketServer::CreateHTTPServer, &s, docroot, port));
+  while (1)
+    {
+    igtl::TrackingDataMessage::Pointer trackingMsg;
+    trackingMsg = igtl::TrackingDataMessage::New();
+    trackingMsg->SetDeviceName("Tracker");
+    PackTrackingData(trackingMsg);
+    s.Send(trackingMsg->GetPackPointer(), trackingMsg->GetPackSize());
+    igtl::Sleep(200);
     }
-    return 0;
+  t.join();
+  }
+  catch (websocketpp::exception const & e) {
+    std::cout << e.what() << std::endl;
+  }
+  return 0;
 }

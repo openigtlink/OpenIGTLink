@@ -219,7 +219,7 @@ ENDIF()
 # Configure WebSocket
 # Create the link to the WebSocket libraries
 IF(BUILD_WEBSOCKET)
-  ADD_SUBDIRECTORY(WebSocket)
+  include(${PROJECT_SOURCE_DIR}/Source/WebSocket/WebSocket.cmake)
   ADD_SUBDIRECTORY(${PROJECT_BINARY_DIR}/websocketpp ${PROJECT_BINARY_DIR})
   include(${PROJECT_BINARY_DIR}/websocketpp/WebSocketConfig.cmake)
 ENDIF()

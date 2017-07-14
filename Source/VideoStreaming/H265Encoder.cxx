@@ -106,10 +106,11 @@ int H265Encoder::SetQP(int maxQP, int minQP)
 {
   sSvcParam->rc.qpMax= maxQP<51?maxQP:51;
   sSvcParam->rc.qpMin = minQP>0?minQP:0;
-  if (x265_encoder_reconfig(this->pSVCEncoder, sSvcParam)<0) {
+  if (x265_encoder_reconfig(this->pSVCEncoder, sSvcParam)<0)
+    {
     fprintf (stderr, "Set QP value failed.\n");
     return -1;
-  }
+    }
   this->initializationDone = true;
   return 0;
 }
@@ -144,10 +145,11 @@ int H265Encoder::SetSpeed(int speed)
   x265_param_default_preset(this->sSvcParam,ToString(9-speed).c_str(),"zerolatency"); // In OpenIGTLink, lower speed value corresponding to slower coding speed. In x265, the speed setting is reversed.
   this->CopySettingToAnother(previousSetting, this->sSvcParam);
   x265_param_free(previousSetting);
-  if (x265_encoder_reconfig(this->pSVCEncoder, sSvcParam)<0) {
+  if (x265_encoder_reconfig(this->pSVCEncoder, sSvcParam)<0)
+    {
     fprintf (stderr, "Set speed mode failed.\n");
     return -1;
-  }
+    }
   return 0;
 }
 
@@ -157,16 +159,17 @@ int H265Encoder::InitializeEncoder()
   int iRet = 0;
   
   if (this->configFile=="" && this->pSVCEncoder)
-  {
+    {
     fprintf (stderr, "No configuration file specified. Use Default Parameters\n");
     iRet = x265_encoder_reconfig(this->pSVCEncoder, sSvcParam);
-    if (iRet<0) {
+    if (iRet<0)
+      {
       fprintf (stderr, "parse svc parameter config file failed.\n");
       return -1;
-    }
+      }
     this->initializationDone = true;
     return iRet;
-  }
+    }
   this->initializationDone = false;
   return -1;
 }
@@ -175,10 +178,11 @@ int H265Encoder::SetPicWidthAndHeight(unsigned int Width, unsigned int Height)
 {
   this->sSvcParam->sourceWidth = Width;
   this->sSvcParam->sourceHeight = Height;
-  if (x265_encoder_reconfig(this->pSVCEncoder, sSvcParam)<0) {
+  if (x265_encoder_reconfig(this->pSVCEncoder, sSvcParam)<0)
+    {
     fprintf (stderr, "parse svc parameter config file failed.\n");
     return -1;
-  }
+    }
   x265_picture_init(sSvcParam,H265SrcPicture);
   this->initializationDone = true;
   return 0;
@@ -198,19 +202,19 @@ int H265Encoder::SetLosslessLink(bool linkMethod)
 int H265Encoder::ConvertToLocalImageFormat(SourcePicture* pSrcPic)
 {
   if(pSrcPic->colorFormat==FormatI420)
-  {
-    if((pSrcPic->picWidth*pSrcPic->picHeight*3/2 != this->H265SrcPicture->framesize || pSrcPic->picHeight != this->H265SrcPicture->height))
     {
+    if((pSrcPic->picWidth*pSrcPic->picHeight*3/2 != this->H265SrcPicture->framesize || pSrcPic->picHeight != this->H265SrcPicture->height))
+      {
       this->SetPicWidthAndHeight(pSrcPic->picWidth, pSrcPic->picHeight);
       x265_picture_init(this->sSvcParam, H265SrcPicture);
-    }
+      }
     for(int i = 0; i < 3; i++)
-    {
+      {
       H265SrcPicture->stride[i] = pSrcPic->stride[i];
       H265SrcPicture->planes[i] = pSrcPic->data[i];
-    }
+      }
     return 1;
-  }
+    }
   return -1;// image format not supported
 }
 
@@ -221,23 +225,23 @@ int H265Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
   int iSourceWidth = pSrcPic->picWidth;
   int iSourceHeight = pSrcPic->picHeight;
   if (iSourceWidth != this->sSvcParam->sourceWidth || iSourceHeight != this->sSvcParam->sourceHeight)
-  {
+    {
     this->SetPicWidthAndHeight(iSourceWidth, iSourceHeight);
     this->InitializeEncoder();
-  }
+    }
   if (this->initializationDone == true)
-  {
+    {
     pSrcPic->stride[0] = iSourceWidth;
     pSrcPic->stride[1] = pSrcPic->stride[2] = pSrcPic->stride[0] >> 1;
     videoMessage->SetUseCompress(this->useCompress);
     this->ConvertToLocalImageFormat(pSrcPic);
     if (this->useCompress)
-    { 
+      {
       igtl_uint32 iNal = 0;
       encodeRet =x265_encoder_encode(this->pSVCEncoder,&pNals,&iNal,this->H265SrcPicture,NULL);
       //encodeRet =x265_encoder_encode(this->pSVCEncoder,&pNals,&iNal,NULL,NULL);
       if (encodeRet>=1)
-      {
+        {
         igtl_uint64 totalBitStreamSize = 0;
         for(int j=0;j<iNal;j++){
           totalBitStreamSize += pNals[j].sizeBytes;
@@ -251,9 +255,9 @@ int H265Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
         videoMessage->SetHeight(pSrcPic->picHeight);
         encodedFrameType = pNals[iNal-1].type;
         if (isGrayImage)
-        {
+          {
           encodedFrameType = pNals[iNal-1].type<<8;
-        }
+          }
         videoMessage->SetFrameType(encodedFrameType);
         int nalSize = 0;
         FILE* testFile = fopen("Test.265", "a");
@@ -265,12 +269,12 @@ int H265Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
         fclose(testFile);
         videoMessage->Pack();
         return 0;
+        }
+      }
+    else
+      {
+      return this->PackUncompressedData(pSrcPic, videoMessage, isGrayImage);
       }
     }
-    else
-    {
-      return this->PackUncompressedData(pSrcPic, videoMessage, isGrayImage);
-    }
-  }
   return -1;
 }
