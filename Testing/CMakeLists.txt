@@ -90,6 +90,7 @@ ENDIF()
 
 IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
   ADD_EXECUTABLE(igtlVideoMessageTest   igtlVideoMessageTest.cxx)
+  ADD_EXECUTABLE(igtlVideoMetaMessageTest   igtlVideoMetaMessageTest.cxx)
 ENDIF()
 
 
@@ -137,6 +138,7 @@ ENDIF()
 
 IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
   TARGET_LINK_LIBRARIES(igtlVideoMessageTest ${GTEST_LINK})
+  TARGET_LINK_LIBRARIES(igtlVideoMetaMessageTest ${GTEST_LINK})
 ENDIF()
 
 
@@ -208,6 +210,6 @@ ENDIF()
 IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (LINK_H264 OR LINK_VP9))
   ADD_TEST(igtlVideoMessageTestFormatVersion1 ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMessageTest ${TestStringFormat1})
   ADD_TEST(igtlVideoMessageTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMessageTest ${TestStringFormat2})
-  ADD_TEST(igtlMessageRTPWrapperTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlMessageRTPWrapperTest ${TestStringFormat2})
+  ADD_TEST(igtlVideoMetaMessageTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMetaMessageTest ${TestStringFormat2})
 ENDIF()
 

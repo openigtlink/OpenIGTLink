@@ -186,10 +186,12 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (LINK_H264 OR LINK_VP9 OR LI
   SET(OpenIGTLink_SOURCES
     ${OpenIGTLink_SOURCES} 
     ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtl_video.c
+    ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtl_videometa.c
     ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoMessage.cxx
     ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VideoStreamIGTLinkServer.cxx
     ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VideoStreamIGTLinkReceiver.cxx
     ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlCodecCommonClasses.cxx
+    ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoMetaMessage.cxx
     )
 	SET(OpenIGTLink_INCLUDE_DIRS
     ${OpenIGTLink_INCLUDE_DIRS}
@@ -199,10 +201,12 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (LINK_H264 OR LINK_VP9 OR LI
     SET(OpenIGTLink_INCLUDE_FILES
       ${OpenIGTLink_INCLUDE_FILES} 
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtl_video.h
+      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtl_videometa.h
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoMessage.h
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VideoStreamIGTLinkServer.h
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VideoStreamIGTLinkReceiver.h
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlCodecCommonClasses.h
+      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoMetaMessage.h
       )
   ENDIF()
   IF(LINK_H264)
