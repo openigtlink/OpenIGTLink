@@ -235,14 +235,14 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (LINK_H264 OR LINK_VP9 OR LI
       ${VP9_SOURCE_DIR}/tools_common.c
       ${VP9_SOURCE_DIR}/video_reader.c
       ${VP9_SOURCE_DIR}/ivfdec.c
-      ${VP9_SOURCE_DIR}/vpx_config.c
+      ${VP9_LIBRARY_DIR}/vpx_config.c
     )
     IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
       SET(OpenIGTLink_INCLUDE_FILES
       	${OpenIGTLink_INCLUDE_FILES}
         ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Decoder.h
         ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Encoder.h
-        ${VP9_SOURCE_DIR}/vpx_config.h
+        ${VP9_LIBRARY_DIR}/vpx_config.h
         ${VP9_SOURCE_DIR}/tools_common.h
         ${VP9_SOURCE_DIR}/video_reader.h
         ${VP9_SOURCE_DIR}/ivfdec.h
