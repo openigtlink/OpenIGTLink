@@ -1,6 +1,6 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink -- Example for Image Meta Data Client
+  Program:   OpenIGTLink -- Example for Video Meta Data Client
   Language:  C++
 
   Copyright (c) Insight Software Consortium. All rights reserved.
@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
 int ReceiveVideoMeta(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Pointer& header)
 {
 
-  std::cerr << "Receiving IMGMETA data type." << std::endl;
+  std::cerr << "Receiving VIDEOMETA data type." << std::endl;
 
   // Create a message buffer to receive transform data
   igtl::VideoMetaMessage::Pointer videoMeta;

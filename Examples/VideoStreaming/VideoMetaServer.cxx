@@ -1,6 +1,6 @@
 /*=========================================================================
 
-  Program:   OpenIGTLink -- Example for Image Meta Data Server
+  Program:   OpenIGTLink -- Example for Video Meta Data Server
   Language:  C++
 
   Copyright (c) Insight Software Consortium. All rights reserved.
@@ -91,9 +91,9 @@ int main(int argc, char* argv[])
         headerMsg->Unpack();
 
         // Check data type and receive data body
-        if (strcmp(headerMsg->GetDeviceType(), "GET_VIDEOMETA") == 0)
+        if (strcmp(headerMsg->GetDeviceType(), "GET_VMETA") == 0)
           {
-          std::cerr << "Received a GET_IMGMETA message." << std::endl;
+          std::cerr << "Received a GET_VMETA message." << std::endl;
           //socket->Skip(headerMsg->GetBodySizeToRead(), 0);
           SendVideoMeta(socket, headerMsg->GetDeviceName());
           }
@@ -131,8 +131,8 @@ int SendVideoMeta(igtl::Socket::Pointer& socket, const char* name)
   // Create 1st meta data
   igtl::VideoMetaElement::Pointer videoMeta0;
   videoMeta0 = igtl::VideoMetaElement::New();
-  videoMeta0->SetName("IMAGE_DESCRIPTION_0");
-  videoMeta0->SetDeviceName("IMAGE_0");
+  videoMeta0->SetName("VIDEO_DESCRIPTION_0");
+  videoMeta0->SetDeviceName("VIDEO_0");
   videoMeta0->SetPatientName("PATIENT_0");
   videoMeta0->SetPatientID("PATIENT_ID_0");
   videoMeta0->SetSize(512, 512, 64);
@@ -146,25 +146,25 @@ int SendVideoMeta(igtl::Socket::Pointer& socket, const char* name)
   //---------------------------
   // Create 2nd meta data
   igtl::VideoMetaElement::Pointer videoMeta1;
-  videoMeta0 = igtl::VideoMetaElement::New();
-  videoMeta0->SetName("IMAGE_DESCRIPTION_1");
-  videoMeta0->SetDeviceName("IMAGE_1");
-  videoMeta0->SetPatientName("PATIENT_1");
-  videoMeta0->SetPatientID("PATIENT_ID_1");
-  videoMeta0->SetSize(256, 256, 64);
+  videoMeta1 = igtl::VideoMetaElement::New();
+  videoMeta1->SetName("VIDEO_DESCRIPTION_1");
+  videoMeta1->SetDeviceName("VIDEO_1");
+  videoMeta1->SetPatientName("PATIENT_1");
+  videoMeta1->SetPatientID("PATIENT_ID_1");
+  videoMeta1->SetSize(256, 256, 64);
   igtl::Matrix4x4 matrix1;
   matrix1[0][0] = -1.0;  matrix1[1][0] = 0.0;  matrix1[2][0] = 0.0; matrix1[3][0] = -15.0;
   matrix1[0][1] = 0.0;  matrix1[1][1] = 1.0;  matrix1[2][1] = 0.0; matrix1[3][1] = 50.0;
   matrix1[0][2] = 0.0;  matrix1[1][2] = 0.0;  matrix1[2][2] = 1.0; matrix1[3][2] = 30.5;
   matrix1[0][3] = 0.0;  matrix1[1][3] = 0.0;  matrix1[2][3] = 0.0; matrix1[3][3] = 1.0;
-  videoMeta0->SetScalarType(igtl::VideoMessage::TYPE_UINT16);
+  videoMeta1->SetScalarType(igtl::VideoMessage::TYPE_UINT16);
   
   //---------------------------
   // Create 3rd meta data
   igtl::VideoMetaElement::Pointer videoMeta2;
   videoMeta2 = igtl::VideoMetaElement::New();
-  videoMeta2->SetName("IMAGE_DESCRIPTION_2");
-  videoMeta2->SetDeviceName("IMAGE_2");
+  videoMeta2->SetName("VIDEO_DESCRIPTION_2");
+  videoMeta2->SetDeviceName("VIDEO_2");
   videoMeta2->SetPatientName("PATIENT_2");
   videoMeta2->SetPatientID("PATIENT_ID_2");
   videoMeta2->SetSize(256, 128, 1);
@@ -182,7 +182,7 @@ int SendVideoMeta(igtl::Socket::Pointer& socket, const char* name)
   videoMetaMsg->Pack();
   std::cerr << "Size of pack: " << videoMetaMsg->GetPackSize() << std::endl;
   std::cerr << "Name of type: " << videoMetaMsg->GetDeviceType() << std::endl;
-  std::cerr << "Sending a IMGMETA message..." << std::endl;
+  std::cerr << "Sending a VIDEOMETA message..." << std::endl;
 
   socket->Send(videoMetaMsg->GetPackPointer(), videoMetaMsg->GetPackSize());
 
