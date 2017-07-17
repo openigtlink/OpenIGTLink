@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+<title>WebSocket++ TrackingData Client</title>
+</head>
+<body>
+
+<script type="text/javascript">
+var ws;
+var url;
+var count = 0;
+var bufferHeader = new ArrayBuffer(58);
+var myBlob = new Blob(["This is my blob content"], {type : "text/plain"});
+var myReader = new FileReader();
+myReader.addEventListener("loadend", function(e){
+		document.getElementById("messages").innerHTML += e.srcElement.result;//prints a string
+});
+function connect() {
+	url = document.getElementById("server_url").value;
+	
+	if ("WebSocket" in window) {
+		ws = new WebSocket(url);
+	} else if ("MozWebSocket" in window) {
+		ws = new MozWebSocket(url);
+	} else {
+		document.getElementById("messages").innerHTML += "This Browser does not support WebSockets<br />";
+		return;
+	}
+	ws.onopen = function(e) {
+		document.getElementById("messages").innerHTML += "Client: A connection to "+ws.url+" has been opened.<br />";
+		
+		document.getElementById("server_url").disabled = true;
+		document.getElementById("toggle_connect").innerHTML = "Disconnect";
+	};
+	
+	ws.onerror = function(e) {
+		document.getElementById("messages").innerHTML += "Client: An error occured, see console log for more details.<br />";
+		console.log(e);
+	};
+	
+	ws.onclose = function(e) {
+		document.getElementById("messages").innerHTML += "Client: The connection to "+url+" was closed. ["+e.code+(e.reason != "" ? ","+e.reason : "")+"]<br />";
+	    cleanup_disconnect();
+	};
+	
+	ws.onmessage = function(e) {
+	  count+=1;
+		document.getElementById("messages").innerHTML = "TrackingDataServer: "+count+"<br />";
+		var blob2 = new Blob(["faerfe"], {type: "plain/text"});
+		var blob = new Blob([e.data], {type: "plain/text"});
+		if (blob) {
+			
+			//handler executed once reading(blob content referenced to a variable) from blob is finished. 
+			//start the reading process.
+			myReader.readAsText(blob);
+		}
+	};
+}
+
+function disconnect() {
+	ws.close();
+	cleanup_disconnect();
+}
+
+function cleanup_disconnect() {
+    document.getElementById("server_url").disabled = false;
+	document.getElementById("toggle_connect").innerHTML = "Connect";
+}
+
+function toggle_connect() {
+	if (document.getElementById("server_url").disabled === false) {
+		connect();
+	} else {
+		disconnect();
+	}
+}
+</script>
+
+<style>
+body,html {
+	margin: 0px;
+	padding: 0px;
+}
+#controls {
+	float:left;
+	background-color: #999;
+}
+
+</style>
+
+<div id="controls">
+	<div id="server">
+	<input type="text" name="server_url" id="server_url" value="ws://localhost:9002" /><br />
+	<button id="toggle_connect" onclick="toggle_connect();">Connect</button>
+	</div>
+</div>
+<div id="messages"></div>
+
+</body>
+</html>

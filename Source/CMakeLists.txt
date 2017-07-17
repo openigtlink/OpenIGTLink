@@ -5,7 +5,6 @@ IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
     ws2_32
     wsock32
     )
-
   #For debug under win32 system, the run time check mode should be set to /RTCu for multithreading purpose
   STRING(REPLACE "/RTC1" "/RTCu" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
   SET(OpenIGTLink_REQUIRED_CXX_FLAGS ${OpenIGTLink_REQUIRED_CXX_FLAGS})
@@ -20,7 +19,6 @@ ELSE() # for POSIX-compatible OSs
       socket
     )
   ENDIF()
-
   IF(OpenIGTLink_PLATFORM_SUNOS)
     LIST(APPEND LINK_LIBS
       ${OpenIGTLink_STD_LINK_LIBRARIES}
@@ -190,6 +188,10 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" )
     igtlQueryMessage.cxx
     igtlutil/igtl_command.c
     igtlutil/igtl_query.c
+    igtlMessageRTPWrapper.cxx
+    igtlGeneralSocket.cxx
+    igtlUDPClientSocket.cxx
+    igtlUDPServerSocket.cxx
     )
   IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
     LIST(APPEND OpenIGTLink_INCLUDE_FILES
@@ -197,9 +199,31 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" )
       igtlQueryMessage.h
       igtlutil/igtl_command.h
       igtlutil/igtl_query.h
+      igtlMessageRTPWrapper.h
+      igtlGeneralSocket.h
+      igtlUDPClientSocket.h
+      igtlUDPServerSocket.h
       )
   ENDIF()
 ENDIF()
+
+#-----------------------------------------------------------------------------
+# Configure VideoStreaming
+# Create the link to the VideoStreaming libraries
+IF(BUILD_VIDEOSTREAM)
+  include(${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VideoStreaming.cmake)
+ENDIF()
+#-----------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------
+# Configure WebSocket
+# Create the link to the WebSocket libraries
+IF(BUILD_WEBSOCKET)
+  include(${PROJECT_SOURCE_DIR}/Source/WebSocket/WebSocket.cmake)
+  ADD_SUBDIRECTORY(${PROJECT_BINARY_DIR}/websocketpp ${PROJECT_BINARY_DIR})
+  include(${PROJECT_BINARY_DIR}/websocketpp/WebSocketConfig.cmake)
+ENDIF()
+#-----------------------------------------------------------------------------
 
 ADD_LIBRARY(OpenIGTLink ${OpenIGTLink_SOURCES} ${OpenIGTLink_INCLUDE_FILES})
 foreach(p IN LISTS OpenIGTLink_INCLUDE_DIRS)

@@ -33,7 +33,7 @@ void BuildMessageFormat1()
   sendCommandMsg->Pack();
 }
 
-TEST(CommandMessageTest, Pack)
+TEST(CommandMessageTest, PackFormatVersion1)
 {
   BuildMessageFormat1();
   int r = memcmp((const void*)sendCommandMsg->GetBufferPointer(), (const void*)test_command_message,(size_t)(IGTL_HEADER_SIZE));
@@ -43,7 +43,7 @@ TEST(CommandMessageTest, Pack)
 }
 
 
-TEST(CommandMessageTest, UnPack)
+TEST(CommandMessageTest, UnPackFormatVersion1)
 {
   BuildMessageFormat1();
   igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();

@@ -9,7 +9,7 @@ if(COMMAND cmake_policy)
 #-----------------------------------------------------------------------------
 # OpenIGTlink version number.
 SET(OpenIGTLink_VERSION_MAJOR "3")
-SET(OpenIGTLink_VERSION_MINOR "0")
+SET(OpenIGTLink_VERSION_MINOR "1")
 SET(OpenIGTLink_VERSION_PATCH "0")
 
 option(OpenIGTLink_PROTOCOL_VERSION_2 "Build Library for Protocol Version 2" ON)
@@ -27,6 +27,45 @@ ENDIF()
 
 
 #-----------------------------------------------------------------------------
+# Configure VideoStreaming
+#Configure VideoStream
+OPTION(BUILD_VIDEOSTREAM "Build the Video Stream." OFF)
+IF(BUILD_VIDEOSTREAM)
+  OPTION(LINK_H264 "Link the OpenH264 tree." OFF)
+  SET(OpenIGTLink_LINK_H264 "0")
+  IF(LINK_H264)
+  SET(OpenIGTLink_LINK_H264 "1")
+  ENDIF()
+
+  OPTION(LINK_VP9 "Link the VP9 tree." OFF)
+  SET(OpenIGTLink_LINK_VP9 "0")
+  IF(LINK_VP9)
+  SET(OpenIGTLink_LINK_VP9 "1")
+  ENDIF()
+
+  OPTION(LINK_X265 "Link the X265 tree." OFF)
+  SET(OpenIGTLink_LINK_X265 "0")
+  IF(LINK_X265)
+  SET(OpenIGTLink_LINK_X265 "1")
+  ENDIF()
+
+  OPTION(LINK_OPENHEVC "Link the OpenHevc tree." OFF)
+  SET(OpenIGTLink_LINK_OPENHEVC "0")
+  IF(LINK_OPENHEVC)
+  SET(OpenIGTLink_LINK_OPENHEVC "1")
+  ENDIF()
+ENDIF()
+
+#-----------------------------------------------------------------------------
+
+#Configure WebSocket
+OPTION(BUILD_WEBSOCKET "Build the Websocket." OFF)
+SET(OpenIGTLink_BUILD_WEBSOCKET "0")
+IF(BUILD_WEBSOCKET)
+  SET(OpenIGTLink_BUILD_WEBSOCKET "1")  
+ENDIF()
+#-----------------------------------------------------------------------------
+
 # OpenIGTLink build configuration options.
 
 OPTION(BUILD_SHARED_LIBS "Build OpenIGTLink with shared libraries." OFF)
@@ -226,7 +265,6 @@ SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenIGTLink_REQUIRED_LIN
 SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${OpenIGTLink_REQUIRED_LINK_FLAGS}")
 SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${OpenIGTLink_REQUIRED_LINK_FLAGS}")
 
-
 #-----------------------------------------------------------------------------
 # Configure Subdirectories
 
@@ -258,6 +296,7 @@ IF(OpenIGTLink_BUILD_TESTING)
   ADD_SUBDIRECTORY(Testing)
   INCLUDE (${CMAKE_ROOT}/Modules/Dart.cmake)
 ENDIF()
+
 
 #-----------------------------------------------------------------------------
 # Doxygen

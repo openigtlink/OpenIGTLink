@@ -27,8 +27,25 @@ if (${OpenIGTLink_PROTOCOL_VERSION} GREATER 1)
     Capability
     Trajectory
     SessionManager
+    #TrackingDataUDPTransfer
+    #SampleUDPProgam
     )
 endif (${OpenIGTLink_PROTOCOL_VERSION} GREATER 1)
+
+
+IF(BUILD_VIDEOSTREAM AND (LINK_H264 OR LINK_VP9 OR LINK_X265) AND (${OpenIGTLink_PROTOCOL_VERSION} GREATER 2))
+	SET(EXAMPLE_DIRS
+    ${EXAMPLE_DIRS}
+    VideoStreaming
+    )
+ENDIF()
+
+IF(BUILD_WEBSOCKET)
+	SET(EXAMPLE_DIRS
+    ${EXAMPLE_DIRS}
+    WebSocket
+  )
+ENDIF()
 
 ## Imager program isn't supported by QNX
 if(NOT OpenIGTLink_PLATFORM_QNX)

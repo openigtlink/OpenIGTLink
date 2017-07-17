@@ -205,7 +205,7 @@ Message types introduced in version 2
 Message types introduced in version 3
 -------------------------------------
 * [COMMAND](/Documents/Protocol/command.md)
-
+* [VIDEO](/Documents/Protocol/video.md)
 
 Query Mechanism
 ===============
