@@ -171,7 +171,7 @@ public:
   igtlNewMacro(igtl::GetVideoMetaMessage);
 
 protected:
-  GetVideoMetaMessage() : MessageBase() { this->m_SendMessageType  = "GET_VIDEOMETA"; };
+  GetVideoMetaMessage() : MessageBase() { this->m_SendMessageType  = "GET_VMETA"; };
   ~GetVideoMetaMessage() {};
 protected:
   virtual int  CalculateContentBufferSize() { return 0; };
