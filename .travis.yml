@@ -25,15 +25,12 @@ install:
       if ! brew ls --version cmake &>/dev/null; then brew install cmake; fi
     fi
   - |
-    if [ "${TRAVIS_OS_NAME}" == "linux" ] || [ "${TRAVIS_OS_NAME}" == "osx" ]; then
+    if [ "${TRAVIS_OS_NAME}" == "linux" ] ; then
       sudo apt-get -y install yasm;
-      wget http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz;
-      tar xzf yasm-1.3.0.tar.gz;
-      cd yasm-1.3.0;
-      ./configure;
-      sudo make;
-      sudo make install;  
-      cd ..
+    fi  
+    if [ "${TRAVIS_OS_NAME}" == "osx" ]; then
+      brew update;
+      brew install yasm;
     fi
       
 before_script:
@@ -41,18 +38,18 @@ before_script:
   - cd    build
 
 script:
-  - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=ON -DLINK_VP9=ON ..
+  - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=ON -DBUILD_VIDEOSTREAM=ON -DLINK_VP9=ON ..
   - make
   - cd ..
   - mkdir TestBuild
   - cd TestBuild
-  - cmake -DCMAKE_PREFIX_PATH:PATH=../build ../Testing
+  - cmake -DCMAKE_PREFIX_PATH:PATH=../build -DBUILD_VIDEOSTREAM=ON -DLINK_VP9=ON ../Testing
   - make 
   - make test 
   #########################
   # Test for version2 build
   - cd ../build
-  - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=OFF ..
+  - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=OFF -DBUILD_VIDEOSTREAM=OFF ..
   - make
   - cd ../TestBuild
   - cmake -DCMAKE_PREFIX_PATH:PATH=../build ../Testing

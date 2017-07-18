@@ -48,17 +48,21 @@ If all went OK you will have the executable and the library:
 
 VideoStreaming
 ---------------
-You might want to use OpenIGTLink library to perform video streaming. Currently H264 and VP9 are supported in the OpenIGTLink
+You might want to use OpenIGTLink library to perform video streaming. Currently OpenH264, H265 and VP9 are supported in the OpenIGTLink.
 
 * Prerequisites
 
 In the case of H264 build, NASM is needed for assembly code: workable version 2.10.06 or above for 32 bit, nasm can downloaded from http://www.nasm.us/ 
-
 For Mac OSX 64-bit NASM needed to be below version 2.11.08 as nasm 2.11.08 
 will introduce error when using RIP-relative addresses in Mac OSX 64-bit. If you have another NASM version installed, try to unlink the wrong version of NASM, 
 and link to the version to below 2.11.08. Afterwards, check the nasm version with comman "which nasm" and "nasm -v".
-In the case of VPX build, The Yasm assembler is required to build optimized libraries for x86 platforms. 
+
+In the case of VP9 build, The Yasm assembler is required to build optimized libraries for x86 platforms. 
 Version 0.8.0 or newer is required, except Version 1.0.0.
+
+In the case of H265 build, H265 have many implementations, the encoder used in library is x265 and the decoder is OpenHEVC.
+OpenIGTLink library doesn't build H265 libraries, so the users need to download and compile the libraries by themselves. 
+Afterwards, set the variables-"X265_SOURCE_DIR, X265_LIBRARY_DIR, OPENHEVC_SOURCE_DIR, OPENHEVC_LIBRARY_DIR"-correctly in cmake configuration.
 
 * Linux / Mac OS X
 
@@ -66,14 +70,14 @@ In the case of Linux and Mac, after installing the required program in the Prere
 the build of openigtlink with codec is very straightforward: 
 
 ~~~~
-$ cmake -DBUILD_H264:BOOL=ON -DOpenIGTLink_PROTOCOL_VERSION_3:BOOL=ON ../OpenIGTLink
+$ cmake -DBUILD_VIDEOSTREAM:BOOL=ON -DLINK_H264:BOOL=ON -DOpenIGTLink_PROTOCOL_VERSION_3:BOOL=ON ../OpenIGTLink
 $ make
 ~~~~
 
 or for VP9 configuration:
 
 ~~~~
-$ cmake -DBUILD_VPX:BOOL=ON -DOpenIGTLink_PROTOCOL_VERSION_3:BOOL=ON ../OpenIGTLink
+$ cmake -DBUILD_VIDEOSTREAM:BOOL=ON -DLINK_VP9:BOOL=ON -DOpenIGTLink_PROTOCOL_VERSION_3:BOOL=ON ../OpenIGTLink
 $ make
 ~~~~
 
@@ -93,6 +97,10 @@ http://wiki.webmproject.org/ffmpeg/building-with-libvpx
 Useful X265 build intructions:
 
 https://bitbucket.org/multicoreware/x265/wiki/CrossCompile
+
+Useful OpenHEVC build intructions:
+
+http://openhevc.github.io/openHEVC/
 
 Other Platforms
 ---------------
