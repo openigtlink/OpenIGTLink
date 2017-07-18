@@ -87,7 +87,7 @@ IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
   ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND LINK_VP9)
     #To do, library name depends on the compiler setting, could be vpxmt.lib and vpxmtd also. Make sure the setting matches.
-    SET(LINK_VP9_LIBRARY optimized ${VP9_LIBRARY_DIR}\\Win32\\Release\\vpxmd.lib debug ${VP9_LIBRARY_DIR}\\Win32\\Debug\\vpxmdd.lib)
+    SET(LINK_VP9_LIBRARY optimized ${VP9_LIBRARY_DIR}\\$(Platform)\\Release\\vpxmd.lib debug ${VP9_LIBRARY_DIR}\\$(Platform)\\Debug\\vpxmdd.lib)
     SET(LINK_LIBS
       ${LINK_LIBS}
       ${LINK_VP9_LIBRARY}
