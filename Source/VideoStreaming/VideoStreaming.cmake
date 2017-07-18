@@ -87,7 +87,7 @@ IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
   ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND LINK_VP9)
     #To do, library name depends on the compiler setting, could be vpxmt.lib and vpxmtd also. Make sure the setting matches.
-    SET(LINK_VP9_LIBRARY optimized ${VP9_LIBRARY_DIR}\\Win32\\Release\\vpxmd.lib debug ${VP9_LIBRARY_DIR}\\Win32\\Debug\\vpxmdd.lib)
+    SET(LINK_VP9_LIBRARY optimized ${VP9_LIBRARY_DIR}\\$(Platform)\\Release\\vpxmd.lib debug ${VP9_LIBRARY_DIR}\\$(Platform)\\Debug\\vpxmdd.lib)
     SET(LINK_LIBS
       ${LINK_LIBS}
       ${LINK_VP9_LIBRARY}
@@ -160,6 +160,7 @@ IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND LINK_VP9)
     "${VP9_SOURCE_DIR}/vpx"
     "${VP9_SOURCE_DIR}/vp9"
     "${VP9_SOURCE_DIR}/vp9/common"
+    "${VP9_LIBRARY_DIR}"
   )
 ENDIF()
 
@@ -235,14 +236,14 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (LINK_H264 OR LINK_VP9 OR LI
       ${VP9_SOURCE_DIR}/tools_common.c
       ${VP9_SOURCE_DIR}/video_reader.c
       ${VP9_SOURCE_DIR}/ivfdec.c
-      ${VP9_SOURCE_DIR}/vpx_config.c
+      ${VP9_LIBRARY_DIR}/vpx_config.c
     )
     IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
       SET(OpenIGTLink_INCLUDE_FILES
       	${OpenIGTLink_INCLUDE_FILES}
         ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Decoder.h
         ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Encoder.h
-        ${VP9_SOURCE_DIR}/vpx_config.h
+        ${VP9_LIBRARY_DIR}/vpx_config.h
         ${VP9_SOURCE_DIR}/tools_common.h
         ${VP9_SOURCE_DIR}/video_reader.h
         ${VP9_SOURCE_DIR}/ivfdec.h
