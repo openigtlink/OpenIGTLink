@@ -160,6 +160,7 @@ IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND LINK_VP9)
     "${VP9_SOURCE_DIR}/vpx"
     "${VP9_SOURCE_DIR}/vp9"
     "${VP9_SOURCE_DIR}/vp9/common"
+    "${VP9_LIBRARY_DIR}"
   )
 ENDIF()
 
