@@ -1,15 +1,17 @@
-# list of libraries
+# Build library dependency list
 # Note: this part should be moved to OpenIGTLinkConfigPlatform.cmake
-IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
-  SET(LINK_LIBS
+IF(WIN32)
+  # for Windows
+  LIST(APPEND LINK_LIBS
     ws2_32
     wsock32
     )
   #For debug under win32 system, the run time check mode should be set to /RTCu for multithreading purpose
   STRING(REPLACE "/RTC1" "/RTCu" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
   SET(OpenIGTLink_REQUIRED_CXX_FLAGS ${OpenIGTLink_REQUIRED_CXX_FLAGS})
-ELSE() # for POSIX-compatible OSs
-  SET(LINK_LIBS
+ELSE()
+  # for POSIX-compatible OSs
+  LIST(APPEND LINK_LIBS
     m
     pthread
     )
@@ -17,7 +19,7 @@ ELSE() # for POSIX-compatible OSs
     LIST(APPEND LINK_LIBS
       c
       socket
-    )
+      )
   ENDIF()
   IF(OpenIGTLink_PLATFORM_SUNOS)
     LIST(APPEND LINK_LIBS
@@ -26,14 +28,12 @@ ELSE() # for POSIX-compatible OSs
   ENDIF()
 ENDIF()
 
-ADD_SUBDIRECTORY( igtlutil )
-
+#-----------------------------------------------------------------------------
+# Include directories
 SET(OpenIGTLink_INCLUDE_DIRS
   ${CMAKE_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/igtlutil
-  ${CMAKE_CURRENT_BINARY_DIR}/igtlutil
   )
 
 SET(OpenIGTLink_SOURCES
@@ -70,7 +70,7 @@ SET(OpenIGTLink_SOURCES
   )
 
 SET(OpenIGTLink_INCLUDE_FILES)
-IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
+IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
   LIST(APPEND OpenIGTLink_INCLUDE_FILES
     igtlutil/igtl_header.h
     igtlutil/igtl_image.h
@@ -118,7 +118,7 @@ IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
 ENDIF()
 
 # Add support for OpenIGTLink version 2
-IF (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1" )
+IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "1")
   LIST(APPEND OpenIGTLink_SOURCES
     igtlutil/igtl_colortable.c
     igtlutil/igtl_imgmeta.c
@@ -148,7 +148,7 @@ IF (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1" )
     igtlBindMessage.cxx
     igtlNDArrayMessage.cxx
     )
-  IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
+  IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
     LIST(APPEND OpenIGTLink_INCLUDE_FILES
       igtlutil/igtl_colortable.h
       igtlutil/igtl_imgmeta.h
@@ -182,7 +182,7 @@ IF (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1" )
 ENDIF()
 
 # Add support for OpenIGTLink version 3
-IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" )
+IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
   LIST(APPEND OpenIGTLink_SOURCES
     igtlCommandMessage.cxx
     igtlQueryMessage.cxx
@@ -193,7 +193,7 @@ IF( ${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" )
     igtlUDPClientSocket.cxx
     igtlUDPServerSocket.cxx
     )
-  IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode" )
+  IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
     LIST(APPEND OpenIGTLink_INCLUDE_FILES
       igtlCommandMessage.h
       igtlQueryMessage.h
@@ -211,29 +211,59 @@ ENDIF()
 # Configure VideoStreaming
 # Create the link to the VideoStreaming libraries
 IF(BUILD_VIDEOSTREAM)
-  include(${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VideoStreaming.cmake)
+  IF(USE_H264)
+    FIND_PACKAGE(OpenH264 REQUIRED)
+    LIST(APPEND LINK_LIBS OpenH264)
+  ENDIF()
+
+  IF(USE_VP9)
+    FIND_PACKAGE(VP9 REQUIRED)
+    LIST(APPEND LINK_LIBS VP9)
+  ENDIF()
+
+  IF(USE_X265)
+    FIND_PACKAGE(x265 REQUIRED)
+    LIST(APPEND LINK_LIBS x265)
+  ENDIF()
+
+  IF(USE_OPENHEVC)
+    FIND_PACKAGE(OpenHEVC REQUIRED)
+    LIST(APPEND LINK_LIBS OpenHEVC)
+  ENDIF()
+
+  INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/VideoStreaming/VideoStreaming.cmake)
 ENDIF()
-#-----------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------
 # Configure WebSocket
 # Create the link to the WebSocket libraries
 IF(BUILD_WEBSOCKET)
-  include(${PROJECT_SOURCE_DIR}/Source/WebSocket/WebSocket.cmake)
-  ADD_SUBDIRECTORY(${PROJECT_BINARY_DIR}/websocketpp ${PROJECT_BINARY_DIR})
-  include(${PROJECT_BINARY_DIR}/websocketpp/WebSocketConfig.cmake)
-ENDIF()
-#-----------------------------------------------------------------------------
+  FIND_PACKAGE(WebSocket REQUIRED)
+  LIST(APPEND LINK_LIBS WebSocket)
 
+  LIST(APPEND OpenIGTLink_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebServerSocket.cxx
+    ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebClientSocket.cxx
+  )
+  
+  LIST(APPEND OpenIGTLink_INCLUDE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebServerSocket.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebClientSocket.h
+  )
+
+  LIST(APPEND OpenIGTLink_INCLUDE_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket
+ENDIF()
+
+#-----------------------------------------------------------------------------
+# Create the library
 ADD_LIBRARY(OpenIGTLink ${OpenIGTLink_SOURCES} ${OpenIGTLink_INCLUDE_FILES})
 foreach(p IN LISTS OpenIGTLink_INCLUDE_DIRS)
-  target_include_directories(OpenIGTLink PUBLIC 
-    $<BUILD_INTERFACE:${p}>)
+  target_include_directories(OpenIGTLink PUBLIC $<BUILD_INTERFACE:${p}>)
 endforeach()
-target_include_directories(OpenIGTLink PUBLIC 
-  $<INSTALL_INTERFACE:${OpenIGTLink_INSTALL_INCLUDE_DIR}>)
+target_include_directories(OpenIGTLink PUBLIC $<INSTALL_INTERFACE:${OpenIGTLink_INSTALL_INCLUDE_DIR}>)
 
-TARGET_LINK_LIBRARIES(OpenIGTLink PUBLIC ${LINK_LIBS})
+TARGET_LINK_LIBRARIES(OpenIGTLink PUBLIC ${LINK_LIBS} igtlutil)
 
 IF(MSVC)
   target_compile_options(OpenIGTLink PRIVATE /MP)

@@ -1,0 +1,63 @@
+#---------------------------------------------------
+SET(OpenIGTLink_DEPENDENCIES)
+
+#---------------------------------------------------
+# VideoStreaming dependencies
+IF(USE_H264)
+  INCLUDE(${CMAKE_CURRENT_LIST_DIR}/External_OpenH264.cmake)
+  LIST(APPEND OpenIGTLink_DEPENDENCIES openh264)
+ENDIF()
+
+IF(USE_VP9)
+  INCLUDE(${CMAKE_CURRENT_LIST_DIR}/External_VPX.cmake)
+  LIST(APPEND OpenIGTLink_DEPENDENCIES vpx)
+ENDIF()
+
+IF(USE_X265)
+  INCLUDE(${CMAKE_CURRENT_LIST_DIR}/External_x265.cmake)
+  LIST(APPEND OpenIGTLink_DEPENDENCIES x265)
+ENDIF()
+
+IF(USE_OPENHEVC)
+  INCLUDE(${CMAKE_CURRENT_LIST_DIR}/External_yasm.cmake)
+  INCLUDE(${CMAKE_CURRENT_LIST_DIR}/External_OpenHEVC.cmake)
+  LIST(APPEND OpenIGTLink_DEPENDENCIES openHEVC)
+ENDIF()
+
+IF(BUILD_WEBSOCKET)
+  INCLUDE(${CMAKE_CURRENT_LIST_DIR}/External_WebSocket.cmake)
+  LIST(APPEND OpenIGTLink_DEPENDENCIES websocket)
+ENDIF()
+
+IF(BUILD_TESTING AND USE_GTEST)
+  INCLUDE(${CMAKE_CURRENT_LIST_DIR}/External_googletest.cmake)
+  LIST(APPEND OpenIGTLink_DEPENDENCIES googletest)
+ENDIF()
+
+#---------------------------------------------------
+# OpenIGTLink library
+ExternalProject_Add( OpenIGTLink-lib
+  PREFIX "${CMAKE_BINARY_DIR}/OpenIGTLink-prefix"
+  SOURCE_DIR "${CMAKE_BINARY_DIR}/OpenIGTLink"
+  BINARY_DIR "${CMAKE_BINARY_DIR}/OpenIGTLink-bin"
+  #--Download step--------------
+  GIT_REPOSITORY "https://github.com/openigtlink/OpenIGTLink.git"
+  GIT_TAG master
+  #--Configure step-------------
+  CMAKE_ARGS
+    ${PLATFORM_SPECIFIC_ARGS}
+    -DIGTL_SUPERBUILD:BOOL=OFF
+    -DCMAKE_LIBRARY_OUTPUT_DIRECTORY:STRING=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    -DCMAKE_RUNTIME_OUTPUT_DIRECTORY:STRING=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY:PATH=${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}
+    -DBUILD_SHARED_LIBS:BOOL=${OpenIGTLink_BUILD_SHARED_LIBS} 
+    -DBUILD_TESTING:BOOL=${BUILD_TESTING}
+    -DBUILD_EXAMPLES:BOOL=${BUILD_EXAMPLES}
+    -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
+    -DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS}
+    -DGTEST_ROOT:PATH=${CMAKE_BINARY_DIR}/Deps/gtest-install
+    -DGMOCK_ROOT:PATH=${CMAKE_BINARY_DIR}/Deps/gtest-install
+  #--Build step-----------------
+  BUILD_ALWAYS 1
+  DEPENDS ${OpenIGTLink_DEPENDENCIES}
+  )
