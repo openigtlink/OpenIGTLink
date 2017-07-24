@@ -19,9 +19,10 @@
 
 #include "vpx/vpx_encoder.h"
 #include "vpx/vp8cx.h"
-#include "vp9/common/vp9_common.h"
-#include "tools_common.h"
-#include "video_writer.h"
+#include "vpx/vpx_codec.h"
+#include "vpx/vpx_image.h"
+#include "vpx/vpx_integer.h"
+#include "vpx_ports/msvc.h"
 
 #include "igtlCodecCommonClasses.h"
 #include "igtl_header.h"
@@ -31,6 +32,16 @@
 #include "igtlVideoMessage.h"
 #include "igtlTimeStamp.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+  typedef struct VpxInterfaceEncoder {
+    vpx_codec_iface_t *(*const codec_interface)();
+  } VpxInterfaceEncoder;
+  
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 using namespace std;
 
@@ -90,7 +101,13 @@ public:
   
 private:
   
-  const VpxInterface *encoder;
+  const VpxInterfaceEncoder *encoder;
+  
+  void error_output(vpx_codec_ctx_t *ctx, const char *s);
+  
+  int vpx_img_plane_width(const vpx_image_t *img, int plane);
+  
+  int vpx_img_plane_height(const vpx_image_t *img, int plane);
   
   vpx_codec_enc_cfg_t cfg;
   

@@ -31,9 +31,23 @@
 #include "igtlVideoMessage.h"
 #include "igtlCodecCommonClasses.h"
 #include "vpx/vpx_decoder.h"
-#include "tools_common.h"
-#include "video_reader.h"
 #include "vpx_config.h"
+#include "vpx/vp8dx.h"
+#include "vpx/vpx_codec.h"
+#include "vpx/vpx_image.h"
+#include "vpx/vpx_integer.h"
+#include "vpx_ports/msvc.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+  typedef struct VpxInterfaceDecoder {
+    vpx_codec_iface_t *(*const codec_interface)();
+  } VpxInterfaceDecoder;
+  
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 #define NO_DELAY_DECODING
 class VP9Decoder:public GenericDecoder
@@ -49,7 +63,11 @@ public:
 private:
   virtual void ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[2], igtl_uint8 *outputFrame);
   
-  const VpxInterface* decoder;
+  const VpxInterfaceDecoder* decoder;
+  
+  int vpx_img_plane_width(const vpx_image_t *img, int plane);
+  
+  int vpx_img_plane_height(const vpx_image_t *img, int plane);
   
   vpx_codec_ctx_t codec;
   

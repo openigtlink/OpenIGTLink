@@ -1,11 +1,13 @@
 PROJECT(OpenIGTLinkTesting)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
 OPTION(USE_GTEST "Use Googletest to drive the testing." ON)
+SET(OpenIGTLink_USE_GTEST "0")
 CONFIGURE_FILE(${PROJECT_SOURCE_DIR}/igtlTestConfig.h.in ${PROJECT_BINARY_DIR}/igtlTestConfig.h)
+include_directories(${PROJECT_BINARY_DIR})
 
-IF(OpenIGTLink_USE_GTEST)
+IF(USE_GTEST)
   IF(${CMAKE_GENERATOR} MATCHES "Visual Studio 11" ) # VS2012 doesn't support correctly the tuples yet
     ADD_DEFINITIONS("-D_VARIADIC_MAX=10")
   ENDIF()
@@ -13,9 +15,13 @@ IF(OpenIGTLink_USE_GTEST)
   # Prevent GoogleTest from overriding our compiler/linker options
   # when building with Visual Studio
   SET(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-  FIND_PACKAGE(GTest REQUIRED)
-  FIND_PACKAGE(GMock REQUIRED)
+  INCLUDE(${CMAKE_CURRENT_LIST_DIR}/External_googletest.cmake)
+  LIST(APPEND OpenIGTLinkTesting_DEPENDENCIES googletest)
+  FIND_PACKAGE(GTest)
+  IF(GTest_DIR)
+    SET(OpenIGTLink_USE_GTEST "1")
+  ENDIF()
+  #FIND_PACKAGE(GMock REQUIRED)
 ENDIF()
 
 ADD_SUBDIRECTORY(igtlutil)
@@ -56,12 +62,12 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
   ADD_EXECUTABLE(igtlMessageRTPWrapperTest    igtlMessageRTPWrapperTest.cxx)
 ENDIF()
 
-IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
+IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM AND (USE_H264 OR USE_VP9 OR (USE_X265 AND USE_OPENHEVC)))
   ADD_EXECUTABLE(igtlVideoMessageTest         igtlVideoMessageTest.cxx)
   ADD_EXECUTABLE(igtlVideoMetaMessageTest     igtlVideoMetaMessageTest.cxx)
 ENDIF()
 
-IF(USE_GTEST)
+IF(OpenIGTLink_USE_GTEST)
   SET(GTEST_LINK OpenIGTLink GTest::Main GTest::GTest gmock_main gmock)
 ELSE()
   SET(GTEST_LINK OpenIGTLink)
@@ -103,7 +109,7 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
   TARGET_LINK_LIBRARIES(igtlMessageRTPWrapperTest   ${GTEST_LINK})
 ENDIF()
 
-IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
+IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM AND (USE_H264 OR USE_VP9 OR (USE_X265 AND USE_OPENHEVC)))
   TARGET_LINK_LIBRARIES(igtlVideoMessageTest        ${GTEST_LINK})
   TARGET_LINK_LIBRARIES(igtlVideoMetaMessageTest    ${GTEST_LINK})
 ENDIF()
@@ -168,7 +174,7 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
   ADD_TEST(igtlMessageRTPWrapperTestFormatVersion2    ${OpenIGTLink_EXECUTABLE_PATH}/igtlMessageRTPWrapperTest ${TestStringFormat2})
 ENDIF()
 
-IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (LINK_H264 OR LINK_VP9))
+IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM AND (USE_H264 OR USE_VP9 OR (USE_X265 AND USE_OPENHEVC)))
   ADD_TEST(igtlVideoMessageTestFormatVersion1         ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMessageTest ${TestStringFormat1})
   ADD_TEST(igtlVideoMessageTestFormatVersion2         ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMessageTest ${TestStringFormat2})
   ADD_TEST(igtlVideoMetaMessageTestFormatVersion2     ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMetaMessageTest ${TestStringFormat2})

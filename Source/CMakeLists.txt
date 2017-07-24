@@ -34,6 +34,8 @@ SET(OpenIGTLink_INCLUDE_DIRS
   ${CMAKE_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/igtlutil
+  ${CMAKE_CURRENT_BINARY_DIR}/igtlutil
   )
 
 SET(OpenIGTLink_SOURCES
@@ -207,54 +209,40 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
   ENDIF()
 ENDIF()
 
-#-----------------------------------------------------------------------------
-# Configure VideoStreaming
-# Create the link to the VideoStreaming libraries
-IF(BUILD_VIDEOSTREAM)
-  IF(USE_H264)
-    FIND_PACKAGE(OpenH264 REQUIRED)
-    LIST(APPEND LINK_LIBS OpenH264)
-  ENDIF()
+IF (NOT (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 3.4))
+	IF(BUILD_VIDEOSTREAM)	
+		IF(USE_X265)
+			FIND_PACKAGE(x265 REQUIRED)
+		ENDIF()
+	
+		IF(USE_OPENHEVC)
+			FIND_PACKAGE(OpenHEVC REQUIRED)
+		ENDIF()
+		INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/VideoStreaming/VideoStreaming.cmake)
+	ENDIF()
 
-  IF(USE_VP9)
-    FIND_PACKAGE(VP9 REQUIRED)
-    LIST(APPEND LINK_LIBS VP9)
-  ENDIF()
+	#-----------------------------------------------------------------------------
+	# Configure WebSocket
+	# Create the link to the WebSocket libraries
+	IF(BUILD_WEBSOCKET)
+		FIND_PACKAGE(WebSocket REQUIRED)
+		LIST(APPEND LINK_LIBS WebSocket)
 
-  IF(USE_X265)
-    FIND_PACKAGE(x265 REQUIRED)
-    LIST(APPEND LINK_LIBS x265)
-  ENDIF()
+		LIST(APPEND OpenIGTLink_SOURCES
+			${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebServerSocket.cxx
+			${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebClientSocket.cxx
+		)
+	
+		LIST(APPEND OpenIGTLink_INCLUDE_FILES
+			${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebServerSocket.h
+			${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebClientSocket.h
+		)
 
-  IF(USE_OPENHEVC)
-    FIND_PACKAGE(OpenHEVC REQUIRED)
-    LIST(APPEND LINK_LIBS OpenHEVC)
-  ENDIF()
-
-  INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/VideoStreaming/VideoStreaming.cmake)
+		LIST(APPEND OpenIGTLink_INCLUDE_DIRS
+			${CMAKE_CURRENT_SOURCE_DIR}/WebSocket
+			)
+	ENDIF()
 ENDIF()
-
-#-----------------------------------------------------------------------------
-# Configure WebSocket
-# Create the link to the WebSocket libraries
-IF(BUILD_WEBSOCKET)
-  FIND_PACKAGE(WebSocket REQUIRED)
-  LIST(APPEND LINK_LIBS WebSocket)
-
-  LIST(APPEND OpenIGTLink_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebServerSocket.cxx
-    ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebClientSocket.cxx
-  )
-  
-  LIST(APPEND OpenIGTLink_INCLUDE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebServerSocket.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebClientSocket.h
-  )
-
-  LIST(APPEND OpenIGTLink_INCLUDE_DIRS
-    ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket
-ENDIF()
-
 #-----------------------------------------------------------------------------
 # Create the library
 ADD_LIBRARY(OpenIGTLink ${OpenIGTLink_SOURCES} ${OpenIGTLink_INCLUDE_FILES})
@@ -263,7 +251,9 @@ foreach(p IN LISTS OpenIGTLink_INCLUDE_DIRS)
 endforeach()
 target_include_directories(OpenIGTLink PUBLIC $<INSTALL_INTERFACE:${OpenIGTLink_INSTALL_INCLUDE_DIR}>)
 
-TARGET_LINK_LIBRARIES(OpenIGTLink PUBLIC ${LINK_LIBS} igtlutil)
+LIST(APPEND OpenIGTLink_DEPENDENCIES igtlutil)
+
+TARGET_LINK_LIBRARIES(OpenIGTLink PUBLIC ${LINK_LIBS})
 
 IF(MSVC)
   target_compile_options(OpenIGTLink PRIVATE /MP)
@@ -282,3 +272,4 @@ INSTALL(TARGETS OpenIGTLink EXPORT OpenIGTLink
   RUNTIME DESTINATION ${OpenIGTLink_INSTALL_BIN_DIR} COMPONENT RuntimeLibraries
   LIBRARY DESTINATION ${OpenIGTLink_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
   ARCHIVE DESTINATION ${OpenIGTLink_INSTALL_LIB_DIR} COMPONENT Development)
+  

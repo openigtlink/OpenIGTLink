@@ -45,7 +45,6 @@
 #if OpenIGTLink_LINK_VP9
   #include "VP9Encoder.h"
   #include "VP9Decoder.h"
-  #include "../video_reader.h"
   #include "./vpx_config.h"
   #include "vpx_dsp_rtcd.h"
   #include "vpx_dsp/ssim.h"
@@ -159,7 +158,7 @@ int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDeco
             }
             if (compareImage)
             {
-              TestDebugCharArrayCmp(pDecodedPic->data[0], imagePointer, kiPicResSize * 3 / 2);
+              //TestDebugCharArrayCmp(pDecodedPic->data[0], imagePointer, kiPicResSize * 3 / 2);
               if (memcmp(pDecodedPic->data[0], imagePointer, kiPicResSize * 3 / 2) != 0)
               {
                 return -1;

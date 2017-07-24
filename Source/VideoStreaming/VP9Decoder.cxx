@@ -13,9 +13,29 @@
 
 #include "VP9Decoder.h"
 
+
+static const VpxInterfaceDecoder vp9StaticDecoder[] = {{&vpx_codec_vp9_dx}};
+
+// TODO(dkovalev): move this function to vpx_image.{c, h}, so it will be part
+// of vpx_image_t support, this section will be removed when it is moved to vpx_image
+int VP9Decoder::vpx_img_plane_width(const vpx_image_t *img, int plane) {
+  if (plane > 0 && img->x_chroma_shift > 0)
+    return (img->d_w + 1) >> img->x_chroma_shift;
+  else
+    return img->d_w;
+}
+
+int VP9Decoder::vpx_img_plane_height(const vpx_image_t *img, int plane) {
+  if (plane > 0 && img->y_chroma_shift > 0)
+    return (img->d_h + 1) >> img->y_chroma_shift;
+  else
+    return img->d_h;
+}
+
+
 VP9Decoder::VP9Decoder()
 {
-  decoder = get_vpx_decoder_by_name("vp9");
+  decoder = &vp9StaticDecoder[0];
   vpx_codec_dec_init(&codec, decoder->codec_interface(), NULL, 0);
   this->deviceName = "";
 }
@@ -96,7 +116,6 @@ int VP9Decoder::DecodeBitStreamIntoFrame(unsigned char* bitstream,igtl_uint8* ou
     {
     vpx_codec_dec_init(&codec, decoder->codec_interface(), NULL, 0);
     std::cerr << "decode failed" << std::endl;
-    //die_codec(&codec, "Failed to decode frame.");
     }
   return -1;
 }

@@ -1,15 +1,12 @@
 PROJECT(OpenIGTLink)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
 INCLUDE(ExternalProject)
 
 IF(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 ENDIF(COMMAND cmake_policy)
-
-OPTION(OpenIGTLink_SUPERBUILD "Superbuild or not." ON)
-MARK_AS_ADVANCED(OpenIGTLink_SUPERBUILD)
 
 #-----------------------------------------------------------------------------
 # OpenIGTlink version number.
@@ -32,12 +29,33 @@ ENDIF()
 
 #-----------------------------------------------------------------------------
 # Configure VideoStreaming
+# Create the link to the VideoStreaming libraries
 OPTION(BUILD_VIDEOSTREAM "Build the Video Stream." OFF)
+OPTION(USE_H264 "Link the OpenH264 tree." OFF)
+OPTION(USE_VP9 "Link the VP9 tree." OFF)
+OPTION(USE_X265 "Link the X265 tree." OFF)
+OPTION(USE_OPENHEVC "Link the OpenHevc tree." OFF)
+SET(OpenIGTLink_LINK_H264 "0")
+SET(OpenIGTLink_LINK_VP9 "0")
+SET(OpenIGTLink_LINK_X265 "0")
+SET(OpenIGTLink_LINK_OPENHEVC "0")
+SET(H264_SOURCE_DIR "" CACHE PATH "H264 source directory")
+SET(H264_LIBRARY_DIR "" CACHE PATH "H264 library directory")
+SET(VP9_SOURCE_DIR "" CACHE PATH "VP9 source directory")
+SET(VP9_LIBRARY_DIR "" CACHE PATH "VP9 library directory")   
 IF(BUILD_VIDEOSTREAM)
-  OPTION(USE_H264 "Link the OpenH264 tree." OFF)
-  OPTION(USE_VP9 "Link the VP9 tree." OFF)
-  OPTION(USE_X265 "Link the X265 tree." OFF)
-  OPTION(USE_OPENHEVC "Link the OpenHevc tree." OFF)
+  IF(USE_H264)
+		SET(OpenIGTLink_LINK_H264 "1")     
+  ENDIF()
+  IF(USE_VP9)
+    SET(OpenIGTLink_LINK_VP9 "1")
+  ENDIF()
+  IF(USE_X265)
+    SET(OpenIGTLink_LINK_X265 "1")
+  ENDIF()
+  IF(USE_OPENHEVC)
+    SET(OpenIGTLink_LINK_OPENHEVC "1")
+  ENDIF()
 ENDIF()
 
 #-----------------------------------------------------------------------------
@@ -54,8 +72,19 @@ IF(NOT OpenIGTLink_BUILD_SHARED_LIBS)
   SET(OpenIGTLink_BUILD_GENERATE_PIC ${BUILD_GENERATE_PIC})
 ENDIF()
 
+#-----------------------------------------------------------------------------
 OPTION(BUILD_EXAMPLES "Build OpenIGTLink example programs." OFF)
 SET(OpenIGTLink_BUILD_EXAMPLES ${BUILD_EXAMPLES})
+
+#-----------------------------------------------------------------------------
+OPTION(BUILD_TESTING "Build the testing tree." ON)
+OPTION(USE_GTEST "Use googletest for testing" ON)
+SET(OpenIGTLink_BUILD_TESTING ${BUILD_TESTING})
+
+#-----------------------------------------------------------------------------
+OPTION(BUILD_DOCUMENTATION "Build OpenIGTLink Documentation" OFF)
+
+
 
 #-----------------------------------------------------------------------------
 # Output directories.
@@ -160,9 +189,24 @@ ENDIF()
 
 #-----------------------------------------------------------------------------
 # Run superbuild script instead of library script
-IF(OpenIGTLink_SUPERBUILD)
-  INCLUDE(SuperBuild/Superbuild.cmake)
-  RETURN()
+IF (NOT (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 3.4))
+  MESSAGE ("Cmake version is not less than 3.4, super build available")
+	OPTION(OpenIGTLink_SUPERBUILD "Superbuild or not." OFF)
+	#MARK_AS_ADVANCED(OpenIGTLink_SUPERBUILD)
+	IF(OpenIGTLink_SUPERBUILD)
+		INCLUDE(SuperBuild/Superbuild.cmake)
+		RETURN()
+	ENDIF()
+ENDIF()
+
+#-----------------------------------------------------------------------------
+# Configure Subdirectories
+ADD_SUBDIRECTORY(Source/igtlutil)
+ADD_SUBDIRECTORY(Source)
+ADD_SUBDIRECTORY(Tools)
+
+IF(OpenIGTLink_BUILD_EXAMPLES)
+ ADD_SUBDIRECTORY(Examples)
 ENDIF()
 
 #-----------------------------------------------------------------------------
@@ -228,16 +272,6 @@ LIST(APPEND CMAKE_SHARED_LINKER_FLAGS ${OpenIGTLink_REQUIRED_LINK_FLAGS})
 LIST(APPEND CMAKE_MODULE_LINKER_FLAGS ${OpenIGTLink_REQUIRED_LINK_FLAGS})
 
 #-----------------------------------------------------------------------------
-# Configure Subdirectories
-ADD_SUBDIRECTORY(Source/igtlutil)
-ADD_SUBDIRECTORY(Source)
-ADD_SUBDIRECTORY(Tools)
-
-IF(OpenIGTLink_BUILD_EXAMPLES)
- ADD_SUBDIRECTORY(Examples)
-ENDIF()
-
-#-----------------------------------------------------------------------------
 # Export targets
 EXPORT(TARGETS OpenIGTLink
   FILE "${OpenIGTLink_LIBRARY_TARGETS_FILE}"
@@ -251,8 +285,6 @@ INSTALL(EXPORT OpenIGTLink
 
 #-----------------------------------------------------------------------------
 # Tests
-OPTION(BUILD_TESTING "Build the testing tree." ON)
-SET(OpenIGTLink_BUILD_TESTING ${BUILD_TESTING})
 IF(OpenIGTLink_BUILD_TESTING)
   ENABLE_TESTING()
   ADD_SUBDIRECTORY(Testing)
@@ -260,9 +292,7 @@ IF(OpenIGTLink_BUILD_TESTING)
 ENDIF()
 
 #-----------------------------------------------------------------------------
-# Doxygen
-OPTION(BUILD_DOCUMENTATION "Build OpenIGTLink Documentation" OFF)
-
+# Build Doxygen documentation
 IF(BUILD_DOCUMENTATION)
   ADD_SUBDIRECTORY(Documents/Doxygen)
 ENDIF()

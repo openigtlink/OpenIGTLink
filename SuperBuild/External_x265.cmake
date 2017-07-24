@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 2.8.2)
+include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 IF(x265_DIR)
   # x265 has been built already
   FIND_PACKAGE(x265 REQUIRED)

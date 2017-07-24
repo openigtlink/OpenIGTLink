@@ -1,5 +1,5 @@
 # Add support for OpenIGTLink version 3
-IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (LINK_H264 OR LINK_VP9 OR LINK_X265 OR LINK_OPENHEVC))
+IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (USE_H264 OR USE_VP9 OR USE_X265 OR USE_OPENHEVC))
   LIST(APPEND OpenIGTLink_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/Source/VideoStreaming)
   LIST(APPEND OpenIGTLink_SOURCES
     ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtl_video.c
@@ -10,7 +10,7 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (LINK_H264 OR LINK_VP9 OR LIN
     ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlCodecCommonClasses.cxx
     ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoMetaMessage.cxx
     )
-  LIST(APPENDOpenIGTLink_INCLUDE_DIRS
+  LIST(APPEND OpenIGTLink_INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/Source/VideoStreaming
     )
   IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
@@ -24,45 +24,52 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (LINK_H264 OR LINK_VP9 OR LIN
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoMetaMessage.h
       )
   ENDIF()
-  IF(USE_H264 AND OpenH264_FOUND)
-    LIST(APPEND OpenIGTLink_SOURCES
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Decoder.cxx
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.cxx
-      ${H264_SOURCE_DIR}/test/api/sha1.c
-      ${H264_SOURCE_DIR}/codec/console/common/src/read_config.cpp
-      )
-    IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
-      LIST(APPEND OpenIGTLink_INCLUDE_FILES
-        ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Decoder.h
-        ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.h
-        ${H264_SOURCE_DIR}/test/sha1.h
-        ${H264_SOURCE_DIR}/codec/console/common/inc/read_config.h
-      )
-    ENDIF()
-  ENDIF()
-
-  IF(USE_VP9 AND VP9_FOUND)
-    LIST(APPEND OpenIGTLink_SOURCES
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Decoder.cxx
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Encoder.cxx
-      ${VP9_SOURCE_DIR}/tools_common.c
-      ${VP9_SOURCE_DIR}/video_reader.c
-      ${VP9_SOURCE_DIR}/ivfdec.c
-      ${VP9_LIBRARY_DIR}/vpx_config.c
-      )
-    IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
-      LIST(APPEND OpenIGTLink_INCLUDE_FILES
-        ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Decoder.h
-        ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Encoder.h
-        ${VP9_LIBRARY_DIR}/vpx_config.h
-        ${VP9_SOURCE_DIR}/tools_common.h
-        ${VP9_SOURCE_DIR}/video_reader.h
-        ${VP9_SOURCE_DIR}/ivfdec.h
-      )
-    ENDIF()
+  IF(USE_H264)
+    LIST(APPEND OpenIGTLink_DEPENDENCIES openh264)
+    INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_openh264.cmake)
+  	IF((EXISTS ${H264_SOURCE_DIR}) AND (EXISTS ${H264_LIBRARY_DIR}))
+			LIST(APPEND OpenIGTLink_SOURCES
+				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Decoder.cxx
+				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.cxx
+				)
+			IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
+				LIST(APPEND OpenIGTLink_INCLUDE_FILES
+					${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Decoder.h
+					${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.h)
+			ENDIF()
+			LIST(APPEND OpenIGTLink_INCLUDE_DIRS
+    		${H264_SOURCE_DIR}/codec/api/svc/
+    	)
+		ELSE()
+			MESSAGE("H264_SOURCE_DIR or H264_LIBRARY_DIR no found.  You could specify now , or it will be downloaded during the openigtlink build, but build of the codec should be done by the user.")
+		ENDIF()
+	ENDIF()
+	
+  IF(USE_VP9)
+    LIST(APPEND OpenIGTLink_DEPENDENCIES VP9)
+    INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_VP9.cmake)
+  	IF((EXISTS ${VP9_SOURCE_DIR}) AND (EXISTS ${VP9_LIBRARY_DIR}))
+  		LIST(APPEND OpenIGTLink_INCLUDE_DIRS
+    		${VP9_SOURCE_DIR}
+    		${VP9_LIBRARY_DIR}
+    	)
+			LIST(APPEND OpenIGTLink_SOURCES
+				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Decoder.cxx
+				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Encoder.cxx
+				)
+			IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
+				LIST(APPEND OpenIGTLink_INCLUDE_FILES
+					${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Decoder.h
+					${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Encoder.h
+				)
+			ENDIF()
+		ELSE()
+			MESSAGE("VP9_SOURCE_DIR or VP9_LIBRARY_DIR no found")
+		ENDIF()
   ENDIF()
 
   IF(USE_X265 AND X265_FOUND)
+  	INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_x264.cmake)
     LIST(APPEND OpenIGTLink_SOURCES
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Encoder.cxx
       )
@@ -73,7 +80,7 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (LINK_H264 OR LINK_VP9 OR LIN
     ENDIF()
   ENDIF()
 
-  IF(USE_OPENHEVC and OpenHEVC_FOUND)
+  IF(USE_OPENHEVC AND OpenHEVC_FOUND)
     LIST(APPEND OpenIGTLink_SOURCES
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Decoder.cxx
       )
@@ -82,5 +89,32 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (LINK_H264 OR LINK_VP9 OR LIN
         ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Decoder.h
         )
     ENDIF()
+  ENDIF()
+ENDIF()
+
+
+IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
+  IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_H264)
+		LIST(APPEND LINK_LIBS
+    	${H264_LIBRARY_DIR}/openh264.lib
+    )
+	ENDIF()
+  IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_VP9)
+    #To do, library name depends on the compiler setting, could be vpxmt.lib and vpxmtd also. Make sure the setting matches.
+    SET(LINK_VP9_LIBRARY optimized ${VP9_LIBRARY_DIR}\\$(Platform)\\Release\\vpxmd.lib debug ${VP9_LIBRARY_DIR}\\$(Platform)\\Debug\\vpxmdd.lib)
+    LIST(APPEND LINK_LIBS
+      ${LINK_VP9_LIBRARY}
+    )
+  ENDIF()
+ELSE() # for POSIX-compatible OSs
+	IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_H264)
+		LIST(APPEND LINK_LIBS
+		  ${H264_LIBRARY_DIR}/libopenh264.a
+		)
+	ENDIF()
+  IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_VP9)
+    LIST(APPEND LINK_LIBS
+      ${VP9_LIBRARY_DIR}/libvpx.a
+    )
   ENDIF()
 ENDIF()

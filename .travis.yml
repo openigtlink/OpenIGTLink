@@ -38,12 +38,12 @@ before_script:
   - cd    build
 
 script:
-  - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=ON -DBUILD_VIDEOSTREAM=ON -DLINK_VP9=ON ..
+  - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=ON -DBUILD_VIDEOSTREAM=ON -DUSE_VP9=ON ..
   - make
   - cd ..
   - mkdir TestBuild
   - cd TestBuild
-  - cmake -DCMAKE_PREFIX_PATH:PATH=../build -DBUILD_VIDEOSTREAM=ON -DLINK_VP9=ON ../Testing
+  - cmake -DCMAKE_PREFIX_PATH:PATH=../build -DBUILD_VIDEOSTREAM=ON -DUSE_VP9=ON ../Testing
   - make 
   - make test 
   #########################
