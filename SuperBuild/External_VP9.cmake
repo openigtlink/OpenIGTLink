@@ -7,22 +7,17 @@ IF((EXISTS ${VP9_SOURCE_DIR}) AND (EXISTS ${VP9_LIBRARY_DIR}))
 ELSE()
   # OpenIGTLink has not been built yet, so download and build it as an external project
   MESSAGE(STATUS "Downloading VP9 from https://github.com/webmproject/libvpx.git")              
-	IF(NOT ${VP9_SOURCE_DIR} EQUAL "")
-  	include_directories("${VP9_SOURCE_DIR}")
-  ENDIF()
-  SET (VP9_SOURCE_DIR "${CMAKE_BINARY_DIR}/Deps/VP9" CACHE PATH "VP9 source directory" FORCE)
-  SET (VP9_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Deps/VP9-bin" CACHE PATH "VP9 library directory"  FORCE)
-  ExternalProject_Add(VP9
-    SOURCE_DIR "${VP9_SOURCE_DIR}"
-    BINARY_DIR "${VP9_LIBRARY_DIR}"
-    #--Download step--------------
-    GIT_REPOSITORY https://github.com/webmproject/libvpx.git
-    GIT_TAG master
-    #--Configure step-------------
-    CONFIGURE_COMMAND ""
-    #--Build step-----------------
-    BUILD_COMMAND "" 
-    #--Install step-----------------
-    INSTALL_COMMAND ""
-    )  
+	SET (VP9_SOURCE_DIR "${CMAKE_BINARY_DIR}/Deps/VP9" CACHE PATH "VP9 source directory" FORCE)
+  SET (VP9_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Deps/VP9-bin" CACHE PATH "VP9 library directory" FORCE)   							
+	configure_file(${OpenIGTLink_SOURCE_DIR}/SuperBuild/CMakeListsVP9Download.txt.in
+  ${PROJECT_BINARY_DIR}/Deps/VP9-download/CMakeLists.txt)
+	#Here the downloading project is triggered                                                               
+	execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" -DH264_SOURCE_DIR:STRING=${VP9_SOURCE_DIR} -DH264_LIBRARY_DIR:STRING=${VP9_LIBRARY_DIR} . 
+									WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/Deps/VP9-download" )
+	execute_process(COMMAND "${CMAKE_COMMAND}" --build . 
+									WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/Deps/VP9-download" )                    
+	if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")             
+		execute_process(COMMAND "${VP9_SOURCE_DIR}/configure" --disable-examples --disable-tools --disable-docs --disable-vp8 --disable-libyuv --disable-unit_tests --disable-postproc WORKING_DIRECTORY "${VP9_LIBRARY_DIR}" )
+    execute_process(COMMAND "make" WORKING_DIRECTORY "${VP9_LIBRARY_DIR}" )                       
+	endif(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") 
 ENDIF()

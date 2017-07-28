@@ -19,8 +19,6 @@ ELSE()
 		CMAKE_ARGS
 			${PLATFORM_SPECIFIC_ARGS}
 			-DBUILD_SHARED_LIBS:BOOL=OFF # make the google test library a static build
-			-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
-			-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS}
 		#--Build step-----------------
 		BUILD_ALWAYS 1
 		INSTALL_COMMAND ""
@@ -45,10 +43,9 @@ ELSE()
 		CMAKE_ARGS
 			${PLATFORM_SPECIFIC_ARGS}
 			-DBUILD_SHARED_LIBS:BOOL=OFF # make the google test library a static build
-			-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
-			-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS}
 		#--Build step-----------------
 		BUILD_ALWAYS 1
 		INSTALL_COMMAND ""
+		DEPENDS GTest
 	)
 ENDIF()

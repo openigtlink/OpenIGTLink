@@ -46,8 +46,6 @@
   #include "VP9Encoder.h"
   #include "VP9Decoder.h"
   #include "./vpx_config.h"
-  #include "vpx_dsp_rtcd.h"
-  #include "vpx_dsp/ssim.h"
 #endif
 
 int Width = 256;
