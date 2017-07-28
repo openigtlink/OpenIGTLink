@@ -25,9 +25,8 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (USE_H264 OR USE_VP9 OR USE_X
       )
   ENDIF()
   IF(USE_H264)
-    LIST(APPEND OpenIGTLink_DEPENDENCIES openh264)
     INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_openh264.cmake)
-  	IF((EXISTS ${H264_SOURCE_DIR}) AND (EXISTS ${H264_LIBRARY_DIR}))
+  	IF(EXISTS ${H264_LIBRARY_DIR})
 			LIST(APPEND OpenIGTLink_SOURCES
 				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Decoder.cxx
 				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.cxx
@@ -37,11 +36,13 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (USE_H264 OR USE_VP9 OR USE_X
 					${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Decoder.h
 					${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.h)
 			ENDIF()
-			LIST(APPEND OpenIGTLink_INCLUDE_DIRS
-    		${H264_SOURCE_DIR}/codec/api/svc/
-    	)
+    	IF(NOT ${H264_LIBRARY_DIR} EQUAL "")
+				LIST(APPEND OpenIGTLink_INCLUDE_DIRS
+    		"${H264_LIBRARY_DIR}/include/wels/" )
+    		LINK_DIRECTORIES("${H264_LIBRARY_DIR}/lib")
+			ENDIF()	
 		ELSE()
-			MESSAGE("H264_SOURCE_DIR or H264_LIBRARY_DIR no found.  You could specify now , or it will be downloaded during the openigtlink build, but build of the codec should be done by the user.")
+			MESSAGE("H264_LIBRARY_DIR no found.  You could specify now , or it will be downloaded during the openigtlink build, but build of the codec should be done by the user.")
 		ENDIF()
 	ENDIF()
 	
@@ -96,7 +97,7 @@ ENDIF()
 IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_H264)
 		LIST(APPEND LINK_LIBS
-    	${H264_LIBRARY_DIR}/openh264.lib
+    	${H264_LIBRARY_DIR}/lib/openh264.lib
     )
 	ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_VP9)
@@ -109,7 +110,7 @@ IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
 ELSE() # for POSIX-compatible OSs
 	IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_H264)
 		LIST(APPEND LINK_LIBS
-		  ${H264_LIBRARY_DIR}/libopenh264.a
+		  ${H264_LIBRARY_DIR}/lib/libopenh264.a
 		)
 	ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_VP9)
