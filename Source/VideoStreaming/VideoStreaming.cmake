@@ -74,8 +74,8 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (USE_H264 OR USE_VP9 OR USE_X
 		ENDIF()
   ENDIF()
 
-  IF(USE_X265 AND X265_FOUND)
-  	INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_x264.cmake)
+  IF(USE_X265)
+  	INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_x265.cmake)
     LIST(APPEND OpenIGTLink_SOURCES
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Encoder.cxx
       )
@@ -86,7 +86,7 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (USE_H264 OR USE_VP9 OR USE_X
     ENDIF()
   ENDIF()
 
-  IF(USE_OPENHEVC AND OpenHEVC_FOUND)
+  IF(USE_OPENHEVC)
     LIST(APPEND OpenIGTLink_SOURCES
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Decoder.cxx
       )

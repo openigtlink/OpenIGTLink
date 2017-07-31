@@ -109,7 +109,7 @@ SET(OpenIGTLink_LIBRARY_PATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 SET(OpenIGTLink_EXECUTABLE_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 SET(OpenIGTLink_CMAKE_DIR "${OpenIGTLink_SOURCE_DIR}/CMake")
-LIST(APPEND CMAKE_MODULE_PATH "${OpenIGTLink_SOURCE_DIR}/CMake/Modules")
+SET(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH} ${OpenIGTLink_SOURCE_DIR}/CMake/Modules")
 
 #-----------------------------------------------------------------------------
 # Installation vars.
@@ -164,19 +164,19 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
   INCLUDE(CheckCXXCompilerFlag)
   CHECK_CXX_COMPILER_FLAG("-fno-tree-vectorize" OpenIGTLink_GNUCXX_TREE_VECTORIZE_SUPPORT)
   IF(OpenIGTLink_GNUCXX_TREE_VECTORIZE_SUPPORT)
-    LIST(APPEND OpenIGTLink_REQUIRED_C_FLAGS -w -fno-tree-vectorize)
-    LIST(APPEND OpenIGTLink_REQUIRED_CXX_FLAGS -ftemplate-depth-50 -fno-tree-vectorize)
+    SET(OpenIGTLink_REQUIRED_C_FLAGS "${OpenIGTLink_REQUIRED_C_FLAGS} -w -fno-tree-vectorize")
+    SET(OpenIGTLink_REQUIRED_CXX_FLAGS "${OpenIGTLink_REQUIRED_CXX_FLAGS} -ftemplate-depth-50 -fno-tree-vectorize")
   ENDIF()
 
   # If the library is built as a static library, pass -fPIC option to the compiler
   IF(OpenIGTLink_BUILD_GENERATE_PIC)
-    LIST(APPEND OpenIGTLink_REQUIRED_C_FLAGS -fPIC)
-    LIST(APPEND OpenIGTLink_REQUIRED_CXX_FLAGS -fPIC)
+    SET(OpenIGTLink_REQUIRED_C_FLAGS "${OpenIGTLink_REQUIRED_C_FLAGS} -fPIC")
+    SET(OpenIGTLink_REQUIRED_CXX_FLAGS "${OpenIGTLink_REQUIRED_CXX_FLAGS} -fPIC")
   ENDIF()
 
   # pthread
   IF(CMAKE_HAVE_THREADS_LIBRARY)
-    LIST(APPEND OpenIGTLink_REQUIRED_LINK_FLAGS ${CMAKE_THREAD_LIBS_INIT})
+    SET(OpenIGTLink_REQUIRED_LINK_FLAGS "${OpenIGTLink_REQUIRED_LINK_FLAGS} ${CMAKE_THREAD_LIBS_INIT}")
   ENDIF()
 ENDIF()
 
@@ -186,10 +186,10 @@ ENDIF()
 IF(CMAKE_USE_PTHREADS)
   IF(CMAKE_SYSTEM MATCHES "SunOS.*")
     IF(CMAKE_COMPILER_IS_GNUCXX)
-      LIST(APPEND OpenIGTLink_REQUIRED_CXX_FLAGS -D_PTHREADS)
+      SET(OpenIGTLink_REQUIRED_CXX_FLAGS "${OpenIGTLink_REQUIRED_CXX_FLAGS} -D_PTHREADS")
     ELSE()
-      LIST(APPEND OpenIGTLink_REQUIRED_CXX_FLAGS -mt)
-      LIST(APPEND OpenIGTLink_REQUIRED_C_FLAGS -mt)
+      SET(OpenIGTLink_REQUIRED_CXX_FLAGS "${OpenIGTLink_REQUIRED_CXX_FLAGS} -mt")
+      SET(OpenIGTLink_REQUIRED_C_FLAGS "${OpenIGTLink_REQUIRED_C_FLAGS} -mt")
     ENDIF()
   ENDIF()
 ENDIF()
@@ -198,7 +198,7 @@ ENDIF()
 # Run superbuild script instead of library script
 IF (NOT (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 3.4))
   #MESSAGE ("Cmake version is not less than 3.4, super build available")
-	OPTION(OpenIGTLink_SUPERBUILD "Superbuild or not." OFF)
+	OPTION(OpenIGTLink_SUPERBUILD "Superbuild or not." ON)
 	IF(OpenIGTLink_SUPERBUILD)
 		INCLUDE(SuperBuild/Superbuild.cmake)
 		RETURN()
@@ -243,6 +243,10 @@ CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/UseOpenIGTLink.cmake.in
 # Create the OpenIGTLinkConfig.cmake file containing the OpenIGTLink configuration.
 INCLUDE(${OpenIGTLink_SOURCE_DIR}/CMake/GenerateOpenIGTLinkConfig.cmake)
 
+# Save the compiler settings so another project can import them.
+INCLUDE(${CMAKE_ROOT}/Modules/CMakeExportBuildSettings.cmake)
+CMAKE_EXPORT_BUILD_SETTINGS(${OpenIGTLink_BINARY_DIR}/OpenIGTLinkBuildSettings.cmake)
+
 INSTALL(FILES
   ${OpenIGTLink_BINARY_DIR}/OpenIGTLinkBuildSettings.cmake
   ${OpenIGTLink_BINARY_DIR}/UseOpenIGTLink.cmake
@@ -271,11 +275,11 @@ INSTALL(FILES
 
 #-----------------------------------------------------------------------------
 # Add compiler flags OpenIGTLink needs to work on this platform
-LIST(APPEND CMAKE_C_FLAGS ${OpenIGTLink_REQUIRED_C_FLAGS})
-LIST(APPEND CMAKE_CXX_FLAGS ${OpenIGTLink_REQUIRED_CXX_FLAGS})
-LIST(APPEND CMAKE_EXE_LINKER_FLAGS ${OpenIGTLink_REQUIRED_LINK_FLAGS})
-LIST(APPEND CMAKE_SHARED_LINKER_FLAGS ${OpenIGTLink_REQUIRED_LINK_FLAGS})
-LIST(APPEND CMAKE_MODULE_LINKER_FLAGS ${OpenIGTLink_REQUIRED_LINK_FLAGS})
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenIGTLink_REQUIRED_C_FLAGS}")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenIGTLink_REQUIRED_CXX_FLAGS}")
+SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenIGTLink_REQUIRED_LINK_FLAGS}")
+SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${OpenIGTLink_REQUIRED_LINK_FLAGS}")
+SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${OpenIGTLink_REQUIRED_LINK_FLAGS}")
 
 #-----------------------------------------------------------------------------
 # Export targets

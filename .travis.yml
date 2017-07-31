@@ -38,14 +38,22 @@ before_script:
   - cd    build
 
 script:
-  - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=ON -DBUILD_VIDEOSTREAM=ON -DUSE_VP9=ON -DBUILD_TESTING=ON ..
+  - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=ON -DOpenIGTLink_SUPERBUILD=OFF -DBUILD_VIDEOSTREAM=ON -DUSE_VP9=ON -DBUILD_TESTING=ON ..
   - make 
   - make test 
   #########################
   # Test for version2 build
-  - cd ../build
-  - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=OFF -DBUILD_VIDEOSTREAM=OFF -DBUILD_TESTING=ON ..
+  - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=OFF -DOpenIGTLink_SUPERBUILD=OFF -DBUILD_VIDEOSTREAM=OFF -DBUILD_TESTING=ON ..
   - make
+  - make test
+  #########################
+  # Test for Super build
+  - cd ..
+  - mkdir SuperBuild
+  - cd SuperBuild
+  - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=ON -DOpenIGTLink_SUPERBUILD=ON -DBUILD_VIDEOSTREAM=ON -DUSE_VP9=ON -DBUILD_TESTING=ON ..
+  - make
+  - cd OpenIGTLink-bin
   - make test
 
 

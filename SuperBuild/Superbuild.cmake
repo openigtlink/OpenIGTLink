@@ -31,11 +31,6 @@ IF(BUILD_VIDEOSTREAM)
     INCLUDE(${CMAKE_CURRENT_LIST_DIR}/External_WebSocket.cmake)
     LIST(APPEND OpenIGTLink_DEPENDENCIES websocket)
   ENDIF()
-
-  IF(BUILD_TESTING AND USE_GTEST)
-    INCLUDE(${OpenIGTLink_SOURCE_DIR}/Testing/External_googletest.cmake)
-    LIST(APPEND OpenIGTLink_DEPENDENCIES GTest GMock)
-  ENDIF()
 ENDIF()
 #---------------------------------------------------
 # OpenIGTLink library
@@ -69,9 +64,9 @@ ExternalProject_Add( OpenIGTLink-lib
     -DH264_LIBRARY_DIR:STRING=${H264_LIBRARY_DIR}
     -DVP9_SOURCE_DIR:STRING=${VP9_SOURCE_DIR}
     -DVP9_LIBRARY_DIR:STRING=${VP9_LIBRARY_DIR}
-    -DGTEST_ROOT:PATH=${CMAKE_BINARY_DIR}/Deps/gtest-bin
-    -DGMOCK_ROOT:PATH=${CMAKE_BINARY_DIR}/Deps/gmock-bin
   #--Build step-----------------
   BUILD_ALWAYS 1
+  #--Install step-----------------
+  INSTALL_COMMAND ""
   DEPENDS ${OpenIGTLink_DEPENDENCIES}
   )

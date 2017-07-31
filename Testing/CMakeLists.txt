@@ -19,7 +19,7 @@ IF(USE_GTEST)
   LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/Deps/gmock-bin")
 ENDIF()
 
-ADD_SUBDIRECTORY(igtlutil)
+ADD_SUBDIRECTORY( igtlutil )
 
 ADD_EXECUTABLE(igtlMultiThreaderTest1       igtlMultiThreaderTest1.cxx)
 ADD_EXECUTABLE(igtlMultiThreaderTest2       igtlMultiThreaderTest2.cxx)
