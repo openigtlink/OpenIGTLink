@@ -18,7 +18,7 @@ ELSE()
 		#--Configure step-------------
 		CMAKE_ARGS
 			${PLATFORM_SPECIFIC_ARGS}
-			-DBUILD_SHARED_LIBS:BOOL=OFF # make the google test library a static build
+      -Dgtest_force_shared_crt:BOOL=ON 
 		#--Build step-----------------
 		BUILD_ALWAYS 1
 		INSTALL_COMMAND ""
@@ -42,7 +42,7 @@ ELSE()
 		#--Configure step-------------
 		CMAKE_ARGS
 			${PLATFORM_SPECIFIC_ARGS}
-			-DBUILD_SHARED_LIBS:BOOL=OFF # make the google test library a static build
+      -Dgtest_force_shared_crt:BOOL=ON 
 		#--Build step-----------------
 		BUILD_ALWAYS 1
 		INSTALL_COMMAND ""

@@ -1,12 +1,9 @@
 cmake_minimum_required(VERSION 2.8.2)
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
-IF(x265_DIR)
+IF((EXISTS ${X265_SOURCE_DIR}) AND (EXISTS ${X265_LIBRARY_DIR}))
   # x265 has been built already
-  FIND_PACKAGE(x265 REQUIRED)
-
   MESSAGE(STATUS "Using x265 available at: ${x265_DIR}")
-
-  SET(OpenIGTLink_x265_DIR "${x265_DIR}" CACHE INTERNAL "Path to store x265 binaries")
+  #SET(OpenIGTLink_x265_DIR "${x265_DIR}" CACHE INTERNAL "Path to store x265 binaries")
 ELSE()
   # x265 has not been built yet, so download and build it as an external project
   SET(GIT_REPOSITORY "https://github.com/videolan/x265.git")
@@ -18,14 +15,14 @@ ELSE()
   
   MESSAGE(STATUS "Downloading x265 ${GIT_TAG} from: ${GIT_REPOSITORY}")
 
-  SET (OpenIGTLink_x265_SRC_DIR "${CMAKE_BINARY_DIR}/Deps/x265")
-  SET (OpenIGTLink_x265_DIR "${CMAKE_BINARY_DIR}/Deps/x265-bin" CACHE INTERNAL "Path to store x265 binaries")
+  SET (X265_SOURCE_DIR "${CMAKE_BINARY_DIR}/Deps/x265" CACHE PATH "x265 source directory")
+  SET (X265_LIBRARY_DIR "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}" CACHE PATH "x265 library directory")
 
   ExternalProject_Add( x265
     PREFIX "${CMAKE_BINARY_DIR}/Deps/x265-prefix"
-    SOURCE_DIR "${OpenIGTLink_x265_SRC_DIR}"
+    SOURCE_DIR "${X265_SOURCE_DIR}"
     SOURCE_SUBDIR source
-    BINARY_DIR "${OpenIGTLink_x265_DIR}"
+    BINARY_DIR "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
     #--Download step--------------
     GIT_REPOSITORY "${GIT_REPOSITORY}"
     GIT_TAG ${GIT_TAG}

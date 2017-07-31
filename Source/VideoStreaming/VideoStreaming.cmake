@@ -79,6 +79,10 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (USE_H264 OR USE_VP9 OR USE_X
     LIST(APPEND OpenIGTLink_SOURCES
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Encoder.cxx
       )
+    LIST(APPEND OpenIGTLink_INCLUDE_DIRS
+    		${X265_SOURCE_DIR}/source
+    		${X265_LIBRARY_DIR}
+    	)
     IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
       LIST(APPEND OpenIGTLink_INCLUDE_FILES
         ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Encoder.h
@@ -98,7 +102,6 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (USE_H264 OR USE_VP9 OR USE_X
   ENDIF()
 ENDIF()
 
-
 IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_H264)
 		LIST(APPEND LINK_LIBS
@@ -110,6 +113,13 @@ IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
     SET(LINK_VP9_LIBRARY optimized ${VP9_LIBRARY_DIR}\\$(Platform)\\Release\\vpxmd.lib debug ${VP9_LIBRARY_DIR}\\$(Platform)\\Debug\\vpxmdd.lib)
     LIST(APPEND LINK_LIBS
       ${LINK_VP9_LIBRARY}
+    )
+  ENDIF()
+  IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_X265)
+    #To do, library name depends on the compiler setting, could be vpxmt.lib and vpxmtd also. Make sure the setting matches.
+    SET(LINK_X265_LIBRARY optimized ${OpenIGTLink_LIBRARY_DIR}\\lib\\Release\\x265-static.lib debug ${OpenIGTLink_LIBRARY_DIR}\\lib\\Debug\\x265-static.lib)
+    LIST(APPEND LINK_LIBS
+      ${LINK_X265_LIBRARY}
     )
   ENDIF()
 ELSE() # for POSIX-compatible OSs

@@ -49,8 +49,8 @@ script:
   #########################
   # Test for Super build
   - cd ..
-  - mkdir SuperBuild
-  - cd SuperBuild
+  - mkdir SuperBuildTest
+  - cd SuperBuildTest
   - cmake -DOpenIGTLink_PROTOCOL_VERSION_3=ON -DOpenIGTLink_SUPERBUILD=ON -DBUILD_VIDEOSTREAM=ON -DUSE_VP9=ON -DBUILD_TESTING=ON ..
   - make
   - cd OpenIGTLink-bin
