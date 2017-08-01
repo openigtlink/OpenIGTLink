@@ -48,6 +48,12 @@
   #include "./vpx_config.h"
 #endif
 
+#if OpenIGTLink_LINK_OPENHEVC && OpenIGTLink_LINK_X265
+  #include "H265Encoder.h"
+  #include "H265Decoder.h"
+#endif
+
+
 int Width = 256;
 int Height = 256;
 std::string testFileName(OpenIGTLink_SOURCE_ROOTDIR);
@@ -279,6 +285,22 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
     std::cerr<<"End of H264 tests "<<std::endl;
     std::cerr<<"--------------------------- "<<std::endl;
   #endif
+#if OpenIGTLink_LINK_OPENHEVC && OpenIGTLink_LINK_X265
+      std::cerr<<"--------------------------- "<<std::endl;
+      std::cerr<<"Begin of VPX tests "<<std::endl;
+      H265Encoder* H265StreamEncoder = new H265Encoder();
+      H265Decoder* H265StreamDecoder = new H265Decoder();
+      H265StreamEncoder->SetPicWidthAndHeight(Width,Height);
+      H265StreamEncoder->InitializeEncoder();
+      H265StreamEncoder->SetLosslessLink(true);
+      TestWithVersion(IGTL_HEADER_VERSION_2, H265StreamEncoder, H265StreamDecoder,true);
+      H265StreamEncoder->SetSpeed(8);
+      H265StreamEncoder->SetLosslessLink(false);
+      std::cerr<<"Encoding Time Using Maximum Speed: "<<std::endl;
+      TestWithVersion(IGTL_HEADER_VERSION_2, H265StreamEncoder, H265StreamDecoder,false);
+      std::cerr<<"End of VPX tests "<<std::endl;
+      std::cerr<<"--------------------------- "<<std::endl;
+#endif
     }
 #endif
 

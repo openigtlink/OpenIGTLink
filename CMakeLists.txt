@@ -7,7 +7,6 @@ INCLUDE(ExternalProject)
 IF(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 ENDIF(COMMAND cmake_policy)
-
 #-----------------------------------------------------------------------------
 # OpenIGTlink version number.
 SET(OpenIGTLink_VERSION_MAJOR "3")
@@ -30,22 +29,22 @@ ENDIF()
 #-----------------------------------------------------------------------------
 # Configure VideoStreaming
 # Create the link to the VideoStreaming libraries
-OPTION(BUILD_VIDEOSTREAM "Build the Video Stream." OFF)
+OPTION(BUILD_VIDEOSTREAM "Build the Video Stream." ON)
 OPTION(USE_H264 "Link the OpenH264 tree." OFF)
 OPTION(USE_VP9 "Link the VP9 tree." OFF)
-OPTION(USE_X265 "Link the X265 tree." OFF)
-OPTION(USE_OPENHEVC "Link the OpenHevc tree." OFF)
+OPTION(USE_X265 "Link the X265 tree." ON)
+OPTION(USE_OPENHEVC "Link the OpenHevc tree." ON)
 SET(OpenIGTLink_LINK_H264 "0")
 SET(OpenIGTLink_LINK_VP9 "0")
 SET(OpenIGTLink_LINK_X265 "0")
 SET(OpenIGTLink_LINK_OPENHEVC "0")
 
-SET(H264_LIBRARY_DIR "" CACHE PATH "H264 library directory")
-MARK_AS_ADVANCED(H264_LIBRARY_DIR)
-SET(VP9_SOURCE_DIR "" CACHE PATH "VP9 source directory")  
-MARK_AS_ADVANCED(VP9_SOURCE_DIR) 
-SET(VP9_LIBRARY_DIR "" CACHE PATH "VP9 library directory")  
-MARK_AS_ADVANCED(VP9_LIBRARY_DIR) 
+#SET(H264_LIBRARY_DIR "" CACHE PATH "H264 library directory")
+#MARK_AS_ADVANCED(H264_LIBRARY_DIR)
+#SET(VP9_SOURCE_DIR "" CACHE PATH "VP9 source directory")  
+#MARK_AS_ADVANCED(VP9_SOURCE_DIR) 
+#SET(VP9_LIBRARY_DIR "" CACHE PATH "VP9 library directory")  
+#MARK_AS_ADVANCED(VP9_LIBRARY_DIR) 
 IF(BUILD_VIDEOSTREAM)
   IF(USE_H264)
 		SET(OpenIGTLink_LINK_H264 "1")     
@@ -203,6 +202,8 @@ IF (NOT (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 3.4))
 		INCLUDE(SuperBuild/Superbuild.cmake)
 		RETURN()
 	ENDIF()
+ELSE()
+  message(FATAL_ERROR "CMake >= 3.4.0 required, or turn off the superbuild option")
 ENDIF()
 
 #-----------------------------------------------------------------------------

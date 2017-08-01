@@ -40,14 +40,18 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (USE_H264 OR USE_VP9 OR USE_X
 				LIST(APPEND OpenIGTLink_INCLUDE_DIRS
     		"${H264_LIBRARY_DIR}/include/wels/" )
     		LINK_DIRECTORIES("${H264_LIBRARY_DIR}/lib")
-			ENDIF()	
+			ENDIF()
 		ELSE()
 			MESSAGE("H264_LIBRARY_DIR no found.  You could specify now , or it will be downloaded during the openigtlink build, but build of the codec should be done by the user.")
 		ENDIF()
 	ENDIF()
 	
+	IF(USE_OPENHEVC OR USE_X265 OR USE_VP9)
+  	INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_yasm.cmake)
+  	LIST(APPEND OpenIGTLink_DEPENDENCIES yasm)
+  ENDIF()	
+	
   IF(USE_VP9)
-    LIST(APPEND OpenIGTLink_DEPENDENCIES VP9)
     INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_VP9.cmake)
   	IF(EXISTS ${VP9_LIBRARY_DIR})
   		LIST(APPEND OpenIGTLink_INCLUDE_DIRS
@@ -89,8 +93,13 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (USE_H264 OR USE_VP9 OR USE_X
         )
     ENDIF()
   ENDIF()
-
+	
   IF(USE_OPENHEVC)
+  	INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_openHEVC.cmake)
+  	LIST(APPEND OpenIGTLink_INCLUDE_DIRS
+    		${OPENHEVC_SOURCE_DIR}
+    		${OPENHEVC_LIBRARY_DIR}
+    	)
     LIST(APPEND OpenIGTLink_SOURCES
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Decoder.cxx
       )
@@ -117,7 +126,7 @@ IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
   ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_X265)
     #To do, library name depends on the compiler setting, could be vpxmt.lib and vpxmtd also. Make sure the setting matches.
-    SET(LINK_X265_LIBRARY optimized ${OpenIGTLink_LIBRARY_DIR}\\lib\\Release\\x265-static.lib debug ${OpenIGTLink_LIBRARY_DIR}\\lib\\Debug\\x265-static.lib)
+    SET(LINK_X265_LIBRARY optimized ${X265_LIBRARY_DIR}\\Release\\x265-static.lib debug ${X265_LIBRARY_DIR}\\Debug\\x265-static.lib)
     LIST(APPEND LINK_LIBS
       ${LINK_X265_LIBRARY}
     )
@@ -131,6 +140,17 @@ ELSE() # for POSIX-compatible OSs
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_VP9)
     LIST(APPEND LINK_LIBS
       ${VP9_LIBRARY_DIR}/libvpx.a
+    )
+  ENDIF()
+  IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_X265)
+    LIST(APPEND LINK_LIBS
+      ${X265_LIBRARY_DIR}/libx265.a
+    )
+  ENDIF()
+  IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_OPENHEVC)
+  	SET(LINK_OPENHEVC_LIBRARY optimized ${OPENHEVC_LIBRARY_DIR}/Release/libLibOpenHevcWrapper.a debug ${OPENHEVC_LIBRARY_DIR}/Debug/libLibOpenHevcWrapper.a)
+    LIST(APPEND LINK_LIBS
+    	${LINK_OPENHEVC_LIBRARY}      
     )
   ENDIF()
 ENDIF()
