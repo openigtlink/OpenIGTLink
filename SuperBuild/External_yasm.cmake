@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 2.8.2)
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
+SET(YASM_Proj_BUILT "0")
 IF((EXISTS ${YASM_SOURCE_DIR}) AND (EXISTS ${YASM_LIBRARY_DIR}))
+	IF(EXISTS "${YASM_LIBRARY_DIR}/${CMAKE_BUILD_TYPE}/yasm") 
+		SET(YASM_Proj_BUILT "1")
+	ENDIF()
+ENDIF()
+IF(YASM_Proj_BUILT EQUAL "1")
   # YASM has been built already
   MESSAGE(STATUS "Using YASM available at: ${YASM_LIBRARY_DIR}")
   #FIND_PACKAGE(yasm REQUIRED)

@@ -111,7 +111,7 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (USE_H264 OR USE_VP9 OR USE_X
   ENDIF()
 ENDIF()
 
-IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
+IF(WIN32) # for Windows
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_H264)
 		LIST(APPEND LINK_LIBS
     	${H264_LIBRARY_DIR}/lib/openh264.lib
@@ -126,7 +126,7 @@ IF(OpenIGTLink_PLATFORM_WIN32) # for Windows
   ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_X265)
     #To do, library name depends on the compiler setting, could be vpxmt.lib and vpxmtd also. Make sure the setting matches.
-    SET(LINK_X265_LIBRARY optimized ${X265_LIBRARY_DIR}\\Release\\x265-static.lib debug ${X265_LIBRARY_DIR}\\Debug\\x265-static.lib)
+    SET(LINK_X265_LIBRARY ${X265_LIBRARY_DIR}\\${CMAKE_BUILD_TYPE}\\x265-static.lib)
     LIST(APPEND LINK_LIBS
       ${LINK_X265_LIBRARY}
     )
@@ -148,8 +148,8 @@ ELSE() # for POSIX-compatible OSs
     )
   ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_OPENHEVC)
-  	SET(LINK_OPENHEVC_LIBRARY optimized ${OPENHEVC_LIBRARY_DIR}/Release/libLibOpenHevcWrapper.a debug ${OPENHEVC_LIBRARY_DIR}/Debug/libLibOpenHevcWrapper.a)
-    LIST(APPEND LINK_LIBS
+  	SET(LINK_OPENHEVC_LIBRARY ${OPENHEVC_LIBRARY_DIR}/${CMAKE_BUILD_TYPE}/libLibOpenHevcWrapper.a )
+  	LIST(APPEND LINK_LIBS
     	${LINK_OPENHEVC_LIBRARY}      
     )
   ENDIF()
