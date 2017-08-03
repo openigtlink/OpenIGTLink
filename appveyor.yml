@@ -49,19 +49,7 @@ build_script:
 - ps: |
     mkdir build -Force | Out-Null
     cd build
-    & cmake -G "$generator" -DOpenIGTLink_PROTOCOL_VERSION_3=ON ..
-    if ($LastExitCode -ne 0) {
-        throw "Exec: $ErrorMessage"
-    }
-    & cmake --build . --config $env:CONFIGURATION
-    if ($LastExitCode -ne 0) {
-        throw "Exec: $ErrorMessage"
-    }
-    mkdir build -Force | Out-Null
-    cd ..
-    mkdir TestBuild
-    cd TestBuild
-    & cmake -G "$generator" -DCMAKE_PREFIX_PATH:PATH=..\build ..\Testing
+    & cmake -G "$generator" -DOpenIGTLink_PROTOCOL_VERSION_3=ON -DOpenIGTLink_SUPERBUILD=OFF ..
     if ($LastExitCode -ne 0) {
         throw "Exec: $ErrorMessage"
     }
@@ -73,17 +61,7 @@ build_script:
     if ($LastExitCode -ne 0) {
         throw "Exec: $ErrorMessage"
     }
-    cd ..\build
-    & cmake -G "$generator" -DOpenIGTLink_PROTOCOL_VERSION_3=OFF ..
-    if ($LastExitCode -ne 0) {
-        throw "Exec: $ErrorMessage"
-    }
-    & cmake --build . --config $env:CONFIGURATION
-    if ($LastExitCode -ne 0) {
-        throw "Exec: $ErrorMessage"
-    }
-    cd ..\TestBuild
-    & cmake -G "$generator" -DCMAKE_PREFIX_PATH:PATH=..\build ..\Testing
+    cmake -G "$generator" -DOpenIGTLink_PROTOCOL_VERSION_3=OFF ..
     if ($LastExitCode -ne 0) {
         throw "Exec: $ErrorMessage"
     }
