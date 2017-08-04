@@ -1,5 +1,5 @@
 # Add support for OpenIGTLink version 3
-IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (USE_H264 OR USE_VP9 OR USE_X265 OR USE_OPENHEVC))
+IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
   LIST(APPEND OpenIGTLink_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/Source/VideoStreaming)
   LIST(APPEND OpenIGTLink_SOURCES
     ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtl_video.c
@@ -26,7 +26,7 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (USE_H264 OR USE_VP9 OR USE_X
   ENDIF()
   IF(USE_H264)
     INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_openh264.cmake)
-  	IF(EXISTS ${H264_LIBRARY_DIR})
+  	IF(NOT ${OpenH264_INCLUDE_DIR} STREQUAL "")
 			LIST(APPEND OpenIGTLink_SOURCES
 				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Decoder.cxx
 				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.cxx
@@ -36,13 +36,14 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (USE_H264 OR USE_VP9 OR USE_X
 					${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Decoder.h
 					${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.h)
 			ENDIF()
-    	IF(NOT ${H264_LIBRARY_DIR} EQUAL "")
-				LIST(APPEND OpenIGTLink_INCLUDE_DIRS
-    		"${H264_LIBRARY_DIR}/include/wels/" )
-    		LINK_DIRECTORIES("${H264_LIBRARY_DIR}/lib")
-			ENDIF()
+			LIST(APPEND OpenIGTLink_INCLUDE_DIRS
+    		${OpenH264_INCLUDE_DIR}
+    	)
+			LIST(APPEND LINK_LIBS
+				${OpenH264_LIBRARY}
+			)
 		ELSE()
-			MESSAGE("H264_LIBRARY_DIR no found.  You could specify now , or it will be downloaded during the openigtlink build, but build of the codec should be done by the user.")
+			MESSAGE("H264_LIBRARY no found.  You could specify now , or it will be downloaded during the openigtlink build, but build of the codec should be done by the user.")
 		ENDIF()
 	ENDIF()
 	
@@ -79,19 +80,22 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (USE_H264 OR USE_VP9 OR USE_X
   ENDIF()
 
   IF(USE_X265)
-  	INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_x265.cmake)
+  	INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_X265.cmake)
     LIST(APPEND OpenIGTLink_SOURCES
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Encoder.cxx
       )
     LIST(APPEND OpenIGTLink_INCLUDE_DIRS
-    		${X265_SOURCE_DIR}/source
-    		${X265_LIBRARY_DIR}
+    		${X265_INCLUDE_DIR}/source
     	)
     IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
       LIST(APPEND OpenIGTLink_INCLUDE_FILES
         ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Encoder.h
         )
     ENDIF()
+    LIST(APPEND OpenIGTLink_INCLUDE_DIRS
+    		${X265_INCLUDE_DIR}
+    		${X265_LIBRARY_DIR}
+    	)
   ENDIF()
 	
   IF(USE_OPENHEVC)

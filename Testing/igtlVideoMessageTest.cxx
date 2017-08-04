@@ -53,6 +53,8 @@
   #include "H265Decoder.h"
 #endif
 
+#include "igtlCodecCommonClasses.h"
+#include "igtlOSUtil.h"
 
 int Width = 256;
 int Height = 256;
@@ -98,17 +100,18 @@ int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDeco
       igtl_int64 i_size = 0;
 #if defined(_WIN32) || defined(_WIN64)
 #if _MSC_VER >= 1400
-      if (!_fseeki64 (pFileYUV, 0, SEEK_END)) {
+      if (!_fseeki64 (pFileYUV, 0, SEEK_END))
+        {
         i_size = _ftelli64 (pFileYUV);
         _fseeki64 (pFileYUV, 0, SEEK_SET);
-        iFrameNumInFile =std::fmax((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
-      }
+        iFrameNumInFile = (i_size / kiPicResSize) > iFrameNumInFile ? (i_size / kiPicResSize):iFrameNumInFile;
+        }
 #else
       if (!fseek (pFileYUV, 0, SEEK_END))
         {
         i_size = ftell (pFileYUV);
         fseek (pFileYUV, 0, SEEK_SET);
-        iFrameNumInFile = std::max((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
+        iFrameNumInFile = (i_size / kiPicResSize) > iFrameNumInFile ? (i_size / kiPicResSize):iFrameNumInFile;
         }
 #endif
 #else
@@ -116,7 +119,7 @@ int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDeco
         {
         i_size = ftello (pFileYUV);
         fseek(pFileYUV, 0, SEEK_SET);
-        iFrameNumInFile = std::max((igtl_int32) (i_size / (kiPicResSize)), iFrameNumInFile);
+        iFrameNumInFile = (i_size / kiPicResSize) > iFrameNumInFile ? (i_size / kiPicResSize):iFrameNumInFile;
         }
 #endif
 #if defined(_WIN32) || defined(_WIN64)

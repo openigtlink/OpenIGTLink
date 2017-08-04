@@ -1,0 +1,49 @@
+# - The OPENHEVC library
+# Once done this will define
+#
+#  OPENHEVC_ROOT - A list of search hints
+#
+#  OPENHEVC_FOUND - found OPENHEVC
+#  OPENHEVC_INCLUDE_DIR - the OPENHEVC include directory
+#  OPENHEVC_LIBRARY_DIR - OPENHEVC library directory
+
+IF((EXISTS ${OPENHEVC_SOURCE_DIR}) AND (EXISTS ${OPENHEVC_LIBRARY_DIR}))
+	IF(EXISTS "${OPENHEVC_SOURCE_DIR}/gpac/modules/openhevc_dec/openHevcWrapper.h") 
+		IF(WIN32)
+		ELSE()
+			IF(${CMAKE_BUILD_TYPE})
+				IF(EXISTS "${OPENHEVC_LIBRARY_DIR}/${CMAKE_BUILD_TYPE}/libLibOpenHevcWrapper.a" )
+					SET(OpenHEVC_Proj_BUILT "1")
+				ENDIF()
+			ELSE()
+				IF(EXISTS "${OPENHEVC_LIBRARY_DIR}/libLibOpenHevcWrapper.a" )
+					SET(OpenHEVC_Proj_BUILT "1")
+				ENDIF()	
+			ENDIF()
+		ENDIF()		
+	ENDIF()
+ENDIF()
+
+SET( OPENHEVC_PATH_HINTS 
+		${OPENHEVC_ROOT} 
+    ${CMAKE_BINARY_DIR}/Deps/OPENHEVC
+    ${CMAKE_BINARY_DIR}/Deps/OPENHEVC-bin
+    )
+    
+set(OPENHEVC_INCLUDE_DIR "")
+find_path(OPENHEVC_INCLUDE_DIR NAMES openHevcWrapper.h 
+	PATH_SUFFIXES gpac/modules/openhevc_dec
+	HINTS ${OPENHEVC_PATH_HINTS} 
+	)
+	
+set(OPENHEVC_LIBRARY_DIR "")
+find_path(OPENHEVC_LIBRARY_DIR
+	 NAMES LibOpenHevcWrapper${CMAKE_STATIC_LIBRARY_SUFFIX} libLibOpenHevcWrapper.a
+	 PATH_SUFFIXES ${CMAKE_BUILD_TYPE}
+	 HINTS ${OPENHEVC_PATH_HINTS}
+	 )
+	 
+include(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(OPENHEVC REQUIRED_VARS OPENHEVC_LIBRARY_DIR OPENHEVC_INCLUDE_DIR)
+
+mark_as_advanced(OPENHEVC_INCLUDE_DIR OPENHEVC_LIBRARY_DIR)

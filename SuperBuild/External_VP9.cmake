@@ -1,21 +1,7 @@
 cmake_minimum_required(VERSION 2.8.2)
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
-SET(VP9_Proj_BUILT "0")
-IF((EXISTS ${VP9_SOURCE_DIR}) AND (EXISTS ${VP9_LIBRARY_DIR}))
-	IF((EXISTS "${VP9_SOURCE_DIR}/vpx/vp8cx.h") AND (EXISTS "${VP9_SOURCE_DIR}/vpx/vpx_image.h"))
-		IF(WIN32)
-			SET(LINK_VP9_LIBRARY optimized ${VP9_LIBRARY_DIR}\\$(Platform)\\Release\\vpxmd.lib debug ${VP9_LIBRARY_DIR}\\$(Platform)\\Debug\\vpxmdd.lib)
-			IF(EXISTS "${LINK_VP9_LIBRARY}")
-				SET(VP9_Proj_BUILT "1")
-			ENDIF()
-		ELSE()
-			IF(EXISTS "${VP9_LIBRARY_DIR}/libvpx.a")
-				SET(VP9_Proj_BUILT "1")
-			ENDIF()
-		ENDIF()	
-	ENDIF()
-ENDIF()
-IF(VP9_Proj_BUILT EQUAL "1")
+include(${OpenIGTLink_SOURCE_DIR}/SuperBuild/findVP9.cmake)
+IF(VP9_FOUND)
   IF(${OpenIGTLink_PROTOCOL_VERSION} LESS 3 OR (NOT ${BUILD_VIDEOSTREAM}))
     MESSAGE(FATAL_ERROR "Video streaming requires a build of OpenIGTLink with v3 support enabled. Please set the OpenIGTLink_PROTOCOL_VERSION_3 to true and activate the BUILD_VIDEOSTREAM.")
   ENDIF()
@@ -23,16 +9,35 @@ ELSE()
   # OpenIGTLink has not been built yet, so download and build it as an external project
   MESSAGE(STATUS "Downloading VP9 from https://github.com/webmproject/libvpx.git")              
 	SET (VP9_SOURCE_DIR "${CMAKE_BINARY_DIR}/Deps/VP9" CACHE PATH "VP9 source directory" FORCE)
-  SET (VP9_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Deps/VP9-bin" CACHE PATH "VP9 library directory" FORCE)   							
-	configure_file(${OpenIGTLink_SOURCE_DIR}/SuperBuild/CMakeListsVP9Download.txt.in
-  ${PROJECT_BINARY_DIR}/Deps/VP9-download/CMakeLists.txt)
-	#Here the downloading project is triggered                                                               
-	execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" -DH264_SOURCE_DIR:STRING=${VP9_SOURCE_DIR} -DH264_LIBRARY_DIR:STRING=${VP9_LIBRARY_DIR} . 
-									WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/Deps/VP9-download" )
-	execute_process(COMMAND "${CMAKE_COMMAND}" --build . 
-									WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/Deps/VP9-download" )                    
-	if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")             
-		execute_process(COMMAND "${VP9_SOURCE_DIR}/configure" --disable-examples --disable-tools --disable-docs --disable-vp8 --disable-libyuv --disable-unit_tests --disable-postproc WORKING_DIRECTORY "${VP9_LIBRARY_DIR}" )
-    execute_process(COMMAND "make" WORKING_DIRECTORY "${VP9_LIBRARY_DIR}" )                       
-	endif(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") 
+  SET (VP9_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Deps/VP9" CACHE PATH "VP9 library directory" FORCE)   							
+	if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") 
+    ExternalProject_Add(VP9
+    	PREFIX "${CMAKE_BINARY_DIR}/Deps/VP9-prefix"
+      GIT_REPOSITORY https://github.com/webmproject/libvpx/
+      GIT_TAG master
+      SOURCE_DIR        "${VP9_SOURCE_DIR}"
+      CONFIGURE_COMMAND "${VP9_SOURCE_DIR}/configure" --disable-examples --disable-tools --disable-docs --disable-vp8 --disable-libyuv --disable-unit_tests --disable-postproc WORKING_DIRECTORY "${VP9_LIBRARY_DIR}"
+      BUILD_ALWAYS 1
+      BUILD_COMMAND make
+      BUILD_IN_SOURCE 1
+      INSTALL_COMMAND   ""
+      TEST_COMMAND      ""
+      DEPENDS YASM
+    )
+  else()
+    # ToDo: if it is a window os platform, make the build successful
+    ExternalProject_Add(VP9
+    	PREFIX "${CMAKE_BINARY_DIR}/Deps/VP9-prefix"
+      GIT_REPOSITORY https://github.com/webmproject/libvpx/
+      GIT_TAG master
+      SOURCE_DIR        "${VP9_SOURCE_DIR}"
+      BINARY_DIR        "${VP9_LIBRARY_DIR}"
+      CONFIGURE_COMMAND ""
+      BUILD_ALWAYS 1
+      BUILD_COMMAND     ""
+      INSTALL_COMMAND   ""
+      TEST_COMMAND      ""
+      DEPENDS YASM
+    )
+  endif()
 ENDIF()

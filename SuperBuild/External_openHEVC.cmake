@@ -1,24 +1,7 @@
 cmake_minimum_required(VERSION 2.8.2)
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
-SET(OpenHEVC_Proj_BUILT "0")
-IF((EXISTS ${OPENHEVC_SOURCE_DIR}) AND (EXISTS ${OPENHEVC_LIBRARY_DIR}))
-	IF(EXISTS "${OPENHEVC_SOURCE_DIR}/gpac/modules/openhevc_dec/openHevcWrapper.h") 
-		IF(WIN32)
-		ELSE()
-			IF(${CMAKE_BUILD_TYPE})
-				IF(EXISTS "${OPENHEVC_LIBRARY_DIR}/${CMAKE_BUILD_TYPE}/libLibOpenHevcWrapper.a" )
-					SET(OpenHEVC_Proj_BUILT "1")
-				ENDIF()
-			ELSE()
-				IF(EXISTS "${OPENHEVC_LIBRARY_DIR}/libLibOpenHevcWrapper.a" )
-					SET(OpenHEVC_Proj_BUILT "1")
-				ENDIF()	
-			ENDIF()
-		ENDIF()		
-	ENDIF()
-ENDIF()
-message(${OpenHEVC_Proj_BUILT})
-IF(OpenHEVC_Proj_BUILT EQUAL "1")
+include(${OpenIGTLink_SOURCE_DIR}/SuperBuild/findOpenHEVC.cmake)
+IF(OPENHEVC_FOUND)
   # openHEVC has been built already
   MESSAGE(STATUS "Using openHEVC available at: ${OPENHEVC_SOURCE_DIR}")
   #FIND_PACKAGE(openHEVC REQUIRED)
@@ -37,7 +20,7 @@ ELSE()
   SET (OPENHEVC_SOURCE_DIR "${CMAKE_BINARY_DIR}/Deps/openHEVC" CACHE PATH "openHEVC source directory" FORCE)
   SET (OPENHEVC_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Deps/openHEVC-bin" CACHE PATH "openHEVC library directory" FORCE)
 
-  ExternalProject_Add( openHEVC
+  ExternalProject_Add( OPENHEVC
     PREFIX "${CMAKE_BINARY_DIR}/Deps/openHEVC-prefix"
     SOURCE_DIR "${OPENHEVC_SOURCE_DIR}"
     BINARY_DIR "${OPENHEVC_LIBRARY_DIR}"
@@ -58,6 +41,6 @@ ELSE()
     #--Build step-----------------
     BUILD_ALWAYS 1
     INSTALL_COMMAND ""
-    DEPENDS yasm
+    DEPENDS YASM
     )
 ENDIF()
