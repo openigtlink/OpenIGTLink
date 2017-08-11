@@ -246,16 +246,18 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
 
   /// Point and cell types.
   enum {
-    POINT_SCALAR = 0x00,
-    POINT_VECTOR = 0x01,
-    POINT_NORMAL = 0x02,
-    POINT_TENSOR = 0x03,
-    POINT_RGBA   = 0x04,
-    CELL_SCALAR  = 0x10,
-    CELL_VECTOR  = 0x11,
-    CELL_NORMAL  = 0x12,
-    CELL_TENSOR  = 0x13,
-    CELL_RGBA    = 0x14,
+    POINT_SCALAR  = 0x00,
+    POINT_VECTOR  = 0x01,
+    POINT_NORMAL  = 0x02,
+    POINT_TENSOR  = 0x03,
+    POINT_RGBA    = 0x04,
+    POINT_TCOORDS = 0x05,
+    CELL_SCALAR   = 0x10,
+    CELL_VECTOR   = 0x11,
+    CELL_NORMAL   = 0x12,
+    CELL_TENSOR   = 0x13,
+    CELL_RGBA     = 0x14,
+    CELL_TCOORDS  = 0x15
   };
 
  public:
@@ -340,6 +342,8 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
 class IGTLCommon_EXPORT PolyDataMessage: public MessageBase
 {
 public:
+  typedef std::vector<PolyDataAttribute::Pointer> AttributeList;
+
   typedef PolyDataMessage                Self;
   typedef MessageBase                    Superclass;
   typedef SmartPointer<Self>             Pointer;
@@ -393,14 +397,19 @@ public:
   int  GetNumberOfAttributes();
 
   /// Gets an attribute specified by 'id'.
-  PolyDataAttribute * GetAttribute(unsigned int id);
+  PolyDataAttribute * GetAttribute(AttributeList::size_type id);
+
+  /// Gets an attribute specified by 'name'.
+  PolyDataAttribute * GetAttribute(const std::string& name);
+
+  /// Gets an attribute specified by 'type'.
+  PolyDataAttribute * GetAttribute(int type);
  
 protected:
   PolyDataMessage();
   ~PolyDataMessage();
 
 protected:
-
   virtual int  CalculateContentBufferSize();
   virtual int  PackContent();
   virtual int  UnpackContent();
@@ -421,7 +430,7 @@ protected:
   PolyDataCellArray::Pointer  m_TriangleStrips;
 
   /// A list of pointers to the attributes.
-  std::vector<PolyDataAttribute::Pointer> m_Attributes;
+  AttributeList m_Attributes;
 
 };
 
