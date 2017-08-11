@@ -274,11 +274,10 @@ int PolyDataAttribute::SetType(int t, int n)
         this->m_NComponents = n;
         }
       break;
+    case POINT_TCOORDS:
+    case CELL_TCOORDS:
     case POINT_VECTOR:
     case CELL_VECTOR:
-      valid = 1;
-      this->m_NComponents = 3;
-      break;
     case POINT_NORMAL:
     case CELL_NORMAL:
       valid = 1;
@@ -303,7 +302,7 @@ int PolyDataAttribute::SetType(int t, int n)
     unsigned int n = this->m_Size * this->m_NComponents;
     if (n != this->m_Data.size())
       {
-      // TODO: this may cause unnecesasry memory allocation,
+      // TODO: this may cause unnecessary memory allocation,
       // unless m_Size == 0.
       // Memory should be reallocate just before use.
       this->m_Data.resize(n);
@@ -329,7 +328,7 @@ igtlUint32 PolyDataAttribute::SetSize(igtlUint32 size)
   unsigned int n = this->m_Size * this->m_NComponents;
   if (n != this->m_Data.size())
     {
-    // TODO: this may cause unnecesasry memory allocation.
+    // TODO: this may cause unnecessary memory allocation.
     // Memory should be reallocate just before use.
     this->m_Data.resize(n);
     }
@@ -869,7 +868,7 @@ int PolyDataMessage::GetNumberOfAttributes()
   return this->m_Attributes.size();
 }
 
-PolyDataAttribute * PolyDataMessage::GetAttribute(unsigned int id)
+PolyDataAttribute * PolyDataMessage::GetAttribute(AttributeList::size_type id)
 {
   if (id >= this->m_Attributes.size())
     {
@@ -877,6 +876,32 @@ PolyDataAttribute * PolyDataMessage::GetAttribute(unsigned int id)
     }
 
   return this->m_Attributes[id];
+}
+
+PolyDataAttribute * PolyDataMessage::GetAttribute(const std::string& name)
+{
+  for(AttributeList::size_type i = 0; i < this->m_Attributes.size(); ++i)
+    {
+    if (this->m_Attributes[i]->GetName() == name)
+      {
+        return this->m_Attributes[i];
+      }
+    }
+
+  return NULL;
+}
+
+PolyDataAttribute * PolyDataMessage::GetAttribute(int type)
+{
+  for (AttributeList::size_type i = 0; i < this->m_Attributes.size(); ++i)
+  {
+    if (this->m_Attributes[i]->GetType() == type)
+    {
+      return this->m_Attributes[i];
+    }
+  }
+
+  return NULL;
 }
 
 GetPolyDataMessage::GetPolyDataMessage()
