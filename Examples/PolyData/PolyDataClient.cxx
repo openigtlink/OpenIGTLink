@@ -233,7 +233,7 @@ int ReceivePolyData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Po
     for (unsigned int i = 0; i < nAttr; i ++)
       {
       std::cerr << "  ------ Attributes #" << i << " ------" << std::endl;
-      igtl::PolyDataAttribute * p = PolyData->GetAttribute(i);
+      igtl::PolyDataAttribute * p = PolyData->GetAttribute(static_cast<igtl::PolyDataMessage::AttributeList::size_type>(i));
       if (p)
         {
         std::cerr << "  Name = " << p->GetName() << std::endl;
