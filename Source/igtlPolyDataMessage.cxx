@@ -138,74 +138,7 @@ int PolyDataPointArray::GetPoint(unsigned int id, igtlFloat32 * point)
 }
 
 /// Implement support for C++11 ranged for loops
-std::vector<PolyDataPointArray::Point>::iterator PolyDataPointArray::begin()
-{
-  return m_Data.begin();
-}
-std::vector<PolyDataPointArray::Point>::iterator PolyDataPointArray::end()
-{
-  return m_Data.end();
-}
-std::vector<PolyDataPointArray::Point>::const_iterator PolyDataPointArray::begin() const
-{
-  return m_Data.begin();
-}
-std::vector<PolyDataPointArray::Point>::const_iterator PolyDataPointArray::end() const
-{
-  return m_Data.end();
-}
-
-std::vector<PolyDataPointArray::Point>::reverse_iterator PolyDataPointArray::rbegin()
-{
-  return m_Data.rbegin();
-}
-std::vector<PolyDataPointArray::Point>::reverse_iterator PolyDataPointArray::rend()
-{
-  return m_Data.rend();
-}
-std::vector<PolyDataPointArray::Point>::const_reverse_iterator PolyDataPointArray::rbegin() const
-{
-  return m_Data.rbegin();
-}
-std::vector<PolyDataPointArray::Point>::const_reverse_iterator PolyDataPointArray::rend() const
-{
-  return m_Data.rend();
-}
-
-/// Implement support for C++11 ranged for loops
-std::vector<PolyDataPointArray::Point>::iterator begin(PolyDataPointArray& list)
-{
-  return list.begin();
-}
-std::vector<PolyDataPointArray::Point>::iterator end(PolyDataPointArray& list)
-{
-  return list.end();
-}
-std::vector<PolyDataPointArray::Point>::const_iterator begin(const PolyDataPointArray& list)
-{
-  return list.begin();
-}
-std::vector<PolyDataPointArray::Point>::const_iterator end(const PolyDataPointArray& list)
-{
-  return list.end();
-}
-
-std::vector<PolyDataPointArray::Point>::reverse_iterator rbegin(PolyDataPointArray& list)
-{
-  return list.rbegin();
-}
-std::vector<PolyDataPointArray::Point>::reverse_iterator rend(PolyDataPointArray& list)
-{
-  return list.rend();
-}
-std::vector<PolyDataPointArray::Point>::const_reverse_iterator rbegin(const PolyDataPointArray& list)
-{
-  return list.rbegin();
-}
-std::vector<PolyDataPointArray::Point>::const_reverse_iterator rend(const PolyDataPointArray& list)
-{
-  return list.rend();
-}
+igtlRangeBasedForBodyMacro(PolyDataPointArray, std::vector<PolyDataPointArray::Point>, m_Data);
 
 // Description:
 // PolyDataCellArray class to pass vertices, lines, polygons, and triangle strips
@@ -308,74 +241,7 @@ int PolyDataCellArray::GetCell(unsigned int id, std::list<igtlUint32>& cell)
 }
 
 /// Implement support for C++11 ranged for loops
-std::vector<PolyDataCellArray::Cell>::iterator PolyDataCellArray::begin()
-{
-  return m_Data.begin();
-}
-std::vector<PolyDataCellArray::Cell>::iterator PolyDataCellArray::end()
-{
-  return m_Data.end();
-}
-std::vector<PolyDataCellArray::Cell>::const_iterator PolyDataCellArray::begin() const
-{
-  return m_Data.begin();
-}
-std::vector<PolyDataCellArray::Cell>::const_iterator PolyDataCellArray::end() const
-{
-  return m_Data.end();
-}
-
-std::vector<PolyDataCellArray::Cell>::reverse_iterator PolyDataCellArray::rbegin()
-{
-  return m_Data.rbegin();
-}
-std::vector<PolyDataCellArray::Cell>::reverse_iterator PolyDataCellArray::rend()
-{
-  return m_Data.rend();
-}
-std::vector<PolyDataCellArray::Cell>::const_reverse_iterator PolyDataCellArray::rbegin() const
-{
-  return m_Data.rbegin();
-}
-std::vector<PolyDataCellArray::Cell>::const_reverse_iterator PolyDataCellArray::rend() const
-{
-  return m_Data.rend();
-}
-
-/// Implement support for C++11 ranged for loops
-std::vector<PolyDataCellArray::Cell>::iterator begin(PolyDataCellArray& list)
-{
-  return list.begin();
-}
-std::vector<PolyDataCellArray::Cell>::iterator end(PolyDataCellArray& list)
-{
-  return list.end();
-}
-std::vector<PolyDataCellArray::Cell>::const_iterator begin(const PolyDataCellArray& list)
-{
-  return list.begin();
-}
-std::vector<PolyDataCellArray::Cell>::const_iterator end(const PolyDataCellArray& list)
-{
-  return list.end();
-}
-
-std::vector<PolyDataCellArray::Cell>::reverse_iterator rbegin(PolyDataCellArray& list)
-{
-  return list.rbegin();
-}
-std::vector<PolyDataCellArray::Cell>::reverse_iterator rend(PolyDataCellArray& list)
-{
-  return list.rend();
-}
-std::vector<PolyDataCellArray::Cell>::const_reverse_iterator rbegin(const PolyDataCellArray& list)
-{
-  return list.rbegin();
-}
-std::vector<PolyDataCellArray::Cell>::const_reverse_iterator rend(const PolyDataCellArray& list)
-{
-  return list.rend();
-}
+igtlRangeBasedForBodyMacro(PolyDataCellArray, std::vector<PolyDataCellArray::Cell>, m_Data);
 
 // Description:
 // Attribute class used for passing attribute data
