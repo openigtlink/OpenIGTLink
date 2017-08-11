@@ -421,6 +421,25 @@ int PolyDataAttribute::GetNthData(unsigned int n, igtlFloat32 * data)
   return 1;
 }
 
+int PolyDataAttribute::GetNthData(unsigned int n, std::vector<igtlFloat32>& data)
+{
+  if (n >= this->m_Size)
+    {
+    return 0;
+    }
+
+  data.clear();
+  std::vector<igtlFloat32>::iterator iter;
+  iter = this->m_Data.begin() + n*this->m_NComponents;
+  for (unsigned int i = 0; i < this->m_NComponents; i++)
+    {
+    data.push_back(*iter);
+    iter++;
+    }
+
+  return 1;
+}
+
 /// Implement support for C++11 ranged for loops
 std::vector<igtlFloat32>::iterator PolyDataAttribute::begin()
 {
