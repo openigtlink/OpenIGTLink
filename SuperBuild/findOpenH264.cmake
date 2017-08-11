@@ -20,12 +20,12 @@ endif (UNIX AND NOT ANDROID)
 
 SET( OpenH264_PATH_HINTS 
 		${OpenH264_ROOT} 
-    ${CMAKE_BINARY_DIR}/Deps/openh264-bin
+    ${CMAKE_BINARY_DIR}/Deps/openh264
     )
 
 set(OpenH264_DIR "")    
 find_path(OpenH264_DIR NAMES codec_api.h codec_app_def.h codec_def.h openh264${CMAKE_STATIC_LIBRARY_SUFFIX} libopenh264.a
-	PATH_SUFFIXES include/wels lib
+	PATH_SUFFIXES include/wels lib codec/api/svc
 	HINTS ${OpenH264_PATH_HINTS}
 	)
 

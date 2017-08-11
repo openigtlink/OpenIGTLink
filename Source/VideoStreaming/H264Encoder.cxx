@@ -68,13 +68,6 @@ int     g_iEncodedFrame  = 0;
 #define printf(...) LOGI(__VA_ARGS__)
 #define fprintf(a, ...) LOGI(__VA_ARGS__)
 #endif
-//#define STICK_STREAM_SIZE
-
-//#include "measure_time.h"
-
-
-//#include "typedefs.h"
-//#include "read_config.h"
 
 #ifdef _MSC_VER
 #include <io.h>     /* _setmode() */
@@ -83,12 +76,6 @@ int     g_iEncodedFrame  = 0;
 
 #include "codec_def.h"
 #include "codec_api.h"
-//#include "extern.h"
-//#include "macros.h"
-//#include "wels_const.h"
-
-//#include "mt_defs.h"
-//#include "WelsThreadLib.h"
 
 #ifdef _WIN32
 #ifdef WINAPI_FAMILY

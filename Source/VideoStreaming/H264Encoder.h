@@ -62,7 +62,6 @@
 #include <iostream>
 
 #include "igtlCodecCommonClasses.h"
-//#include "sha1.h"
 #include "igtl_header.h"
 #include "igtl_video.h"
 #include "igtlOSUtil.h"
@@ -71,8 +70,6 @@
 #include "igtlTimeStamp.h"
 #include "codec_def.h"
 #include "codec_app_def.h"
-//#include "read_config.h"
-//#include "wels_const.h"
 
 #define MAX_DEPENDENCY_LAYER 4
 #define MAX_THREADS_NUM 4

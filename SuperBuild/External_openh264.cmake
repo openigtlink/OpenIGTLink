@@ -9,7 +9,7 @@ IF(OpenH264_FOUND)
 ELSE()
   # OpenIGTLink has not been built yet, so download and build it as an external project
   MESSAGE(STATUS "Downloading openh264 from https://github.com/cisco/openh264.git.")  
-  SET (OpenH264_DIR "${CMAKE_BINARY_DIR}/Deps/openh264-bin" CACHE PATH "H264 source directory" FORCE)
+  SET (OpenH264_DIR "${CMAKE_BINARY_DIR}/Deps/openh264" CACHE PATH "H264 source directory" FORCE)
   if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")     
 		ExternalProject_Add(OpenH264
 			PREFIX "${CMAKE_BINARY_DIR}/Deps/openh264-prefix"

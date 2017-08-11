@@ -26,7 +26,7 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
   ENDIF()
   IF(USE_H264)
     INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_openh264.cmake)
-  	IF(NOT ${OpenH264_INCLUDE_DIR} STREQUAL "")
+  	IF(NOT ${OpenH264_DIR} STREQUAL "")
 			LIST(APPEND OpenIGTLink_SOURCES
 				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Decoder.cxx
 				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.cxx
@@ -37,11 +37,9 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
 					${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.h)
 			ENDIF()
 			LIST(APPEND OpenIGTLink_INCLUDE_DIRS
-    		${OpenH264_INCLUDE_DIR}
+    		${OpenH264_DIR}
+    		${OpenH264_DIR}/codec/api/svc
     	)
-			LIST(APPEND LINK_LIBS
-				${OpenH264_LIBRARY}
-			)
 		ELSE()
 			MESSAGE("H264_LIBRARY no found.  You could specify now , or it will be downloaded during the openigtlink build, but build of the codec should be done by the user.")
 		ENDIF()
@@ -118,7 +116,7 @@ ENDIF()
 IF(WIN32) # for Windows
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_H264)
 		LIST(APPEND LINK_LIBS
-    	${H264_LIBRARY_DIR}/lib/openh264.lib
+    	${OpenH264_DIR}/openh264.lib
     )
 	ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_VP9)
@@ -138,7 +136,7 @@ IF(WIN32) # for Windows
 ELSE() # for POSIX-compatible OSs
 	IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_H264)
 		LIST(APPEND LINK_LIBS
-		  ${H264_LIBRARY_DIR}/lib/libopenh264.a
+		  ${OpenH264_DIR}/libopenh264.a
 		)
 	ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_VP9)
