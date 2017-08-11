@@ -500,7 +500,7 @@ void IGTLCommon_EXPORT SetPolyDataInfoAttribute(igtl_polydata_info * info, PolyD
   igtl_polydata_attribute * attr = info->attributes;
   for (unsigned int i = 0; i < info->header.nattributes; i ++)
     {
-    PolyDataAttribute * src =  pdm->GetAttribute(i);
+    PolyDataAttribute * src =  pdm->GetAttribute(static_cast<PolyDataMessage::AttributeList::size_type>(i));
     if (src)
       {
       attr->type = src->GetType();
