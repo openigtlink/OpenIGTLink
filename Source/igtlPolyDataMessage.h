@@ -172,16 +172,40 @@ class IGTLCommon_EXPORT PolyDataPointArray : public Object {
   /// Gets the coordinates of the point specified by 'id'
   int  GetPoint(unsigned int id, igtlFloat32 * point);
 
+  /// Implement support for C++11 ranged for loops
+  std::vector<Point>::iterator begin();
+  std::vector<Point>::iterator end();
+  std::vector<Point>::const_iterator begin() const;
+  std::vector<Point>::const_iterator end() const;
+
+  std::vector<Point>::reverse_iterator rbegin();
+  std::vector<Point>::reverse_iterator rend();
+  std::vector<Point>::const_reverse_iterator rbegin() const;
+  std::vector<Point>::const_reverse_iterator rend() const;
+
  private:
   /// A list of the points.
   std::vector< Point > m_Data;
 };
 
+/// Implement support for C++11 ranged for loops
+IGTLCommon_EXPORT std::vector<PolyDataPointArray::Point>::iterator begin(PolyDataPointArray& list);
+IGTLCommon_EXPORT std::vector<PolyDataPointArray::Point>::iterator end(PolyDataPointArray& list);
+IGTLCommon_EXPORT std::vector<PolyDataPointArray::Point>::const_iterator begin(const PolyDataPointArray& list);
+IGTLCommon_EXPORT std::vector<PolyDataPointArray::Point>::const_iterator end(const PolyDataPointArray& list);
+
+IGTLCommon_EXPORT std::vector<PolyDataPointArray::Point>::reverse_iterator rbegin(PolyDataPointArray& list);
+IGTLCommon_EXPORT std::vector<PolyDataPointArray::Point>::reverse_iterator rend(PolyDataPointArray& list);
+IGTLCommon_EXPORT std::vector<PolyDataPointArray::Point>::const_reverse_iterator rbegin(const PolyDataPointArray& list);
+IGTLCommon_EXPORT std::vector<PolyDataPointArray::Point>::const_reverse_iterator rend(const PolyDataPointArray& list);
 
 // The PolyDataCellArray class is used to pass vertices, lines, polygons, and triangle strips
 class IGTLCommon_EXPORT PolyDataCellArray : public Object {
   
  public:
+
+   typedef std::list<igtlUint32> Cell;
+
   enum {
     NULL_POINT = 0xFFFFFFFF,
   };
@@ -211,7 +235,7 @@ class IGTLCommon_EXPORT PolyDataCellArray : public Object {
   void       AddCell(int n, igtlUint32 * cell);
 
   /// Adds an array of cells stored in 'cell'.
-  void       AddCell(std::list<igtlUint32> cell);
+  void       AddCell(const Cell& cell);
 
   /// GetTotalSize() returns the total memory size of the cell data array in
   /// POLYDATA message. Cell data array is array of cell data, consisting of
@@ -232,13 +256,34 @@ class IGTLCommon_EXPORT PolyDataCellArray : public Object {
   int        GetCell(unsigned int id, igtlUint32 * cell);
 
   /// Gets the cell specified by the 'id'. A list of points in the cell will be stored in the 'cell'.
-  int        GetCell(unsigned int id, std::list<igtlUint32>& cell);
+  int        GetCell(unsigned int id, Cell& cell);
+
+  /// Implement support for C++11 ranged for loops
+  std::vector<Cell>::iterator begin();
+  std::vector<Cell>::iterator end();
+  std::vector<Cell>::const_iterator begin() const;
+  std::vector<Cell>::const_iterator end() const;
+
+  std::vector<Cell>::reverse_iterator rbegin();
+  std::vector<Cell>::reverse_iterator rend();
+  std::vector<Cell>::const_reverse_iterator rbegin() const;
+  std::vector<Cell>::const_reverse_iterator rend() const;
 
  private:
   /// A lists of the cells. Each cell consists of multiple points. 
-  std::vector< std::list<igtlUint32> > m_Data;
+  std::vector<Cell> m_Data;
 };
 
+/// Implement support for C++11 ranged for loops
+IGTLCommon_EXPORT std::vector<PolyDataCellArray::Cell>::iterator begin(PolyDataCellArray& list);
+IGTLCommon_EXPORT std::vector<PolyDataCellArray::Cell>::iterator end(PolyDataCellArray& list);
+IGTLCommon_EXPORT std::vector<PolyDataCellArray::Cell>::const_iterator begin(const PolyDataCellArray& list);
+IGTLCommon_EXPORT std::vector<PolyDataCellArray::Cell>::const_iterator end(const PolyDataCellArray& list);
+
+IGTLCommon_EXPORT std::vector<PolyDataCellArray::Cell>::reverse_iterator rbegin(PolyDataCellArray& list);
+IGTLCommon_EXPORT std::vector<PolyDataCellArray::Cell>::reverse_iterator rend(PolyDataCellArray& list);
+IGTLCommon_EXPORT std::vector<PolyDataCellArray::Cell>::const_reverse_iterator rbegin(const PolyDataCellArray& list);
+IGTLCommon_EXPORT std::vector<PolyDataCellArray::Cell>::const_reverse_iterator rend(const PolyDataCellArray& list);
 
 /// Attribute class used for passing attribute data.
 class IGTLCommon_EXPORT PolyDataAttribute : public Object {
@@ -318,8 +363,18 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
   /// Gets the Nth data.
   int         GetNthData(unsigned int n, igtlFloat32 * data);
 
- private:
+  /// Implement support for C++11 ranged for loops
+  std::vector<igtlFloat32>::iterator begin();
+  std::vector<igtlFloat32>::iterator end();
+  std::vector<igtlFloat32>::const_iterator begin() const;
+  std::vector<igtlFloat32>::const_iterator end() const;
 
+  std::vector<igtlFloat32>::reverse_iterator rbegin();
+  std::vector<igtlFloat32>::reverse_iterator rend();
+  std::vector<igtlFloat32>::const_reverse_iterator rbegin() const;
+  std::vector<igtlFloat32>::const_reverse_iterator rend() const;
+
+ private:
   /// The attribute type.
   igtlUint8                m_Type;
 
@@ -337,6 +392,16 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
 
 };
 
+/// Implement support for C++11 ranged for loops
+IGTLCommon_EXPORT std::vector<igtlFloat32>::iterator begin(PolyDataAttribute& list);
+IGTLCommon_EXPORT std::vector<igtlFloat32>::iterator end(PolyDataAttribute& list);
+IGTLCommon_EXPORT std::vector<igtlFloat32>::const_iterator begin(const PolyDataAttribute& list);
+IGTLCommon_EXPORT std::vector<igtlFloat32>::const_iterator end(const PolyDataAttribute& list);
+
+IGTLCommon_EXPORT std::vector<igtlFloat32>::reverse_iterator rbegin(PolyDataAttribute& list);
+IGTLCommon_EXPORT std::vector<igtlFloat32>::reverse_iterator rend(PolyDataAttribute& list);
+IGTLCommon_EXPORT std::vector<igtlFloat32>::const_reverse_iterator rbegin(const PolyDataAttribute& list);
+IGTLCommon_EXPORT std::vector<igtlFloat32>::const_reverse_iterator rend(const PolyDataAttribute& list);
 
 /// A class for the POLYDATA message type.
 class IGTLCommon_EXPORT PolyDataMessage: public MessageBase
