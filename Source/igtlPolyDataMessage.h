@@ -330,6 +330,9 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
   /// Gets the Nth data.
   int         GetNthData(unsigned int n, igtlFloat32 * data);
 
+  /// Gets the Nth data.
+  int         GetNthData(unsigned int n, std::vector<igtlFloat32>& data);
+
   /// Implement support for C++11 ranged for loops
   std::vector<igtlFloat32>::iterator begin();
   std::vector<igtlFloat32>::iterator end();
