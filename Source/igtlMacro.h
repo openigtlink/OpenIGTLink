@@ -949,5 +949,52 @@ private:
 #endif
 // end of Template Meta Programming helper macros
 
+//namespace igtl
+//{
+///**
+// * The following is used as a convenience macro to define the
+// * functions required for C++ range based for loops */
+//} // end namespace igtl
+
+///**
+// * The following is used as a convenience macro to define the
+// * functions required for C++ range based for loops */
+#define igtlRangeBasedForHeaderMemberMacro(varType) \
+  varType::iterator begin(); \
+  varType::iterator end(); \
+  varType::const_iterator begin() const; \
+  varType::const_iterator end() const; \
+  varType::reverse_iterator rbegin(); \
+  varType::reverse_iterator rend(); \
+  varType::const_reverse_iterator rbegin() const; \
+  varType::const_reverse_iterator rend() const;
+
+#define igtlRangeBasedForHeaderExternalMacro(classType, varType, exportDecl) \
+  exportDecl varType::iterator begin(classType& list); \
+  exportDecl varType::iterator end(classType& list); \
+  exportDecl varType::const_iterator begin(const classType& list); \
+  exportDecl varType::const_iterator end(const classType& list); \
+  exportDecl varType::reverse_iterator rbegin(classType& list); \
+  exportDecl varType::reverse_iterator rend(classType& list); \
+  exportDecl varType::const_reverse_iterator rbegin(const classType& list); \
+  exportDecl varType::const_reverse_iterator rend(const classType& list);
+
+#define igtlRangeBasedForBodyMacro(classType, varType, memberVar) \
+  varType::iterator classType::begin() { return memberVar.begin(); } \
+  varType::iterator classType::end() { return memberVar.end(); } \
+  varType::const_iterator classType::begin() const { return memberVar.begin(); } \
+  varType::const_iterator classType::end() const { return memberVar.end(); } \
+  varType::reverse_iterator classType::rbegin() { return memberVar.rbegin(); } \
+  varType::reverse_iterator classType::rend() { return memberVar.rend(); } \
+  varType::const_reverse_iterator classType::rbegin() const { return memberVar.rbegin(); } \
+  varType::const_reverse_iterator classType::rend() const { return memberVar.rend(); } \
+  varType::iterator begin(classType& list) { return list.begin(); } \
+  varType::iterator end(classType& list) { return list.end(); } \
+  varType::const_iterator begin(const classType& list) { return list.begin(); } \
+  varType::const_iterator end(const classType& list) { return list.end(); } \
+  varType::reverse_iterator rbegin(classType& list) { return list.rbegin(); } \
+  varType::reverse_iterator rend(classType& list) { return list.rend(); } \
+  varType::const_reverse_iterator rbegin(const classType& list) { return list.rbegin(); } \
+  varType::const_reverse_iterator rend(const classType& list) { return list.rend(); }
 
 #endif //end of igtlMacro.h

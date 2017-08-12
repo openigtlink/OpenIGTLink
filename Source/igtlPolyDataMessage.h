@@ -173,31 +173,14 @@ class IGTLCommon_EXPORT PolyDataPointArray : public Object {
   int  GetPoint(unsigned int id, igtlFloat32 * point);
 
   /// Implement support for C++11 ranged for loops
-  std::vector<Point>::iterator begin();
-  std::vector<Point>::iterator end();
-  std::vector<Point>::const_iterator begin() const;
-  std::vector<Point>::const_iterator end() const;
-
-  std::vector<Point>::reverse_iterator rbegin();
-  std::vector<Point>::reverse_iterator rend();
-  std::vector<Point>::const_reverse_iterator rbegin() const;
-  std::vector<Point>::const_reverse_iterator rend() const;
+  igtlRangeBasedForHeaderMemberMacro(std::vector<Point>);
 
  private:
   /// A list of the points.
   std::vector< Point > m_Data;
 };
 
-/// Implement support for C++11 ranged for loops
-IGTLCommon_EXPORT std::vector<PolyDataPointArray::Point>::iterator begin(PolyDataPointArray& list);
-IGTLCommon_EXPORT std::vector<PolyDataPointArray::Point>::iterator end(PolyDataPointArray& list);
-IGTLCommon_EXPORT std::vector<PolyDataPointArray::Point>::const_iterator begin(const PolyDataPointArray& list);
-IGTLCommon_EXPORT std::vector<PolyDataPointArray::Point>::const_iterator end(const PolyDataPointArray& list);
-
-IGTLCommon_EXPORT std::vector<PolyDataPointArray::Point>::reverse_iterator rbegin(PolyDataPointArray& list);
-IGTLCommon_EXPORT std::vector<PolyDataPointArray::Point>::reverse_iterator rend(PolyDataPointArray& list);
-IGTLCommon_EXPORT std::vector<PolyDataPointArray::Point>::const_reverse_iterator rbegin(const PolyDataPointArray& list);
-IGTLCommon_EXPORT std::vector<PolyDataPointArray::Point>::const_reverse_iterator rend(const PolyDataPointArray& list);
+igtlRangeBasedForHeaderExternalMacro(PolyDataPointArray, std::vector<PolyDataPointArray::Point>, IGTLCommon_EXPORT);
 
 // The PolyDataCellArray class is used to pass vertices, lines, polygons, and triangle strips
 class IGTLCommon_EXPORT PolyDataCellArray : public Object {
@@ -259,15 +242,7 @@ class IGTLCommon_EXPORT PolyDataCellArray : public Object {
   int        GetCell(unsigned int id, Cell& cell);
 
   /// Implement support for C++11 ranged for loops
-  std::vector<Cell>::iterator begin();
-  std::vector<Cell>::iterator end();
-  std::vector<Cell>::const_iterator begin() const;
-  std::vector<Cell>::const_iterator end() const;
-
-  std::vector<Cell>::reverse_iterator rbegin();
-  std::vector<Cell>::reverse_iterator rend();
-  std::vector<Cell>::const_reverse_iterator rbegin() const;
-  std::vector<Cell>::const_reverse_iterator rend() const;
+  igtlRangeBasedForHeaderMemberMacro(std::vector<Cell>);
 
  private:
   /// A lists of the cells. Each cell consists of multiple points. 
@@ -275,15 +250,7 @@ class IGTLCommon_EXPORT PolyDataCellArray : public Object {
 };
 
 /// Implement support for C++11 ranged for loops
-IGTLCommon_EXPORT std::vector<PolyDataCellArray::Cell>::iterator begin(PolyDataCellArray& list);
-IGTLCommon_EXPORT std::vector<PolyDataCellArray::Cell>::iterator end(PolyDataCellArray& list);
-IGTLCommon_EXPORT std::vector<PolyDataCellArray::Cell>::const_iterator begin(const PolyDataCellArray& list);
-IGTLCommon_EXPORT std::vector<PolyDataCellArray::Cell>::const_iterator end(const PolyDataCellArray& list);
-
-IGTLCommon_EXPORT std::vector<PolyDataCellArray::Cell>::reverse_iterator rbegin(PolyDataCellArray& list);
-IGTLCommon_EXPORT std::vector<PolyDataCellArray::Cell>::reverse_iterator rend(PolyDataCellArray& list);
-IGTLCommon_EXPORT std::vector<PolyDataCellArray::Cell>::const_reverse_iterator rbegin(const PolyDataCellArray& list);
-IGTLCommon_EXPORT std::vector<PolyDataCellArray::Cell>::const_reverse_iterator rend(const PolyDataCellArray& list);
+igtlRangeBasedForHeaderExternalMacro(PolyDataCellArray, std::vector<PolyDataCellArray::Cell>, IGTLCommon_EXPORT);
 
 /// Attribute class used for passing attribute data.
 class IGTLCommon_EXPORT PolyDataAttribute : public Object {
@@ -362,6 +329,9 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
 
   /// Gets the Nth data.
   int         GetNthData(unsigned int n, igtlFloat32 * data);
+
+  /// Gets the Nth data.
+  int         GetNthData(unsigned int n, std::vector<igtlFloat32>& data);
 
   /// Implement support for C++11 ranged for loops
   std::vector<igtlFloat32>::iterator begin();
