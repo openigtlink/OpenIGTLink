@@ -8,9 +8,9 @@ IF(VP9_FOUND)
 ELSE()
   # OpenIGTLink has not been built yet, so download and build it as an external project
   MESSAGE(STATUS "Downloading VP9 from https://github.com/webmproject/libvpx.git")              
-	SET (VP9_SOURCE_DIR "${CMAKE_BINARY_DIR}/Deps/VP9" CACHE PATH "VP9 source directory" FORCE)
-  SET (VP9_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Deps/VP9" CACHE PATH "VP9 library directory" FORCE)   							
 	if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") 
+    SET (VP9_SOURCE_DIR "${CMAKE_BINARY_DIR}/Deps/VP9" CACHE PATH "VP9 source directory" FORCE)
+    SET (VP9_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Deps/VP9" CACHE PATH "VP9 library directory" FORCE)   							
     ExternalProject_Add(VP9
     	PREFIX "${CMAKE_BINARY_DIR}/Deps/VP9-prefix"
       GIT_REPOSITORY https://github.com/webmproject/libvpx/
@@ -20,21 +20,6 @@ ELSE()
       BUILD_ALWAYS 1
       BUILD_COMMAND make
       BUILD_IN_SOURCE 1
-      INSTALL_COMMAND   ""
-      TEST_COMMAND      ""
-      DEPENDS YASM
-    )
-  else()
-    # ToDo: if it is a window os platform, make the build successful
-    ExternalProject_Add(VP9
-    	PREFIX "${CMAKE_BINARY_DIR}/Deps/VP9-prefix"
-      GIT_REPOSITORY https://github.com/webmproject/libvpx/
-      GIT_TAG master
-      SOURCE_DIR        "${VP9_SOURCE_DIR}"
-      BINARY_DIR        "${VP9_LIBRARY_DIR}"
-      CONFIGURE_COMMAND ""
-      BUILD_ALWAYS 1
-      BUILD_COMMAND     ""
       INSTALL_COMMAND   ""
       TEST_COMMAND      ""
       DEPENDS YASM
