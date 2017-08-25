@@ -45,16 +45,24 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
 		ENDIF()
 	ENDIF()
 	
-	IF(USE_OPENHEVC OR USE_X265 OR USE_VP9)
+	IF(USE_OPENHEVC OR USE_X265)
   	INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_yasm.cmake)
-  	LIST(APPEND OpenIGTLink_DEPENDENCIES yasm)
+  	LIST(APPEND OpenIGTLink_DEPENDENCIES YASM)
   ENDIF()	
-	
+	IF(USE_VP9)
+		#For windows build, we don't build the library in openigtlink, but import it directly
+    #So dependecicy on YASM is not necessary in openigtlink
+  	IF(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  		INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_yasm.cmake)
+      LIST(APPEND OpenIGTLink_DEPENDENCIES YASM) 
+    ENDIF()
+  ENDIF()  
+  
   IF(USE_VP9)
     INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_VP9.cmake)
   	IF(EXISTS ${VP9_LIBRARY_DIR})
   		LIST(APPEND OpenIGTLink_INCLUDE_DIRS
-    		${VP9_SOURCE_DIR}
+    		${VP9_INCLUDE_DIR}
     		${VP9_LIBRARY_DIR}
     	)
 			LIST(APPEND OpenIGTLink_SOURCES
@@ -73,7 +81,7 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
     		LINK_DIRECTORIES("${VP9_LIBRARY_DIR}/lib")
 			ENDIF()	
 		ELSE()
-			MESSAGE("VP9_SOURCE_DIR or VP9_LIBRARY_DIR no found")
+			MESSAGE("VP9_INCLUDE_DIR or VP9_LIBRARY_DIR no found")
 		ENDIF()
   ENDIF()
 
@@ -127,9 +135,16 @@ IF(WIN32) # for Windows
   ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_X265)
     #To do, library name depends on the compiler setting, could be vpxmt.lib and vpxmtd also. Make sure the setting matches.
-    SET(LINK_X265_LIBRARY ${X265_LIBRARY_DIR}\\${CMAKE_BUILD_TYPE}\\x265-static.lib)
+    SET(LINK_X265_LIBRARY optimized ${X265_LIBRARY_DIR}\\Release\\x265-static.lib debug ${X265_LIBRARY_DIR}\\Debug\\x265-static.lib)
     LIST(APPEND LINK_LIBS
       ${LINK_X265_LIBRARY}
+    )
+  ENDIF()
+  IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_OPENHEVC)
+    #To do, library name depends on the compiler setting, could be vpxmt.lib and vpxmtd also. Make sure the setting matches.
+    SET(LINK_OPENHEVC_LIBRARY optimized ${OPENHEVC_LIBRARY_DIR}\\Release\\LibOpenHevcWrapper.lib debug ${OPENHEVC_LIBRARY_DIR}\\Debug\\LibOpenHevcWrapper.lib)
+    LIST(APPEND LINK_LIBS
+      ${LINK_OPENHEVC_LIBRARY}
     )
   ENDIF()
 ELSE() # for POSIX-compatible OSs

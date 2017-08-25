@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8.2)
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 include(${OpenIGTLink_SOURCE_DIR}/SuperBuild/findYASM.cmake)
+include(${CMAKE_ROOT}/Modules/FindPythonInterp.cmake)
+
+find_package(PythonInterp "2.7" REQUIRED)
 IF(YASM_FOUND)
   # YASM has been built already
   MESSAGE(STATUS "Using YASM available at: ${YASM_BINARY_DIR}")
@@ -30,6 +33,7 @@ ELSE()
       -DCMAKE_INSTALL_PREFIX:PATH="${CMAKE_BINARY_DIR}/Deps/yasm-install"
       -DCMAKE_LIBRARY_OUTPUT_DIRECTORY:STRING=${YASM_BINART_DIR}
       -DCMAKE_RUNTIME_OUTPUT_DIRECTORY:STRING=${YASM_BINART_DIR}
+      -DPYTHON_EXECUTABLE:STRING=${PYTHON_EXECUTABLE}
       -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY:PATH=${YASM_BINART_DIR}
       -DBUILD_SHARED_LIBS:BOOL=${OpenIGTLink_BUILD_SHARED_LIBS} 
       -DBUILD_TESTING:BOOL=OFF 

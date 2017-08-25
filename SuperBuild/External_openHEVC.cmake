@@ -8,8 +8,8 @@ IF(OPENHEVC_FOUND)
   #SET(OPENHEVC_LIBRARY_DIR "${openHEVC_DIR}" CACHE INTERNAL "Path to store openHEVC library")
 ELSE()
   # openHEVC has not been built yet, so download and build it as an external project
-  SET(GIT_REPOSITORY "https://github.com/OpenHEVC/openHEVC.git")
-  SET(GIT_TAG "hevc_rext")
+  SET(GIT_REPOSITORY "https://github.com/openigtlink/openHEVC.git")
+  SET(GIT_TAG "master")
 
   IF(MSVC)
     LIST(APPEND PLATFORM_SPECIFIC_ARGS -DCMAKE_CXX_MP_FLAG:BOOL=ON)
@@ -20,7 +20,7 @@ ELSE()
   SET (OPENHEVC_SOURCE_DIR "${CMAKE_BINARY_DIR}/Deps/openHEVC" CACHE PATH "openHEVC source directory" FORCE)
   SET (OPENHEVC_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Deps/openHEVC-bin" CACHE PATH "openHEVC library directory" FORCE)
 
-  ExternalProject_Add( OPENHEVC
+  ExternalProject_Add( OpenHEVC
     PREFIX "${CMAKE_BINARY_DIR}/Deps/openHEVC-prefix"
     SOURCE_DIR "${OPENHEVC_SOURCE_DIR}"
     BINARY_DIR "${OPENHEVC_LIBRARY_DIR}"

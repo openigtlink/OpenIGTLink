@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.2)
+cmake_minimum_required(VERSION 3.7.2)
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 include(${OpenIGTLink_SOURCE_DIR}/SuperBuild/findX265.cmake)
 IF(X265_FOUND)
@@ -23,13 +23,13 @@ ELSE()
   ExternalProject_Add(X265
     PREFIX "${CMAKE_BINARY_DIR}/Deps/x265-prefix"
     SOURCE_DIR "${X265_INCLUDE_DIR}"
-    #SOURCE_SUBDIR source   # SOURCE_SUBDIR is only available for cmake version later than 3.7.2 
+    SOURCE_SUBDIR source   # SOURCE_SUBDIR is only available for cmake version later than 3.7.2 
     BINARY_DIR "${X265_LIBRARY_DIR}"
     #--Download step--------------
     GIT_REPOSITORY "${GIT_REPOSITORY}"
     GIT_TAG ${GIT_TAG}
     #--Configure step-------------
-    CONFIGURE_COMMAND cd ${X265_LIBRARY_DIR} && ${CMAKE_COMMAND} 
+    CMAKE_ARGS # cd ${X265_LIBRARY_DIR} && ${CMAKE_COMMAND} 
     	${PLATFORM_SPECIFIC_ARGS}
     	-DCMAKE_GENERATOR:STRING=${Generator}
       -DCMAKE_INSTALL_PREFIX:PATH="${CMAKE_BINARY_DIR}/Deps/x265-install"
@@ -40,7 +40,7 @@ ELSE()
       -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
       -DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS}
       -DEXPORT_C_API:BOOL=ON
-      -DENABLE_CLI:BOOL=OFF ${X265_INCLUDE_DIR}/source
+      -DENABLE_CLI:BOOL=OFF #${X265_SOURCE_DIR}/source
     #--Build step----------------- 
     BUILD_ALWAYS 1
     INSTALL_COMMAND ""
