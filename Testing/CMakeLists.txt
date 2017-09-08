@@ -7,22 +7,17 @@ include_directories(${OpenIGTLink_INCLUDE_DIRS})
 link_directories(${OpenIGTLink_LIBRARY_DIRS})
 include_directories(${PROJECT_BINARY_DIR})
 OPTION(USE_GTEST "Build the testing tree." ON)
-IF(USE_GTEST)
-	SET(OpenIGTLink_USE_GTEST "1")
-ELSE()
-  SET(OpenIGTLink_USE_GTEST "0")
-ENDIF()	
 configure_file(${PROJECT_SOURCE_DIR}/igtlTestConfig.h.in ${PROJECT_BINARY_DIR}/igtlTestConfig.h)
 ENABLE_TESTING()
 ADD_SUBDIRECTORY( igtlutil )
-IF(OpenIGTLink_USE_GTEST)
+IF(USE_GTEST)
 	#-----------
 	#download of GoogleTest
 	if( MSVC ) # VS2012 doesn't support correctly the tuples yet
 		add_definitions("-D_VARIADIC_MAX=10")
 	endif()
 	# Download and unpack googletest at configure time
-	configure_file(CMakeLists.txt.in
+	configure_file(GoogletestDownload.txt.in
 								 googletest-download/CMakeLists.txt)
 	execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" . 
 		WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/googletest-download" )
@@ -207,9 +202,8 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
   ADD_TEST(igtlMessageRTPWrapperTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlMessageRTPWrapperTest ${TestStringFormat2})
 ENDIF()
 
-IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (LINK_H264 OR LINK_VP9))
+IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM AND (USE_H264 OR USE_VP9 OR (USE_X265 AND USE_OPENHEVC)))
   ADD_TEST(igtlVideoMessageTestFormatVersion1 ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMessageTest ${TestStringFormat1})
   ADD_TEST(igtlVideoMessageTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMessageTest ${TestStringFormat2})
   ADD_TEST(igtlVideoMetaMessageTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMetaMessageTest ${TestStringFormat2})
 ENDIF()
-

@@ -167,7 +167,6 @@ int H264Decoder::DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_ui
   unsigned char uiStartCode[4] = {0, 0, 0, 1};
   
   unsigned char* pData[3] = {NULL};
-  //unsigned char* pDst[3] = {NULL};
   SBufferInfo sDstBufInfo;
   
   igtl_int32 iBufPos = 0;
@@ -266,10 +265,6 @@ int H264Decoder::DecodeBitStreamIntoFrame(unsigned char* kpH264BitStream,igtl_ui
     if (iFrameCount)
       {
       dElapsed = iTotal / 1e6;
-      //fprintf (stderr, "-------------------------------------------------------\n");
-      //fprintf (stderr, "iWidth:\t\t%d\nheight:\t\t%d\nFrames:\t\t%d\ndecode time:\t%f sec\nFPS:\t\t%f fps\n",
-      //iWidth, iHeight, ++iFrameCountTotal, dElapsed, (iFrameCount * 1.0) / dElapsed);
-      //fprintf (stderr, "-------------------------------------------------------\n");
       }
     iBufPos += iSliceSize;
     ++ iSliceIndex;

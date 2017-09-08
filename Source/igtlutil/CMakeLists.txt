@@ -1,14 +1,21 @@
-#SET(IGTL_UTIL_PROTOCOL_VERSION "1")
-#SET(IGTL_UTIL_PROTOCOL_VERSION ${OpenIGTLink_PROTOCOL_VERSION})
+PROJECT(igtlutil)
 
-if(OpenIGTLink_BUILD_SHARED_LIBS)
-  set(igtlutil_BUILD_SHARED_LIBS ${OpenIGTLink_BUILD_SHARED_LIBS})
-endif(OpenIGTLink_BUILD_SHARED_LIBS)
+#-----------------------------------------------------------------------------
+# Include directories
+SET(igtlutil_INCLUDE_DIRS
+  ${CMAKE_BINARY_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_BINARY_DIR}
+  )
 
-if(OpenIGTLink_BUILD_GENERATE_PIC)
-  set(igtlutil_BUILD_GENERATE_PIC ${OpenIGTLink_BUILD_GENERATE_PIC})
-  set(IGTLSTATIC 1)
-endif(OpenIGTLink_BUILD_GENERATE_PIC)
+IF(OpenIGTLink_BUILD_SHARED_LIBS)
+  SET(igtlutil_BUILD_SHARED_LIBS ${OpenIGTLink_BUILD_SHARED_LIBS})
+ENDIF()
+
+IF(OpenIGTLink_BUILD_GENERATE_PIC)
+  SET(igtlutil_BUILD_GENERATE_PIC ${OpenIGTLink_BUILD_GENERATE_PIC})
+  SET(IGTLSTATIC 1)
+ENDIF()
 
 SET(igtlutil_HEADS
   igtl_header.h
@@ -29,7 +36,7 @@ SET(igtlutil_SOURCES
   igtl_capability.c
   )
 
-if (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1")
+IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "1")
   SET(igtlutil_HEADS
     ${igtlutil_HEADS}
     igtl_colortable.h
@@ -64,9 +71,9 @@ if (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1")
     igtl_qtrans.c
     igtl_polydata.c
     )
-endif (${OpenIGTLink_PROTOCOL_VERSION} GREATER "1")
+ENDIF()
 
-if (${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
+IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
   SET(igtlutil_HEADS
     ${igtlutil_HEADS}
     igtl_command.h
@@ -75,9 +82,9 @@ if (${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
     ${igtlutil_SOURCES}
     igtl_command.c
     )
-endif (${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
+ENDIF()
 
-IF( MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
+IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
   ADD_LIBRARY(igtlutil
     ${igtlutil_SOURCES}
     ${igtlutil_HEADS}
@@ -88,6 +95,11 @@ ELSE()
     )
 ENDIF()
 
+FOREACH(p IN LISTS igtlutil_INCLUDE_DIRS)
+  target_include_directories(igtlutil PUBLIC $<BUILD_INTERFACE:${p}>)
+ENDFOREACH()
+target_include_directories(igtlutil PUBLIC $<INSTALL_INTERFACE:${igtlutil_INSTALL_INCLUDE_DIR}>)
+
 IF(MSVC)
   target_compile_options(igtlutil PRIVATE /MP)
 ENDIF()
@@ -97,6 +109,11 @@ SET_TARGET_PROPERTIES(igtlutil PROPERTIES
   SOVERSION ${OpenIGTLink_VERSION_MAJOR}
 )
 
-#TARGET_LINK_LIBRARIES(igtlutil
-#  ${LIBS}
-#  )
+INSTALL(FILES ${igtlutil_HEADS}
+  DESTINATION ${igtlutil_INSTALL_INCLUDE_DIR}
+  COMPONENT Development)
+
+INSTALL(TARGETS igtlutil EXPORT OpenIGTLink
+  RUNTIME DESTINATION ${OpenIGTLink_INSTALL_BIN_DIR} COMPONENT RuntimeLibraries
+  LIBRARY DESTINATION ${OpenIGTLink_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
+  ARCHIVE DESTINATION ${OpenIGTLink_INSTALL_LIB_DIR} COMPONENT Development)

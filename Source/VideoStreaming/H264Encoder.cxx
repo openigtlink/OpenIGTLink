@@ -68,13 +68,6 @@ int     g_iEncodedFrame  = 0;
 #define printf(...) LOGI(__VA_ARGS__)
 #define fprintf(a, ...) LOGI(__VA_ARGS__)
 #endif
-//#define STICK_STREAM_SIZE
-
-#include "measure_time.h"
-
-
-#include "typedefs.h"
-#include "read_config.h"
 
 #ifdef _MSC_VER
 #include <io.h>     /* _setmode() */
@@ -83,12 +76,6 @@ int     g_iEncodedFrame  = 0;
 
 #include "codec_def.h"
 #include "codec_api.h"
-#include "extern.h"
-#include "macros.h"
-#include "wels_const.h"
-
-#include "mt_defs.h"
-#include "WelsThreadLib.h"
 
 #ifdef _WIN32
 #ifdef WINAPI_FAMILY
@@ -116,6 +103,8 @@ static void    SigIntHandler (int a) {
   g_iCtrlC = 1;
 }
 
+#define   CALC_BI_STRIDE(width,bitcount)  ((((width * bitcount) + 31) & ~31) >> 3)
+
 H264Encoder::H264Encoder(char *configFile):GenericEncoder()
 {
   this->pSVCEncoder = NULL;
@@ -142,34 +131,6 @@ H264Encoder::~H264Encoder()
 {
   WelsDestroySVCEncoder (this->pSVCEncoder);
   this->pSVCEncoder = NULL;
-}
-
-bool H264Encoder::CompareHash (const unsigned char* digest, const char* hashStr) {
-  char hashStrCmp[SHA_DIGEST_LENGTH * 2 + 1];
-  for (int i = 0; i < SHA_DIGEST_LENGTH; ++i)
-    {
-    sprintf (&hashStrCmp[i * 2], "%.2x", digest[i]);
-    }
-  hashStrCmp[SHA_DIGEST_LENGTH * 2] = '\0';
-  if (hashStr == hashStrCmp)
-    {
-    return true;
-    }
-  return false;
-}
-
-
-void H264Encoder::UpdateHashFromFrame (SFrameBSInfo& info, SHA1Context* ctx) {
-  for (int i = 0; i < info.iLayerNum; ++i)
-    {
-    const SLayerBSInfo& layerInfo = info.sLayerInfo[i];
-    int layerSize = 0;
-    for (int j = 0; j < layerInfo.iNalCount; ++j)
-      {
-      layerSize += layerInfo.pNalLengthInByte[j];
-      }
-    SHA1Input (ctx, layerInfo.pBsBuf, layerSize);
-    }
 }
 
 int H264Encoder::FillSpecificParameters() {
@@ -213,7 +174,7 @@ int H264Encoder::FillSpecificParameters() {
   
   float fMaxFr = sSvcParam.sSpatialLayers[sSvcParam.iSpatialLayerNum - 1].fFrameRate;
   for (int32_t i = sSvcParam.iSpatialLayerNum - 2; i >= 0; --i) {
-    if (sSvcParam.sSpatialLayers[i].fFrameRate > fMaxFr + EPSN)
+    if (sSvcParam.sSpatialLayers[i].fFrameRate > (fMaxFr+EPSN))
       fMaxFr = sSvcParam.sSpatialLayers[i].fFrameRate;
   }
   sSvcParam.fMaxFrameRate = fMaxFr;
@@ -353,7 +314,6 @@ int H264Encoder::ParseLayerConfig (string strTag[], const int iLayer, SEncParamE
       {
       const char* kpString = strTag[0].c_str();
       int uiSliceIdx = atoi (&kpString[kiSize]);
-      assert (uiSliceIdx < MAX_SLICES_NUM);
       sLayerCtx.sSliceArgument.uiSliceMbNum[uiSliceIdx] = atoi (strTag[1].c_str());
       }
     }
@@ -594,12 +554,11 @@ int H264Encoder::ParseConfig() {
       }
     }
   
-  const igtlUint8 kiActualLayerNum = WELS_MIN (sSvcParam.iSpatialLayerNum, actLayerConfigNum);
+  const igtlUint8 kiActualLayerNum = sSvcParam.iSpatialLayerNum<actLayerConfigNum ? sSvcParam.iSpatialLayerNum:actLayerConfigNum;
   if (sSvcParam.iSpatialLayerNum >
       kiActualLayerNum) { // fixed number of dependency layer due to parameter error in settings
     sSvcParam.iSpatialLayerNum = kiActualLayerNum;
   }
-  assert (kiActualLayerNum <= MAX_DEPENDENCY_LAYER);
   return 0;
 }
 
@@ -698,6 +657,76 @@ int H264Encoder::SetPicWidthAndHeight(unsigned int Width, unsigned int Height)
     return -1;
   }
   this->initializationDone = true;
+  return 0;
+}
+
+
+igtlInt32 H264Encoder::InitPic (const void* kpSrc, const int32_t colorspace, const int32_t width, const int32_t height) {
+  SSourcePicture* pSrcPic = (SSourcePicture*)kpSrc;
+  
+  if (NULL == pSrcPic || width == 0 || height == 0)
+    return 1;
+  
+  pSrcPic->iColorFormat = colorspace;
+  pSrcPic->iPicWidth    = width;
+  pSrcPic->iPicHeight   = height;
+  
+  //currently encoder only supports videoFormatI420.
+  if ((colorspace & (~videoFormatVFlip)) != videoFormatI420)
+    return 2;
+  switch (colorspace & (~videoFormatVFlip)) {
+    case videoFormatI420:
+    case videoFormatYV12:
+      pSrcPic->pData[0]   = NULL;
+      pSrcPic->pData[1]   = NULL;
+      pSrcPic->pData[2]   = NULL;
+      pSrcPic->pData[3]   = NULL;
+      pSrcPic->iStride[0] = width;
+      pSrcPic->iStride[2] = pSrcPic->iStride[1] = width >> 1;
+      pSrcPic->iStride[3] = 0;
+      break;
+    case videoFormatYUY2:
+    case videoFormatYVYU:
+    case videoFormatUYVY:
+      pSrcPic->pData[0]   = NULL;
+      pSrcPic->pData[1]   = NULL;
+      pSrcPic->pData[2]   = NULL;
+      pSrcPic->pData[3]   = NULL;
+      pSrcPic->iStride[0] = CALC_BI_STRIDE (width,  16);
+      pSrcPic->iStride[3] = pSrcPic->iStride[2] = pSrcPic->iStride[1] = 0;
+      break;
+    case videoFormatRGB:
+    case videoFormatBGR:
+      pSrcPic->pData[0]   = NULL;
+      pSrcPic->pData[1]   = NULL;
+      pSrcPic->pData[2]   = NULL;
+      pSrcPic->pData[3]   = NULL;
+      pSrcPic->iStride[0] = CALC_BI_STRIDE (width, 24);
+      pSrcPic->iStride[3] = pSrcPic->iStride[2] = pSrcPic->iStride[1] = 0;
+      if (colorspace & videoFormatVFlip)
+        pSrcPic->iColorFormat = colorspace & (~videoFormatVFlip);
+      else
+        pSrcPic->iColorFormat = colorspace | videoFormatVFlip;
+      break;
+    case videoFormatBGRA:
+    case videoFormatRGBA:
+    case videoFormatARGB:
+    case videoFormatABGR:
+      pSrcPic->pData[0]   = NULL;
+      pSrcPic->pData[1]   = NULL;
+      pSrcPic->pData[2]   = NULL;
+      pSrcPic->pData[3]   = NULL;
+      pSrcPic->iStride[0] = width << 2;
+      pSrcPic->iStride[3] = pSrcPic->iStride[2] = pSrcPic->iStride[1] = 0;
+      if (colorspace & videoFormatVFlip)
+        pSrcPic->iColorFormat = colorspace & (~videoFormatVFlip);
+      else
+        pSrcPic->iColorFormat = colorspace | videoFormatVFlip;
+      break;
+    default:
+      return 2; // any else?
+  }
+  
   return 0;
 }
 

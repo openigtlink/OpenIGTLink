@@ -5,9 +5,9 @@ os: Visual Studio 2015
 #Google Test is not build correctly for v120 and v110, but the TestConfigure.h file is a workaround solution for the testing 
 environment:
   matrix:
-  - Toolset: v140
-  - Toolset: v120  
   - Toolset: v110
+  - Toolset: v120  
+  - Toolset: v140
   
 platform: 
   - x86
@@ -39,9 +39,9 @@ before_build:
     Write-Output "Platform: $env:PLATFORM"
     $generator = switch ($env:TOOLSET)
     {
-        "v140" {"Visual Studio 14 2015"}
-        "v120" {"Visual Studio 12 2013"}
         "v110" {"Visual Studio 11 2012"}
+        "v120" {"Visual Studio 12 2013"}
+        "v140" {"Visual Studio 14 2015"}
     }
     $generator = "$generator Win64"
 
@@ -49,19 +49,7 @@ build_script:
 - ps: |
     mkdir build -Force | Out-Null
     cd build
-    & cmake -G "$generator" -DOpenIGTLink_PROTOCOL_VERSION_3=ON ..
-    if ($LastExitCode -ne 0) {
-        throw "Exec: $ErrorMessage"
-    }
-    & cmake --build . --config $env:CONFIGURATION
-    if ($LastExitCode -ne 0) {
-        throw "Exec: $ErrorMessage"
-    }
-    mkdir build -Force | Out-Null
-    cd ..
-    mkdir TestBuild
-    cd TestBuild
-    & cmake -G "$generator" -DCMAKE_PREFIX_PATH:PATH=..\build ..\Testing
+    & cmake -G "$generator" -DOpenIGTLink_PROTOCOL_VERSION_3=ON -DOpenIGTLink_SUPERBUILD=OFF ..
     if ($LastExitCode -ne 0) {
         throw "Exec: $ErrorMessage"
     }
@@ -73,17 +61,7 @@ build_script:
     if ($LastExitCode -ne 0) {
         throw "Exec: $ErrorMessage"
     }
-    cd ..\build
-    & cmake -G "$generator" -DOpenIGTLink_PROTOCOL_VERSION_3=OFF ..
-    if ($LastExitCode -ne 0) {
-        throw "Exec: $ErrorMessage"
-    }
-    & cmake --build . --config $env:CONFIGURATION
-    if ($LastExitCode -ne 0) {
-        throw "Exec: $ErrorMessage"
-    }
-    cd ..\TestBuild
-    & cmake -G "$generator" -DCMAKE_PREFIX_PATH:PATH=..\build ..\Testing
+    cmake -G "$generator" -DOpenIGTLink_PROTOCOL_VERSION_3=OFF ..
     if ($LastExitCode -ne 0) {
         throw "Exec: $ErrorMessage"
     }
@@ -95,4 +73,3 @@ build_script:
     if ($LastExitCode -ne 0) {
         throw "Exec: $ErrorMessage"
     }    
-    

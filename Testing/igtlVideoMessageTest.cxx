@@ -45,11 +45,16 @@
 #if OpenIGTLink_LINK_VP9
   #include "VP9Encoder.h"
   #include "VP9Decoder.h"
-  #include "../video_reader.h"
   #include "./vpx_config.h"
-  #include "vpx_dsp_rtcd.h"
-  #include "vpx_dsp/ssim.h"
 #endif
+
+#if OpenIGTLink_LINK_OPENHEVC && OpenIGTLink_LINK_X265
+  #include "H265Encoder.h"
+  #include "H265Decoder.h"
+#endif
+
+#include "igtlCodecCommonClasses.h"
+#include "igtlOSUtil.h"
 
 int Width = 256;
 int Height = 256;
@@ -95,17 +100,18 @@ int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDeco
       igtl_int64 i_size = 0;
 #if defined(_WIN32) || defined(_WIN64)
 #if _MSC_VER >= 1400
-      if (!_fseeki64 (pFileYUV, 0, SEEK_END)) {
+      if (!_fseeki64 (pFileYUV, 0, SEEK_END))
+        {
         i_size = _ftelli64 (pFileYUV);
         _fseeki64 (pFileYUV, 0, SEEK_SET);
-        iFrameNumInFile =std::fmax((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
-      }
+        iFrameNumInFile = (i_size / kiPicResSize) > iFrameNumInFile ? (i_size / kiPicResSize):iFrameNumInFile;
+        }
 #else
       if (!fseek (pFileYUV, 0, SEEK_END))
         {
         i_size = ftell (pFileYUV);
         fseek (pFileYUV, 0, SEEK_SET);
-        iFrameNumInFile = std::max((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
+        iFrameNumInFile = (i_size / kiPicResSize) > iFrameNumInFile ? (i_size / kiPicResSize):iFrameNumInFile;
         }
 #endif
 #else
@@ -113,7 +119,7 @@ int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDeco
         {
         i_size = ftello (pFileYUV);
         fseek(pFileYUV, 0, SEEK_SET);
-        iFrameNumInFile = std::max((igtl_int32) (i_size / (kiPicResSize)), iFrameNumInFile);
+        iFrameNumInFile = (i_size / kiPicResSize) > iFrameNumInFile ? (i_size / kiPicResSize):iFrameNumInFile;
         }
 #endif
 #if defined(_WIN32) || defined(_WIN64)
@@ -159,7 +165,7 @@ int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDeco
             }
             if (compareImage)
             {
-              TestDebugCharArrayCmp(pDecodedPic->data[0], imagePointer, kiPicResSize * 3 / 2);
+              //TestDebugCharArrayCmp(pDecodedPic->data[0], imagePointer, kiPicResSize * 3 / 2);
               if (memcmp(pDecodedPic->data[0], imagePointer, kiPicResSize * 3 / 2) != 0)
               {
                 return -1;
@@ -282,6 +288,22 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
     std::cerr<<"End of H264 tests "<<std::endl;
     std::cerr<<"--------------------------- "<<std::endl;
   #endif
+#if OpenIGTLink_LINK_OPENHEVC && OpenIGTLink_LINK_X265
+      std::cerr<<"--------------------------- "<<std::endl;
+      std::cerr<<"Begin of VPX tests "<<std::endl;
+      H265Encoder* H265StreamEncoder = new H265Encoder();
+      H265Decoder* H265StreamDecoder = new H265Decoder();
+      H265StreamEncoder->SetPicWidthAndHeight(Width,Height);
+      H265StreamEncoder->InitializeEncoder();
+      H265StreamEncoder->SetLosslessLink(true);
+      TestWithVersion(IGTL_HEADER_VERSION_2, H265StreamEncoder, H265StreamDecoder,true);
+      H265StreamEncoder->SetSpeed(8);
+      H265StreamEncoder->SetLosslessLink(false);
+      std::cerr<<"Encoding Time Using Maximum Speed: "<<std::endl;
+      TestWithVersion(IGTL_HEADER_VERSION_2, H265StreamEncoder, H265StreamDecoder,false);
+      std::cerr<<"End of VPX tests "<<std::endl;
+      std::cerr<<"--------------------------- "<<std::endl;
+#endif
     }
 #endif
 

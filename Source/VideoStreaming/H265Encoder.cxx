@@ -22,16 +22,9 @@ std::string ToString(T variable)
   stream << variable;
   return stream.str();
 }
-/* Ctrl-C handler */
-static int     g_iCtrlC = 0;
-static void    SigIntHandler (int a) {
-  g_iCtrlC = 1;
-}
 
 H265Encoder::H265Encoder(char *configFile):GenericEncoder()
 {
-  /* Control-C handler */
-  signal (SIGINT, SigIntHandler);
   this->sSvcParam=H265EncoderNameSpace::x265_param_alloc();
   FillSpecificParameters();
   pSVCEncoder=H265EncoderNameSpace::x265_encoder_open(this->sSvcParam);

@@ -62,7 +62,6 @@
 #include <iostream>
 
 #include "igtlCodecCommonClasses.h"
-#include "sha1.h"
 #include "igtl_header.h"
 #include "igtl_video.h"
 #include "igtlOSUtil.h"
@@ -71,9 +70,10 @@
 #include "igtlTimeStamp.h"
 #include "codec_def.h"
 #include "codec_app_def.h"
-#include "read_config.h"
-#include "wels_const.h"
 
+#define MAX_DEPENDENCY_LAYER 4
+#define MAX_THREADS_NUM 4
+#define EPSN (0.000001f) 
 
 using namespace std;
 
@@ -104,10 +104,6 @@ public:
   H264Encoder(char * configFile = NULL);
   ~H264Encoder();
   
-  void UpdateHashFromFrame (SFrameBSInfo& info, SHA1Context* ctx);
-  
-  bool CompareHash (const unsigned char* digest, const char* hashStr);
-
   virtual int FillSpecificParameters();
   
   /**
@@ -165,6 +161,8 @@ private:
   int ParseLayerConfig (string strTag[], const int iLayer, SEncParamExt& pSvcParam);
   
   int ParseConfig();
+  
+  igtlInt32 InitPic (const void* kpSrc, const int32_t colorspace, const int32_t width, const int32_t height);
   
   ISVCEncoder*  pSVCEncoder;
   

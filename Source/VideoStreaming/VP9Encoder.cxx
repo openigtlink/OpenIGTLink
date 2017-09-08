@@ -15,11 +15,37 @@
 #include "VP9Encoder.h"
 #include "igtlVideoMessage.h"
 
-void usage_exit(void) {exit(EXIT_FAILURE);};
+static const VpxInterfaceEncoder vp9StaticEncoder[] = {{&vpx_codec_vp9_cx}};
+
+void VP9Encoder::error_output(vpx_codec_ctx_t *ctx, const char *s) {
+  const char *detail = vpx_codec_error_detail(ctx);
+  
+  printf("%s: %s\n", s, vpx_codec_error(ctx));
+  if (detail) printf("    %s\n", detail);
+  exit(EXIT_FAILURE);
+}
+
+
+// TODO(dkovalev): move this function to vpx_image.{c, h}, so it will be part
+// of vpx_image_t support, this section will be removed when it is moved to vpx_image
+int VP9Encoder::vpx_img_plane_width(const vpx_image_t *img, int plane) {
+  if (plane > 0 && img->x_chroma_shift > 0)
+    return (img->d_w + 1) >> img->x_chroma_shift;
+  else
+    return img->d_w;
+}
+
+int VP9Encoder::vpx_img_plane_height(const vpx_image_t *img, int plane) {
+  if (plane > 0 && img->y_chroma_shift > 0)
+    return (img->d_h + 1) >> img->y_chroma_shift;
+  else
+    return img->d_h;
+}
+
 
 VP9Encoder::VP9Encoder(char *configFile):GenericEncoder()
 {
-  this->encoder = get_vpx_encoder_by_name("vp9");
+  this->encoder = &vp9StaticEncoder[0];
   codec = new vpx_codec_ctx_t();
   encodedBuf = new vpx_fixed_buf_t();
   inputImage = new vpx_image_t();
@@ -46,14 +72,14 @@ VP9Encoder::~VP9Encoder()
 int VP9Encoder::FillSpecificParameters() {
   if (vpx_codec_enc_config_default(encoder->codec_interface(), &cfg, 0))
     {
-    die_codec(codec, "Failed to get default codec config.");
+    error_output(codec, "Failed to get default codec config.");
     return -1;
     }
   cfg.g_error_resilient = true;
   vpx_codec_enc_init(codec, encoder->codec_interface(), &cfg, 0);
   if(this->SetSpeed(FastestSpeed)!=0)
     {
-    die_codec(codec, "Failed to set the speed to be the fastest.");
+    error_output(codec, "Failed to set the speed to be the fastest.");
     return -1;
     }
   return 0;
@@ -64,7 +90,7 @@ int VP9Encoder::SetRCMode(int value)
   this->cfg.rc_end_usage = (vpx_rc_mode) value;
   if(vpx_codec_enc_config_set(codec, &this->cfg))
     {
-    die_codec(codec, "Failed to set RC mode");
+    error_output(codec, "Failed to set RC mode");
     return -1;
     }
   return 0;
@@ -76,7 +102,7 @@ int VP9Encoder::SetKeyFrameDistance(int frameNum)
   this->cfg.kf_min_dist = frameNum;
   if(vpx_codec_enc_config_set(codec, &this->cfg))
     {
-    die_codec(codec, "Failed to key frame distance");
+    error_output(codec, "Failed to key frame distance");
     return -1;
     }
   return 0;
@@ -95,7 +121,7 @@ int VP9Encoder::SetRCTaregetBitRate(unsigned int bitRate)
     }
   if (vpx_codec_enc_config_set(codec, &this->cfg))
     {
-    die_codec(codec, "Failed to set target bit rate");
+    error_output(codec, "Failed to set target bit rate");
     return -1;
     }
   this->initializationDone = true;
@@ -109,7 +135,7 @@ int VP9Encoder::SetQP(int maxQP, int minQP)
   this->cfg.rc_end_usage = VPX_Q;
   if (vpx_codec_enc_config_set(codec, &this->cfg))
     {
-    die_codec(codec, "Failed to set QP");
+    error_output(codec, "Failed to set QP");
     return -1;
     }
   this->initializationDone = true;
@@ -122,7 +148,7 @@ int VP9Encoder::SetLosslessLink(bool linkMethod)
   this->isLossLessLink = linkMethod;
   if (vpx_codec_control_(codec, VP9E_SET_LOSSLESS, linkMethod))
     {
-    die_codec(codec, "Failed to set lossless mode");
+    error_output(codec, "Failed to set lossless mode");
     return -1;
     }
   else
@@ -153,13 +179,13 @@ int VP9Encoder::InitializeEncoder()
                 cfg.g_h, 1);
   if (vpx_codec_enc_init(codec, encoder->codec_interface(), &cfg, 0))
     {
-    die_codec(codec, "Failed to initialize encoder");
+    error_output(codec, "Failed to initialize encoder");
     return -1;
     }
   
   if (vpx_codec_control_(codec, VP9E_SET_LOSSLESS, this->GetLosslessLink()))
     {
-    die_codec(codec, "Failed to set lossless mode");
+    error_output(codec, "Failed to set lossless mode");
     return -1;
     }
   
@@ -167,7 +193,7 @@ int VP9Encoder::InitializeEncoder()
     {
     if (vpx_codec_control(codec, VP8E_SET_CPUUSED, codecSpeed))
       {
-      die_codec(codec, "Failed to set Speed");
+      error_output(codec, "Failed to set Speed");
       return -1;
       }
     }
@@ -235,7 +261,7 @@ int VP9Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
       const vpx_codec_err_t res2 = vpx_codec_encode(codec, inputImage, messageID, 1, 0, this->deadlineMode);
       if (res2 != VPX_CODEC_OK)
         {
-        die_codec(codec, "Failed to encode frame");
+        error_output(codec, "Failed to encode frame");
         return -1;
         }
       iter = NULL;
