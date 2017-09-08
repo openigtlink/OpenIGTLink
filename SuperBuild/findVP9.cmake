@@ -10,16 +10,16 @@
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") 
   SET( VP9_PATH_HINTS 
       ${VP9_ROOT} 
-      ${CMAKE_BINARY_DIR}/Deps/VP9
-      ${CMAKE_BINARY_DIR}/Deps/VP9-bin
+      ${VP9_INCLUDE_DIR}
+      ${VP9_LIBRARY_DIR} 
       )
-  set(VP9_INCLUDE_DIR "")
+  unset(VP9_INCLUDE_DIR CACHE)
   find_path(VP9_INCLUDE_DIR NAMES vp8cx.h vpx_image.h 
     PATH_SUFFIXES vpx
     HINTS ${VP9_PATH_HINTS} 
     )
     
-  set(VP9_LIBRARY_DIR "")
+  unset(VP9_LIBRARY_DIR CACHE)
   find_path(VP9_LIBRARY_DIR
      NAMES libvpx.a
      PATH_SUFFIXES ${Platform}/${CMAKE_BUILD_TYPE}
@@ -30,18 +30,26 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
   mark_as_advanced(VP9_INCLUDE_DIR VP9_LIBRARY_DIR)
 else()
-  set(VP9_INCLUDE_DIR "" CACHE PATH "VP9 library directory")
-  find_file(VP9_files NAMES vp8cx.h 
+	SET(VP9_PATH_HINTS 
+			${VP9_ROOT} 
+      ${VP9_INCLUDE_DIR}
+      ${VP9_LIBRARY_DIR}/Win32/Release 
+      ${VP9_LIBRARY_DIR}/Win32/Debug 
+      ${VP9_LIBRARY_DIR}/x64/Release 
+      ${VP9_LIBRARY_DIR}/x64/Debug
+      )
+  unset(VP9_INCLUDE_DIR CACHE)
+  find_path(VP9_INCLUDE_DIR NAMES vp8cx.h vpx_image.h 
     PATH_SUFFIXES vpx
-    HINTS ${VP9_INCLUDE_DIR} 
+    HINTS ${VP9_PATH_HINTS} 
     )
-  if(NOT VP9_files)
+  if(NOT VP9_INCLUDE_DIR)
     MESSAGE(FATAL_ERROR "VP9 include files not found, specify the file path")
   endif()  
   
-  SET(VP9_LIBRARY_DIR "" CACHE PATH "VP9 library directory")
+  unset(VP9_LIBRARY_DIR CACHE)
   find_library(VP9_lib vpxmd.lib  
-     HINTS ${VP9_LIBRARY_DIR}/Win32/Release ${VP9_LIBRARY_DIR}/Win32/Debug ${VP9_LIBRARY_DIR}/x64/Release ${VP9_LIBRARY_DIR}/x64/Debug
+     HINTS  ${VP9_PATH_HINTS}
      )
   if(NOT VP9_lib)
     MESSAGE(FATAL_ERROR "VP9 library not found, specify the library path")

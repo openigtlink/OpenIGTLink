@@ -26,7 +26,7 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
   ENDIF()
   IF(USE_H264)
     INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_openh264.cmake)
-  	IF(NOT ${OpenH264_DIR} STREQUAL "")
+  	IF(OpenH264_FOUND)
 			LIST(APPEND OpenIGTLink_SOURCES
 				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Decoder.cxx
 				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.cxx
@@ -37,32 +37,21 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
 					${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.h)
 			ENDIF()
 			LIST(APPEND OpenIGTLink_INCLUDE_DIRS
-    		${OpenH264_DIR}
-    		${OpenH264_DIR}/codec/api/svc
+    		${OpenH264_INCLUDE_DIR}
+    		${OpenH264_INCLUDE_DIR}/codec/api/svc # build location
+    		${OpenH264_INCLUDE_DIR}/include/wels # install location
     	)
 		ELSE()
-			MESSAGE("H264_LIBRARY no found.  You could specify now , or it will be downloaded during the openigtlink build, but build of the codec should be done by the user.")
+			MESSAGE("H264_LIBRARY no found.  You could specify now , or it will be downloaded during the openigtlink build")
 		ENDIF()
 	ENDIF()
-	
-	IF(USE_OPENHEVC OR USE_X265)
-  	INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_yasm.cmake)
-  	LIST(APPEND OpenIGTLink_DEPENDENCIES YASM)
-  ENDIF()	
-	IF(USE_VP9)
-		#For windows build, we don't build the library in openigtlink, but import it directly
-    #So dependecicy on YASM is not necessary in openigtlink
-  	IF(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
-  		INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_yasm.cmake)
-      LIST(APPEND OpenIGTLink_DEPENDENCIES YASM) 
-    ENDIF()
-  ENDIF()  
   
   IF(USE_VP9)
     INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_VP9.cmake)
   	IF(EXISTS ${VP9_LIBRARY_DIR})
   		LIST(APPEND OpenIGTLink_INCLUDE_DIRS
     		${VP9_INCLUDE_DIR}
+    		${VP9_INCLUDE_DIR}/vpx
     		${VP9_LIBRARY_DIR}
     	)
 			LIST(APPEND OpenIGTLink_SOURCES
@@ -87,27 +76,26 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
 
   IF(USE_X265)
   	INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_X265.cmake)
+  	LIST(APPEND OpenIGTLink_INCLUDE_DIRS
+    		${X265_INCLUDE_DIR}
+    		${X265_INCLUDE_DIR}/source
+    		${X265_LIBRARY_DIR}
+    	)
     LIST(APPEND OpenIGTLink_SOURCES
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Encoder.cxx
       )
-    LIST(APPEND OpenIGTLink_INCLUDE_DIRS
-    		${X265_INCLUDE_DIR}/source
-    	)
     IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
       LIST(APPEND OpenIGTLink_INCLUDE_FILES
         ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Encoder.h
         )
     ENDIF()
-    LIST(APPEND OpenIGTLink_INCLUDE_DIRS
-    		${X265_INCLUDE_DIR}
-    		${X265_LIBRARY_DIR}
-    	)
   ENDIF()
 	
   IF(USE_OPENHEVC)
   	INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_openHEVC.cmake)
   	LIST(APPEND OpenIGTLink_INCLUDE_DIRS
-    		${OPENHEVC_SOURCE_DIR}
+    		${OPENHEVC_INCLUDE_DIR}
+    		${OPENHEVC_INCLUDE_DIR}/gpac/modules/openhevc_dec
     		${OPENHEVC_LIBRARY_DIR}
     	)
     LIST(APPEND OpenIGTLink_SOURCES
@@ -124,7 +112,7 @@ ENDIF()
 IF(WIN32) # for Windows
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_H264)
 		LIST(APPEND LINK_LIBS
-    	${OpenH264_DIR}/openh264.lib
+    	${OpenH264_LIBRARY_DIR}/openh264.lib
     )
 	ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_VP9)
@@ -150,7 +138,7 @@ IF(WIN32) # for Windows
 ELSE() # for POSIX-compatible OSs
 	IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_H264)
 		LIST(APPEND LINK_LIBS
-		  ${OpenH264_DIR}/libopenh264.a
+		  ${OpenH264_LIBRARY_DIR}/libopenh264.a
 		)
 	ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_VP9)
@@ -164,7 +152,10 @@ ELSE() # for POSIX-compatible OSs
     )
   ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_OPENHEVC)
-  	SET(LINK_OPENHEVC_LIBRARY ${OPENHEVC_LIBRARY_DIR}/${CMAKE_BUILD_TYPE}/libLibOpenHevcWrapper.a )
+  	SET(LINK_OPENHEVC_LIBRARY ${OPENHEVC_LIBRARY_DIR}/libLibOpenHevcWrapper.a)
+  	IF (CMAKE_CONFIGURATION_TYPES) 
+  		SET(LINK_OPENHEVC_LIBRARY optimized ${OPENHEVC_LIBRARY_DIR}/Release/libLibOpenHevcWrapper.a debug ${OPENHEVC_LIBRARY_DIR}/Debug/libLibOpenHevcWrapper.a)
+  	ENDIF()	
   	LIST(APPEND LINK_LIBS
     	${LINK_OPENHEVC_LIBRARY}      
     )

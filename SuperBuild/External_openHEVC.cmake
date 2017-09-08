@@ -1,9 +1,14 @@
 cmake_minimum_required(VERSION 2.8.2)
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 include(${OpenIGTLink_SOURCE_DIR}/SuperBuild/findOpenHEVC.cmake)
+INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_yasm.cmake)
+SET(OpenHEVC_DEPENDENCIES)
+IF(NOT YASM_FOUND)
+	LIST(APPEND OpenHEVC_DEPENDENCIES YASM)
+ENDIF()
 IF(OPENHEVC_FOUND)
   # openHEVC has been built already
-  MESSAGE(STATUS "Using openHEVC available at: ${OPENHEVC_SOURCE_DIR}")
+  MESSAGE(STATUS "Using openHEVC available at: ${OPENHEVC_INCLUDE_DIR}")
   #FIND_PACKAGE(openHEVC REQUIRED)
   #SET(OPENHEVC_LIBRARY_DIR "${openHEVC_DIR}" CACHE INTERNAL "Path to store openHEVC library")
 ELSE()
@@ -17,12 +22,12 @@ ELSE()
   
   MESSAGE(STATUS "Downloading openHEVC ${GIT_TAG} from: ${GIT_REPOSITORY}")
 
-  SET (OPENHEVC_SOURCE_DIR "${CMAKE_BINARY_DIR}/Deps/openHEVC" CACHE PATH "openHEVC source directory" FORCE)
+  SET (OPENHEVC_INCLUDE_DIR "${CMAKE_BINARY_DIR}/Deps/openHEVC" CACHE PATH "openHEVC source directory" FORCE)
   SET (OPENHEVC_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Deps/openHEVC-bin" CACHE PATH "openHEVC library directory" FORCE)
 
   ExternalProject_Add( OpenHEVC
     PREFIX "${CMAKE_BINARY_DIR}/Deps/openHEVC-prefix"
-    SOURCE_DIR "${OPENHEVC_SOURCE_DIR}"
+    SOURCE_DIR "${OPENHEVC_INCLUDE_DIR}"
     BINARY_DIR "${OPENHEVC_LIBRARY_DIR}"
     #--Download step--------------
     GIT_REPOSITORY "${GIT_REPOSITORY}"
@@ -41,6 +46,6 @@ ELSE()
     #--Build step-----------------
     BUILD_ALWAYS 1
     INSTALL_COMMAND ""
-    DEPENDS YASM
+    DEPENDS ${OpenHEVC_DEPENDENCIES}
     )
 ENDIF()

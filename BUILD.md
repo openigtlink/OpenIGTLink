@@ -62,7 +62,7 @@ Version 0.8.0 or newer is required, except Version 1.0.0.
 
 In the case of H265 build, H265 have many implementations, the encoder used in library is x265 and the decoder is OpenHEVC.
 OpenIGTLink library doesn't build H265 libraries, so the users need to download and compile the libraries by themselves. 
-Afterwards, set the variables-"X265_SOURCE_DIR, X265_LIBRARY_DIR, OPENHEVC_SOURCE_DIR, OPENHEVC_LIBRARY_DIR"-correctly in cmake configuration.
+Afterwards, set the variables-"X265_INCLUDE_DIR, X265_LIBRARY_DIR, OPENHEVC_INCLUDE_DIR, OPENHEVC_LIBRARY_DIR"-correctly in cmake configuration.
 
 * Linux / Mac OS X
 

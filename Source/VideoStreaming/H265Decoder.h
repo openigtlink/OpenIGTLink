@@ -26,7 +26,7 @@
 #include "igtlVideoMessage.h"
 #include "igtlCodecCommonClasses.h"
 
-#include "gpac/modules/openhevc_dec/openHevcWrapper.h"
+#include "openHevcWrapper.h"
 
 #define FRAME_CONCEALMENT   0
 

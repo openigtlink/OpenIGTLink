@@ -5,40 +5,27 @@ SET(OpenIGTLink_DEPENDENCIES)
 # VideoStreaming dependencies
 IF(BUILD_VIDEOSTREAM)
   IF(USE_H264)
-    set(OpenH264_DIR "" CACHE PATH "H264 source directory" FORCE)    
+  	set(OpenH264_INCLUDE_DIR "" CACHE PATH "H264 source directory" FORCE)  
+    set(OpenH264_LIBRARY_DIR "" CACHE PATH "H264 library directory" FORCE)    
     INCLUDE(${CMAKE_CURRENT_LIST_DIR}/External_openh264.cmake)
   ENDIF()
   
-  IF(USE_X265 OR USE_OPENHEVC)
-		set(YASM_BINARY_DIR "" CACHE PATH "YASM binary directory" FORCE)
-    INCLUDE(${CMAKE_CURRENT_LIST_DIR}/External_yasm.cmake)
-    LIST(APPEND OpenIGTLink_DEPENDENCIES YASM)
-	ENDIF()
-	IF(USE_VP9)
-		#For windows build, we don't build the library in openigtlink, but import it directly
-    #So dependecicy on YASM is not necessary in openigtlink
-  	IF(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
-  		INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_yasm.cmake)
-      LIST(APPEND OpenIGTLink_DEPENDENCIES YASM) 
-    ENDIF()
-  ENDIF()  
-  
   IF(USE_VP9)
-    set(VP9_SOURCE_DIR "" CACHE PATH "VP9 source directory" FORCE)
+    set(VP9_INCLUDE_DIR "" CACHE PATH "VP9 source directory" FORCE)
 		set(VP9_LIBRARY_DIR "" CACHE PATH "VP9 library directory" FORCE)
     INCLUDE(${CMAKE_CURRENT_LIST_DIR}/External_VP9.cmake)
     LIST(APPEND OpenIGTLink_DEPENDENCIES VP9)
   ENDIF()
 	
   IF(USE_X265)
-    set(X265_SOURCE_DIR "" CACHE PATH "X265 source directory" FORCE)
+    set(X265_INCLUDE_DIR "" CACHE PATH "X265 source directory" FORCE)
 		set(X265_LIBRARY_DIR "" CACHE PATH "X265 library directory" FORCE)
     INCLUDE(${CMAKE_CURRENT_LIST_DIR}/External_X265.cmake)
     LIST(APPEND OpenIGTLink_DEPENDENCIES X265)
   ENDIF()
   
   IF(USE_OPENHEVC)
- 		set(OPENHEVC_SOURCE_DIR "" CACHE PATH "OpenHEVC source directory" FORCE)
+ 		set(OPENHEVC_INCLUDE_DIR "" CACHE PATH "OpenHEVC source directory" FORCE)
 		set(OPENHEVC_LIBRARY_DIR "" CACHE PATH "OpenHEVC library directory" FORCE)
     INCLUDE(${CMAKE_CURRENT_LIST_DIR}/External_openHEVC.cmake)
     LIST(APPEND OpenIGTLink_DEPENDENCIES OpenHEVC)
@@ -77,14 +64,14 @@ ExternalProject_Add( OpenIGTLink-lib
 		-DBUILD_EXAMPLES:BOOL=${BUILD_EXAMPLES}
 		-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
 		-DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS}
-		-DOpenH264_DIR:STRING=${OpenH264_DIR}
+		-DOpenH264_INCLUDE_DIR:STRING=${OpenH264_INCLUDE_DIR}
+		-DOpenH264_LIBRARY_DIR:STRING=${OpenH264_LIBRARY_DIR}
 		-DX265_INCLUDE_DIR:STRING=${X265_INCLUDE_DIR}
 		-DX265_LIBRARY_DIR:STRING=${X265_LIBRARY_DIR}
 		-DOPENHEVC_INCLUDE_DIR:STRING=${OPENHEVC_INCLUDE_DIR}
 		-DOPENHEVC_LIBRARY_DIR:STRING=${OPENHEVC_LIBRARY_DIR}
 		-DVP9_INCLUDE_DIR:STRING=${VP9_INCLUDE_DIR}
 		-DVP9_LIBRARY_DIR:STRING=${VP9_LIBRARY_DIR}
-		-DYASM_BINARY_DIR:STRING=${YASM_BINARY_DIR}
 	#--Build step-----------------
 	BUILD_ALWAYS 1
 	#--Install step-----------------
