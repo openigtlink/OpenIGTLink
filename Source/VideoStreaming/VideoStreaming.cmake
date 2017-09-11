@@ -91,12 +91,12 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
     ENDIF()
   ENDIF()
 	
-  IF(USE_OPENHEVC)
+  IF(USE_OpenHEVC)
   	INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_openHEVC.cmake)
   	LIST(APPEND OpenIGTLink_INCLUDE_DIRS
-    		${OPENHEVC_INCLUDE_DIR}
-    		${OPENHEVC_INCLUDE_DIR}/gpac/modules/openhevc_dec
-    		${OPENHEVC_LIBRARY_DIR}
+    		${OpenHEVC_INCLUDE_DIR}
+    		${OpenHEVC_INCLUDE_DIR}/gpac/modules/openhevc_dec
+    		${OpenHEVC_LIBRARY_DIR}
     	)
     LIST(APPEND OpenIGTLink_SOURCES
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Decoder.cxx
@@ -128,9 +128,9 @@ IF(WIN32) # for Windows
       ${LINK_X265_LIBRARY}
     )
   ENDIF()
-  IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_OPENHEVC)
+  IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_OpenHEVC)
     #To do, library name depends on the compiler setting, could be vpxmt.lib and vpxmtd also. Make sure the setting matches.
-    SET(LINK_OPENHEVC_LIBRARY optimized ${OPENHEVC_LIBRARY_DIR}\\Release\\LibOpenHevcWrapper.lib debug ${OPENHEVC_LIBRARY_DIR}\\Debug\\LibOpenHevcWrapper.lib)
+    SET(LINK_OPENHEVC_LIBRARY optimized ${OpenHEVC_LIBRARY_DIR}\\Release\\LibOpenHevcWrapper.lib debug ${OpenHEVC_LIBRARY_DIR}\\Debug\\LibOpenHevcWrapper.lib)
     LIST(APPEND LINK_LIBS
       ${LINK_OPENHEVC_LIBRARY}
     )
@@ -151,10 +151,10 @@ ELSE() # for POSIX-compatible OSs
       ${X265_LIBRARY_DIR}/libx265.a
     )
   ENDIF()
-  IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_OPENHEVC)
-  	SET(LINK_OPENHEVC_LIBRARY ${OPENHEVC_LIBRARY_DIR}/libLibOpenHevcWrapper.a)
+  IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_OpenHEVC)
+  	SET(LINK_OPENHEVC_LIBRARY ${OpenHEVC_LIBRARY_DIR}/libLibOpenHevcWrapper.a)
   	IF (CMAKE_CONFIGURATION_TYPES) 
-  		SET(LINK_OPENHEVC_LIBRARY optimized ${OPENHEVC_LIBRARY_DIR}/Release/libLibOpenHevcWrapper.a debug ${OPENHEVC_LIBRARY_DIR}/Debug/libLibOpenHevcWrapper.a)
+  		SET(LINK_OPENHEVC_LIBRARY optimized ${OpenHEVC_LIBRARY_DIR}/Release/libLibOpenHevcWrapper.a debug ${OpenHEVC_LIBRARY_DIR}/Debug/libLibOpenHevcWrapper.a)
   	ENDIF()	
   	LIST(APPEND LINK_LIBS
     	${LINK_OPENHEVC_LIBRARY}      
