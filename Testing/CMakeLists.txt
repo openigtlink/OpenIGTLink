@@ -202,7 +202,7 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
   ADD_TEST(igtlMessageRTPWrapperTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlMessageRTPWrapperTest ${TestStringFormat2})
 ENDIF()
 
-IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM AND (USE_H264 OR USE_VP9 OR (USE_X265 AND USE_OPENHEVC)))
+IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM AND (USE_H264 OR USE_VP9 OR (USE_X265 AND USE_OpenHEVC)))
   ADD_TEST(igtlVideoMessageTestFormatVersion1 ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMessageTest ${TestStringFormat1})
   ADD_TEST(igtlVideoMessageTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMessageTest ${TestStringFormat2})
   ADD_TEST(igtlVideoMetaMessageTestFormatVersion2 ${OpenIGTLink_EXECUTABLE_PATH}/igtlVideoMetaMessageTest ${TestStringFormat2})
