@@ -26,7 +26,7 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
   ENDIF()
   IF(USE_H264)
     INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_openh264.cmake)
-  	IF(OpenH264_FOUND)
+  	IF(EXISTS ${OpenH264_LIBRARY_DIR})
 			LIST(APPEND OpenIGTLink_SOURCES
 				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Decoder.cxx
 				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.cxx
@@ -42,7 +42,7 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
     		${OpenH264_INCLUDE_DIR}/include/wels # install location
     	)
 		ELSE()
-			MESSAGE("H264_LIBRARY no found.  You could specify now , or it will be downloaded during the openigtlink build")
+			MESSAGE("H264_LIBRARY no found.  You could specify OpenH264_INCLUDE_DIR or OpenH264_LIBRARY_DIR")
 		ENDIF()
 	ENDIF()
   
