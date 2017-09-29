@@ -23,10 +23,11 @@ PURPOSE.  See the above copyright notices for more information.
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 2
 #include "igtlPointMessage.h"
-#include "igtlTrajectoryMessage.h"
+#include "igtlPolyDataMessage.h"
+#include "igtlQuaternionTrackingDataMessage.h"
 #include "igtlStringMessage.h"
 #include "igtlTrackingDataMessage.h"
-#include "igtlQuaternionTrackingDataMessage.h"
+#include "igtlTrajectoryMessage.h"
 #endif // OpenIGTLink_PROTOCOL_VERSION >= 2
 
 #if OpenIGTLink_HEADER_VERSION >= 2
@@ -62,6 +63,11 @@ MessageFactory::MessageFactory()
   this->AddMessageType("GET_TRAJ", (PointerToMessageBaseNew)&igtl::GetTrajectoryMessage::New);
   this->AddMessageType("STRING", (PointerToMessageBaseNew)&igtl::StringMessage::New);
   this->AddMessageType("TDATA", (PointerToMessageBaseNew)&igtl::TrackingDataMessage::New);
+  this->AddMessageType("POLYDATA", (PointerToMessageBaseNew)&igtl::PolyDataMessage::New);
+  this->AddMessageType("GET_POLYDATA", (PointerToMessageBaseNew)&igtl::GetPolyDataMessage::New);
+  this->AddMessageType("RTS_POLYDATA", (PointerToMessageBaseNew)&igtl::RTSPolyDataMessage::New);
+  this->AddMessageType("STT_POLYDATA", (PointerToMessageBaseNew)&igtl::StartPolyDataMessage::New);
+  this->AddMessageType("STP_POLYDATA", (PointerToMessageBaseNew)&igtl::StopPolyDataMessage::New);
   this->AddMessageType("RTS_TDATA", (PointerToMessageBaseNew)&igtl::RTSTrackingDataMessage::New);
   this->AddMessageType("STT_TDATA", (PointerToMessageBaseNew)&igtl::StartTrackingDataMessage::New);
   this->AddMessageType("STP_TDATA", (PointerToMessageBaseNew)&igtl::StopTrackingDataMessage::New);
