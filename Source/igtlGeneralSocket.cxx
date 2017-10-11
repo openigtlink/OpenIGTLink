@@ -569,7 +569,7 @@ namespace igtl
     dest.sin_family = AF_INET;
     
     // store this IP address in dest:
-    inet_pton(AF_INET, this->IPAddress, &(dest.sin_addr));
+    dest.sin_addr.s_addr = inet_addr(this->IPAddress);
     dest.sin_port = htons(this->PortNum);
     
     int n = sendto(this->m_SocketDescriptor, (char*)data, length, 0, (struct sockaddr*)&dest, sizeof dest);
