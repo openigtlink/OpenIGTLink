@@ -58,8 +58,7 @@ UDPServerSocket::~UDPServerSocket()
 bool UDPServerSocket::IsMulticastAddreesValid(const char* add)
 {
   //224.0.0.0 through 224.0.0.255, are not routable
-  igtl_uint32 address;
-  inet_pton(AF_INET, add, &(address));// to do: make sure the endian is correct
+  igtl_uint32 address = inet_addr(add); // to do: make sure the endian is correct
   if(igtl_is_little_endian())
   {
     address = BYTE_SWAP_INT32(address);
