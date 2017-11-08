@@ -28,6 +28,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include "igtlStringMessage.h"
 #include "igtlTrackingDataMessage.h"
 #include "igtlTrajectoryMessage.h"
+#include "igtlImageMetaMessage.h"
+#include "igtlLabelMetaMessage.h"
 #endif // OpenIGTLink_PROTOCOL_VERSION >= 2
 
 #if OpenIGTLink_HEADER_VERSION >= 2
@@ -75,6 +77,10 @@ MessageFactory::MessageFactory()
   this->AddMessageType("RTS_QTDATA", (PointerToMessageBaseNew)&igtl::RTSQuaternionTrackingDataMessage::New);
   this->AddMessageType("STT_QTDATA", (PointerToMessageBaseNew)&igtl::StartQuaternionTrackingDataMessage::New);
   this->AddMessageType("STP_QTDATA", (PointerToMessageBaseNew)&igtl::StopQuaternionTrackingDataMessage::New);
+  this->AddMessageType("GET_IMGMETA", (PointerToMessageBaseNew)&igtl::GetImageMetaMessage::New);
+  this->AddMessageType("IMGMETA", (PointerToMessageBaseNew)&igtl::ImageMetaMessage::New);
+  this->AddMessageType("GET_LBMETA", (PointerToMessageBaseNew)&igtl::GetLabelMetaMessage::New);
+  this->AddMessageType("LBMETA", (PointerToMessageBaseNew)&igtl::LabelMetaMessage::New);
 #endif
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
