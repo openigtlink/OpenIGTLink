@@ -632,6 +632,11 @@ int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array,
       n = 3 * info->attributes[i].n;
       size = n * sizeof(igtl_float32);
       }
+    else if (info->attributes[i].type == IGTL_POLY_ATTR_TYPE_TCOORDS)
+      {
+      n = 3 * info->attributes[i].n;
+      size = n * sizeof(igtl_float32);
+      }
     else /* TENSOR */
       {
       n = 9 * info->attributes[i].n;
