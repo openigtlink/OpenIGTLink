@@ -21,7 +21,7 @@ ELSE()
     ExternalProject_Add(VP9
     	PREFIX "${CMAKE_BINARY_DIR}/Deps/VP9-prefix"
       GIT_REPOSITORY https://github.com/webmproject/libvpx/
-      GIT_TAG master
+      GIT_TAG v1.6.1
       SOURCE_DIR        "${VP9_INCLUDE_DIR}"
       CONFIGURE_COMMAND "${VP9_INCLUDE_DIR}/configure" --disable-examples --as=yasm --disable-tools --disable-docs --disable-vp8 --disable-libyuv --disable-unit_tests --disable-postproc WORKING_DIRECTORY "${VP9_LIBRARY_DIR}"
       BUILD_ALWAYS 1
