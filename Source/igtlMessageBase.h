@@ -144,16 +144,14 @@ namespace igtl
 
     /// Add Meta data element
     bool SetMetaDataElement(const std::string& key, IANA_ENCODING_TYPE encodingScheme, std::string value);
-    bool SetMetaDataElement(const std::string& key, igtl_uint8);
-    bool SetMetaDataElement(const std::string& key, igtl_int8);
-    bool SetMetaDataElement(const std::string& key, igtl_uint16);
-    bool SetMetaDataElement(const std::string& key, igtl_int16);
-    bool SetMetaDataElement(const std::string& key, igtl_uint32);
-    bool SetMetaDataElement(const std::string& key, igtl_int32);
-    bool SetMetaDataElement(const std::string& key, igtl_uint64);
-    bool SetMetaDataElement(const std::string& key, igtl_int64);
-    bool SetMetaDataElement(const std::string& key, float);
-    bool SetMetaDataElement(const std::string& key, double);
+  
+    template <class dataType>
+    bool SetMetaDataElement(const std::string& key, dataType value)
+    {
+      std::stringstream ss;
+      ss << value;
+      return SetMetaDataElement(key, IANA_TYPE_US_ASCII, ss.str());
+    }
 
     /// Get meta data element
     bool GetMetaDataElement(const std::string& key, std::string& value) const;

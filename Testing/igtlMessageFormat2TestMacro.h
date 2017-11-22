@@ -23,7 +23,7 @@
 #define igtlMetaDataAddElementMacro(object) \
   object->SetHeaderVersion(IGTL_HEADER_VERSION_2);\
   IANA_ENCODING_TYPE codingScheme = IANA_TYPE_US_ASCII; /* 3 corresponding to US-ASCII */ \
-  object->SetMetaDataElement("First patient age", codingScheme, "22");\
+  object->SetMetaDataElement("First patient age", "22"); /* default is IANA_TYPE_US_ASCII coding */ \
   object->SetMetaDataElement("Second patient age",codingScheme, "25");\
   object->SetMessageID(1);
 
