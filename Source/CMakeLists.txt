@@ -71,53 +71,50 @@ SET(OpenIGTLink_SOURCES
   igtlTransformMessage.cxx
   )
 
-SET(OpenIGTLink_INCLUDE_FILES)
-IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
-  LIST(APPEND OpenIGTLink_INCLUDE_FILES
-    igtlutil/igtl_header.h
-    igtlutil/igtl_image.h
-    igtlutil/igtl_position.h
-    igtlutil/igtl_transform.h
-    igtlutil/igtl_types.h
-    igtlutil/igtl_util.h
-    igtlutil/igtl_capability.h
-    igtlutil/igtl_win32header.h
-    igtlMessageHandler.h
-    igtlMessageHandlerMacro.h
-    igtlCapabilityMessage.h
-    igtlClientSocket.h
-    igtlConditionVariable.h
-    igtlCreateObjectFunction.h
-    igtlFastMutexLock.h
-    igtlImageMessage.h
-    igtlImageMessage2.h
-    igtlLightObject.h
-    igtlMacro.h
-    igtlMath.h
-    igtlMessageBase.h
-    igtlMessageFactory.h
-    igtlMessageHeader.h
-    igtlMultiThreader.h
-    igtlMutexLock.h
-    igtlObjectFactory.h
-    igtlOSUtil.h
-    igtlObject.h
-    igtlObjectFactoryBase.h
-    igtlPositionMessage.h
-    igtlServerSocket.h
-    igtlSessionManager.h
-    igtlSimpleFastMutexLock.h
-    igtlSmartPointer.h
-    igtlSocket.h
-    igtlStatusMessage.h
-    igtlTimeStamp.h
-    igtlTransformMessage.h
-    igtlTypes.h
-    igtlWin32Header.h
-    igtlWindows.h
-    igtlCommon.h
-  )
-ENDIF()
+Set(OpenIGTLink_INCLUDE_FILES
+  igtlutil/igtl_header.h
+  igtlutil/igtl_image.h
+  igtlutil/igtl_position.h
+  igtlutil/igtl_transform.h
+  igtlutil/igtl_types.h
+  igtlutil/igtl_util.h
+  igtlutil/igtl_capability.h
+  igtlutil/igtl_win32header.h
+  igtlMessageHandler.h
+  igtlMessageHandlerMacro.h
+  igtlCapabilityMessage.h
+  igtlClientSocket.h
+  igtlConditionVariable.h
+  igtlCreateObjectFunction.h
+  igtlFastMutexLock.h
+  igtlImageMessage.h
+  igtlImageMessage2.h
+  igtlLightObject.h
+  igtlMacro.h
+  igtlMath.h
+  igtlMessageBase.h
+  igtlMessageFactory.h
+  igtlMessageHeader.h
+  igtlMultiThreader.h
+  igtlMutexLock.h
+  igtlObjectFactory.h
+  igtlOSUtil.h
+  igtlObject.h
+  igtlObjectFactoryBase.h
+  igtlPositionMessage.h
+  igtlServerSocket.h
+  igtlSessionManager.h
+  igtlSimpleFastMutexLock.h
+  igtlSmartPointer.h
+  igtlSocket.h
+  igtlStatusMessage.h
+  igtlTimeStamp.h
+  igtlTransformMessage.h
+  igtlTypes.h
+  igtlWin32Header.h
+  igtlWindows.h
+  igtlCommon.h
+)
 
 # Add support for OpenIGTLink version 2
 IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "1")
@@ -150,37 +147,35 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "1")
     igtlBindMessage.cxx
     igtlNDArrayMessage.cxx
     )
-  IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
-    LIST(APPEND OpenIGTLink_INCLUDE_FILES
-      igtlutil/igtl_colortable.h
-      igtlutil/igtl_imgmeta.h
-      igtlutil/igtl_lbmeta.h
-      igtlutil/igtl_point.h
-      igtlutil/igtl_tdata.h
-      igtlutil/igtl_qtdata.h
-      igtlutil/igtl_trajectory.h
-      igtlutil/igtl_unit.h
-      igtlutil/igtl_sensor.h
-      igtlutil/igtl_string.h
-      igtlutil/igtl_ndarray.h
-      igtlutil/igtl_bind.h
-      igtlutil/igtl_qtrans.h
-      igtlutil/igtl_polydata.h
-      igtlColorTableMessage.h
-      igtlImageMetaMessage.h
-      igtlLabelMetaMessage.h
-      igtlPointMessage.h
-      igtlTrackingDataMessage.h
-      igtlPolyDataMessage.h
-      igtlQuaternionTrackingDataMessage.h
-      igtlTrajectoryMessage.h
-      igtlStringMessage.h
-      igtlUnit.h
-      igtlSensorMessage.h
-      igtlBindMessage.h
-      igtlNDArrayMessage.h
-      )
-  ENDIF()
+  LIST(APPEND OpenIGTLink_INCLUDE_FILES
+    igtlutil/igtl_colortable.h
+    igtlutil/igtl_imgmeta.h
+    igtlutil/igtl_lbmeta.h
+    igtlutil/igtl_point.h
+    igtlutil/igtl_tdata.h
+    igtlutil/igtl_qtdata.h
+    igtlutil/igtl_trajectory.h
+    igtlutil/igtl_unit.h
+    igtlutil/igtl_sensor.h
+    igtlutil/igtl_string.h
+    igtlutil/igtl_ndarray.h
+    igtlutil/igtl_bind.h
+    igtlutil/igtl_qtrans.h
+    igtlutil/igtl_polydata.h
+    igtlColorTableMessage.h
+    igtlImageMetaMessage.h
+    igtlLabelMetaMessage.h
+    igtlPointMessage.h
+    igtlTrackingDataMessage.h
+    igtlPolyDataMessage.h
+    igtlQuaternionTrackingDataMessage.h
+    igtlTrajectoryMessage.h
+    igtlStringMessage.h
+    igtlUnit.h
+    igtlSensorMessage.h
+    igtlBindMessage.h
+    igtlNDArrayMessage.h
+    )
 ENDIF()
 
 # Add support for OpenIGTLink version 3
@@ -195,18 +190,16 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
     igtlUDPClientSocket.cxx
     igtlUDPServerSocket.cxx
     )
-  IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
-    LIST(APPEND OpenIGTLink_INCLUDE_FILES
-      igtlCommandMessage.h
-      igtlQueryMessage.h
-      igtlutil/igtl_command.h
-      igtlutil/igtl_query.h
-      igtlMessageRTPWrapper.h
-      igtlGeneralSocket.h
-      igtlUDPClientSocket.h
-      igtlUDPServerSocket.h
-      )
-  ENDIF()
+  LIST(APPEND OpenIGTLink_INCLUDE_FILES
+    igtlCommandMessage.h
+    igtlQueryMessage.h
+    igtlutil/igtl_command.h
+    igtlutil/igtl_query.h
+    igtlMessageRTPWrapper.h
+    igtlGeneralSocket.h
+    igtlUDPClientSocket.h
+    igtlUDPServerSocket.h
+    )
 ENDIF()
 
 IF (NOT (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 3.04))
@@ -240,7 +233,11 @@ ELSE()
 ENDIF()
 #-----------------------------------------------------------------------------
 # Create the library
-ADD_LIBRARY(OpenIGTLink ${OpenIGTLink_SOURCES} ${OpenIGTLink_INCLUDE_FILES})
+IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
+  ADD_LIBRARY(OpenIGTLink ${OpenIGTLink_SOURCES} ${OpenIGTLink_INCLUDE_FILES})
+ELSE()
+  ADD_LIBRARY(OpenIGTLink ${OpenIGTLink_SOURCES})
+ENDIF()
 foreach(p IN LISTS OpenIGTLink_INCLUDE_DIRS)
   target_include_directories(OpenIGTLink PUBLIC $<BUILD_INTERFACE:${p}>)
 endforeach()

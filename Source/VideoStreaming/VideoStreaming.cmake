@@ -13,17 +13,15 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
   LIST(APPEND OpenIGTLink_INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/Source/VideoStreaming
     )
-  IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
-    LIST(APPEND OpenIGTLink_INCLUDE_FILES
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtl_video.h
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtl_videometa.h
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoMessage.h
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VideoStreamIGTLinkServer.h
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VideoStreamIGTLinkReceiver.h
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlCodecCommonClasses.h
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoMetaMessage.h
-      )
-  ENDIF()
+	LIST(APPEND OpenIGTLink_INCLUDE_FILES
+		${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtl_video.h
+		${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtl_videometa.h
+		${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoMessage.h
+		${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VideoStreamIGTLinkServer.h
+		${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VideoStreamIGTLinkReceiver.h
+		${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlCodecCommonClasses.h
+		${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoMetaMessage.h
+		)
   IF(USE_H264)
     INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_openh264.cmake)
   	IF(EXISTS ${OpenH264_LIBRARY_DIR})
@@ -31,11 +29,10 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
 				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Decoder.cxx
 				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.cxx
 				)
-			IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
-				LIST(APPEND OpenIGTLink_INCLUDE_FILES
-					${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Decoder.h
-					${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.h)
-			ENDIF()
+			LIST(APPEND OpenIGTLink_INCLUDE_FILES
+				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Decoder.h
+				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.h
+				)
 			LIST(APPEND OpenIGTLink_INCLUDE_DIRS
     		${OpenH264_INCLUDE_DIR}
     		${OpenH264_INCLUDE_DIR}/codec/api/svc # build location
@@ -58,12 +55,10 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
 				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Decoder.cxx
 				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Encoder.cxx
 				)
-			IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
-				LIST(APPEND OpenIGTLink_INCLUDE_FILES
-					${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Decoder.h
-					${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Encoder.h
-				)
-			ENDIF()
+			LIST(APPEND OpenIGTLink_INCLUDE_FILES
+				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Decoder.h
+				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Encoder.h
+			)
 			IF(NOT ${VP9_LIBRARY_DIR} EQUAL "")
 				LIST(APPEND OpenIGTLink_INCLUDE_DIRS
     		"${VP9_LIBRARY_DIR}" )
@@ -84,11 +79,9 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
     LIST(APPEND OpenIGTLink_SOURCES
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Encoder.cxx
       )
-    IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
-      LIST(APPEND OpenIGTLink_INCLUDE_FILES
-        ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Encoder.h
-        )
-    ENDIF()
+		LIST(APPEND OpenIGTLink_INCLUDE_FILES
+			${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Encoder.h
+			)
   ENDIF()
 	
   IF(USE_OpenHEVC)
@@ -101,11 +94,9 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
     LIST(APPEND OpenIGTLink_SOURCES
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Decoder.cxx
       )
-    IF(MSVC OR ${CMAKE_GENERATOR} MATCHES "Xcode")
-      LIST(APPEND OpenIGTLink_INCLUDE_FILES
-        ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Decoder.h
-        )
-    ENDIF()
+		LIST(APPEND OpenIGTLink_INCLUDE_FILES
+			${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Decoder.h
+			)
   ENDIF()
 ENDIF()
 
