@@ -44,5 +44,6 @@ ELSE()
       -DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS}
     #--Build step-----------------
     BUILD_ALWAYS 1
+    INSTALL_COMMAND ""
     )
 ENDIF()

@@ -16,14 +16,14 @@ ELSE()
   # OpenIGTLink has not been built yet, so download and build it as an external project
   MESSAGE(STATUS "Downloading VP9 from https://github.com/webmproject/libvpx.git")              
 	if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") 
-    SET (VP9_INCLUDE_DIR "${CMAKE_BINARY_DIR}/Deps/VP9" CACHE PATH "VP9 source directory" FORCE)
+    SET (VP9_INCLUDE_DIR "${CMAKE_BINARY_DIR}/Deps/VP9/vpx" CACHE PATH "VP9 source directory" FORCE)
     SET (VP9_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Deps/VP9" CACHE PATH "VP9 library directory" FORCE)   							
     ExternalProject_Add(VP9
     	PREFIX "${CMAKE_BINARY_DIR}/Deps/VP9-prefix"
       GIT_REPOSITORY https://github.com/webmproject/libvpx/
       GIT_TAG v1.6.1
-      SOURCE_DIR        "${VP9_INCLUDE_DIR}"
-      CONFIGURE_COMMAND "${VP9_INCLUDE_DIR}/configure" --disable-examples --as=yasm --disable-tools --disable-docs --disable-vp8 --disable-libyuv --disable-unit_tests --disable-postproc WORKING_DIRECTORY "${VP9_LIBRARY_DIR}"
+      SOURCE_DIR        "${CMAKE_BINARY_DIR}/Deps/VP9"
+      CONFIGURE_COMMAND "${CMAKE_BINARY_DIR}/Deps/VP9/configure" --disable-examples --as=yasm --disable-tools --disable-docs --disable-vp8 --disable-libyuv --disable-unit_tests --disable-postproc WORKING_DIRECTORY "${VP9_LIBRARY_DIR}"
       BUILD_ALWAYS 1
       BUILD_COMMAND make
       BUILD_IN_SOURCE 1

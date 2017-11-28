@@ -9,8 +9,6 @@ ENDIF()
 IF(OpenHEVC_FOUND)
   # OpenHEVC has been built already
   MESSAGE(STATUS "Using OpenHEVC available at: ${OpenHEVC_INCLUDE_DIR}")
-  #FIND_PACKAGE(OpenHEVC REQUIRED)
-  #SET(OpenHEVC_LIBRARY_DIR "${OpenHEVC_DIR}" CACHE INTERNAL "Path to store OpenHEVC library")
 ELSE()
   # OpenHEVC has not been built yet, so download and build it as an external project
   SET(GIT_REPOSITORY "https://github.com/openigtlink/openHEVC.git")
@@ -22,12 +20,18 @@ ELSE()
   
   MESSAGE(STATUS "Downloading OpenHEVC ${GIT_TAG} from: ${GIT_REPOSITORY}")
 
-  SET (OpenHEVC_INCLUDE_DIR "${CMAKE_BINARY_DIR}/Deps/OpenHEVC" CACHE PATH "OpenHEVC source directory" FORCE)
-  SET (OpenHEVC_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Deps/OpenHEVC-bin" CACHE PATH "OpenHEVC library directory" FORCE)
-
+  SET (OpenHEVC_INCLUDE_DIR "${CMAKE_BINARY_DIR}/Deps/OpenHEVC/gpac/modules/openhevc_dec" CACHE PATH "OpenHEVC source directory" FORCE)
+  SET (OpenHEVC_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Deps/OpenHEVC-bin")
+  IF(WIN32) # for Windows
+  	SET(OpenHEVC_LIBRARY optimized ${OpenHEVC_LIBRARY_DIR}\\Release\\LibOpenHevcWrapper.lib debug ${OpenHEVC_LIBRARY_DIR}\\Debug\\LibOpenHevcWrapper.lib CACHE STRING "OpenHEVC library" FORCE)
+	ELSE()
+		IF (CMAKE_CONFIGURATION_TYPES) 
+			SET(OpenHEVC_LIBRARY optimized ${OpenHEVC_LIBRARY_DIR}/Release/libLibOpenHevcWrapper.a debug ${OpenHEVC_LIBRARY_DIR}/Debug/libLibOpenHevcWrapper.a CACHE STRING "OpenHEVC library" FORCE)
+		ENDIF()	
+	ENDIF()
   ExternalProject_Add( OpenHEVC
     PREFIX "${CMAKE_BINARY_DIR}/Deps/OpenHEVC-prefix"
-    SOURCE_DIR "${OpenHEVC_INCLUDE_DIR}"
+    SOURCE_DIR "${CMAKE_BINARY_DIR}/Deps/OpenHEVC"
     BINARY_DIR "${OpenHEVC_LIBRARY_DIR}"
     #--Download step--------------
     GIT_REPOSITORY "${GIT_REPOSITORY}"

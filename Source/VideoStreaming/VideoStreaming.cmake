@@ -35,8 +35,6 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
 				)
 			LIST(APPEND OpenIGTLink_INCLUDE_DIRS
     		${OpenH264_INCLUDE_DIR}
-    		${OpenH264_INCLUDE_DIR}/codec/api/svc # build location
-    		${OpenH264_INCLUDE_DIR}/include/wels # install location
     	)
 		ELSE()
 			MESSAGE("H264_LIBRARY no found.  You could specify OpenH264_INCLUDE_DIR or OpenH264_LIBRARY_DIR")
@@ -48,8 +46,6 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
   	IF(EXISTS ${VP9_LIBRARY_DIR})
   		LIST(APPEND OpenIGTLink_INCLUDE_DIRS
     		${VP9_INCLUDE_DIR}
-    		${VP9_INCLUDE_DIR}/vpx
-    		${VP9_LIBRARY_DIR}
     	)
 			LIST(APPEND OpenIGTLink_SOURCES
 				${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Decoder.cxx
@@ -73,7 +69,6 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
   	INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_X265.cmake)
   	LIST(APPEND OpenIGTLink_INCLUDE_DIRS
     		${X265_INCLUDE_DIR}
-    		${X265_INCLUDE_DIR}/source
     		${X265_LIBRARY_DIR}
     	)
     LIST(APPEND OpenIGTLink_SOURCES
@@ -88,8 +83,6 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND BUILD_VIDEOSTREAM)
   	INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_openHEVC.cmake)
   	LIST(APPEND OpenIGTLink_INCLUDE_DIRS
     		${OpenHEVC_INCLUDE_DIR}
-    		${OpenHEVC_INCLUDE_DIR}/gpac/modules/openhevc_dec
-    		${OpenHEVC_LIBRARY_DIR}
     	)
     LIST(APPEND OpenIGTLink_SOURCES
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Decoder.cxx
@@ -121,9 +114,8 @@ IF(WIN32) # for Windows
   ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_OpenHEVC)
     #To do, library name depends on the compiler setting, could be vpxmt.lib and vpxmtd also. Make sure the setting matches.
-    SET(LINK_OPENHEVC_LIBRARY optimized ${OpenHEVC_LIBRARY_DIR}\\Release\\LibOpenHevcWrapper.lib debug ${OpenHEVC_LIBRARY_DIR}\\Debug\\LibOpenHevcWrapper.lib)
     LIST(APPEND LINK_LIBS
-      ${LINK_OPENHEVC_LIBRARY}
+      ${OpenHEVC_LIBRARY}
     )
   ENDIF()
 ELSE() # for POSIX-compatible OSs
@@ -143,12 +135,8 @@ ELSE() # for POSIX-compatible OSs
     )
   ENDIF()
   IF((${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" ) AND USE_OpenHEVC)
-  	SET(LINK_OPENHEVC_LIBRARY ${OpenHEVC_LIBRARY_DIR}/libLibOpenHevcWrapper.a)
-  	IF (CMAKE_CONFIGURATION_TYPES) 
-  		SET(LINK_OPENHEVC_LIBRARY optimized ${OpenHEVC_LIBRARY_DIR}/Release/libLibOpenHevcWrapper.a debug ${OpenHEVC_LIBRARY_DIR}/Debug/libLibOpenHevcWrapper.a)
-  	ENDIF()	
   	LIST(APPEND LINK_LIBS
-    	${LINK_OPENHEVC_LIBRARY}      
+    	${OpenHEVC_LIBRARY}      
     )
   ENDIF()
 ENDIF()

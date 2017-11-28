@@ -45,6 +45,12 @@
       int size;
     } Info;
     
+    enum {
+       MULTITHREAD_FRAME     =    1, ///< Put frames into multiple threads
+       MULTITHREAD_SLICE     =    2, ///< Put slices of a frame into multiple threads
+       MULTITHREAD_FRAME_SLICE  =  4 ///< Put slices of multiple frames into multiple threads
+    };
+    
     virtual int DecodeBitStreamIntoFrame(unsigned char* bitStream,igtl_uint8* outputFrame, igtl_uint32 iDimensions[2], igtl_uint64 &iStreamSize);
     
     virtual int DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* pDecodedPic);

@@ -12,11 +12,11 @@
  =========================================================================*/
 
 #include "H265Decoder.h"
-#include <libavformat/avformat.h>
+
 H265Decoder::H265Decoder()
 {
   this->nb_pthreads = 4;
-  openHevcHandle = libOpenHevcInit(this->nb_pthreads, FF_THREAD_SLICE/*, pFormatCtx*/);
+  openHevcHandle = libOpenHevcInit(this->nb_pthreads, MULTITHREAD_SLICE/*, pFormatCtx*/);
   libOpenHevcSetCheckMD5(openHevcHandle, false);
   libOpenHevcSetDebugMode(openHevcHandle, 0);
   libOpenHevcStartDecoder(openHevcHandle);

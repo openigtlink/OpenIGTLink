@@ -24,11 +24,11 @@ ELSE()
 	  #SET(Generator "Unix Makefiles") # xcode generator tend to fail, use unix makefiles instead, https://bitbucket.org/multicoreware/x265/issues/303/build-x265-version20-on-xcode
 	ELSE()
 		MESSAGE(STATUS "Downloading x265 ${GIT_TAG} from: ${GIT_REPOSITORY}")
-		SET (X265_INCLUDE_DIR "${CMAKE_BINARY_DIR}/Deps/x265" CACHE PATH "x265 source directory" FORCE)
+		SET (X265_INCLUDE_DIR "${CMAKE_BINARY_DIR}/Deps/x265/source" CACHE PATH "x265 source directory" FORCE)
 		SET (X265_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Deps/x265-bin" CACHE PATH "x265 library directory" FORCE)
 		ExternalProject_Add(X265
 			PREFIX "${CMAKE_BINARY_DIR}/Deps/x265-prefix"
-			SOURCE_DIR "${X265_INCLUDE_DIR}"
+			SOURCE_DIR "${CMAKE_BINARY_DIR}/Deps/x265"
 			SOURCE_SUBDIR source   # SOURCE_SUBDIR is only available for cmake version later than 3.7.2 
 			BINARY_DIR "${X265_LIBRARY_DIR}"
 			#--Download step--------------
