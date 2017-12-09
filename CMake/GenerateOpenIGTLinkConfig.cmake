@@ -25,7 +25,7 @@ SET(OpenIGTLink_USE_FILE ${OpenIGTLink_BINARY_DIR}/UseOpenIGTLink.cmake)
 SET(OpenIGTLink_BUILD_SETTINGS_FILE ${OpenIGTLink_BINARY_DIR}/OpenIGTLinkBuildSettings.cmake)
 
 # Library directory.
-SET(OpenIGTLink_LIBRARY_DIRS_CONFIG ${OpenIGTLink_LIBRARY_PATH})
+SET(OpenIGTLink_LIBRARY_DIRS_CONFIG ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 # Determine the include directories needed.
 SET(OpenIGTLink_INCLUDE_DIRS_CONFIG

@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 2.4)
 #
 # Examples
 #
-
-
 SET(EXAMPLE_DIRS
   Tracker
   Imager
@@ -34,14 +32,14 @@ endif (${OpenIGTLink_PROTOCOL_VERSION} GREATER 1)
 
 
 IF(BUILD_VIDEOSTREAM AND (USE_H264 OR USE_VP9 OR USE_X265) AND (${OpenIGTLink_PROTOCOL_VERSION} GREATER 2))
-	SET(EXAMPLE_DIRS
+  SET(EXAMPLE_DIRS
     ${EXAMPLE_DIRS}
     VideoStreaming
     )
 ENDIF()
 
 IF(BUILD_WEBSOCKET)
-	SET(EXAMPLE_DIRS
+  SET(EXAMPLE_DIRS
     ${EXAMPLE_DIRS}
     WebSocket
   )
@@ -50,7 +48,7 @@ ENDIF()
 ## Imager program isn't supported by QNX
 if(NOT OpenIGTLink_PLATFORM_QNX)
   SUBDIRS(
-    ${EXAMPLE_DIRS}  
+    ${EXAMPLE_DIRS}
     )
 else(NOT OpenIGTLink_PLATFORM_QNX)
   SUBDIRS(

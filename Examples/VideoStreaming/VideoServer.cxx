@@ -24,12 +24,12 @@
 #include <cstring>
 #include <string>
 
-#if OpenIGTLink_LINK_H264
+#if defined(USE_H264)
 #include "H264Encoder.h"
 #include "H264Decoder.h"
 #endif
 
-#if OpenIGTLink_LINK_VP9
+#if defined(USE_VP9)
 #include "VP9Encoder.h"
 #include "VP9Decoder.h"
 #endif
@@ -197,14 +197,14 @@ void* ThreadFunction(void * ptr)
   
   igtl::Socket::Pointer& socket = td->socket;
   GenericEncoder * encoder = NULL;
-#if OpenIGTLink_LINK_VP9
+#if defined(USE_VP9)
   VP9Encoder* VP9StreamEncoder = new VP9Encoder();
   VP9StreamEncoder->SetPicWidthAndHeight(Width,Height);
   VP9StreamEncoder->InitializeEncoder();
   VP9StreamEncoder->SetLosslessLink(true);
   encoder = VP9StreamEncoder;
 #endif
-#if OpenIGTLink_LINK_H264
+#if defined(USE_H264)
   H264Encoder* H264StreamEncoder = new H264Encoder();
   H264StreamEncoder->SetPicWidthAndHeight(Width,Height);
   H264StreamEncoder->InitializeEncoder();
