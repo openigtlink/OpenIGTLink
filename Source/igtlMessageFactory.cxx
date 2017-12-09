@@ -109,10 +109,6 @@ MessageFactory::PointerToMessageBaseNew MessageFactory::GetMessageTypeNewPointer
     return this->IgtlMessageTypes.find(messageTypeName)->second;
     }
 
-  std::ostringstream oss;
-  oss << "Error: In " __FILE__ ", line " << __LINE__ << ", unknown message type constructor requested." << std::endl;
-  throw std::invalid_argument(oss.str());
-
   return NULL; 
 }
 
@@ -153,9 +149,7 @@ igtl::MessageBase::Pointer MessageFactory::GetMessage(igtl::MessageHeader::Point
 {
   if (headerMsg.IsNull())
     {
-    std::ostringstream oss;
-    oss << "Error: In " __FILE__ ", line " << __LINE__ << ", header is NULL." << std::endl;
-    throw std::invalid_argument(oss.str());
+    return NULL;
     }
 
 #if OpenIGTLink_HEADER_VERSION >= 2
@@ -166,9 +160,7 @@ igtl::MessageBase::Pointer MessageFactory::GetMessage(igtl::MessageHeader::Point
 
   if (!this->IsValid(headerMsg))
     {
-    std::ostringstream oss;
-    oss << "Error: In " __FILE__ ", line " << __LINE__ << ", receiving message of type:" << messageType << std::endl;
-    throw std::invalid_argument(oss.str());
+    return NULL;
     }
 
   std::string messageTypeUpper(messageType);
@@ -177,9 +169,7 @@ igtl::MessageBase::Pointer MessageFactory::GetMessage(igtl::MessageHeader::Point
   igtl::MessageBase::Pointer result = NULL;
   if( GetMessageTypeNewPointer(messageTypeUpper) == NULL )
     {
-    std::ostringstream oss;
-    oss << "Error: In " __FILE__ ", line " << __LINE__ << ", unable to create message of type:" << messageTypeUpper << std::endl;
-    throw std::invalid_argument(oss.str());
+    return NULL;
     }
   result = GetMessageTypeNewPointer(messageTypeUpper)();
 
@@ -207,9 +197,7 @@ igtl::MessageBase::Pointer MessageFactory::CreateReceiveMessage(igtl::MessageHea
 {
   if (headerMsg.IsNull())
     {
-    std::ostringstream oss;
-    oss << "Error: In " __FILE__ ", line " << __LINE__ << ", header is NULL." << std::endl;
-    throw std::invalid_argument(oss.str());
+    return NULL;
     }
 
 #if OpenIGTLink_HEADER_VERSION >= 2
@@ -222,17 +210,13 @@ igtl::MessageBase::Pointer MessageFactory::CreateReceiveMessage(igtl::MessageHea
 
   if (!this->IsValid(headerMsg))
     {
-    std::ostringstream oss;
-    oss << "Error: In " __FILE__ ", line " << __LINE__ << ", receiving message of type:" << messageTypeUpper << std::endl;
-    throw std::invalid_argument(oss.str());
+    return NULL;
     }
 
   igtl::MessageBase::Pointer result = NULL;
   if( GetMessageTypeNewPointer(messageTypeUpper) == NULL )
     {
-    std::ostringstream oss;
-    oss << "Error: In " __FILE__ ", line " << __LINE__ << ", unable to create message of type:" << messageTypeUpper << std::endl;
-    throw std::invalid_argument(oss.str());
+    return NULL;
     }
   result = GetMessageTypeNewPointer(messageTypeUpper)();
 
@@ -250,9 +234,7 @@ igtl::MessageBase::Pointer MessageFactory::CreateSendMessage(const std::string& 
 {
   if (messageType.empty())
     {
-    std::ostringstream oss;
-    oss << "Error: In " __FILE__ ", line " << __LINE__ << ", message type is undefined." << std::endl;
-    throw std::invalid_argument(oss.str());
+    return NULL;
     }
 
   std::string messageTypeUpper(messageType);
@@ -261,9 +243,7 @@ igtl::MessageBase::Pointer MessageFactory::CreateSendMessage(const std::string& 
   igtl::MessageBase::Pointer result = NULL;
   if( GetMessageTypeNewPointer(messageTypeUpper) == NULL )
     {
-    std::ostringstream oss;
-    oss << "Error: In " __FILE__ ", line " << __LINE__ << ", unable to create message of type:" << messageTypeUpper << std::endl;
-    throw std::invalid_argument(oss.str());
+    return NULL;
     }
   result = GetMessageTypeNewPointer(messageTypeUpper)();
 
