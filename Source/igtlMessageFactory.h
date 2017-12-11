@@ -48,7 +48,7 @@ public:
 
   /// Get pointer to message type new function, or NULL if the message type not registered 
   /// Usage: igtl::MessageBase::Pointer message = GetMessageTypeNewPointer("IMAGE")(); 
-  /// Throws invalid_argument if message type is not found
+  /// Returns NULL if message type is not found
   virtual MessageFactory::PointerToMessageBaseNew GetMessageTypeNewPointer(const std::string& messageTypeName) const; 
 
   /// Checks that headerMsg is not null and the headerMsg->GetDeviceType() refers to a valid type, returning true if valid, and false otherwise.
@@ -59,25 +59,25 @@ public:
 
   /// LEGACY method, use CreateReceiveMessage instead
   /// Constructs a message from the given header.
-  /// Throws invalid_argument if headerMsg is NULL.
-  /// Throws invalid_argument if this->IsValid(headerMsg) returns false.
+  /// Returns NULL if headerMsg is NULL.
+  /// Returns NULL if this->IsValid(headerMsg) returns false.
   /// Creates message, sets header onto message and calls AllocateBuffer() on the message.
   igtl::MessageBase::Pointer GetMessage(igtl::MessageHeader::Pointer headerMsg);
 
   /// Constructs a message header.
-  /// Throws invalid_argument if headerMsg is NULL.
-  /// Throws invalid_argument if this->IsValid(headerMsg) returns false.
+  /// Returns NULL if headerMsg is NULL.
+  /// Returns NULL if this->IsValid(headerMsg) returns false.
   /// Creates message, calls InitBuffer()
   igtl::MessageHeader::Pointer CreateHeaderMessage(int headerVersion) const;
 
   /// Constructs a message from the given populated header.
-  /// Throws invalid_argument if headerMsg is NULL.
-  /// Throws invalid_argument if this->IsValid(headerMsg) returns false.
+  /// Returns NULL if headerMsg is NULL.
+  /// Returns NULL if this->IsValid(headerMsg) returns false.
   /// Creates message, sets header onto message and calls AllocatePack() on the message.
   igtl::MessageBase::Pointer CreateReceiveMessage(igtl::MessageHeader::Pointer headerMsg) const;
 
   /// Constructs an empty message from the given message type.
-  /// Throws invalid_argument if messageType is empty.
+  /// Returns NULL if messageType is empty.
   /// Creates message, sets header onto message and calls AllocatePack() on the message.
   igtl::MessageBase::Pointer CreateSendMessage(const std::string& messageType, int headerVersion) const;
 

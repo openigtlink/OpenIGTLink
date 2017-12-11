@@ -60,31 +60,42 @@ int main(int , char * [] )
     }
 
   // Test with an invalid message.
-  try
+  igtl::BananaMessage::Pointer bananaMessage = igtl::BananaMessage::New();
+
+  // Check firstly its not valid.
+  if (factory->IsValid(bananaMessage.GetPointer()))
     {
-    igtl::BananaMessage::Pointer bananaMessage = igtl::BananaMessage::New();
-
-    // Check firstly its not valid.
-    if (factory->IsValid(bananaMessage.GetPointer()))
-      {
-      std::cerr << "The IsValid method should fail for BANANA messages." << std::endl;
-      return EXIT_FAILURE;
-      }
-
-    factory->GetMessage(bananaMessage.GetPointer());
-    throw std::logic_error("Should not reach this line, as the previous line should throw invalid_argument, as BANANA messages are not valid.");
+    std::cerr << "The IsValid method should fail for BANANA messages." << std::endl;
+    return EXIT_FAILURE;
     }
-  catch (const std::invalid_argument& e)
+  
+  header->SetDeviceType("BANANA");
+  header->SetHeaderVersion(IGTL_HEADER_VERSION_1);
+
+  if (factory->GetMessage(header))
     {
-    std::cerr << "Caught exception e=" << e.what() << std::endl;
+    std::cerr << "The GetMessage method should return NULL for BANANA messages." << std::endl;
+    return EXIT_FAILURE;
     }
-  catch (const std::exception& e)
+  
+  if (factory->CreateReceiveMessage(header))
     {
-    std::cerr << "Caught std::exception, which should not happen. e=" << e.what() << std::endl;
-    throw e;
+    std::cerr << "The CreateReceiveMessage method should return NULL for BANANA messages." << std::endl;
+    return EXIT_FAILURE;
     }
-
-
+  
+  if (factory->CreateSendMessage("BANANA", IGTL_HEADER_VERSION_1))
+    {
+    std::cerr << "The CreateSendMessage method should return NULL for BANANA messages." << std::endl;
+    return EXIT_FAILURE;
+    }
+  
+  if (factory->GetMessageTypeNewPointer("BANANA"))
+    {
+    std::cerr << "The CreateSendMessage method should return NULL for BANANA messages." << std::endl;
+    return EXIT_FAILURE;
+    }
+  
   return EXIT_SUCCESS;
 }
 

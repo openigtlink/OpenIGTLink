@@ -636,7 +636,6 @@ int MessageBase::CalculateReceiveContentSize()
     {
     if( !m_IsExtendedHeaderUnpacked )
       {
-      // TODO : would like to throw an error, which method to do to report errors?
       return -1;
       }
     igtl_extended_header* header = (igtl_extended_header*)m_ExtendedHeader;
