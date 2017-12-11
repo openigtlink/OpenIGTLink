@@ -43,12 +43,12 @@
 #include <cstring>
 #include <string>
 
-#if OpenIGTLink_LINK_H264
+#if defined(USE_H264)
 #include "H264Encoder.h"
 #include "H264Decoder.h"
 #endif
 
-#if OpenIGTLink_LINK_VP9
+#if defined(USE_VP9)
 #include "VP9Encoder.h"
 #include "VP9Decoder.h"
 #include "../video_reader.h"
@@ -57,7 +57,7 @@
 #include "vpx_dsp/ssim.h"
 #endif
 
-#if OpenIGTLink_LINK_X265
+#if defined(USE_X265)
 #include "H265Encoder.h"
 #include "H265Decoder.h"
 #endif
@@ -390,7 +390,7 @@ void H264CodecSpeedAndRateEval()
 
 void VP9CodecSpeedAndRateEval()
 {
-#if OpenIGTLink_LINK_VP9
+#if defined(USE_VP9)
   VP9Encoder* videoStreamEncoder = new VP9Encoder();
   VP9Decoder* videoStreamDecoder = new VP9Decoder();
   videoStreamEncoder->SetPicWidthAndHeight(Width, Height);
@@ -458,7 +458,7 @@ void VP9SpeedEvaluation()
 {
   for (int speed = 0; speed<=8;speed=speed+2)
   {
-#if OpenIGTLink_LINK_VP9
+#if defined(USE_VP9)
       std::map<std::string, std::string> values, times;
       VP9Encoder* videoStreamEncoder = new VP9Encoder();
       VP9Decoder* videoStreamDecoder = new VP9Decoder();
@@ -504,7 +504,7 @@ void H265SpeedEvaluation()
 {
   for (int speed = 1; speed<=9;speed=speed+2)
   {
-#if OpenIGTLink_LINK_X265
+#if defined(USE_X265)
     float percents[5] ={0.01, 0.02, 0.04, 0.06, 0.09};
     std::map<std::string, std::string> values, times;
     int BitRateFactor = 7;
@@ -553,7 +553,7 @@ void H264SpeedEvaluation()
   {
     for (int i = 0; i<22; i=i+2)
     {
-#if OpenIGTLink_LINK_H264
+#if defined(USE_H264)
       startIndex = i*100;
       pEval = fopen (evalFileName.c_str(), "a");
       std::string title = "H264CodecSpeedAndRateEvalWithSpeed-";
