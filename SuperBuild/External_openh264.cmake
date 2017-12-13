@@ -3,8 +3,8 @@ include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 include(${OpenIGTLink_SOURCE_DIR}/SuperBuild/findOpenH264.cmake)
 IF(OpenH264_FOUND)
   # H264 has been built already
-  IF(${OpenIGTLink_PROTOCOL_VERSION} LESS 3 OR (NOT ${BUILD_VIDEOSTREAM}))
-    MESSAGE(FATAL_ERROR "Video streaming requires a build of OpenIGTLink with v3 support enabled. Please set the OpenIGTLink_PROTOCOL_VERSION_3 to true and activate the BUILD_VIDEOSTREAM.")
+  IF(${OpenIGTLink_PROTOCOL_VERSION} LESS 3)
+    MESSAGE(FATAL_ERROR "Video streaming requires a build of OpenIGTLink with v3 support enabled. Please set the OpenIGTLink_PROTOCOL_VERSION_3 to true.")
   ENDIF()
 ELSE()
   # OpenIGTLink has not been built yet, so download and build it as an external project

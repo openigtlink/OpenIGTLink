@@ -29,7 +29,6 @@ ENDIF()
 #-----------------------------------------------------------------------------
 # Configure VideoStreaming
 # Create the link to the VideoStreaming libraries
-OPTION(BUILD_VIDEOSTREAM "Build the Video Stream." ON)
 OPTION(USE_H264 "Link the OpenH264 tree." OFF)
 OPTION(USE_VP9 "Link the VP9 tree." OFF)
 OPTION(USE_X265 "Link the X265 tree." OFF)
@@ -37,7 +36,7 @@ OPTION(USE_OpenHEVC "Link the OpenHEVC tree." OFF)
 
 #-----------------------------------------------------------------------------
 # Configure WebSocket
-OPTION(BUILD_WEBSOCKET "Build the Websocket." OFF)
+OPTION(USE_WEBSOCKET "Build the Websocket." OFF)
 
 #-----------------------------------------------------------------------------
 # OpenIGTLink build configuration options.
