@@ -37,18 +37,18 @@
   #include "igtlMessageFormat2TestMacro.h"
 #endif
 
-#if defined(USE_H264)
+#if defined(OpenIGTLink_USE_H264)
   #include "H264Encoder.h"
   #include "H264Decoder.h"
 #endif
 
-#if defined(USE_VP9)
+#if defined(OpenIGTLink_USE_VP9)
   #include "VP9Encoder.h"
   #include "VP9Decoder.h"
   #include "./vpx_config.h"
 #endif
 
-#if defined(USE_OpenHEVC) && defined(USE_X265)
+#if defined(OpenIGTLink_USE_OpenHEVC) && defined(OpenIGTLink_USE_X265)
   #include "H265Encoder.h"
   #include "H265Decoder.h"
 #endif
@@ -195,7 +195,7 @@ int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDeco
 
 TEST(VideoMessageTest, YUVandRGBConversion)
 {
-#if defined(USE_VP9)
+#if defined(OpenIGTLink_USE_VP9)
   VP9Encoder * encoder = new VP9Encoder();
   VP9Decoder * decoder = new VP9Decoder();
   int width = 400, height = 400;
@@ -227,7 +227,7 @@ TEST(VideoMessageTest, YUVandRGBConversion)
 
 TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
   {
-#if defined(USE_VP9)
+#if defined(OpenIGTLink_USE_VP9)
   std::cerr<<"--------------------------- "<<std::endl;
   std::cerr<<"Begin of VPX tests "<<std::endl;
   VP9Encoder* VPXStreamEncoder = new VP9Encoder();
@@ -243,7 +243,7 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
   std::cerr<<"End of VPX tests "<<std::endl;
   std::cerr<<"--------------------------- "<<std::endl;
 #endif
-#if defined(USE_H264)
+#if defined(OpenIGTLink_USE_H264)
   std::cerr<<"--------------------------- "<<std::endl;
   std::cerr<<"Begin of H264 tests "<<std::endl;
   H264Encoder* H264StreamEncoder = new H264Encoder();
@@ -260,7 +260,7 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
   TEST(VideoMessageTest, EncodeAndDecodeFormatVersion2)
     {
-  #if defined(USE_VP9)
+  #if defined(OpenIGTLink_USE_VP9)
     std::cerr<<"--------------------------- "<<std::endl;
     std::cerr<<"Begin of VPX tests "<<std::endl;
     VP9Encoder* VPXStreamEncoder = new VP9Encoder();
@@ -276,7 +276,7 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
     std::cerr<<"End of VPX tests "<<std::endl;
     std::cerr<<"--------------------------- "<<std::endl;
   #endif
-  #if defined(USE_H264)
+  #if defined(OpenIGTLink_USE_H264)
     std::cerr<<"--------------------------- "<<std::endl;
     std::cerr<<"Begin of H264 tests "<<std::endl;
     H264Encoder* H264StreamEncoder = new H264Encoder();
@@ -287,7 +287,7 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
     std::cerr<<"End of H264 tests "<<std::endl;
     std::cerr<<"--------------------------- "<<std::endl;
   #endif
-  #if defined(USE_OpenHEVC) && defined(USE_X265)
+  #if defined(OpenIGTLink_USE_OpenHEVC) && defined(OpenIGTLink_USE_X265)
       std::cerr<<"--------------------------- "<<std::endl;
       std::cerr<<"Begin of VPX tests "<<std::endl;
       H265Encoder* H265StreamEncoder = new H265Encoder();

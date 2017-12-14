@@ -33,12 +33,12 @@
 #include <cstring>
 #include <string>
 
-#if defined(USE_H264)
+#if defined(OpenIGTLink_USE_H264)
   #include "H264Encoder.h"
   #include "H264Decoder.h"
 #endif
 
-#if defined(USE_VP9)
+#if defined(OpenIGTLink_USE_VP9)
   #include "VP9Encoder.h"
   #include "VP9Decoder.h"
 #endif
@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
   {
     GenericEncoder * encoder = NULL;
     GenericDecoder * decoder = NULL;
-  #if defined(USE_VP9)
+  #if defined(OpenIGTLink_USE_VP9)
     std::cerr<<"--------------------------- "<<std::endl;
     std::cerr<<"Begin of VP9 tests "<<std::endl;
     VP9Encoder* VP9StreamEncoder = new VP9Encoder();
@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
     encoder = VP9StreamEncoder;
     decoder = VP9StreamDecoder;
   #endif
-  #if defined(USE_H264)
+  #if defined(OpenIGTLink_USE_H264)
     H264Encoder* H264StreamEncoder = new H264Encoder();
     H264Decoder* H264StreamDecoder = new H264Decoder();
     H264StreamEncoder->SetPicWidthAndHeight(Width,Height);

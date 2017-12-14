@@ -36,11 +36,12 @@
 #cmakedefine OpenIGTLink_USE_SPROC
 #cmakedefine OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T
 #cmakedefine OpenIGTLink_HAVE_STRNLEN
-#cmakedefine USE_H264
-#cmakedefine USE_VP9
-#cmakedefine USE_X265
-#cmakedefine USE_OpenHEVC
+#cmakedefine OpenIGTLink_USE_H264
+#cmakedefine OpenIGTLink_USE_VP9
+#cmakedefine OpenIGTLink_USE_X265
+#cmakedefine OpenIGTLink_USE_OpenHEVC
 #cmakedefine USE_WEBSOCKET
+#define OpenIGTLink_ENABLE_VIDEOSTREAMING @OpenIGTLink_ENABLE_VIDEOSTREAMING@
 
 #define OpenIGTLink_PROTOCOL_VERSION_1 1
 #define OpenIGTLink_PROTOCOL_VERSION_2 2

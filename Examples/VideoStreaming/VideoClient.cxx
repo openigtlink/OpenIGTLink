@@ -21,11 +21,11 @@
 #include "igtlClientSocket.h"
 
 
-#if defined(USE_H264)
+#if defined(OpenIGTLink_USE_H264)
 #include "H264Decoder.h"
 #endif
 
-#if defined(USE_VP9)
+#if defined(OpenIGTLink_USE_VP9)
 #include "VP9Decoder.h"
 #endif
 
@@ -66,11 +66,11 @@ int main(int argc, char* argv[])
     }
   
   GenericDecoder * decoder = NULL;
-#if defined(USE_VP9)
+#if defined(OpenIGTLink_USE_VP9)
   VP9Decoder* VP9StreamDecoder = new VP9Decoder();
   decoder = VP9StreamDecoder;
 #endif
-#if defined(USE_H264)
+#if defined(OpenIGTLink_USE_H264)
   H264Decoder* H264StreamDecoder = new H264Decoder();
   decoder = H264StreamDecoder;
 #endif

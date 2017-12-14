@@ -273,7 +273,7 @@ int VP9Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
           videoMessage->SetBitStreamSize(pkt->data.frame.sz);
           videoMessage->AllocateScalars();
           videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
-          videoMessage->SetCodecType(CodecNameForVPX);
+          videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_VP9);
           videoMessage->SetEndian(igtl_is_little_endian() == true ? 2 : 1); //little endian is 2 big endian is 1
           videoMessage->SetWidth(pSrcPic->picWidth);
           videoMessage->SetHeight(pSrcPic->picHeight);

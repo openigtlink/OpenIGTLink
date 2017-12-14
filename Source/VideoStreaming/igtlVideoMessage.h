@@ -61,7 +61,7 @@ protected:
     this->m_SendMessageType  = "STT_VIDEO";
     this->m_TimeInterval = 50;
     this->m_UseCompress = true;
-    this->m_CodecType = CodecNameForVPX;
+    this->m_CodecType = IGTL_VIDEO_CODEC_NAME_VP9;
   };
   ~StartVideoMessage();
   

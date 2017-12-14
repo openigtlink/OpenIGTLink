@@ -77,7 +77,7 @@ $ make
 or for VP9 configuration:
 
 ~~~~
-$ cmake -DBUILD_VIDEOSTREAM:BOOL=ON -DUSE_VP9:BOOL=ON -DOpenIGTLink_PROTOCOL_VERSION_3:BOOL=ON ../OpenIGTLink
+$ cmake -DBUILD_VIDEOSTREAM:BOOL=ON -DOpenIGTLink_USE_VP9:BOOL=ON -DOpenIGTLink_PROTOCOL_VERSION_3:BOOL=ON ../OpenIGTLink
 $ make
 ~~~~
 

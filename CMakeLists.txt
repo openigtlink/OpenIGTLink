@@ -29,10 +29,10 @@ ENDIF()
 #-----------------------------------------------------------------------------
 # Configure VideoStreaming
 # Create the link to the VideoStreaming libraries
-OPTION(USE_H264 "Link the OpenH264 tree." OFF)
-OPTION(USE_VP9 "Link the VP9 tree." OFF)
-OPTION(USE_X265 "Link the X265 tree." OFF)
-OPTION(USE_OpenHEVC "Link the OpenHEVC tree." OFF)
+OPTION(OpenIGTLink_USE_H264 "Link the OpenH264 tree." OFF)
+OPTION(OpenIGTLink_USE_VP9 "Link the VP9 tree." OFF)
+OPTION(OpenIGTLink_USE_X265 "Link the X265 tree." OFF)
+OPTION(OpenIGTLink_USE_OpenHEVC "Link the OpenHEVC tree." OFF)
 
 #-----------------------------------------------------------------------------
 # Configure WebSocket
@@ -164,6 +164,10 @@ IF(CMAKE_USE_PTHREADS)
   ENDIF()
 ENDIF()
 
+SET(OpenIGTLink_ENABLE_VIDEOSTREAMING "0")
+IF (OpenIGTLink_USE_H264 OR OpenIGTLink_USE_VP9 OR OpenIGTLink_USE_X265 OR OpenIGTLink_USE_OpenHEVC)
+  SET(OpenIGTLink_ENABLE_VIDEOSTREAMING  "1")
+ENDIF()
 #-----------------------------------------------------------------------------
 # Run superbuild script instead of library script
 IF (NOT (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 3.04))

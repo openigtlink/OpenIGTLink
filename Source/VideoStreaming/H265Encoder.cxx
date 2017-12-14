@@ -242,7 +242,7 @@ int H265Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
         videoMessage->SetBitStreamSize(totalBitStreamSize);
         videoMessage->AllocateScalars();
         videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
-        videoMessage->SetCodecType(CodecNameForX265);
+        videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_X265);
         videoMessage->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
         videoMessage->SetWidth(pSrcPic->picWidth);
         videoMessage->SetHeight(pSrcPic->picHeight);

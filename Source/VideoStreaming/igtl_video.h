@@ -41,9 +41,10 @@
 #define IGTL_VIDEO_ENDIAN_BIG           1
 #define IGTL_VIDEO_ENDIAN_LITTLE        2
 
-#define CodecNameForH264 "H264"
-#define CodecNameForVPX "VP9 "
-#define CodecNameForX265 "X265"
+#define IGTL_VIDEO_CODEC_NAME_H264 "H264"
+#define IGTL_VIDEO_CODEC_NAME_VP9 "VP9 "
+#define IGTL_VIDEO_CODEC_NAME_X265 "X265"
+#define IGTL_VIDEO_CODEC_NAME_OPENHEVC "O265"
 
 #ifdef __cplusplus
 extern "C" {

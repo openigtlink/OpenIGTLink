@@ -72,7 +72,7 @@ namespace igtl {
     m_Frame       = NULL;
     
     m_SendMessageType  = "VIDEO";
-    this->m_CodecType = CodecNameForVPX;
+    this->m_CodecType = IGTL_VIDEO_CODEC_NAME_VP9;
     this->useCompress = true;
     this->additionalZDimension = 1;
     ScalarSizeTable[0] = 0;
@@ -98,7 +98,7 @@ namespace igtl {
   
   int VideoMessage::SetCodecType(const char codecType[])
   {
-    if (strcmp(codecType, CodecNameForX265)==0 || strcmp(codecType, CodecNameForVPX)==0 || strcmp(codecType, CodecNameForH264)==0)
+    if (strcmp(codecType, IGTL_VIDEO_CODEC_NAME_X265)==0 || strcmp(codecType, IGTL_VIDEO_CODEC_NAME_VP9)==0 || strcmp(codecType, IGTL_VIDEO_CODEC_NAME_H264)==0 || strcmp(codecType, IGTL_VIDEO_CODEC_NAME_OPENHEVC)==0)
       {
       this->m_CodecType = std::string(codecType);
       return 0;
