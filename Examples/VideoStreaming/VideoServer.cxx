@@ -95,76 +95,11 @@ int main(int argc, char* argv[])
       {
       std::cerr << "A client is connected." << std::endl;
       // Create a message buffer to receive header
-      igtl::MessageHeader::Pointer headerMsg;
-      headerMsg = igtl::MessageHeader::New();
-      for(;;)
-        {
-        headerMsg->InitPack();
-        // Receive generic header from the socket
-        int rs = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
-        if (rs == 0)
-        {
-          if (threadID >= 0)
-          {
-            td.stop = 1;
-            threader->TerminateThread(threadID);
-            threadID = -1;
-          }
-          std::cerr << "Disconnecting the client." << std::endl;
-          td.socket = NULL;  // VERY IMPORTANT. Completely remove the instance.
-          socket->CloseSocket();
-          break;
-        }
-        if (rs != headerMsg->GetPackSize())
-        {
-          continue;
-        }
-
-        if (rs == headerMsg->GetPackSize())
-          {
-          headerMsg->Unpack();
-          if (strcmp(headerMsg->GetDeviceType(), "STT_VIDEO") == 0)
-            {
-            std::cerr << "Received a STT_VIDEO message." << std::endl;
-            
-            igtl::StartVideoMessage::Pointer startVideo;
-            startVideo = igtl::StartVideoMessage::New();
-            startVideo->SetMessageHeader(headerMsg);
-            startVideo->AllocatePack();
-            
-            int r2 = socket->Receive(startVideo->GetPackBodyPointer(), startVideo->GetPackBodySize());
-            int c = startVideo->Unpack(1);
-            if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
-              {
-              td.interval = startVideo->GetTimeInterval();
-              td.glock    = glock;
-              td.socket   = socket;
-              td.stop     = 0;
-              threadID    = threader->SpawnThread((igtl::ThreadFunctionType) &ThreadFunction, &td);
-              }
-            }
-          else if (strcmp(headerMsg->GetDeviceType(), "STP_VIDEO") == 0)
-            {
-            socket->Skip(headerMsg->GetBodySizeToRead(), 0);
-            std::cerr << "Received a STP_VIDEO message." << std::endl;
-            if (threadID >= 0)
-              {
-              td.stop  = 1;
-              threader->TerminateThread(threadID);
-              threadID = -1;
-              std::cerr << "Disconnecting the client." << std::endl;
-              td.socket = NULL;  // VERY IMPORTANT. Completely remove the instance.
-              socket->CloseSocket();
-              }
-            break;
-            }
-          else
-            {
-            std::cerr << "Receiving : " << headerMsg->GetDeviceType() << std::endl;
-            socket->Skip(headerMsg->GetBodySizeToRead(), 0);
-            }
-          }
-        }
+      td.interval = 30;
+      td.glock    = glock;
+      td.socket   = socket;
+      td.stop     = 0;
+      threadID    = threader->SpawnThread((igtl::ThreadFunctionType) &ThreadFunction, &td);
       }
     }
   
@@ -197,18 +132,20 @@ void* ThreadFunction(void * ptr)
   
   igtl::Socket::Pointer& socket = td->socket;
   GenericEncoder * encoder = NULL;
+  
+#if defined(OpenIGTLink_USE_H264)
+  H264Encoder* H264StreamEncoder = new H264Encoder();
+  H264StreamEncoder->SetPicWidthAndHeight(Width,Height);
+  H264StreamEncoder->InitializeEncoder();
+  encoder = H264StreamEncoder;
+#endif
+
 #if defined(OpenIGTLink_USE_VP9)
   VP9Encoder* VP9StreamEncoder = new VP9Encoder();
   VP9StreamEncoder->SetPicWidthAndHeight(Width,Height);
   VP9StreamEncoder->InitializeEncoder();
   VP9StreamEncoder->SetLosslessLink(true);
   encoder = VP9StreamEncoder;
-#endif
-#if defined(OpenIGTLink_USE_H264)
-  H264Encoder* H264StreamEncoder = new H264Encoder();
-  H264StreamEncoder->SetPicWidthAndHeight(Width,Height);
-  H264StreamEncoder->InitializeEncoder();
-  encoder = H264StreamEncoder;
 #endif
   // Get thread information
   int kiPicResSize = Width*Height;
