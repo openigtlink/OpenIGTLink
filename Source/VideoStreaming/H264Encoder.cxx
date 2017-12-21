@@ -775,6 +775,7 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
       videoMessage->SetBitStreamSize(sFbi.iFrameSizeInBytes);
       videoMessage->AllocateScalars();
       videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
+      videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_H264);
       videoMessage->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
       videoMessage->SetWidth(pSrcPic->picWidth);
       videoMessage->SetHeight(pSrcPic->picHeight);

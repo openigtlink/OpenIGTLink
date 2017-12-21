@@ -36,7 +36,7 @@ OPTION(OpenIGTLink_USE_OpenHEVC "Link the OpenHEVC tree." OFF)
 
 #-----------------------------------------------------------------------------
 # Configure WebSocket
-OPTION(USE_WEBSOCKET "Build the Websocket." OFF)
+OPTION(OpenIGTLink_USE_WEBSOCKET "Build the Websocket." OFF)
 
 #-----------------------------------------------------------------------------
 # OpenIGTLink build configuration options.
@@ -165,8 +165,10 @@ IF(CMAKE_USE_PTHREADS)
 ENDIF()
 
 SET(OpenIGTLink_ENABLE_VIDEOSTREAMING "0")
-IF (OpenIGTLink_USE_H264 OR OpenIGTLink_USE_VP9 OR OpenIGTLink_USE_X265 OR OpenIGTLink_USE_OpenHEVC)
-  SET(OpenIGTLink_ENABLE_VIDEOSTREAMING  "1")
+IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
+  IF (OpenIGTLink_USE_H264 OR OpenIGTLink_USE_VP9 OR OpenIGTLink_USE_X265 OR OpenIGTLink_USE_OpenHEVC)
+    SET(OpenIGTLink_ENABLE_VIDEOSTREAMING  "1")
+  ENDIF()
 ENDIF()
 #-----------------------------------------------------------------------------
 # Run superbuild script instead of library script

@@ -203,14 +203,14 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
 ENDIF()
 
 IF (NOT (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 3.04))
-	IF(OpenIGTLink_USE_H264 OR OpenIGTLink_USE_VP9 OR OpenIGTLink_USE_X265 OR OpenIGTLink_USE_OpenHEVC)
+	IF(OpenIGTLink_ENABLE_VIDEOSTREAMING)
 		INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/VideoStreaming/VideoStreaming.cmake)
 	ENDIF()
 
 	#-----------------------------------------------------------------------------
 	# Configure WebSocket
 	# Create the link to the WebSocket libraries
-	IF(USE_WEBSOCKET)
+	IF(OpenIGTLink_USE_WEBSOCKET)
 		FIND_PACKAGE(WebSocket REQUIRED)
 		LIST(APPEND LINK_LIBS WebSocket)
 
@@ -257,7 +257,7 @@ IF (NOT (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 3.04))
   IF(OpenIGTLink_USE_OpenHEVC AND (NOT OpenHEVC_FOUND))
     add_dependencies(OpenIGTLink OpenHEVC)
   ENDIF()
-	IF(USE_WEBSOCKET)
+	IF(OpenIGTLink_USE_WEBSOCKET)
 		add_dependencies(OpenIGTLink WebSocket)
 	ENDIF()
 ELSE()

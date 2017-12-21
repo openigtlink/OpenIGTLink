@@ -40,7 +40,7 @@
 #cmakedefine OpenIGTLink_USE_VP9
 #cmakedefine OpenIGTLink_USE_X265
 #cmakedefine OpenIGTLink_USE_OpenHEVC
-#cmakedefine USE_WEBSOCKET
+#cmakedefine OpenIGTLink_USE_WEBSOCKET
 #define OpenIGTLink_ENABLE_VIDEOSTREAMING @OpenIGTLink_ENABLE_VIDEOSTREAMING@
 
 #define OpenIGTLink_PROTOCOL_VERSION_1 1

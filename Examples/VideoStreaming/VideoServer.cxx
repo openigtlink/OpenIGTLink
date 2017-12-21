@@ -138,9 +138,7 @@ void* ThreadFunction(void * ptr)
   H264StreamEncoder->SetPicWidthAndHeight(Width,Height);
   H264StreamEncoder->InitializeEncoder();
   encoder = H264StreamEncoder;
-#endif
-
-#if defined(OpenIGTLink_USE_VP9)
+#elif defined(OpenIGTLink_USE_VP9)
   VP9Encoder* VP9StreamEncoder = new VP9Encoder();
   VP9StreamEncoder->SetPicWidthAndHeight(Width,Height);
   VP9StreamEncoder->InitializeEncoder();

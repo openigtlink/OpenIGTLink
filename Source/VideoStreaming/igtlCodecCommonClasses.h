@@ -197,7 +197,7 @@ public:
   
   virtual void Write2File (FILE* pFp, unsigned char* pData[], igtl_uint32 iDimensions[], igtl_uint32 iStride[]);
   
-  virtual int DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* decodedPic){return 0;};
+  virtual int DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* decodedPic){return -1;};
   
   virtual igtl_int64 getCurrentTime();
   
