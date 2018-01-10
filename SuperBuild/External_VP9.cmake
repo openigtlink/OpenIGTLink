@@ -27,7 +27,7 @@ ELSE()
       GIT_REPOSITORY https://github.com/webmproject/libvpx/
       GIT_TAG v1.6.1
       SOURCE_DIR        "${CMAKE_BINARY_DIR}/Deps/VP9"
-      CONFIGURE_COMMAND "${CMAKE_BINARY_DIR}/Deps/VP9/configure" --disable-examples --as=yasm --disable-tools --disable-docs --disable-vp8 --disable-libyuv --disable-unit_tests --disable-postproc WORKING_DIRECTORY "${VP9_LIBRARY_DIR}"
+      CONFIGURE_COMMAND "${CMAKE_BINARY_DIR}/Deps/VP9/configure" --disable-examples --as=yasm --enable-pic --disable-tools --disable-docs --disable-vp8 --disable-libyuv --disable-unit_tests --disable-postproc WORKING_DIRECTORY "${VP9_LIBRARY_DIR}"
       BUILD_ALWAYS 1
       BUILD_COMMAND PATH=${YASM_BINARY_DIR}:$ENV{PATH}; make
       BUILD_IN_SOURCE 1
