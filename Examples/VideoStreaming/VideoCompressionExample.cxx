@@ -43,6 +43,11 @@
   #include "VP9Decoder.h"
 #endif
 
+#if defined(OpenIGTLink_USE_AV1)
+  #include "AV1Encoder.h"
+  #include "AV1Decoder.h"
+#endif
+
 int Width = 256;
 int Height = 256;
 std::string testFileName(OpenIGTLink_SOURCE_ROOTDIR);
@@ -73,6 +78,16 @@ int main(int argc, char* argv[])
     encoder = H264StreamEncoder;
     decoder = H264StreamDecoder;
   #endif
+#if defined(OpenIGTLink_USE_AV1)
+    igtlAV1Encoder* AV1StreamEncoder = new AV1Encoder();
+    igtlAV1Decoder* AV1StreamDecoder = new AV1Decoder();
+    AV1StreamEncoder->SetPicWidthAndHeight(Width, Height);
+    AV1StreamEncoder->InitializeEncoder();
+    AV1StreamEncoder->SetLosslessLink(false);
+    AV1StreamEncoder->SetSpeed(AV1StreamEncoder->FastestSpeed);
+    encoder = AV1StreamEncoder;
+    decoder = AV1StreamDecoder;
+#endif
     // Get thread information
     int kiPicResSize = Width*Height;
     igtl_uint8* imagePointer = new igtl_uint8[kiPicResSize*3/2];

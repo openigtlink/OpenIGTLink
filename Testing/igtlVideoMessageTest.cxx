@@ -53,6 +53,11 @@
   #include "H265Decoder.h"
 #endif
 
+#if defined (OpenIGTLink_USE_AV1)
+  #include "igtlAV1Encoder.h"
+  #include "igtlAV1Decoder.h"
+#endif
+
 #include "igtlCodecCommonClasses.h"
 #include "igtlOSUtil.h"
 
@@ -254,8 +259,23 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
   std::cerr<<"End of H264 tests "<<std::endl;
   std::cerr<<"--------------------------- "<<std::endl;
 #endif
+#if defined(OpenIGTLink_USE_AV1)
+  std::cerr << "--------------------------- " << std::endl;
+  std::cerr << "Begin of AOM tests " << std::endl;
+  igtlAV1Encoder* AOStreamEncoder = new igtlAV1Encoder();
+  igtlAV1Decoder* AOMStreamDecoder = new igtlAV1Decoder();
+  AOStreamEncoder->SetPicWidthAndHeight(Width, Height);
+  AOStreamEncoder->SetLosslessLink(true);
+  AOStreamEncoder->InitializeEncoder();
+  EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, AOStreamEncoder, AOMStreamDecoder, true), 0);
+  AOStreamEncoder->SetSpeed(AOStreamEncoder->FastestSpeed);
+  AOStreamEncoder->SetLosslessLink(false);
+  std::cerr << "Encoding Time Using Maximum Speed: " << std::endl;
+  EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, AOStreamEncoder, AOMStreamDecoder, false), 0);
+  std::cerr << "End of AOM tests " << std::endl;
+  std::cerr << "--------------------------- " << std::endl;
+#endif
   }
-
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
   TEST(VideoMessageTest, EncodeAndDecodeFormatVersion2)
@@ -289,7 +309,7 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
   #endif
   #if defined(OpenIGTLink_USE_OpenHEVC) && defined(OpenIGTLink_USE_X265)
       std::cerr<<"--------------------------- "<<std::endl;
-      std::cerr<<"Begin of VPX tests "<<std::endl;
+      std::cerr<<"Begin of OpenHEVC tests "<<std::endl;
       H265Encoder* H265StreamEncoder = new H265Encoder();
       H265Decoder* H265StreamDecoder = new H265Decoder();
       H265StreamEncoder->SetPicWidthAndHeight(Width,Height);
@@ -300,8 +320,24 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
       H265StreamEncoder->SetLosslessLink(false);
       std::cerr<<"Encoding Time Using Maximum Speed: "<<std::endl;
       TestWithVersion(IGTL_HEADER_VERSION_2, H265StreamEncoder, H265StreamDecoder,false);
-      std::cerr<<"End of VPX tests "<<std::endl;
+      std::cerr<<"End of OpenHEVC tests "<<std::endl;
       std::cerr<<"--------------------------- "<<std::endl;
+  #endif
+  #if defined(OpenIGTLink_USE_AV1)
+    std::cerr << "--------------------------- " << std::endl;
+    std::cerr << "Begin of AOM tests " << std::endl;
+    igtlAV1Encoder* AOMStreamEncoder = new igtlAV1Encoder();
+    igtlAV1Decoder* AOMStreamDecoder = new igtlAV1Decoder();
+    AOMStreamEncoder->SetPicWidthAndHeight(Width, Height);
+    AOMStreamEncoder->InitializeEncoder();
+    AOMStreamEncoder->SetLosslessLink(true);
+    TestWithVersion(IGTL_HEADER_VERSION_2, AOMStreamEncoder, AOMStreamDecoder, true);
+    AOMStreamEncoder->SetSpeed(AOMStreamEncoder->FastestSpeed);
+    AOMStreamEncoder->SetLosslessLink(false);
+    std::cerr << "Encoding Time Using Maximum Speed: " << std::endl;
+    TestWithVersion(IGTL_HEADER_VERSION_2, AOMStreamEncoder, AOMStreamDecoder, false);
+    std::cerr << "End of AOM tests " << std::endl;
+    std::cerr << "--------------------------- " << std::endl;
   #endif
     }
 #endif

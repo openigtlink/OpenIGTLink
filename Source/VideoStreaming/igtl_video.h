@@ -45,6 +45,7 @@
 #define IGTL_VIDEO_CODEC_NAME_VP9 "VP9 "
 #define IGTL_VIDEO_CODEC_NAME_X265 "X265"
 #define IGTL_VIDEO_CODEC_NAME_OPENHEVC "O265"
+#define IGTL_VIDEO_CODEC_NAME_AV1 "AV1"
 
 #ifdef __cplusplus
 extern "C" {
