@@ -779,7 +779,15 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
       videoMessage->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
       videoMessage->SetWidth(pSrcPic->picWidth);
       videoMessage->SetHeight(pSrcPic->picHeight);
-      encodedFrameType = sFbi.eFrameType;
+      if (sFbi.eFrameType == videoFrameTypeIDR)
+        {
+        encodedFrameType = FrameTypeKey;
+        }
+      else
+        {
+        // To do, assign other frame type too.
+        encodedFrameType = FrameTypeUnKnown;
+        }
       if (isGrayImage)
         {
         encodedFrameType = sFbi.eFrameType<<8;

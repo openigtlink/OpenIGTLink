@@ -34,7 +34,10 @@ typedef enum {
 typedef enum {
   FrameTypeInvalid,    ///< encoder not ready or parameters are invalidate
   FrameTypeKey,        ///< Key Frame
+  FrameTypeIntraPrediction,        ///< Intra Prediction Frame
+  FrameTypeInterPrediction,        ///< Inter Prediction Frame
   FrameTypeSkip,       ///< skip the frame based encoder kernel
+  FrameTypeUnKnown     ///
 } VideoFrameType;
 
 /**

@@ -269,7 +269,16 @@ int VP9Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
         {
         if (pkt->kind == VPX_CODEC_CX_FRAME_PKT)
           {
-          encodedFrameType = FrameTypeKey;
+          if((pkt->data.frame.flags & VPX_FRAME_IS_KEY) != 0)
+            {
+            encodedFrameType = FrameTypeKey;
+            }
+          else
+            {
+            // To do, assign other frame type too.
+            encodedFrameType = FrameTypeUnKnown;
+            }
+          videoMessage->SetFrameType(encodedFrameType);
           videoMessage->SetBitStreamSize(pkt->data.frame.sz);
           videoMessage->AllocateScalars();
           videoMessage->SetScalarType(videoMessage->TYPE_UINT8);

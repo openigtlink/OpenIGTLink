@@ -239,6 +239,16 @@ int H265Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
         for(int j=0;j<iNal;j++){
           totalBitStreamSize += pNals[j].sizeBytes;
         }
+        if((pNals[0].type & X265_TYPE_IDR) != 0)
+          {
+          encodedFrameType = FrameTypeKey;
+          }
+        else
+          {
+          // To do, assign other frame type too.
+          encodedFrameType = FrameTypeUnKnown;
+          }
+        videoMessage->SetFrameType(encodedFrameType);
         videoMessage->SetBitStreamSize(totalBitStreamSize);
         videoMessage->AllocateScalars();
         videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
