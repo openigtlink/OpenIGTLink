@@ -71,6 +71,7 @@ int main(int argc, char* argv[])
     float quaternion[4];
 
     GetRandomTestVectors(position, quaternion);
+    positionMsg->InitPack();
     positionMsg->SetPosition(position);
     positionMsg->SetQuaternion(quaternion);
     positionMsg->Pack();
