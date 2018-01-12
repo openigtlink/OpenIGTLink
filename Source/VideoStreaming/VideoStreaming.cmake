@@ -56,7 +56,7 @@ IF(OpenIGTLink_USE_VP9)
       LIST(APPEND OpenIGTLink_INCLUDE_DIRS
       "${VP9_LIBRARY_DIR}" )
       LINK_DIRECTORIES("${VP9_LIBRARY_DIR}/lib")
-    ENDIF()	
+    ENDIF()
   ELSE()
     MESSAGE("VP9_INCLUDE_DIR or VP9_LIBRARY_DIR no found")
   ENDIF()
@@ -89,6 +89,22 @@ IF(OpenIGTLink_USE_OpenHEVC)
   )
 ENDIF()
 
+IF(OpenIGTLink_USE_AV1)
+  INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_AV1.cmake)
+  LIST(APPEND OpenIGTLink_INCLUDE_DIRS
+    ${AV1_INCLUDE_DIR}
+    ${AV1_LIBRARY_DIR}
+  )
+  LIST(APPEND OpenIGTLink_SOURCES
+    ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlAV1Decoder.cxx
+    ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlAV1Encoder.cxx
+  )
+  LIST(APPEND OpenIGTLink_INCLUDE_FILES
+    ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlAV1Decoder.h
+    ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlAV1Encoder.h
+  )
+ENDIF()
+
 IF(WIN32) # for Windows
   IF(OpenIGTLink_USE_H264)
     LIST(APPEND LINK_LIBS
@@ -114,6 +130,12 @@ IF(WIN32) # for Windows
       ${OpenHEVC_LIBRARY}
     )
   ENDIF()
+
+  IF(OpenIGTLink_USE_AV1)
+    LIST(APPEND LINK_LIBS
+      ${AV1_LIBRARY}
+    )
+  ENDIF()
 ELSE() # for POSIX-compatible OSs
   IF(OpenIGTLink_USE_H264)
     LIST(APPEND LINK_LIBS
@@ -132,7 +154,12 @@ ELSE() # for POSIX-compatible OSs
   ENDIF()
   IF(OpenIGTLink_USE_OpenHEVC)
     LIST(APPEND LINK_LIBS
-      ${OpenHEVC_LIBRARY}      
+      ${OpenHEVC_LIBRARY}
+    )
+  ENDIF()
+  IF(OpenIGTLink_USE_AV1)
+    LIST(APPEND LINK_LIBS
+      ${AV1_LIBRARY}
     )
   ENDIF()
 ENDIF()

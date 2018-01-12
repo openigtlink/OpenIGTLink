@@ -29,6 +29,9 @@
 #include "VP9Decoder.h"
 #endif
 
+#if defined(OpenIGTLink_USE_AV1)
+#include "igtlAV1Decoder.h"
+#endif
 
 int ReceiveVideoData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Pointer& header, GenericDecoder * decoder);
 
@@ -73,6 +76,10 @@ int main(int argc, char* argv[])
 #if defined(OpenIGTLink_USE_H264)
   H264Decoder* H264StreamDecoder = new H264Decoder();
   decoder = H264StreamDecoder;
+#endif
+#if defined(OpenIGTLink_USE_AV1)
+  igtlAV1Decoder* AV1StreamDecoder = new igtlAV1Decoder();
+  decoder = AV1StreamDecoder;
 #endif
   
   //------------------------------------------------------------

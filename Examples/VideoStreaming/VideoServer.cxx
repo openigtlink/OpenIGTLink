@@ -34,6 +34,11 @@
 #include "VP9Decoder.h"
 #endif
 
+#if defined (OpenIGTLink_USE_AV1)
+#include "igtlAV1Encoder.h"
+#include "igtlAV1Decoder.h"
+#endif
+
 #include "igtlServerSocket.h"
 #include "igtlMultiThreader.h"
 
@@ -144,6 +149,12 @@ void* ThreadFunction(void * ptr)
   VP9StreamEncoder->InitializeEncoder();
   VP9StreamEncoder->SetLosslessLink(true);
   encoder = VP9StreamEncoder;
+#elif defined(OpenIGTLink_USE_AV1)
+  igtlAV1Encoder* AV1StreamEncoder = new igtlAV1Encoder();
+  AV1StreamEncoder->SetPicWidthAndHeight(Width, Height);
+  AV1StreamEncoder->InitializeEncoder();
+  AV1StreamEncoder->SetLosslessLink(true);
+  encoder = AV1StreamEncoder;
 #endif
   // Get thread information
   int kiPicResSize = Width*Height;

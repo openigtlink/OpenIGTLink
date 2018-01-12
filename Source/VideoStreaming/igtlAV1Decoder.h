@@ -1,0 +1,62 @@
+/*=========================================================================
+ 
+ Program:   AOMDecoder
+ Language:  C++
+ 
+ Copyright (c) Insight Software Consortium. All rights reserved.
+ 
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the above copyright notices for more information.
+ 
+ =========================================================================*/
+
+#ifndef __igtlAV1Decoder_h
+#define __igtlAV1Decoder_h
+
+// OpenIGTLink includes
+#include "igtlCodecCommonClasses.h"
+
+// AV1 includes
+#include "aom/aom_decoder.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+  typedef struct AomInterfaceDecoder {
+    aom_codec_iface_t *(*const codec_interface)();
+  } AomInterfaceDecoder;
+  
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
+
+#define NO_DELAY_DECODING
+class igtlAV1Decoder : public GenericDecoder
+{
+public: 
+  igtlAV1Decoder();
+  ~igtlAV1Decoder();
+  
+  virtual int DecodeBitStreamIntoFrame(unsigned char* bitStream,igtl_uint8* outputFrame, igtl_uint32 iDimensions[2], igtl_uint64 &iStreamSize);
+  
+  virtual int DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* pDecodedPic);
+  
+private:
+  virtual void ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[2], igtl_uint8 *outputFrame);
+  
+  const AomInterfaceDecoder* decoder;
+  
+  int aom_img_plane_width(const aom_image_t *img, int plane);
+  
+  int aom_img_plane_height(const aom_image_t *img, int plane);
+  
+  aom_codec_ctx_t codec;
+  
+  aom_image_t* outputImage;
+  
+  aom_codec_iter_t iter;
+  
+};
+
+#endif

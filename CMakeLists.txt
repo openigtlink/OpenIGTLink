@@ -33,6 +33,7 @@ OPTION(OpenIGTLink_USE_H264 "Link the OpenH264 tree." OFF)
 OPTION(OpenIGTLink_USE_VP9 "Link the VP9 tree." OFF)
 OPTION(OpenIGTLink_USE_X265 "Link the X265 tree." OFF)
 OPTION(OpenIGTLink_USE_OpenHEVC "Link the OpenHEVC tree." OFF)
+OPTION(OpenIGTLink_USE_AV1 "Link the AV1 tree." OFF)
 
 #-----------------------------------------------------------------------------
 # Configure WebSocket
@@ -166,7 +167,7 @@ ENDIF()
 
 SET(OpenIGTLink_ENABLE_VIDEOSTREAMING "0")
 IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
-  IF (OpenIGTLink_USE_H264 OR OpenIGTLink_USE_VP9 OR OpenIGTLink_USE_X265 OR OpenIGTLink_USE_OpenHEVC)
+  IF (OpenIGTLink_USE_H264 OR OpenIGTLink_USE_VP9 OR OpenIGTLink_USE_X265 OR OpenIGTLink_USE_OpenHEVC OR OpenIGTLink_USE_AV1)
     SET(OpenIGTLink_ENABLE_VIDEOSTREAMING  "1")
   ENDIF()
 ENDIF()
