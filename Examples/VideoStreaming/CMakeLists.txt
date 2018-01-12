@@ -9,9 +9,6 @@ find_package(OpenIGTLink REQUIRED)
 
 include(${OpenIGTLink_USE_FILE})
 
-add_executable( VideoCompressionExample VideoCompressionExample.cxx)
-target_link_libraries( VideoCompressionExample OpenIGTLink)
-
 add_executable( VideoServer VideoServer.cxx)
 target_link_libraries( VideoServer OpenIGTLink)
 

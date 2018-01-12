@@ -38,19 +38,19 @@
 #endif
 
 #if defined(OpenIGTLink_USE_H264)
-  #include "H264Encoder.h"
-  #include "H264Decoder.h"
+  #include "igtlH264Encoder.h"
+  #include "igtlH264Decoder.h"
 #endif
 
 #if defined(OpenIGTLink_USE_VP9)
-  #include "VP9Encoder.h"
-  #include "VP9Decoder.h"
+  #include "igtlVP9Encoder.h"
+  #include "igtlVP9Decoder.h"
   #include "./vpx_config.h"
 #endif
 
 #if defined(OpenIGTLink_USE_OpenHEVC) && defined(OpenIGTLink_USE_X265)
-  #include "H265Encoder.h"
-  #include "H265Decoder.h"
+  #include "igtlH265Encoder.h"
+  #include "igtlH265Decoder.h"
 #endif
 
 #if defined (OpenIGTLink_USE_AV1)

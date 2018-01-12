@@ -11,7 +11,7 @@
  
  =========================================================================*/
 
-#include "VideoStreamIGTLinkServer.h"
+#include "igtlVideoStreamIGTLinkServer.h"
 
 static void* ThreadFunctionServer(void* ptr);
 

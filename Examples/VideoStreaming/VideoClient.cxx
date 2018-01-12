@@ -22,11 +22,11 @@
 
 
 #if defined(OpenIGTLink_USE_H264)
-#include "H264Decoder.h"
+#include "igtlH264Decoder.h"
 #endif
 
 #if defined(OpenIGTLink_USE_VP9)
-#include "VP9Decoder.h"
+#include "igtlVP9Decoder.h"
 #endif
 
 #if defined(OpenIGTLink_USE_AV1)

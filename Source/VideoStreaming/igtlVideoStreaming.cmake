@@ -3,8 +3,8 @@ LIST(APPEND OpenIGTLink_SOURCES
   ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtl_video.c
   ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtl_videometa.c
   ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoMessage.cxx
-  ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VideoStreamIGTLinkServer.cxx
-  ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VideoStreamIGTLinkReceiver.cxx
+  ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoStreamIGTLinkServer.cxx
+  ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoStreamIGTLinkReceiver.cxx
   ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlCodecCommonClasses.cxx
   ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoMetaMessage.cxx
   )
@@ -15,8 +15,8 @@ LIST(APPEND OpenIGTLink_INCLUDE_FILES
   ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtl_video.h
   ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtl_videometa.h
   ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoMessage.h
-  ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VideoStreamIGTLinkServer.h
-  ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VideoStreamIGTLinkReceiver.h
+  ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoStreamIGTLinkServer.h
+  ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoStreamIGTLinkReceiver.h
   ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlCodecCommonClasses.h
   ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoMetaMessage.h
   )
@@ -24,12 +24,12 @@ IF(OpenIGTLink_USE_H264)
   INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_openh264.cmake)
   IF(EXISTS ${OpenH264_LIBRARY_DIR})
     LIST(APPEND OpenIGTLink_SOURCES
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Decoder.cxx
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.cxx
+      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlH264Decoder.cxx
+      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlH264Encoder.cxx
       )
     LIST(APPEND OpenIGTLink_INCLUDE_FILES
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Decoder.h
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H264Encoder.h
+      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlH264Decoder.h
+      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlH264Encoder.h
       )
     LIST(APPEND OpenIGTLink_INCLUDE_DIRS
       ${OpenH264_INCLUDE_DIR}
@@ -45,12 +45,12 @@ IF(OpenIGTLink_USE_VP9)
       ${VP9_INCLUDE_DIR}
     )
     LIST(APPEND OpenIGTLink_SOURCES
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Decoder.cxx
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Encoder.cxx
+      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVP9Decoder.cxx
+      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVP9Encoder.cxx
     )
     LIST(APPEND OpenIGTLink_INCLUDE_FILES
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Decoder.h
-      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/VP9Encoder.h
+      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVP9Decoder.h
+      ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVP9Encoder.h
     )
     IF(NOT ${VP9_LIBRARY_DIR} EQUAL "")
       LIST(APPEND OpenIGTLink_INCLUDE_DIRS
@@ -69,10 +69,10 @@ IF(OpenIGTLink_USE_X265)
       ${X265_LIBRARY_DIR}
   )
   LIST(APPEND OpenIGTLink_SOURCES
-    ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Encoder.cxx
+    ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlH265Encoder.cxx
   )
   LIST(APPEND OpenIGTLink_INCLUDE_FILES
-    ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Encoder.h
+    ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlH265Encoder.h
   )
 ENDIF()
 
@@ -82,10 +82,10 @@ IF(OpenIGTLink_USE_OpenHEVC)
     ${OpenHEVC_INCLUDE_DIR}
   )
   LIST(APPEND OpenIGTLink_SOURCES
-    ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Decoder.cxx
+    ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlH265Decoder.cxx
   )
   LIST(APPEND OpenIGTLink_INCLUDE_FILES
-    ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/H265Decoder.h
+    ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlH265Decoder.h
   )
 ENDIF()
 

@@ -25,13 +25,13 @@
 #include <string>
 
 #if defined(OpenIGTLink_USE_H264)
-#include "H264Encoder.h"
-#include "H264Decoder.h"
+#include "igtlH264Encoder.h"
+#include "igtlH264Decoder.h"
 #endif
 
 #if defined(OpenIGTLink_USE_VP9)
-#include "VP9Encoder.h"
-#include "VP9Decoder.h"
+#include "igtlVP9Encoder.h"
+#include "igtlVP9Decoder.h"
 #endif
 
 #if defined (OpenIGTLink_USE_AV1)
@@ -123,8 +123,6 @@ void* ThreadFunction(void * ptr)
   igtl::MultiThreader::ThreadInfo* info =
   static_cast<igtl::MultiThreader::ThreadInfo*>(ptr);
   
-  //int id      = info->ThreadID;
-  //int nThread = info->NumberOfThreads;
   ThreadData* td = static_cast<ThreadData*>(info->UserData);
   
   //------------------------------------------------------------
@@ -132,18 +130,10 @@ void* ThreadFunction(void * ptr)
   igtl::MutexLock::Pointer glock = td->glock;
   long interval = td->interval;
   std::cerr << "Interval = " << interval << " (ms)" << std::endl;
-  //long interval = 1000;
-  //long interval = (id + 1) * 100; // (ms)
-  
   igtl::Socket::Pointer& socket = td->socket;
   GenericEncoder * encoder = NULL;
   
-#if defined(OpenIGTLink_USE_H264)
-  H264Encoder* H264StreamEncoder = new H264Encoder();
-  H264StreamEncoder->SetPicWidthAndHeight(Width,Height);
-  H264StreamEncoder->InitializeEncoder();
-  encoder = H264StreamEncoder;
-#elif defined(OpenIGTLink_USE_VP9)
+#if defined(OpenIGTLink_USE_VP9)
   VP9Encoder* VP9StreamEncoder = new VP9Encoder();
   VP9StreamEncoder->SetPicWidthAndHeight(Width,Height);
   VP9StreamEncoder->InitializeEncoder();
@@ -155,6 +145,11 @@ void* ThreadFunction(void * ptr)
   AV1StreamEncoder->InitializeEncoder();
   AV1StreamEncoder->SetLosslessLink(true);
   encoder = AV1StreamEncoder;
+#elif defined(OpenIGTLink_USE_H264)
+  H264Encoder* H264StreamEncoder = new H264Encoder();
+  H264StreamEncoder->SetPicWidthAndHeight(Width,Height);
+  H264StreamEncoder->InitializeEncoder();
+  encoder = H264StreamEncoder;
 #endif
   // Get thread information
   int kiPicResSize = Width*Height;
@@ -173,10 +168,8 @@ void* ThreadFunction(void * ptr)
   SourcePicture* pDecodedPic = new SourcePicture();
   pDecodedPic->data[0] = new igtl_uint8[kiPicResSize*3/2];
   memset(pDecodedPic->data[0], 0, Width * Height * 3 / 2);
-  int totalFrame = 0;
   for(int i = 0; i <inputFrameNum; i++)
   {
-    igtl_int32 iFrameNumInFile = -1;
     std::string sep = "/";
 #if defined(_WIN32) || defined(_WIN64)
     sep = "\\";
@@ -189,41 +182,7 @@ void* ThreadFunction(void * ptr)
     FILE* pFileYUV = NULL;
     pFileYUV = fopen (testIndexedFileName.c_str(), "rb");
     if (pFileYUV != NULL) {
-      igtl_int64 i_size = 0;
-#if defined(_WIN32) || defined(_WIN64)
-#if _MSC_VER >= 1400
-      if (!_fseeki64 (pFileYUV, 0, SEEK_END))
-        {
-        i_size = _ftelli64 (pFileYUV);
-        _fseeki64 (pFileYUV, 0, SEEK_SET);
-        iFrameNumInFile =std::fmax((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
-        }
-#else
-      if (!fseek (pFileYUV, 0, SEEK_END))
-        {
-        i_size = ftell (pFileYUV);
-        fseek (pFileYUV, 0, SEEK_SET);
-        iFrameNumInFile = std::max((igtl_int32) (i_size / kiPicResSize), iFrameNumInFile);
-        }
-#endif
-#else
-      if (!fseeko (pFileYUV, 0, SEEK_END))
-        {
-        i_size = ftello (pFileYUV);
-        fseek(pFileYUV, 0, SEEK_SET);
-        iFrameNumInFile = std::max((igtl_int32) (i_size / (kiPicResSize)), iFrameNumInFile);
-        }
-#endif
-#if defined(_WIN32) || defined(_WIN64)
-#if _MSC_VER >= 1400
-      _fseeki64(pFileYUV, startIndex*kiPicResSize, SEEK_SET); //fix the data range issue
-#else
-      fseek(pFileYUV, startIndex*kiPicResSize, SEEK_SET); //fix the data range issue
-#endif
-#else
-      fseek(pFileYUV, startIndex*kiPicResSize, SEEK_SET);
-#endif
-      while(fread (imagePointer, 1, kiPicResSize, pFileYUV ) == (kiPicResSize) && totalFrame<inputFrameNum)
+      if(fread (imagePointer, 1, kiPicResSize, pFileYUV ) == (kiPicResSize))
         {
         bool isGrayImage = true;
         igtl::VideoMessage::Pointer videoMessageSend = igtl::VideoMessage::New();

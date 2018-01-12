@@ -43,7 +43,7 @@
  *
  */
 
-#include "H264Decoder.h"
+#include "igtlH264Decoder.h"
 
 H264Decoder::H264Decoder()
 {

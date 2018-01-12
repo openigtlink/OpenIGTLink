@@ -11,7 +11,7 @@
  
  =========================================================================*/
 
-#include "H265Encoder.h"
+#include "igtlH265Encoder.h"
 #include "igtlVideoMessage.h"
 #include <sstream>
 //namespace H265EncoderNameSpace

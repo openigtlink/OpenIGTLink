@@ -11,7 +11,7 @@
  
  =========================================================================*/
 
-#include "VP9Decoder.h"
+#include "igtlVP9Decoder.h"
 
 
 static const VpxInterfaceDecoder vp9StaticDecoder[] = {{&vpx_codec_vp9_dx}};

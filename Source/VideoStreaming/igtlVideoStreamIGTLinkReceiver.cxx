@@ -12,7 +12,7 @@
  
  =========================================================================*/
 
-#include "VideoStreamIGTLinkReceiver.h"
+#include "igtlVideoStreamIGTLinkReceiver.h"
 
 struct ReadSocketAndPush
 {

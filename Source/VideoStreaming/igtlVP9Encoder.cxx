@@ -12,7 +12,7 @@
  =========================================================================*/
 
 
-#include "VP9Encoder.h"
+#include "igtlVP9Encoder.h"
 #include "igtlVideoMessage.h"
 
 static const VpxInterfaceEncoder vp9StaticEncoder[] = {{&vpx_codec_vp9_cx}};

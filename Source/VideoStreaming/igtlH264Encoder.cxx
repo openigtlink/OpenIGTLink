@@ -93,7 +93,7 @@ int     g_iEncodedFrame  = 0;
 #endif
 
 
-#include "H264Encoder.h"
+#include "igtlH264Encoder.h"
 #include "igtlVideoMessage.h"
 
 

@@ -204,7 +204,7 @@ ENDIF()
 
 IF (NOT (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 3.04))
 	IF(OpenIGTLink_ENABLE_VIDEOSTREAMING)
-		INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/VideoStreaming/VideoStreaming.cmake)
+		INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/VideoStreaming/igtlVideoStreaming.cmake)
 	ENDIF()
 
 	#-----------------------------------------------------------------------------

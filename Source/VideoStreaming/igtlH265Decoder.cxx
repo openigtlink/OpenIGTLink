@@ -11,7 +11,7 @@
  
  =========================================================================*/
 
-#include "H265Decoder.h"
+#include "igtlH265Decoder.h"
 
 H265Decoder::H265Decoder()
 {
