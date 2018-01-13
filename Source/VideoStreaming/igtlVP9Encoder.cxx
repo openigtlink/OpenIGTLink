@@ -15,6 +15,9 @@
 #include "igtlVP9Encoder.h"
 #include "igtlVideoMessage.h"
 
+namespace igtl {
+
+
 static const VpxInterfaceEncoder vp9StaticEncoder[] = {{&vpx_codec_vp9_cx}};
 
 void VP9Encoder::error_output(vpx_codec_ctx_t *ctx, const char *s) {
@@ -308,3 +311,8 @@ int VP9Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
     }
   return -1;
 }
+
+
+}// namespace igtl
+
+

@@ -15,6 +15,7 @@
 
 // AV1 includes
 #include "aom/aomdx.h"
+namespace igtl {
 
 static const AomInterfaceDecoder AV1StaticDecoder[] = { { &aom_codec_av1_dx } };
 
@@ -119,3 +120,5 @@ int igtlAV1Decoder::DecodeBitStreamIntoFrame(unsigned char* bitstream, igtl_uint
     }
   return -1;
 }
+
+} // namespace igtl

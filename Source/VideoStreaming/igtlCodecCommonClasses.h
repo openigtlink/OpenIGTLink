@@ -24,6 +24,9 @@
 #include <string>
 #include "igtlVideoMessage.h"
 
+
+namespace igtl {
+
 /**
  * @brief Enumerate the type of video format
  */
@@ -61,7 +64,7 @@ typedef struct {
   long long timeStamp;           ///< timestamp of the source picture, unit: millisecond
 } SourcePicture;
 
-class ReadConfigFile {
+class IGTLCommon_EXPORT ReadConfigFile {
 public:
   ReadConfigFile();
   ReadConfigFile (const char* pConfigFileName);
@@ -81,7 +84,7 @@ private:
   unsigned int      lineNums;
 };
 
-class GenericEncoder
+class IGTLCommon_EXPORT GenericEncoder
 {
 public:
   GenericEncoder(){
@@ -190,7 +193,7 @@ protected:
   
 };
 
-class GenericDecoder
+class IGTLCommon_EXPORT GenericDecoder
 {
 public:
   GenericDecoder(){deviceName = ""; isGrayImage = false;};
@@ -290,9 +293,5 @@ protected:
   
 };
 
-
-
-
-float* SSIMCalculate();
-
+} // namespace igtl
 #endif

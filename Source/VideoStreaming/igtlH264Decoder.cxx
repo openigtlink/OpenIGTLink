@@ -45,6 +45,8 @@
 
 #include "igtlH264Decoder.h"
 
+namespace igtl {
+
 H264Decoder::H264Decoder()
 {
   WelsCreateDecoder (&this->pDecoder);
@@ -281,3 +283,5 @@ label_exit:
     }
   return -1;
 }
+
+}// Namespace igtl

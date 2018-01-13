@@ -8,6 +8,7 @@
 
 #include "igtlCodecCommonClasses.h"
 
+namespace igtl {
 
 ReadConfigFile::ReadConfigFile()
 : configFile(NULL)
@@ -321,3 +322,5 @@ int GenericEncoder::PackUncompressedData(SourcePicture* pSrcPic, igtl::VideoMess
     }
   return -1;
 }
+
+} //namespace igtl

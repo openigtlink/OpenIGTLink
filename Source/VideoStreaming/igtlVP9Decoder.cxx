@@ -13,6 +13,7 @@
 
 #include "igtlVP9Decoder.h"
 
+namespace igtl {
 
 static const VpxInterfaceDecoder vp9StaticDecoder[] = {{&vpx_codec_vp9_dx}};
 
@@ -119,3 +120,5 @@ int VP9Decoder::DecodeBitStreamIntoFrame(unsigned char* bitstream,igtl_uint8* ou
     }
   return -1;
 }
+
+}// namespace igtl

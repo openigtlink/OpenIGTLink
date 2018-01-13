@@ -42,7 +42,9 @@
 #include "igtlTimeStamp.h"
 #include "igtlCodecCommonClasses.h"
 
-class VideoStreamIGTLinkServer
+namespace igtl {
+
+class IGTLCommon_EXPORT VideoStreamIGTLinkServer
 {
 public:
   VideoStreamIGTLinkServer(char *argv);
@@ -231,5 +233,7 @@ private:
   int readFrameThreadID;
   
 };
+
+} //Namespace igtl
 
 #endif

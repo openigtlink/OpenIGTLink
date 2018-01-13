@@ -61,6 +61,8 @@
 #include "igtlCodecCommonClasses.h"
 #include "igtlOSUtil.h"
 
+using namespace igtl;
+
 int Width = 256;
 int Height = 256;
 std::string testFileName(OpenIGTLink_SOURCE_ROOTDIR);

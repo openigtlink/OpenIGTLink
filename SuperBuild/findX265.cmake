@@ -32,7 +32,7 @@ find_path(X265_LIBRARY_DIRECT_DIR x265-static${CMAKE_STATIC_LIBRARY_SUFFIX} | li
 if(NOT X265_LIBRARY_DIRECT_DIR)
     unset(X265_LIBRARY_DIRECT_DIR  CACHE) # don't expose the X265_LIBRARY_DIRECT_DIR to user, force the user to set the variable X265_LIBRARY_DIR
 endif()     
-message("x265-static${CMAKE_STATIC_LIBRARY_SUFFIX}")	 
+
 include(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(X265 REQUIRED_VARS X265_LIBRARY_DIR X265_INCLUDE_DIR)
 

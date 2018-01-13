@@ -14,6 +14,8 @@
 
 #include "igtlVideoStreamIGTLinkReceiver.h"
 
+namespace igtl {
+
 struct ReadSocketAndPush
 {
   igtl::MessageRTPWrapper::Pointer wrapper;
@@ -453,4 +455,6 @@ int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream, int st
     }
   return 0;
 }
+
+}// namespace igtl
 

@@ -77,6 +77,10 @@
 
 using namespace std;
 
+class ISVCEncoder;
+
+namespace igtl {
+
 typedef struct LayerpEncCtx_s {
   int32_t       iDLayerQp;
   SSliceArgument  sSliceArgument;
@@ -96,9 +100,7 @@ typedef enum {
 } H264VideoFrameType;
 
 
-class ISVCEncoder;
-
-class H264Encoder: public GenericEncoder
+class IGTLCommon_EXPORT H264Encoder: public GenericEncoder
 {
 public:
   H264Encoder(char * configFile = NULL);
@@ -177,4 +179,6 @@ private:
   
 };
 
+
+}//Namespace igtl
 #endif

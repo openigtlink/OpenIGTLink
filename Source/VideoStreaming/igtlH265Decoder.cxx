@@ -13,6 +13,9 @@
 
 #include "igtlH265Decoder.h"
 
+namespace igtl {
+
+
 H265Decoder::H265Decoder()
 {
   this->nb_pthreads = 4;
@@ -169,4 +172,6 @@ int H265Decoder::ReconstructFrame(OpenHevc_Frame_cpy *openHevcFrame,igtl_uint8* 
     }
   return 1;
 }
+
+}// namespace igtl
 

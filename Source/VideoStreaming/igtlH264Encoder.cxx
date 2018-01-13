@@ -96,6 +96,7 @@ int     g_iEncodedFrame  = 0;
 #include "igtlH264Encoder.h"
 #include "igtlVideoMessage.h"
 
+namespace igtl {
 
 /* Ctrl-C handler */
 static int     g_iCtrlC = 0;
@@ -818,4 +819,6 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
       }
     }
   return encodeRet;
-}
+};
+
+} // Namespace igtl

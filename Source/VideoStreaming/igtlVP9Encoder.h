@@ -28,6 +28,8 @@
 #include "igtlVideoMessage.h"
 #include "igtlTimeStamp.h"
 
+namespace igtl {
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -41,7 +43,7 @@ extern "C" {
 
 using namespace std;
 
-class VP9Encoder: public GenericEncoder
+class IGTLCommon_EXPORT VP9Encoder: public GenericEncoder
 {
 public:
   VP9Encoder(char * configFile = NULL);
@@ -123,4 +125,6 @@ private:
   
 };
 
+
+}// Namespace igtl
 #endif

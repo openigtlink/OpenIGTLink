@@ -16,6 +16,8 @@
 // AV1 includes
 #include "aom/aomcx.h"
 
+namespace igtl {
+
 static const AomInterfaceEncoder AV1StaticEncoder[] = {{&aom_codec_av1_cx}};
 
 void igtlAV1Encoder::error_output(aom_codec_ctx_t *ctx, const char *s) {
@@ -295,3 +297,5 @@ int igtlAV1Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::
     }
   return -1;
 }
+
+} // namespace igtl

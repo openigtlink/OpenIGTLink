@@ -30,7 +30,9 @@
 
 #define FRAME_CONCEALMENT   0
 
-  class H265Decoder:public GenericDecoder
+namespace igtl {
+  
+  class IGTLCommon_EXPORT H265Decoder:public GenericDecoder
   {
   public: 
     H265Decoder();
@@ -68,5 +70,7 @@
     int nb_pthreads;
     
   };
+
+} // namespace igtl
 
 #endif

@@ -37,6 +37,9 @@
 #include "vpx/vpx_image.h"
 #include "vpx/vpx_integer.h"
 
+namespace igtl {
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -49,7 +52,7 @@ extern "C" {
 #endif
 
 #define NO_DELAY_DECODING
-class VP9Decoder:public GenericDecoder
+class IGTLCommon_EXPORT VP9Decoder:public GenericDecoder
 {
 public: 
   VP9Decoder();
@@ -75,5 +78,7 @@ private:
   vpx_codec_iter_t iter;
   
 };
+
+} // namespace igtl
 
 #endif

@@ -14,7 +14,9 @@
 #include "igtlH265Encoder.h"
 #include "igtlVideoMessage.h"
 #include <sstream>
-//namespace H265EncoderNameSpace
+
+namespace igtl {
+
 template <typename T>
 std::string ToString(T variable)
 {
@@ -25,20 +27,20 @@ std::string ToString(T variable)
 
 H265Encoder::H265Encoder(char *configFile):GenericEncoder()
 {
-  this->sSvcParam=H265EncoderNameSpace::x265_param_alloc();
+  this->sSvcParam=x265_param_alloc();
   FillSpecificParameters();
-  pSVCEncoder=H265EncoderNameSpace::x265_encoder_open(this->sSvcParam);
-  H265SrcPicture = H265EncoderNameSpace::x265_picture_alloc();
-  H265EncoderNameSpace::x265_picture_init(sSvcParam,H265SrcPicture);
+  pSVCEncoder=x265_encoder_open(this->sSvcParam);
+  H265SrcPicture = x265_picture_alloc();
+  x265_picture_init(sSvcParam,H265SrcPicture);
   pNals = NULL;
   this->codecSpeed = 9;
 }
 
 H265Encoder::~H265Encoder()
 {
-  H265EncoderNameSpace::x265_encoder_close(this->pSVCEncoder);
-  H265EncoderNameSpace::x265_picture_free(this->H265SrcPicture);
-  H265EncoderNameSpace::x265_param_free(this->sSvcParam);
+  x265_encoder_close(this->pSVCEncoder);
+  x265_picture_free(this->H265SrcPicture);
+  x265_param_free(this->sSvcParam);
   this->pNals = NULL;
   this->pSVCEncoder = NULL;
   this->H265SrcPicture = NULL;
@@ -48,7 +50,7 @@ H265Encoder::~H265Encoder()
 int H265Encoder::FillSpecificParameters() {
   /* Test for temporal, spatial, SNR scalability */
   
-  H265EncoderNameSpace::x265_param_default_preset(this->sSvcParam,ToString(9-this->codecSpeed).c_str(),"zerolatency");// second parameter is the speed.
+  x265_param_default_preset(this->sSvcParam,ToString(9-this->codecSpeed).c_str(),"zerolatency");// second parameter is the speed.
   this->sSvcParam->internalCsp=X265_CSP_I420;
   this->sSvcParam->bRepeatHeaders=1;//write sps,pps before keyframe
   this->sSvcParam->fpsNum=200;
@@ -65,16 +67,16 @@ int H265Encoder::FillSpecificParameters() {
 int H265Encoder::SetRCTaregetBitRate(unsigned int bitRate)
 {
   this->sSvcParam->rc.aqMode = X265_AQ_VARIANCE;
-  this->sSvcParam->rc.rateControlMode = H265EncoderNameSpace::X265_RC_ABR;
+  this->sSvcParam->rc.rateControlMode = X265_RC_ABR;
   this->sSvcParam->rc.bitrate = bitRate/1000; // bit rate in h265 is represented in kbps
   /*for (int i = 0; i < this->sSvcParam.iSpatialLayerNum; i++)
    {
    this->sSvcParam.sSpatialLayers[i].iSpatialBitrate = bitRate/this->sSvcParam.iSpatialLayerNum;
    }*/
-  H265EncoderNameSpace::x265_encoder_close(this->pSVCEncoder);
-  pSVCEncoder=H265EncoderNameSpace::x265_encoder_open(this->sSvcParam);
-  H265SrcPicture = H265EncoderNameSpace::x265_picture_alloc();
-  H265EncoderNameSpace::x265_picture_init(sSvcParam,H265SrcPicture);
+  x265_encoder_close(this->pSVCEncoder);
+  pSVCEncoder=x265_encoder_open(this->sSvcParam);
+  H265SrcPicture = x265_picture_alloc();
+  x265_picture_init(sSvcParam,H265SrcPicture);
   /*if (x265_encoder_reconfig(this->pSVCEncoder, sSvcParam)<0) {
    fprintf (stderr, "Set target bit rate failed. \n");
    return -1;
@@ -108,7 +110,7 @@ int H265Encoder::SetQP(int maxQP, int minQP)
   return 0;
 }
 
-void H265Encoder::CopySettingToAnother(H265EncoderNameSpace::x265_param* srcSetting,H265EncoderNameSpace::x265_param* dstSetting)
+void H265Encoder::CopySettingToAnother(x265_param* srcSetting, x265_param* dstSetting)
 {
   dstSetting->rc.qpMax = srcSetting->rc.qpMax;
   dstSetting->rc.qpMin = srcSetting->rc.qpMin;
@@ -132,7 +134,7 @@ int H265Encoder::SetSpeed(int speed)
   speed = speed>=0?speed:0;
   speed = speed<=9?speed:9;
   this->codecSpeed = speed;
-  H265EncoderNameSpace::x265_param* previousSetting = H265EncoderNameSpace::x265_param_alloc();
+  x265_param* previousSetting = x265_param_alloc();
   
   this->CopySettingToAnother(this->sSvcParam, previousSetting);
   x265_param_default_preset(this->sSvcParam,ToString(9-speed).c_str(),"zerolatency"); // In OpenIGTLink, lower speed value corresponding to slower coding speed. In x265, the speed setting is reversed.
@@ -184,10 +186,10 @@ int H265Encoder::SetPicWidthAndHeight(unsigned int Width, unsigned int Height)
 int H265Encoder::SetLosslessLink(bool linkMethod)
 {
   this->sSvcParam->bLossless = linkMethod;
-  H265EncoderNameSpace::x265_encoder_close(this->pSVCEncoder);
-  pSVCEncoder=H265EncoderNameSpace::x265_encoder_open(this->sSvcParam);
-  H265SrcPicture = H265EncoderNameSpace::x265_picture_alloc();
-  H265EncoderNameSpace::x265_picture_init(sSvcParam,H265SrcPicture);
+  x265_encoder_close(this->pSVCEncoder);
+  pSVCEncoder=x265_encoder_open(this->sSvcParam);
+  H265SrcPicture = x265_picture_alloc();
+  x265_picture_init(sSvcParam,H265SrcPicture);
   return 0;
 }
 
@@ -281,3 +283,5 @@ int H265Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
     }
   return -1;
 }
+
+} // namespace igtl

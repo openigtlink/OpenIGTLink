@@ -13,6 +13,8 @@
 
 #include "igtlVideoStreamIGTLinkServer.h"
 
+namespace igtl {
+
 static void* ThreadFunctionServer(void* ptr);
 
 VideoStreamIGTLinkServer::VideoStreamIGTLinkServer(char *argv)
@@ -753,4 +755,6 @@ int VideoStreamIGTLinkServer::EncodeSingleFrame(igtl_uint8* picPointer, bool isG
     }
   return encodeRet;
 }
+
+}//namespace igtl
 

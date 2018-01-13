@@ -20,6 +20,8 @@
 // AV1 includes
 #include "aom/aom_decoder.h"
 
+namespace igtl {
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,7 +34,7 @@ extern "C" {
 #endif
 
 #define NO_DELAY_DECODING
-class igtlAV1Decoder : public GenericDecoder
+class IGTLCommon_EXPORT igtlAV1Decoder : public GenericDecoder
 {
 public: 
   igtlAV1Decoder();
@@ -59,4 +61,6 @@ private:
   
 };
 
+
+}// Namepace igtl
 #endif

@@ -55,7 +55,10 @@
 #include "igtlCodecCommonClasses.h"
 
 #define NO_DELAY_DECODING
-class H264Decoder:public GenericDecoder
+
+namespace igtl {
+
+class IGTLCommon_EXPORT H264Decoder:public GenericDecoder
 {
 public: 
   H264Decoder();
@@ -77,4 +80,6 @@ private:
   
 };
 
+
+} // Namespace igtl
 #endif

@@ -33,6 +33,8 @@
 #include "igtlAV1Decoder.h"
 #endif
 
+using namespace igtl;
+
 int ReceiveVideoData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Pointer& header, GenericDecoder * decoder);
 
 int main(int argc, char* argv[])

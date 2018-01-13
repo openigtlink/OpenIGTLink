@@ -20,6 +20,8 @@
 // AV1 includes
 #include "aom/aom_encoder.h"
 
+namespace igtl {
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -31,7 +33,7 @@ extern "C" {
 } /* extern "C" */
 #endif
 
-class igtlAV1Encoder : public GenericEncoder
+class IGTLCommon_EXPORT igtlAV1Encoder : public GenericEncoder
 {
 public:
   igtlAV1Encoder(char * configFile = NULL);
@@ -113,4 +115,6 @@ private:
   
 };
 
+
+} // namespace igtl
 #endif

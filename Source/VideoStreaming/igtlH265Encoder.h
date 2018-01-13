@@ -38,13 +38,8 @@
 #include "igtlMessageHeader.h"
 #include "igtlVideoMessage.h"
 #include "igtlTimeStamp.h"
-#if defined ( __cplusplus)
 
-namespace H265EncoderNameSpace
-{
-  // To avoid the redefinition of ENUM types. Especially when the decode and encode library are from different developers.
-  // Normally it is not necessary if they arefrom the same developers
-  // for example, NalUnitType is defined in both the encoder and decoder.
+#if defined ( __cplusplus)
   extern "C"
   {
 #include "x265.h"
@@ -52,8 +47,10 @@ namespace H265EncoderNameSpace
 #else
 #include "x265.h"
 #endif
-}
+
 using namespace std;
+
+namespace igtl {
 
 /**
  * @brief Enumerate  video frame type
@@ -68,7 +65,7 @@ typedef enum {
   H265FrameTypeIPMixed     ///< a frame where I and P slices are mixing, not supported yet
 } H265VideoFrameType;
 
-class H265Encoder: public GenericEncoder
+class IGTLCommon_EXPORT H265Encoder: public GenericEncoder
 {
 public:
   H265Encoder(char * configFile = NULL);
@@ -122,17 +119,19 @@ public:
   
 protected:
   
-  void CopySettingToAnother(H265EncoderNameSpace::x265_param* srcSetting,H265EncoderNameSpace::x265_param* dstSetting);
+  void CopySettingToAnother(x265_param* srcSetting, x265_param* dstSetting);
   
 private:
   
-  H265EncoderNameSpace::x265_encoder*  pSVCEncoder;
+  x265_encoder*  pSVCEncoder;
   
-  H265EncoderNameSpace::x265_param* sSvcParam;
+  x265_param* sSvcParam;
   
-  H265EncoderNameSpace::x265_nal *pNals;
+  x265_nal *pNals;
   
-  H265EncoderNameSpace::x265_picture* H265SrcPicture;
+  x265_picture* H265SrcPicture;
   
 };
+
+} //namespace igtl
 #endif

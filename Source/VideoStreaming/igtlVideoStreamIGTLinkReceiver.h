@@ -39,7 +39,9 @@
 #include "igtlTimeStamp.h"
 #include "igtlCodecCommonClasses.h"
 
-class VideoStreamIGTLinkReceiver
+namespace igtl {
+
+class IGTLCommon_EXPORT VideoStreamIGTLinkReceiver
 {
 public:
   VideoStreamIGTLinkReceiver(char * fileName);
@@ -124,4 +126,6 @@ private:
 
 };
 
+
+} // namespace igtl
 #endif
