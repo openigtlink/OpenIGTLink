@@ -13,22 +13,22 @@
 #endif()
 
 SET( X265_PATH_HINTS 
-		${X265_ROOT} 
+    ${X265_ROOT} 
     ${X265_INCLUDE_DIR}
     )
 unset(X265_INCLUDE_DIR CACHE)
 find_path(X265_INCLUDE_DIR NAMES x265.h 
-	HINTS ${X265_PATH_HINTS} 
-	PATH_SUFFIXES source
-	)
+  HINTS ${X265_PATH_HINTS} 
+  PATH_SUFFIXES source
+  )
 set(X265_LIBRARY_DIR "" CACHE PATH "")
 SET( X265_PATH_HINTS 
-		${X265_ROOT} 
+    ${X265_ROOT} 
     ${X265_LIBRARY_DIR}
     )
 find_path(X265_LIBRARY_DIRECT_DIR x265-static${CMAKE_STATIC_LIBRARY_SUFFIX} | libx265.a
      HINTS  ${X265_PATH_HINTS}
-     )	 
+     )   
 if(NOT X265_LIBRARY_DIRECT_DIR)
     unset(X265_LIBRARY_DIRECT_DIR  CACHE) # don't expose the X265_LIBRARY_DIRECT_DIR to user, force the user to set the variable X265_LIBRARY_DIR
 endif()     

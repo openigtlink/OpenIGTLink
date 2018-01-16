@@ -6,10 +6,10 @@ include(${OpenIGTLink_SOURCE_DIR}/SuperBuild/FindVP9.cmake)
 SET(VP9_DEPENDENCIES)
 IF(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") # window os build doesn't need the yasm
         INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_yasm.cmake)
-	IF(NOT YASM_FOUND)
-	  LIST(APPEND VP9_DEPENDENCIES YASM)
-	  message("VP9 dependencies modified." VP9_DEPENDENCIES)
-	ENDIF()
+  IF(NOT YASM_FOUND)
+    LIST(APPEND VP9_DEPENDENCIES YASM)
+    message("VP9 dependencies modified." VP9_DEPENDENCIES)
+  ENDIF()
 ENDIF()
 
 IF(VP9_FOUND)
@@ -19,9 +19,9 @@ IF(VP9_FOUND)
 ELSE()
   # OpenIGTLink has not been built yet, so download and build it as an external project
   MESSAGE(STATUS "Downloading VP9 from https://github.com/webmproject/libvpx.git")              
-	if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") 
+  if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") 
     SET (VP9_INCLUDE_DIR "${CMAKE_BINARY_DIR}/Deps/VP9/vpx" CACHE PATH "VP9 source directory" FORCE)
-    SET (VP9_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Deps/VP9" CACHE PATH "VP9 library directory" FORCE)   							
+    SET (VP9_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Deps/VP9" CACHE PATH "VP9 library directory" FORCE)                 
     ExternalProject_Add(VP9
       PREFIX "${CMAKE_BINARY_DIR}/Deps/VP9-prefix"
       GIT_REPOSITORY https://github.com/webmproject/libvpx/

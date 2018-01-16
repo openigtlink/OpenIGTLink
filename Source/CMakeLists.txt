@@ -203,31 +203,31 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
 ENDIF()
 
 IF (NOT (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 3.04))
-	IF(OpenIGTLink_ENABLE_VIDEOSTREAMING)
-		INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/VideoStreaming/igtlVideoStreaming.cmake)
-	ENDIF()
+  IF(OpenIGTLink_ENABLE_VIDEOSTREAMING)
+    INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/VideoStreaming/igtlVideoStreaming.cmake)
+  ENDIF()
 
-	#-----------------------------------------------------------------------------
-	# Configure WebSocket
-	# Create the link to the WebSocket libraries
-	IF(OpenIGTLink_USE_WEBSOCKET)
-		FIND_PACKAGE(WebSocket REQUIRED)
-		LIST(APPEND LINK_LIBS WebSocket)
+  #-----------------------------------------------------------------------------
+  # Configure WebSocket
+  # Create the link to the WebSocket libraries
+  IF(OpenIGTLink_USE_WEBSOCKET)
+    FIND_PACKAGE(WebSocket REQUIRED)
+    LIST(APPEND LINK_LIBS WebSocket)
 
-		LIST(APPEND OpenIGTLink_SOURCES
-			${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebServerSocket.cxx
-			${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebClientSocket.cxx
-		)
-	
-		LIST(APPEND OpenIGTLink_INCLUDE_FILES
-			${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebServerSocket.h
-			${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebClientSocket.h
-		)
+    LIST(APPEND OpenIGTLink_SOURCES
+      ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebServerSocket.cxx
+      ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebClientSocket.cxx
+    )
+  
+    LIST(APPEND OpenIGTLink_INCLUDE_FILES
+      ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebServerSocket.h
+      ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebClientSocket.h
+    )
 
-		LIST(APPEND OpenIGTLink_INCLUDE_DIRS
-			${CMAKE_CURRENT_SOURCE_DIR}/WebSocket
-			)
-	ENDIF()
+    LIST(APPEND OpenIGTLink_INCLUDE_DIRS
+      ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket
+      )
+  ENDIF()
 ELSE()
   message(FATAL_ERROR "CMake >= 3.4.0 required, or turn off the video stream library option")
 ENDIF()
@@ -260,9 +260,9 @@ IF (NOT (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 3.04))
   IF(OpenIGTLink_USE_AV1 AND (NOT AV1_FOUND))
     add_dependencies(OpenIGTLink AV1)
   ENDIF()
-	IF(OpenIGTLink_USE_WEBSOCKET)
-		add_dependencies(OpenIGTLink WebSocket)
-	ENDIF()
+  IF(OpenIGTLink_USE_WEBSOCKET)
+    add_dependencies(OpenIGTLink WebSocket)
+  ENDIF()
 ELSE()
   message(FATAL_ERROR "CMake >= 3.4.0 required, or turn off the video streaming library option")
 ENDIF()

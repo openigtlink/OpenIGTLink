@@ -20,6 +20,7 @@
 #include "igtl_types.h"
 #include "igtl_header.h"
 #include "igtl_util.h"
+#include "igtlOSUtil.h"
 #include "string.h"
 #include <cstring>
 #include <string>
@@ -176,7 +177,7 @@ void* ThreadFunction(void * ptr)
 #if defined(_WIN32) || defined(_WIN64)
     sep = "\\";
 #endif
-    stringstream stream;
+    std::stringstream stream;
     stream << (i%6+1);
     std::string imageIndexStr = stream.str();
     std::string testIndexedFileName = std::string(testFileName);

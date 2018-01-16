@@ -30,7 +30,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
   mark_as_advanced(VP9_INCLUDE_DIR VP9_LIBRARY_DIR)
 else()
-	SET(VP9_PATH_HINTS 
+  SET(VP9_PATH_HINTS 
       ${VP9_ROOT} 
       ${VP9_INCLUDE_DIR}
       )
@@ -56,7 +56,7 @@ else()
 
   find_path(VP9_LIBRARY_DIRECT_DIR vpxmdd.lib | vpxmd.lib
      HINTS  ${VP9_PATH_HINTS}
-     )	 
+     )   
   if(NOT VP9_LIBRARY_DIRECT_DIR)
     unset(VP9_LIBRARY_DIRECT_DIR  CACHE) # don't expose the VP9_LIBRARY_DIRECT_DIR to user, force the user to set the variable VP9_LIBRARY_DIR
     MESSAGE(FATAL_ERROR "VP9 library file not found, specify the path where the vp9 project was build, if vp9 was built in source, then set the library path the same as include path")

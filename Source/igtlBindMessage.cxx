@@ -156,8 +156,8 @@ int BindMessage::GetChildMessage(unsigned int i, igtl::MessageBase * child)
     // TODO: Is there any way to avoid this memory copy?
     memcpy(child->GetBufferBodyPointer(),
            this->m_ChildMessages[i].ptr, this->m_ChildMessages[i].size);
-	
-	  child->Unpack();
+  
+    child->Unpack();
     return 1;
     }
   else

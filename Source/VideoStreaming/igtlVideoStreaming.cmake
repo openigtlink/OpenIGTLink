@@ -125,7 +125,6 @@ IF(WIN32) # for Windows
     )
   ENDIF()
   IF(OpenIGTLink_USE_OpenHEVC)
-    #To do, library name depends on the compiler setting, could be vpxmt.lib and vpxmtd also. Make sure the setting matches.
     LIST(APPEND LINK_LIBS
       ${OpenHEVC_LIBRARY}
     )
@@ -133,7 +132,7 @@ IF(WIN32) # for Windows
 
   IF(OpenIGTLink_USE_AV1)
     LIST(APPEND LINK_LIBS
-      AV1_lib
+      ${AV1_LIBRARY}
     )
   ENDIF()
 ELSE() # for POSIX-compatible OSs
@@ -159,7 +158,7 @@ ELSE() # for POSIX-compatible OSs
   ENDIF()
   IF(OpenIGTLink_USE_AV1)
     LIST(APPEND LINK_LIBS
-      AV1_lib
+      ${AV1_LIBRARY}
     )
   ENDIF()
 ENDIF()
