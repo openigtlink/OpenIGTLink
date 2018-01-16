@@ -14,7 +14,7 @@
 #include "igtlAV1Encoder.h"
 
 // AV1 includes
-#include "aom/aomcx.h"
+#include "aomcx.h"
 
 namespace igtl {
 
@@ -267,7 +267,15 @@ int igtlAV1Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::
         {
         if (pkt->kind == AOM_CODEC_CX_FRAME_PKT)
           {
-          encodedFrameType = FrameTypeKey;
+          if((pkt->data.frame.flags & AOM_FRAME_IS_KEY) != 0)
+            {
+            encodedFrameType = FrameTypeKey;
+            }
+          else
+            {
+            // To do, assign other frame type too.
+            encodedFrameType = FrameTypeUnKnown;
+            }
           videoMessage->SetBitStreamSize(pkt->data.frame.sz);
           videoMessage->AllocateScalars();
           videoMessage->SetScalarType(videoMessage->TYPE_UINT8);

@@ -18,7 +18,7 @@
 #include "igtlCodecCommonClasses.h"
 
 // AV1 includes
-#include "aom/aom_decoder.h"
+#include "aom_decoder.h"
 
 namespace igtl {
 

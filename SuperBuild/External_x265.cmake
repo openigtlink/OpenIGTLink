@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.7.2)
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
-include(${OpenIGTLink_SOURCE_DIR}/SuperBuild/findX265.cmake)
+include(${OpenIGTLink_SOURCE_DIR}/SuperBuild/FindX265.cmake)
 
 IF(X265_FOUND)
   MESSAGE(STATUS "Using X265 available at: ${X265_INCLUDE_DIR}")

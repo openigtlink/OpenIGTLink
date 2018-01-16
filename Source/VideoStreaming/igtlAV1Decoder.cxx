@@ -14,7 +14,7 @@
 #include "igtlAV1Decoder.h"
 
 // AV1 includes
-#include "aom/aomdx.h"
+#include "aomdx.h"
 namespace igtl {
 
 static const AomInterfaceDecoder AV1StaticDecoder[] = { { &aom_codec_av1_dx } };

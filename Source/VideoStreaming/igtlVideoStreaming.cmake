@@ -133,7 +133,7 @@ IF(WIN32) # for Windows
 
   IF(OpenIGTLink_USE_AV1)
     LIST(APPEND LINK_LIBS
-      ${AV1_LIBRARY}
+      AV1_lib
     )
   ENDIF()
 ELSE() # for POSIX-compatible OSs
@@ -159,7 +159,7 @@ ELSE() # for POSIX-compatible OSs
   ENDIF()
   IF(OpenIGTLink_USE_AV1)
     LIST(APPEND LINK_LIBS
-      ${AV1_LIBRARY}
+      AV1_lib
     )
   ENDIF()
 ENDIF()

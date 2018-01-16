@@ -48,7 +48,7 @@ ExternalProject_Add( OpenIGTLink-lib
   SOURCE_DIR "${CMAKE_BINARY_DIR}/OpenIGTLink"
   BINARY_DIR "${CMAKE_BINARY_DIR}/OpenIGTLink-bin"
   #--Download step--------------
-  GIT_REPOSITORY "https://github.com/openigtlink/OpenIGTLink.git"
+  GIT_REPOSITORY "https://github.com/leochan2009/OpenIGTLink.git"
   GIT_TAG master
   #--Configure step-------------
   CMAKE_ARGS

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.2)
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
-include(${OpenIGTLink_SOURCE_DIR}/SuperBuild/findYASM.cmake)
+include(${OpenIGTLink_SOURCE_DIR}/SuperBuild/FindYASM.cmake)
 include(${CMAKE_ROOT}/Modules/FindPythonInterp.cmake)
 
 find_package(PythonInterp "2.7" REQUIRED)

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.2)
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
-include(${OpenIGTLink_SOURCE_DIR}/SuperBuild/findOpenH264.cmake)
+include(${OpenIGTLink_SOURCE_DIR}/SuperBuild/FindOpenH264.cmake)
 IF(OpenH264_FOUND)
   # H264 has been built already
   IF(${OpenIGTLink_PROTOCOL_VERSION} LESS 3)

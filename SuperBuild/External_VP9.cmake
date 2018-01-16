@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.2)
 
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
-include(${OpenIGTLink_SOURCE_DIR}/SuperBuild/findVP9.cmake)
+include(${OpenIGTLink_SOURCE_DIR}/SuperBuild/FindVP9.cmake)
 
 SET(VP9_DEPENDENCIES)
 IF(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") # window os build doesn't need the yasm
