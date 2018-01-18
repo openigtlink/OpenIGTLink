@@ -40,8 +40,7 @@ else()
     PATH_SUFFIXES vpx
     HINTS ${VP9_PATH_HINTS} 
     )
-  
-  if(NOT VP9_INCLUDE_DIR)
+  if((NOT VP9_INCLUDE_DIR) AND (NOT "${CMAKE_GENERATOR}" STREQUAL "Visual Studio 14 2015" ))
     MESSAGE(FATAL_ERROR "VP9 include files not found, specify the file path")
   endif()  
   
@@ -57,10 +56,7 @@ else()
   find_path(VP9_LIBRARY_DIRECT_DIR vpxmdd.lib | vpxmd.lib
      HINTS  ${VP9_PATH_HINTS}
      )   
-  if(NOT VP9_LIBRARY_DIRECT_DIR)
-    unset(VP9_LIBRARY_DIRECT_DIR  CACHE) # don't expose the VP9_LIBRARY_DIRECT_DIR to user, force the user to set the variable VP9_LIBRARY_DIR
-    MESSAGE(FATAL_ERROR "VP9 library file not found, specify the path where the vp9 project was build, if vp9 was built in source, then set the library path the same as include path")
-  else()
+  if(VP9_LIBRARY_DIRECT_DIR OR ("${CMAKE_GENERATOR}" STREQUAL "Visual Studio 14 2015"))
     unset(VP9_LIBRARY_DIRECT_DIR  CACHE)
     add_library(VP9_lib STATIC IMPORTED GLOBAL)
     if(NOT "${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
@@ -69,6 +65,9 @@ else()
     else()
       set_property(TARGET VP9_lib PROPERTY IMPORTED_LOCATION_RELEASE ${VP9_LIBRARY_DIR}/x64/Release/vpxmd.lib)
       set_property(TARGET VP9_lib PROPERTY IMPORTED_LOCATION_DEBUG ${VP9_LIBRARY_DIR}/x64/Debug/vpxmdd.lib)
-    endif()     
+    endif()   
+  else()  
+    unset(VP9_LIBRARY_DIRECT_DIR  CACHE) # don't expose the VP9_LIBRARY_DIRECT_DIR to user, force the user to set the variable VP9_LIBRARY_DIR
+    MESSAGE(FATAL_ERROR "VP9 library file not found, specify the path where the vp9 project was build, if vp9 was built in source, then set the library path the same as include path")
   endif()
 endif()
