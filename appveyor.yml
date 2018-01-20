@@ -26,8 +26,6 @@ branches:
   #whitelist
   only:
     - master
-    - Version3-Development
-    - VideoStreamMerge
       
 clone_depth: 1
 skip_tags: true
@@ -43,13 +41,12 @@ before_build:
         "v120" {"Visual Studio 12 2013"}
         "v140" {"Visual Studio 14 2015"}
     }
-    $generator = "$generator Win64"
-
+    
 build_script:
 - ps: |
     mkdir build -Force | Out-Null
     cd build
-    & cmake -G "$generator" -DOpenIGTLink_PROTOCOL_VERSION_3=ON -DOpenIGTLink_SUPERBUILD=OFF ..
+    & cmake -G "$generator" -DOpenIGTLink_PROTOCOL_VERSION_3=ON -DOpenIGTLink_USE_VP9=ON -DOpenIGTLink_SUPERBUILD=OFF ..
     if ($LastExitCode -ne 0) {
         throw "Exec: $ErrorMessage"
     }
