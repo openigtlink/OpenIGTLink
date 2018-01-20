@@ -40,7 +40,8 @@ else()
     PATH_SUFFIXES vpx
     HINTS ${VP9_PATH_HINTS} 
     )
-  if((NOT VP9_INCLUDE_DIR) AND (NOT "${CMAKE_GENERATOR}" STREQUAL "Visual Studio 14 2015" ))
+  if((NOT VP9_INCLUDE_DIR) AND (NOT "${CMAKE_GENERATOR}" STREQUAL "Visual Studio 14 2015")
+    AND (NOT "${CMAKE_GENERATOR}" STREQUAL "Visual Studio 12 2013 Win64" ))
     MESSAGE(FATAL_ERROR "VP9 include files not found, specify the file path")
   endif()  
   
@@ -56,7 +57,9 @@ else()
   find_path(VP9_LIBRARY_DIRECT_DIR vpxmdd.lib | vpxmd.lib
      HINTS  ${VP9_PATH_HINTS}
      )   
-  if(VP9_LIBRARY_DIRECT_DIR OR ("${CMAKE_GENERATOR}" STREQUAL "Visual Studio 14 2015"))
+  if(VP9_LIBRARY_DIRECT_DIR OR ("${CMAKE_GENERATOR}" STREQUAL "Visual Studio 14 2015")
+    OR ("${CMAKE_GENERATOR}" STREQUAL "Visual Studio 12 2013 Win64"))
+
     unset(VP9_LIBRARY_DIRECT_DIR  CACHE)
     add_library(VP9_lib STATIC IMPORTED GLOBAL)
     if(NOT "${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
