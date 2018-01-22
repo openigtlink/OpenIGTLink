@@ -46,6 +46,11 @@
 #include "igtlWin32Header.h"
 #include "igtl_types.h"
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#else
+#include <sys/time.h>
+#endif
+
 #define IP4AddressStrLen 16
 #define IP6AddressStrLen 46
 

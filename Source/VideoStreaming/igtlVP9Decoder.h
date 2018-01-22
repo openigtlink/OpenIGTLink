@@ -30,12 +30,12 @@
 #include "igtl_types.h"
 #include "igtlVideoMessage.h"
 #include "igtlCodecCommonClasses.h"
-#include "vpx/vpx_decoder.h"
+#include "vpx_decoder.h"
 #include "vpx_config.h"
-#include "vpx/vp8dx.h"
-#include "vpx/vpx_codec.h"
-#include "vpx/vpx_image.h"
-#include "vpx/vpx_integer.h"
+#include "vp8dx.h"
+#include "vpx_codec.h"
+#include "vpx_image.h"
+#include "vpx_integer.h"
 
 namespace igtl {
 

@@ -30,11 +30,6 @@
 #include "igtlTimeStamp.h"
 #include "igtlOSUtil.h"
 
-#if defined(WIN32) || defined(_WIN32)
-#include <windows.h>
-#else
-#include <sys/time.h>
-#endif
 
 /// This number defines the maximum number for UDP packet buffering, to avoid overflow of the buffer, the first buffered packet will be
 #define PacketMaximumBufferNum 1000

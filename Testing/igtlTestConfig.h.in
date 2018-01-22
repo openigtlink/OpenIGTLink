@@ -20,8 +20,7 @@
 // we will switch entirely to the GTest. 
 //
 
-#define OpenIGTLink_USE_GTEST @OpenIGTLink_USE_GTEST@
-#if OpenIGTLink_USE_GTEST == 1
+#if defined(USE_GTEST)
   #include "gtest/gtest.h"
   #include "gmock/gmock.h"
 #else
