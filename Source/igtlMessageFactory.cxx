@@ -36,7 +36,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "igtlCommandMessage.h"
 #endif // OpenIGTLink_PROTOCOL_VERSION >= 3
 
-#if OpenIGTLink_ENABLE_VIDEOSTREAMING
+#if defined(OpenIGTLink_ENABLE_VIDEOSTREAMING)
 #include "igtlVideoMessage.h"
 #endif 
 
@@ -92,7 +92,7 @@ MessageFactory::MessageFactory()
   this->AddMessageType("RTS_COMMAND", (PointerToMessageBaseNew)&igtl::RTSCommandMessage::New);
 #endif
 
-#if OpenIGTLink_ENABLE_VIDEOSTREAMING
+#if defined(OpenIGTLink_ENABLE_VIDEOSTREAMING)
   this->AddMessageType("VIDEO", (PointerToMessageBaseNew)&igtl::VideoMessage::New);
 #endif 
 }

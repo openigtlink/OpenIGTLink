@@ -40,7 +40,7 @@ IF(OpenIGTLink_USE_H264)
 ENDIF()
 IF(OpenIGTLink_USE_VP9)
   INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_VP9.cmake)
-  IF(EXISTS ${VP9_LIBRARY_DIR})
+  IF((NOT "${VP9_LIBRARY_DIR}" STREQUAL "") AND (NOT "${VP9_INCLUDE_DIR}" STREQUAL ""))
     LIST(APPEND OpenIGTLink_INCLUDE_DIRS
       ${VP9_INCLUDE_DIR}
     )
@@ -52,11 +52,9 @@ IF(OpenIGTLink_USE_VP9)
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVP9Decoder.h
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVP9Encoder.h
     )
-    IF(NOT ${VP9_LIBRARY_DIR} EQUAL "")
-      LIST(APPEND OpenIGTLink_INCLUDE_DIRS
-      "${VP9_LIBRARY_DIR}" )
-      LINK_DIRECTORIES("${VP9_LIBRARY_DIR}/lib")
-    ENDIF()
+    LIST(APPEND OpenIGTLink_INCLUDE_DIRS
+      ${VP9_LIBRARY_DIR} )
+    LINK_DIRECTORIES("${VP9_LIBRARY_DIR}/lib")
   ELSE()
     MESSAGE("VP9_INCLUDE_DIR or VP9_LIBRARY_DIR no found")
   ENDIF()
@@ -113,8 +111,9 @@ IF(WIN32) # for Windows
   ENDIF()
   IF(OpenIGTLink_USE_VP9)
     #To do, library name depends on the compiler setting, could be vpxmt.lib and vpxmtd also. Make sure the setting matches.
+    SET(VP9_lib optimized ${VP9_LIBRARY_DIR}\\Release\\vpxmd.lib debug ${VP9_LIBRARY_DIR}\\Debug\\vpxmdd.lib)
     LIST(APPEND LINK_LIBS
-      VP9_lib
+      ${VP9_lib}
     )
   ENDIF()
   IF(OpenIGTLink_USE_X265)
