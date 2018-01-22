@@ -48,7 +48,7 @@ If all went OK you will have the executable and the library:
 
 VideoStreaming
 ---------------
-You might want to use OpenIGTLink library to perform video streaming. Currently OpenH264, H265 and VP9 are supported in the OpenIGTLink.
+You might want to use OpenIGTLink library to perform video streaming. Currently OpenH264, H265, VP9 and AV1 are supported in the OpenIGTLink.
 
 * Prerequisites
 
@@ -64,6 +64,7 @@ In the case of H265 build, H265 have many implementations, the encoder used in l
 OpenIGTLink library doesn't build H265 libraries, so the users need to download and compile the libraries by themselves. 
 Afterwards, set the variables-"X265_INCLUDE_DIR, X265_LIBRARY_DIR, OPENHEVC_INCLUDE_DIR, OpenHEVC_LIBRARY"-correctly in cmake configuration.
 
+In the case of AV1 build, the AV1 codec is cmakefied. Once the OpenIGTLink_USE_AV1 option is selected, the openigtlink libray will superbuild the codec and link automatically.
 * Linux / Mac OS X
 
 In the case of Linux and Mac, after installing the required program in the Prerequisites section,
@@ -84,7 +85,6 @@ $ make
 * Windows Build
 
 In the case of windows build, please refer to the following websites for H264, X265 and VP9 respectively.
-Make sure the build are 32 bit.
 Useful H264 build instructions:
 
 https://github.com/cisco/openh264
@@ -93,6 +93,11 @@ Useful VP9 build instructions:
 
 https://www.webmproject.org/code/build-prerequisites/ 
 http://wiki.webmproject.org/ffmpeg/building-with-libvpx
+
+OpenIGTLink provides binary library files for visual studio 12 2013 and visual studio 14 2015.
+The libray will be automatically downloaded during the project build when user configure OpenIGTLink library using these cmake generators:
+"Visual Studio 12 2013", "Visual Studio 12 2013 Win64", "Visual Studio 14 2015" and "Visual Studio 14 2015 Win64". 
+For the rest cmake generators, the user need to provide the VP9_INCLUDE_DIR and VP9_BINARY_DIR, otherwize the video streaming feature will be deactivated.
 
 Useful X265 build intructions:
 

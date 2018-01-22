@@ -5,9 +5,12 @@ os: Visual Studio 2015
 #Google Test is not build correctly for v120 and v110, but the TestConfigure.h file is a workaround solution for the testing 
 environment:
   matrix:
-  - Toolset: v110
-  - Toolset: v120  
+  - Toolset: v140-64
   - Toolset: v140
+  - Toolset: v120-64
+  - Toolset: v120  
+  - Toolset: v110
+  
   
 platform: 
   - x86
@@ -15,7 +18,6 @@ platform:
   - ARM
 
 configuration: 
-  - Debug
   - Release
     
 
@@ -39,7 +41,9 @@ before_build:
     {
         "v110" {"Visual Studio 11 2012"}
         "v120" {"Visual Studio 12 2013"}
+        "v120-64" {"Visual Studio 12 2013 Win64"}
         "v140" {"Visual Studio 14 2015"}
+        "v140-64" {"Visual Studio 14 2015 Win64"}
     }
     
 build_script:

@@ -6,41 +6,39 @@ include(${OpenIGTLink_USE_FILE})
 include_directories(${OpenIGTLink_INCLUDE_DIRS})
 link_directories(${OpenIGTLink_LIBRARY_DIRS})
 include_directories(${PROJECT_BINARY_DIR})
-OPTION(USE_GTEST "Build the testing tree." ON)
 configure_file(${PROJECT_SOURCE_DIR}/igtlTestConfig.h.in ${PROJECT_BINARY_DIR}/igtlTestConfig.h)
 ENABLE_TESTING()
 ADD_SUBDIRECTORY( igtlutil )
-IF(USE_GTEST)
-  #-----------
-  #download of GoogleTest
-  if( MSVC ) # VS2012 doesn't support correctly the tuples yet
-    add_definitions("-D_VARIADIC_MAX=10")
-  endif()
-  # Download and unpack googletest at configure time
-  configure_file(GoogletestDownload.txt.in
-                 googletest-download/CMakeLists.txt)
-  execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" . 
-    WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/googletest-download" )
+IF(USE_GTEST AND (NOT OpenIGTLink_BUILD_SHARED_LIBS))
+	#-----------
+	#download of GoogleTest
+	if( MSVC ) # VS2012 doesn't support correctly the tuples yet
+		add_definitions("-D_VARIADIC_MAX=10")
+	endif()
+	# Download and unpack googletest at configure time
+	configure_file(GoogletestDownload.txt.in
+								 googletest-download/CMakeLists.txt)
+	execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" . 
+		WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/googletest-download" )
 
-  execute_process(COMMAND "${CMAKE_COMMAND}" --build . 
-    WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/googletest-download" )
+	execute_process(COMMAND "${CMAKE_COMMAND}" --build . 
+		WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/googletest-download" )
 
-  # Prevent GoogleTest from overriding our compiler/linker options
-  # when building with Visual Studio
-  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+	# Prevent GoogleTest from overriding our compiler/linker options
+	# when building with Visual Studio
+	set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-  # Add googletest directly to our build. This adds
-  # the following targets: gtest, gtest_main, gmock
-  # and gmock_main
-  add_subdirectory("${PROJECT_BINARY_DIR}/gmock"
-                   "${PROJECT_BINARY_DIR}/gmock-build" )
+	# Add googletest directly to our build. This adds
+	# the following targets: gtest, gtest_main, gmock
+	# and gmock_main
+	add_subdirectory("${PROJECT_BINARY_DIR}/gmock"
+									 "${PROJECT_BINARY_DIR}/gmock-build" )
 
-  # The gtest/gmock targets carry header search path
-  # dependencies automatically when using CMake 2.8.11 or
-  # later. Otherwise we have to add them here ourselves.
-  include_directories("${gtest_SOURCE_DIR}/include")
-  include_directories("${gmock_SOURCE_DIR}/include")
-#---------------
+	# The gtest/gmock targets carry header search path
+	# dependencies automatically when using CMake 2.8.11 or
+	# later. Otherwise we have to add them here ourselves.
+	include_directories("${gtest_SOURCE_DIR}/include")
+	include_directories("${gmock_SOURCE_DIR}/include")
 ENDIF()
 
 ADD_EXECUTABLE(igtlMultiThreaderTest1   igtlMultiThreaderTest1.cxx)
@@ -89,7 +87,7 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (OpenIGTLink_USE_H264 OR Open
 ENDIF()
 
 
-IF(USE_GTEST)
+IF(USE_GTEST AND (NOT OpenIGTLink_BUILD_SHARED_LIBS))
   SET(GTEST_LINK OpenIGTLink gtest_main gtest gmock_main gmock)
 ELSE()
   SET(GTEST_LINK OpenIGTLink)

@@ -17,8 +17,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "vpx/vp8cx.h"
-#include "vpx/vpx_image.h"
+#include "vp8cx.h"
+#include "vpx_image.h"
 
 #include "igtlCodecCommonClasses.h"
 #include "igtl_header.h"

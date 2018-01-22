@@ -49,7 +49,7 @@ int Width = 256;
 int Height = 256;
 std::string testFileName(OpenIGTLink_SOURCE_ROOTDIR);
 int startIndex = 0;
-int  inputFrameNum = 500;
+int  inputFrameNum = 2000;
 
 void* ThreadFunction(void* ptr);
 
@@ -103,11 +103,41 @@ int main(int argc, char* argv[])
       {
       std::cerr << "A client is connected." << std::endl;
       // Create a message buffer to receive header
-      td.interval = 30;
+      td.interval = 100;
       td.glock    = glock;
       td.socket   = socket;
       td.stop     = 0;
       threadID    = threader->SpawnThread((igtl::ThreadFunctionType) &ThreadFunction, &td);
+      // Create a message buffer to receive header
+      igtl::MessageHeader::Pointer headerMsg;
+      headerMsg = igtl::MessageHeader::New();
+      //------------------------------------------------------------
+      // loop
+      for (;;)
+        {
+        // Initialize receive buffer
+        headerMsg->InitPack();
+
+        // Receive generic header from the socket
+        int rs = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
+        if (rs == 0)
+          {
+          if (threadID >= 0)
+            {
+            td.stop = 1;
+            threader->TerminateThread(threadID);
+            threadID = -1;
+            }
+          std::cerr << "Disconnecting the client." << std::endl;
+          td.socket = NULL;  // VERY IMPORTANT. Completely remove the instance.
+          socket->CloseSocket();
+          break;
+          }
+        if (rs != headerMsg->GetPackSize())
+          {
+          continue;
+          }
+        }
       }
     }
   
@@ -141,6 +171,7 @@ void* ThreadFunction(void * ptr)
   VP9StreamEncoder->SetPicWidthAndHeight(Width,Height);
   VP9StreamEncoder->InitializeEncoder();
   VP9StreamEncoder->SetLosslessLink(true);
+  VP9StreamEncoder->SetKeyFrameDistance(50);
   encoder = VP9StreamEncoder;
 #elif defined(OpenIGTLink_USE_AV1)
   igtlAV1Encoder* AV1StreamEncoder = new igtlAV1Encoder();
@@ -173,6 +204,10 @@ void* ThreadFunction(void * ptr)
   memset(pDecodedPic->data[0], 0, Width * Height * 3 / 2);
   for(int i = 0; i <inputFrameNum; i++)
   {
+    if(td->stop)
+      {
+      break;
+      }
     std::string sep = "/";
 #if defined(_WIN32) || defined(_WIN64)
     sep = "\\";

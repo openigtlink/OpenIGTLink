@@ -57,9 +57,9 @@ SET(OpenIGTLink_BUILD_EXAMPLES ${BUILD_EXAMPLES})
 OPTION(BUILD_TESTING "Build the testing tree." ON)
 OPTION(USE_GTEST "Use googletest for testing" ON)
 SET(OpenIGTLink_BUILD_TESTING ${BUILD_TESTING})
-SET(OpenIGTLink_USE_GTEST "0")
-IF(USE_GTEST)
-  SET(OpenIGTLink_USE_GTEST "1")
+#link to google test library tend to fail https://github.com/openigtlink/OpenIGTLink/issues/122
+IF(OpenIGTLink_BUILD_SHARED_LIBS)
+  SET(USE_GTEST OFF)
 ENDIF()
 
 #-----------------------------------------------------------------------------
@@ -165,10 +165,10 @@ IF(CMAKE_USE_PTHREADS)
   ENDIF()
 ENDIF()
 
-SET(OpenIGTLink_ENABLE_VIDEOSTREAMING "0")
+OPTION(OpenIGTLink_ENABLE_VIDEOSTREAMING "Video stream feature activated." OFF)
 IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
   IF (OpenIGTLink_USE_H264 OR OpenIGTLink_USE_VP9 OR OpenIGTLink_USE_X265 OR OpenIGTLink_USE_OpenHEVC OR OpenIGTLink_USE_AV1)
-    SET(OpenIGTLink_ENABLE_VIDEOSTREAMING  "1")
+    SET(OpenIGTLink_ENABLE_VIDEOSTREAMING  ON)
   ENDIF()
 ENDIF()
 #-----------------------------------------------------------------------------
