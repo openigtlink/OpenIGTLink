@@ -630,7 +630,8 @@ void VideoStreamIGTLinkServer::SendOriginalData()
         videoMsg->SetBitStreamSize(kiPicResSize);
         videoMsg->AllocateScalars();
         videoMsg->SetScalarType(videoMsg->TYPE_UINT8);
-        videoMsg->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
+        int endian = (int) (igtl_is_little_endian() == true ? IGTL_VIDEO_ENDIAN_LITTLE : IGTL_VIDEO_ENDIAN_BIG);
+        videoMsg->SetEndian(endian); //little endian is 2 big endian is 1
         videoMsg->SetWidth(pSrcPic->picWidth);
         videoMsg->SetHeight(pSrcPic->picHeight);
         videoMsg->SetMessageID(messageID);

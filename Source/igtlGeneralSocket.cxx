@@ -51,6 +51,12 @@
 #define igtlCloseSocketMacro(sock) (shutdown(sock, 2))
 #endif
 
+#if defined (_WIN32)
+  #define TTL_TYPE const char
+#else
+  #define TTL_TYPE igtl_uint8
+#endif
+
 namespace igtl
 {
   
@@ -140,11 +146,6 @@ namespace igtl
      #endif */
     
     //If not otherwise specified, multicast datagrams are sent with a default value of 1, to prevent them to be forwarded beyond the local network. To change the TTL to the value you desire (from 0 to 255), put that value into a variable (here I name it "ttl") and write somewhere in your program:
-  #if defined (_WIN32)
-  #define TTL_TYPE const char
-  #else
-  #define TTL_TYPE igtl_uint8
-  #endif
     TTL_TYPE ttl = 64;
     if (setsockopt(sock, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl))<0)
       {
@@ -551,12 +552,6 @@ namespace igtl
   #endif
     flags = 0;
   #endif
-  #endif
-    
-  #if defined (_WIN32)
-  #define TTL_TYPE int
-  #else
-  #define TTL_TYPE igtl_uint8
   #endif
     igtl_uint8 ttlArg = 1; // 1 is the default value , valid value from 0 to 255
     TTL_TYPE ttl = (TTL_TYPE)ttlArg;

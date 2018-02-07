@@ -307,7 +307,8 @@ int GenericEncoder::PackUncompressedData(SourcePicture* pSrcPic, igtl::VideoMess
     videoMessage->SetBitStreamSize(kiPicResSize);
     videoMessage->AllocateScalars();
     videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
-    videoMessage->SetEndian(igtl_is_little_endian() == true ? IGTL_VIDEO_ENDIAN_LITTLE : IGTL_VIDEO_ENDIAN_BIG); //little endian is 2 big endian is 1
+    int endian = (int) (igtl_is_little_endian() == true ? IGTL_VIDEO_ENDIAN_LITTLE : IGTL_VIDEO_ENDIAN_BIG);
+    videoMessage->SetEndian(endian); //little endian is 2 big endian is 1
     videoMessage->SetWidth(pSrcPic->picWidth);
     videoMessage->SetHeight(pSrcPic->picHeight);
     encodedFrameType = FrameTypeKey;

@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 
         // Receive generic header from the socket
         int rs = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
-        if (rs == 0)
+        if (rs <= 0)
           {
           if (threadID >= 0)
             {
