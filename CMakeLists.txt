@@ -136,7 +136,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
   CHECK_CXX_COMPILER_FLAG("-fno-tree-vectorize" OpenIGTLink_GNUCXX_TREE_VECTORIZE_SUPPORT)
   IF(OpenIGTLink_GNUCXX_TREE_VECTORIZE_SUPPORT)
     SET(OpenIGTLink_REQUIRED_C_FLAGS "${OpenIGTLink_REQUIRED_C_FLAGS} -w -fno-tree-vectorize")
-    SET(OpenIGTLink_REQUIRED_CXX_FLAGS "${OpenIGTLink_REQUIRED_CXX_FLAGS} -ftemplate-depth-900 -fno-tree-vectorize")
+    SET(OpenIGTLink_REQUIRED_CXX_FLAGS "${OpenIGTLink_REQUIRED_CXX_FLAGS} -fno-tree-vectorize")
   ENDIF()
 
   # If the library is built as a static library, pass -fPIC option to the compiler
