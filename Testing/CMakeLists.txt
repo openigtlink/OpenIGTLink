@@ -9,7 +9,7 @@ include_directories(${PROJECT_BINARY_DIR})
 configure_file(${PROJECT_SOURCE_DIR}/igtlTestConfig.h.in ${PROJECT_BINARY_DIR}/igtlTestConfig.h)
 ENABLE_TESTING()
 ADD_SUBDIRECTORY( igtlutil )
-IF(USE_GTEST AND (NOT OpenIGTLink_BUILD_SHARED_LIBS))
+IF(OpenIGTLink_USE_GTEST AND (NOT OpenIGTLink_BUILD_SHARED_LIBS))
 	#-----------
 	#download of GoogleTest
 	if( MSVC ) # VS2012 doesn't support correctly the tuples yet
@@ -87,7 +87,7 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND (OpenIGTLink_USE_H264 OR Open
 ENDIF()
 
 
-IF(USE_GTEST AND (NOT OpenIGTLink_BUILD_SHARED_LIBS))
+IF(OpenIGTLink_USE_GTEST AND (NOT OpenIGTLink_BUILD_SHARED_LIBS))
   SET(GTEST_LINK OpenIGTLink gtest_main gtest gmock_main gmock)
 ELSE()
   SET(GTEST_LINK OpenIGTLink)
