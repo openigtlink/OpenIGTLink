@@ -21,14 +21,14 @@ IF( NOT OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T )
   IF(OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T)
     MESSAGE(STATUS "Checking for getsockname with socklen_t -- yes")
     SET(OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T 1 CACHE INTERNAL "Support for getsockname with socklen_t")
-    WRITE_FILE(${CMAKE_BINARY_DIR}/CMakeFiles/CMakeOutput.log
+    WRITE_FILE(${OpenIGTLink_BINARY_DIR}/CMakeFiles/CMakeOutput.log
       "Determining if getsockname accepts socklen_t type  "
       "passed with the following output:\n"
       "${OUTPUT}\n" APPEND)
   ELSE()
     MESSAGE(STATUS "Checking for getsockname with socklen_t -- no")
     SET(OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T 0 CACHE INTERNAL "Support for getsockname with socklen_t")
-    WRITE_FILE(${CMAKE_BINARY_DIR}/CMakeFiles/CMakeError.log
+    WRITE_FILE(${OpenIGTLink_BINARY_DIR}/CMakeFiles/CMakeError.log
       "Determining if getsockname accepts socklen_t type  "
       "failed with the following output:\n"
       "${OUTPUT}\n" APPEND)

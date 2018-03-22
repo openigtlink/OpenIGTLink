@@ -122,7 +122,7 @@ IF(NOT OpenIGTLink_INSTALL_NO_DOCUMENTATION)
   SET(OpenIGTLink_INSTALL_NO_DOCUMENTATION 0)
 ENDIF()
 
-SET(OpenIGTLink_DIR "${CMAKE_BINARY_DIR}" CACHE INTERNAL "OpenIGTLink dir to be used by subprojects")
+SET(OpenIGTLink_DIR "${OpenIGTLink_BINARY_DIR}" CACHE INTERNAL "OpenIGTLink dir to be used by subprojects")
 
 #-----------------------------------------------------------------------------
 # OpenIGTLink requires special compiler flags on some platforms.
@@ -197,7 +197,7 @@ ENDIF()
 #-----------------------------------------------------------------------------
 # Platform configuration tests.
 INCLUDE(${OpenIGTLink_CMAKE_DIR}/OpenIGTLinkCMakeTests.cmake)
-SET(OpenIGTLink_LIBRARY_TARGETS_FILE "${CMAKE_BINARY_DIR}/OpenIGTLinkTargets.cmake")
+SET(OpenIGTLink_LIBRARY_TARGETS_FILE "${OpenIGTLink_BINARY_DIR}/OpenIGTLinkTargets.cmake")
 
 #-----------------------------------------------------------------------------
 # Generate Configuration Header files.
