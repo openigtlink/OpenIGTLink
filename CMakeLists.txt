@@ -50,22 +50,32 @@ IF(NOT OpenIGTLink_BUILD_SHARED_LIBS)
 ENDIF()
 
 #-----------------------------------------------------------------------------
-OPTION(BUILD_EXAMPLES "Build OpenIGTLink example programs." OFF)
-SET(OpenIGTLink_BUILD_EXAMPLES ${BUILD_EXAMPLES})
+if(NOT DEFINED OpenIGTLink_BUILD_DOCUMENTATION)
+  option(BUILD_DOCUMENTATION "Build OpenIGTLink Documentation" OFF)
+  set(OpenIGTLink_BUILD_DOCUMENTATION ${BUILD_DOCUMENTATION})
+endif()
 
 #-----------------------------------------------------------------------------
-OPTION(BUILD_TESTING "Build the testing tree." ON)
-OPTION(USE_GTEST "Use googletest for testing" ON)
-SET(OpenIGTLink_BUILD_TESTING ${BUILD_TESTING})
+if(NOT DEFINED OpenIGTLink_BUILD_EXAMPLES)
+  option(BUILD_EXAMPLES "Build OpenIGTLink example programs." OFF)
+  set(OpenIGTLink_BUILD_EXAMPLES ${BUILD_EXAMPLES})
+endif()
+
+#-----------------------------------------------------------------------------
+if(NOT DEFINED OpenIGTLink_BUILD_TESTING)
+  option(BUILD_TESTING "Build the testing tree." ON)
+  set(OpenIGTLink_BUILD_TESTING ${BUILD_TESTING})
+endif()
+
+#-----------------------------------------------------------------------------
+if(NOT DEFINED OpenIGTLink_USE_GTEST)
+  option(USE_GTEST "Use googletest for testing" ON)
+  set(OpenIGTLink_USE_GTEST ${USE_GTEST})
+endif()
 #link to google test library tend to fail https://github.com/openigtlink/OpenIGTLink/issues/122
 IF(OpenIGTLink_BUILD_SHARED_LIBS)
-  SET(USE_GTEST OFF)
+  SET(OpenIGTLink_USE_GTEST OFF)
 ENDIF()
-
-#-----------------------------------------------------------------------------
-OPTION(BUILD_DOCUMENTATION "Build OpenIGTLink Documentation" OFF)
-
-
 
 #-----------------------------------------------------------------------------
 # Output directories.
@@ -122,7 +132,7 @@ IF(NOT OpenIGTLink_INSTALL_NO_DOCUMENTATION)
   SET(OpenIGTLink_INSTALL_NO_DOCUMENTATION 0)
 ENDIF()
 
-SET(OpenIGTLink_DIR "${CMAKE_BINARY_DIR}" CACHE INTERNAL "OpenIGTLink dir to be used by subprojects")
+SET(OpenIGTLink_DIR "${OpenIGTLink_BINARY_DIR}" CACHE INTERNAL "OpenIGTLink dir to be used by subprojects")
 
 #-----------------------------------------------------------------------------
 # OpenIGTLink requires special compiler flags on some platforms.
@@ -197,7 +207,7 @@ ENDIF()
 #-----------------------------------------------------------------------------
 # Platform configuration tests.
 INCLUDE(${OpenIGTLink_CMAKE_DIR}/OpenIGTLinkCMakeTests.cmake)
-SET(OpenIGTLink_LIBRARY_TARGETS_FILE "${CMAKE_BINARY_DIR}/OpenIGTLinkTargets.cmake")
+SET(OpenIGTLink_LIBRARY_TARGETS_FILE "${OpenIGTLink_BINARY_DIR}/OpenIGTLinkTargets.cmake")
 
 #-----------------------------------------------------------------------------
 # Generate Configuration Header files.
@@ -282,6 +292,6 @@ ENDIF()
 
 #-----------------------------------------------------------------------------
 # Build Doxygen documentation
-IF(BUILD_DOCUMENTATION)
+IF(OpenIGTLink_BUILD_DOCUMENTATION)
   ADD_SUBDIRECTORY(Documents/Doxygen)
 ENDIF()

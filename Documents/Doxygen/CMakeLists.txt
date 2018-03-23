@@ -1,5 +1,5 @@
 #-- Add an Option to toggle the generation of the API documentation
-if(BUILD_DOCUMENTATION)
+if(OpenIGTLink_BUILD_DOCUMENTATION)
 
   FIND_PACKAGE(Doxygen QUIET)
   if (NOT DOXYGEN_FOUND)
