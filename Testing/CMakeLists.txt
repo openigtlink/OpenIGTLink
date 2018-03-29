@@ -1,6 +1,6 @@
 PROJECT( OpenIGTLinkTesting )
 
-cmake_minimum_required(VERSION 2.9)
+cmake_minimum_required(VERSION 2.8.11)
 find_package(OpenIGTLink REQUIRED)
 include(${OpenIGTLink_USE_FILE})
 include_directories(${OpenIGTLink_INCLUDE_DIRS})

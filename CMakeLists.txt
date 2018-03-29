@@ -1,6 +1,6 @@
 PROJECT(OpenIGTLink)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11)
 
 INCLUDE(ExternalProject)
 
@@ -191,7 +191,7 @@ IF (NOT (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 3.04))
     RETURN()
   ENDIF()
 ELSE()
-  message(FATAL_ERROR "CMake >= 3.4.0 required, or turn off the superbuild option")
+  message(WARNING "CMake >= 3.4.0 recommended to enable the superbuild option")
 ENDIF()
 
 #-----------------------------------------------------------------------------
@@ -233,8 +233,10 @@ CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/UseOpenIGTLink.cmake.in
 INCLUDE(${OpenIGTLink_SOURCE_DIR}/CMake/GenerateOpenIGTLinkConfig.cmake)
 
 # Save the compiler settings so another project can import them.
-INCLUDE(${CMAKE_ROOT}/Modules/CMakeExportBuildSettings.cmake)
-CMAKE_EXPORT_BUILD_SETTINGS(${OpenIGTLink_BINARY_DIR}/OpenIGTLinkBuildSettings.cmake)
+# The functionality of this module has been dropped as of CMake 2.8.  It was
+# deemed harmful (confusing users by changing their compiler). CMAKE_EXPORT_BUILD_SETTINGS should be removed
+# INCLUDE(${CMAKE_ROOT}/Modules/CMakeExportBuildSettings.cmake)
+# CMAKE_EXPORT_BUILD_SETTINGS(${OpenIGTLink_BINARY_DIR}/OpenIGTLinkBuildSettings.cmake)
 
 INSTALL(FILES
   ${OpenIGTLink_BINARY_DIR}/OpenIGTLinkBuildSettings.cmake
