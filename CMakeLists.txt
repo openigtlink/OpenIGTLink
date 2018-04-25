@@ -183,7 +183,7 @@ IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2")
 ENDIF()
 #-----------------------------------------------------------------------------
 # Run superbuild script instead of library script
-IF (NOT (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 3.04))
+IF (NOT (${CMAKE_VERSION} VERSION_LESS 3.4))
   #MESSAGE ("Cmake version is not less than 3.4, super build available")
   OPTION(OpenIGTLink_SUPERBUILD "Superbuild or not." OFF)
   IF(OpenIGTLink_SUPERBUILD)
