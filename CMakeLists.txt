@@ -200,10 +200,6 @@ ADD_SUBDIRECTORY(Source/igtlutil)
 ADD_SUBDIRECTORY(Source)
 ADD_SUBDIRECTORY(Tools)
 
-IF(OpenIGTLink_BUILD_EXAMPLES)
- ADD_SUBDIRECTORY(Examples)
-ENDIF()
-
 #-----------------------------------------------------------------------------
 # Platform configuration tests.
 INCLUDE(${OpenIGTLink_CMAKE_DIR}/OpenIGTLinkCMakeTests.cmake)
@@ -239,7 +235,6 @@ INCLUDE(${OpenIGTLink_SOURCE_DIR}/CMake/GenerateOpenIGTLinkConfig.cmake)
 # CMAKE_EXPORT_BUILD_SETTINGS(${OpenIGTLink_BINARY_DIR}/OpenIGTLinkBuildSettings.cmake)
 
 INSTALL(FILES
-  ${OpenIGTLink_BINARY_DIR}/OpenIGTLinkBuildSettings.cmake
   ${OpenIGTLink_BINARY_DIR}/UseOpenIGTLink.cmake
   ${OpenIGTLink_BINARY_DIR}/Utilities/OpenIGTLinkConfig.cmake
   DESTINATION ${OpenIGTLink_INSTALL_PACKAGE_DIR}
@@ -290,6 +285,12 @@ IF(OpenIGTLink_BUILD_TESTING)
   ENABLE_TESTING()
   ADD_SUBDIRECTORY(Testing)
   INCLUDE(${CMAKE_ROOT}/Modules/Dart.cmake)
+ENDIF()
+
+#-----------------------------------------------------------------------------
+# Examples
+IF(OpenIGTLink_BUILD_EXAMPLES)
+ ADD_SUBDIRECTORY(Examples)
 ENDIF()
 
 #-----------------------------------------------------------------------------
