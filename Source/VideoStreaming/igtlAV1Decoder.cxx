@@ -101,7 +101,7 @@ void igtlAV1Decoder::ComposeByteSteam(igtl_uint8** inputData, int dimension[2], 
 
 int igtlAV1Decoder::DecodeBitStreamIntoFrame(unsigned char* bitstream, igtl_uint8* outputFrame, igtl_uint32 dimensions[2], igtl_uint64& iStreamSize)
 {
-  if (!aom_codec_decode(&codec, bitstream, (unsigned int)iStreamSize, NULL, 0))
+  if (!aom_codec_decode(&codec, bitstream, (unsigned int)iStreamSize, NULL))
     {
     iter = NULL;
     if ((outputImage = aom_codec_get_frame(&codec, &iter)) != NULL)

@@ -202,9 +202,7 @@ int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDeco
 
 TEST(VideoMessageTest, YUVandRGBConversion)
 {
-#if defined(OpenIGTLink_USE_VP9)
-  VP9Encoder * encoder = new VP9Encoder();
-  VP9Decoder * decoder = new VP9Decoder();
+#if defined(OpenIGTLink_ENABLE_VIDEOSTREAMING)
   int width = 400, height = 400;
   int yuvDataLen = width*height*3/2;
   igtlUint8* yuv_a = new igtlUint8[yuvDataLen];
@@ -221,9 +219,9 @@ TEST(VideoMessageTest, YUVandRGBConversion)
   rgbPointer -=yuvDataLen*2;
   //------------
   //Test of the data lost in RGB->YUV->RGB conversion
-  encoder->ConvertRGBToYUV(rgbPointer, yuv_a, width, height);
-  decoder->ConvertYUVToRGB(yuv_a, rgbPointer2, width,height);
-  encoder->ConvertRGBToYUV((igtlUint8*)rgbPointer2, yuv_a2, width,height);
+  GenericEncoder::ConvertRGBToYUV(rgbPointer, yuv_a, width, height);
+  GenericDecoder::ConvertYUVToRGB(yuv_a, rgbPointer2, width,height);
+  GenericEncoder::ConvertRGBToYUV((igtlUint8*)rgbPointer2, yuv_a2, width,height);
   int iReturn = memcmp(yuv_a2, yuv_a,yuvDataLen);// The conversion is not valid. Image is not the same after conversion.
   //-------------
   //igtlUint8* yuv_b = new igtlUint8[b->GetDimensions()[0]*b->GetDimensions()[1]*3/2];

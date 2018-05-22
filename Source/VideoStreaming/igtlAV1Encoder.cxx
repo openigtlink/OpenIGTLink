@@ -52,7 +52,6 @@ igtlAV1Encoder::igtlAV1Encoder(char *configFile):GenericEncoder()
   codec = new aom_codec_ctx_t();
   encodedBuf = new aom_fixed_buf_t();
   inputImage = new aom_image_t();
-  deadlineMode = AOM_DL_GOOD_QUALITY; //TODO: different deadline mode?
   isLossLessLink = true;
   codecSpeed = 0;
   FillSpecificParameters ();
@@ -60,7 +59,7 @@ igtlAV1Encoder::igtlAV1Encoder(char *configFile):GenericEncoder()
 
 igtlAV1Encoder::~igtlAV1Encoder()
 {
-  aom_codec_encode(codec, NULL, -1, 1, 0, deadlineMode); //Flush the codec
+  aom_codec_encode(codec, NULL, -1, 1, 0); //Flush the codec
   aom_codec_destroy(codec);
   if (inputImage)
     {
@@ -142,7 +141,6 @@ int igtlAV1Encoder::SetQP(int maxQP, int minQP)
 
 int igtlAV1Encoder::SetLosslessLink(bool linkMethod)
 {
-  this->SetDeadlineMode(AOM_DL_GOOD_QUALITY);
   this->isLossLessLink = linkMethod;
   if (aom_codec_control_(codec, AV1E_SET_LOSSLESS, linkMethod))
     {
@@ -158,7 +156,6 @@ int igtlAV1Encoder::SetLosslessLink(bool linkMethod)
 
 int igtlAV1Encoder::SetSpeed(int speed)
 {
-  this->SetDeadlineMode(AOM_DL_GOOD_QUALITY);
   this->codecSpeed = speed;
   if (speed>=SlowestSpeed && speed<=FastestSpeed)
     {  
@@ -214,12 +211,6 @@ int igtlAV1Encoder::SetPicWidthAndHeight(unsigned int width, unsigned int height
   return 0;
 }
 
-int igtlAV1Encoder::SetDeadlineMode(unsigned long mode)
-{
-  this->deadlineMode = mode;
-  return 0;
-}
-
 int igtlAV1Encoder::ConvertToLocalImageFormat(SourcePicture* pSrcPic)
 {
   if (pSrcPic->picWidth != this->cfg.g_w || pSrcPic->picHeight != this->cfg.g_h)
@@ -256,7 +247,7 @@ int igtlAV1Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::
     videoMessage->SetUseCompress(this->useCompress);
     if (this->useCompress)
       {
-      const aom_codec_err_t res2 = aom_codec_encode(codec, inputImage, messageID, 1, 0, this->deadlineMode);
+      const aom_codec_err_t res2 = aom_codec_encode(codec, inputImage, messageID, 1, 0);
       if (res2 != AOM_CODEC_OK)
         {
         error_output(codec, "Failed to encode frame");

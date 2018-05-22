@@ -167,7 +167,7 @@ public:
   
   virtual int SetPicWidthAndHeight(unsigned int Width, unsigned int Height){return -1;};
   
-  void ConvertRGBToYUV(igtlUint8 *rgb, igtlUint8 *destination, unsigned int width, unsigned int height);
+  static void ConvertRGBToYUV(igtlUint8 *rgb, igtlUint8 *destination, unsigned int width, unsigned int height);
    
   int PackUncompressedData(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage);
 
@@ -201,7 +201,7 @@ public:
   
   virtual int DecodeBitStreamIntoFrame(unsigned char* bitStream,igtl_uint8* outputFrame,igtl_uint32 iDimensions[], igtl_uint64 &iStreamSize) = 0;
   
-  virtual void Write2File (FILE* pFp, unsigned char* pData[], igtl_uint32 iDimensions[], igtl_uint32 iStride[]);
+  static void Write2File (FILE* pFp, unsigned char* pData[], igtl_uint32 iDimensions[], igtl_uint32 iStride[]);
   
   virtual int DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* decodedPic){return -1;};
   
@@ -277,9 +277,9 @@ public:
    To do, use the latest conversion Scheme from ITU. 
    https://www.itu.int/dms_pubrec/itu-r/rec/bt/R-REC-BT.2020-2-201510-I!!PDF-E.pdf
    */
-  int ConvertYUVToRGB(igtl_uint8 *YUVFrame, igtl_uint8* RGBFrame, int iHeight, int iWidth);
+  static int ConvertYUVToRGB(igtl_uint8 *YUVFrame, igtl_uint8* RGBFrame, int iHeight, int iWidth);
   
-  int ConvertYUVToGrayImage(igtl_uint8 * YUV420Frame, igtl_uint8 *GrayFrame, int iHeight, int iWidth);
+  static int ConvertYUVToGrayImage(igtl_uint8 * YUV420Frame, igtl_uint8 *GrayFrame, int iHeight, int iWidth);
   
   int UnpackUncompressedData(igtl::VideoMessage* videoMessage, SourcePicture* decodedPic);
   
