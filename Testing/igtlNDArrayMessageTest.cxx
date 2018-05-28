@@ -56,12 +56,15 @@ TEST(NDArrayMessageTest, SetAndGetValue)
 {
   BuildUpArrayElements();
   igtl::ArrayBase::IndexType index(array.GetSize());
-  index.at(0) = 0;
-  index.at(1) = 0;
-  index.at(2) = 0;
+  index.at(0) = 1;
+  index.at(1) = 2;
+  index.at(2) = 3;
+  igtl_float64 returnValue = 1.0;
+  array.GetValue(index, returnValue);
+  // The value at index(1,2,3) = (i*(4*3) + j*3 + k) = 21
+  EXPECT_FLOAT_EQ(returnValue, 21);
   igtl_float64 inputValue = 3.0;
   array.SetValue(index, inputValue);
-  igtl_float64 returnValue = 1.0;
   array.GetValue(index, returnValue);
   EXPECT_FLOAT_EQ(inputValue, returnValue);
 }
