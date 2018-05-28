@@ -91,8 +91,8 @@ public:
   int                     SetValue(IndexType index, T value)
   {
     if (Get1DIndex(index) <= GetNumberOfElements()) {
-      T* ByteArray = (T*)GetRawArray();
-      ByteArray[Get1DIndex(index) * sizeof(T)] = value;
+      T* TypeArray = reinterpret_cast<T*>(GetRawArray());
+      TypeArray[Get1DIndex(index)] = value;
       return 1;
     } else {
       return 0;
@@ -103,8 +103,8 @@ public:
   int                     GetValue(IndexType index,  T & value)
   {
     if (Get1DIndex(index) <= GetNumberOfElements()) {
-      T* ByteArray = (T*)GetRawArray();
-      value = ByteArray[Get1DIndex(index) * sizeof(T)];
+      T* TypeArray = reinterpret_cast<T*>(GetRawArray());
+      value = TypeArray[Get1DIndex(index)];
       return 1;
     } else {
       return 0;
