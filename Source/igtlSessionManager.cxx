@@ -103,6 +103,10 @@ int SessionManager::Connect()
       //clientSocket->SetReceiveTimeout(0);
       this->m_Socket = clientSocket;
       }
+    else
+      {
+      return 0;
+      }
     }
   else
     {
