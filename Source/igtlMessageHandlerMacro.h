@@ -51,7 +51,7 @@
       if (pos == 0) /* New body */                                      \
         {                                                               \
         this->m_Message->SetMessageHeader(header);                      \
-        this->m_Message->InitBuffer();                                  \
+        this->m_Message->AllocateBuffer();                                  \
         }                                                               \
       int s = socket->Receive((void*)((char*)this->m_Message->GetBufferBodyPointer()+pos), \
                               this->m_Message->GetBufferBodySize()-pos);  \
