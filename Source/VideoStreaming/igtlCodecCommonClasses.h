@@ -84,7 +84,7 @@ private:
   unsigned int      lineNums;
 };
 
-class IGTLCommon_EXPORT GenericEncoder
+class IGTLCommon_EXPORT GenericEncoder : public Object
 {
 public:
   GenericEncoder(){
@@ -193,7 +193,7 @@ protected:
   
 };
 
-class IGTLCommon_EXPORT GenericDecoder
+class IGTLCommon_EXPORT GenericDecoder : public Object
 {
 public:
   GenericDecoder(){deviceName = ""; isGrayImage = false;};
