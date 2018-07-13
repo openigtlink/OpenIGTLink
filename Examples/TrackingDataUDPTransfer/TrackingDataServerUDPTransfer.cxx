@@ -40,19 +40,19 @@ int main(int argc, char* argv[])
   //------------------------------------------------------------
   // Parse Arguments
 
-  if (argc != 2) // check number of arguments
+  if (argc != 1) // check number of arguments
     {
     // If not correct, print usage
-    std::cerr << "Usage: " << argv[0] << " <port>"    << std::endl;
-    std::cerr << "    <port>     : Port # (18944 in Slicer default)"   << std::endl;
+    std::cerr << "Usage: No augments"  << std::endl;
     exit(0);
     }
 
-  int    port     = atoi(argv[1]);
   igtl::UDPServerSocket::Pointer serverSocket;
   serverSocket = igtl::UDPServerSocket::New();
-  int r = serverSocket->CreateUDPServer(port);
+  int r = serverSocket->CreateUDPServer();
   serverSocket->AddClient("127.0.0.1", 18944, 1);
+  serverSocket->AddClient("127.0.0.1", 18945, 1);
+
   if (r < 0)
     {
     std::cerr << "Cannot create a server socket." << std::endl;
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
   igtl::MessageRTPWrapper::Pointer rtpWrapper = igtl::MessageRTPWrapper::New();
   //------------------------------------------------------------
   // loop
-  for (int i = 0;i<100;i++)
+  for (int i = 0;i<1000;i++)
   {
     WrapMessage(serverSocket, rtpWrapper);
   }
@@ -81,7 +81,7 @@ void WrapMessage(igtl::UDPServerSocket::Pointer serverSocket, igtl::MessageRTPWr
   //------------------------------------------------------------
   // Get user data
   igtl::MutexLock::Pointer glock = igtl::MutexLock::New();
-  long interval = 5000;
+  long interval = 500;
   std::cerr << "Interval = " << interval << " (ms)" << std::endl;
   //long interval = 1000;
   //long interval = (id + 1) * 100; // (ms)
@@ -153,22 +153,12 @@ int SendTrackingData(igtl::UDPServerSocket::Pointer& socket, igtl::TrackingDataM
 
   trackingMsg->Pack();
   rtpWrapper->SetSSRC(1);
-  int status = igtl::MessageRTPWrapper::PaketReady;
-  igtl_uint8* messagePointer = (igtl_uint8*)trackingMsg->GetPackBodyPointer();
+  int status = igtl::MessageRTPWrapper::PacketReady;
+  igtl_uint8* messagePointer = (igtl_uint8*)trackingMsg->GetPackPointer();
   rtpWrapper->SetMSGHeader((igtl_uint8*)trackingMsg->GetPackPointer());
-  int messageLength = trackingMsg->GetPackBodySize();
-  do
-  {
-    status = rtpWrapper->WrapMessage(messagePointer, messageLength);
-    if (status == igtl::MessageRTPWrapper::WaitingForFragment || status == igtl::MessageRTPWrapper::PaketReady)
-    {
-      socket->WriteSocket(rtpWrapper->GetPackPointer(), rtpWrapper->GetPackedMSGLocation());
-      messagePointer += rtpWrapper->GetCurMSGLocation();
-      messageLength = trackingMsg->GetPackBodySize() - rtpWrapper->GetCurMSGLocation();
-    }
-  }while(status!=igtl::MessageRTPWrapper::PaketReady);
-  socket->WriteSocket(rtpWrapper->GetPackPointer(), RTP_PAYLOAD_LENGTH+RTP_HEADER_LENGTH);
-  
+  int messageLength = trackingMsg->GetPackSize();
+  status = rtpWrapper->WrapMessageAndSend(socket, messagePointer, messageLength);
+
   phi0 += 0.1;
   phi1 += 0.2;
   phi2 += 0.3;

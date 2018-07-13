@@ -11,10 +11,15 @@
 
 #include <string.h>
 
-#define BUFLEN 512
-#define NPACK 10000
-#define PORT 9930
-
+#ifndef BUFLEN
+    #define BUFLEN 512
+#endif
+#ifndef NPACK
+    #define NPACK 10000
+#endif
+#ifndef PORT
+    #define PORT 9930
+#endif
 void diep(char *s)
 {
   perror(s);

@@ -99,7 +99,7 @@ int VideoStreamIGTLinkServer::StartUDPServer ()
         {
         this->serverUDPSocket->CloseSocket();
         }
-      r = this->serverUDPSocket->CreateUDPServer(this->serverPortNumber);
+      r = this->serverUDPSocket->CreateUDPServer();
       if (r < 0)
         {
         std::cerr << "Cannot create a server socket." << std::endl;

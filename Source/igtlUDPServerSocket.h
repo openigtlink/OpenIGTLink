@@ -106,7 +106,7 @@ public:
   // Description:
   // Creates a UDP server socket at a given port and binds to it.
   // Returns -1 on error. 0 on success.
-  int CreateUDPServer(int port);
+  int CreateUDPServer();
   
   // Desciption:
   // Write the data to all clients

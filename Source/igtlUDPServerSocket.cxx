@@ -120,7 +120,7 @@ int UDPServerSocket::WriteSocket(unsigned char* buffer, unsigned bufferSize)
   return numByteSend;
 }
   
-int UDPServerSocket::CreateUDPServer(int port)
+int UDPServerSocket::CreateUDPServer()
 {
   if (this->m_SocketDescriptor != -1)
   {
