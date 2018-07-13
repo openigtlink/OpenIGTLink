@@ -45,7 +45,7 @@
 
 #include "igtlMutexLock.h"
 #include "igtlLightObject.h"
-
+#include "igtl_types.h"
 
 namespace igtl {
 
@@ -98,6 +98,15 @@ public:
    *  argument is a SimpleMutex object that must be locked prior to calling
    *  this method.  */
   void Wait(SimpleMutexLock * mutex);
+
+  /** Suspend execution of this thread until the condition is signaled or specified time in millisecond elapsed.
+   *  return true if the signal recevied, false if the timeout expired or other error conditions happened.
+   *  See the following links for more infomation about other scenarios:
+   *  https://docs.microsoft.com/en-us/windows/desktop/api/winbase/nf-winbase-signalobjectandwait
+   *  https://www.ibm.com/support/knowledgecenter/en/ssw_i5_54/apis/users_77.htm
+   *  The argument is a SimpleMutex object that must be locked prior to calling
+   *  this method.  */
+  bool Wait(SimpleMutexLock * mutex, igtl_uint32 waitTime);
 
   /** Signal that the condition is true and release one waiting thread */
   void Signal();

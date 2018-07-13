@@ -22,16 +22,21 @@
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 #include "igtlConditionVariable.h"
+#if defined(WIN32) || defined(_WIN32)
+  #include <windows.h>
+#else
+  #include <sys/time.h>
+#endif  // defined(WIN32) || defined(_WIN32)
 
 
 namespace igtl {
-  
+
 ConditionVariable::ConditionVariable()
 {
 #ifdef OpenIGTLink_USE_PTHREADS
@@ -66,10 +71,10 @@ ConditionVariable::~ConditionVariable()
   DeleteCriticalSection( &m_NumberOfWaitersLock );
 #endif
 #endif
-  
+
 }
 
-void ConditionVariable::Signal()  
+void ConditionVariable::Signal()
 {
 #ifdef OpenIGTLink_USE_PTHREADS
   pthread_cond_signal(&m_ConditionVariable);
@@ -163,7 +168,7 @@ void ConditionVariable::Wait(SimpleMutexLock *mutex)
     // This call atomically signals the m_WaitersAreDone event and waits
     // until it can acquire the external mutex.  This is required to
     // ensure fairness
-    SignalObjectAndWait( m_WaitersAreDone, mutex->GetMutexLock(), 
+    SignalObjectAndWait( m_WaitersAreDone, mutex->GetMutexLock(),
                                                              INFINITE, FALSE);
     }
   else
@@ -172,6 +177,66 @@ void ConditionVariable::Wait(SimpleMutexLock *mutex)
     // give to our callers
     WaitForSingleObject( mutex->GetMutexLock(), INFINITE );
     }
+#endif
+#endif
+}
+
+
+bool ConditionVariable::Wait(SimpleMutexLock *mutex, igtl_uint32 waitTime)
+{
+#ifdef OpenIGTLink_USE_PTHREADS
+  bool returnCode = false;
+  struct timeval tval;
+  ::gettimeofday( &tval, 0 );
+  struct timespec targetTime;
+  int seconds = waitTime/1000;
+  int millisecond = waitTime%1000;
+  targetTime.tv_sec  = tval.tv_sec + seconds;
+  targetTime.tv_nsec = tval.tv_usec*1000 + (millisecond * 1000000);
+  int rv = pthread_cond_timedwait(&m_ConditionVariable, &mutex->GetMutexLock(), &targetTime);
+  if (rv == 0) returnCode = true;
+  return returnCode;
+#else
+#ifdef WIN32
+  bool returnCode = false;
+  // Avoid race conditions
+  EnterCriticalSection( &m_NumberOfWaitersLock );
+  m_NumberOfWaiters++;
+  LeaveCriticalSection( &m_NumberOfWaitersLock );
+
+  // This call atomically releases the mutex and waits on the
+  // semaphore until signaled
+  DWORD dwRet = SignalObjectAndWait( mutex->GetMutexLock(), m_Semaphore, waitTime, FALSE );
+
+  // Reacquire lock to avoid race conditions
+  EnterCriticalSection( &m_NumberOfWaitersLock );
+
+  // We're no longer waiting....
+  m_NumberOfWaiters--;
+
+  // Check to see if we're the last waiter after the broadcast
+  int lastWaiter = m_WasBroadcast && m_NumberOfWaiters == 0;
+
+  LeaveCriticalSection( &m_NumberOfWaitersLock );
+
+  // If we're the last waiter thread during this particular broadcast
+  // then let the other threads proceed
+  if (lastWaiter)
+    {
+    // This call atomically signals the m_WaitersAreDone event and waits
+    // until it can acquire the external mutex.  This is required to
+    // ensure fairness
+    SignalObjectAndWait( m_WaitersAreDone, mutex->GetMutexLock(),
+                                                             INFINITE, FALSE);
+    }
+  else
+    {
+    // Always regain the external mutex since that's the guarentee we
+    // give to our callers
+    WaitForSingleObject( mutex->GetMutexLock(), INFINITE );
+    }
+  if (WAIT_OBJECT_0 == dwRet) returnCode = true;
+  return returnCode;
 #endif
 #endif
 }
