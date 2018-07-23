@@ -228,57 +228,49 @@ int H265Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
     {
     pSrcPic->stride[0] = iSourceWidth;
     pSrcPic->stride[1] = pSrcPic->stride[2] = pSrcPic->stride[0] >> 1;
-    videoMessage->SetUseCompress(this->useCompress);
     this->ConvertToLocalImageFormat(pSrcPic);
-    if (this->useCompress)
+
+    igtl_uint32 iNal = 0;
+    encodeRet =x265_encoder_encode(this->pSVCEncoder,&pNals,&iNal,this->H265SrcPicture,NULL);
+    //encodeRet =x265_encoder_encode(this->pSVCEncoder,&pNals,&iNal,NULL,NULL);
+    if (encodeRet>=1)
       {
-      igtl_uint32 iNal = 0;
-      encodeRet =x265_encoder_encode(this->pSVCEncoder,&pNals,&iNal,this->H265SrcPicture,NULL);
-      //encodeRet =x265_encoder_encode(this->pSVCEncoder,&pNals,&iNal,NULL,NULL);
-      if (encodeRet>=1)
-        {
-        igtl_uint64 totalBitStreamSize = 0;
-        for(int j=0;j<iNal;j++){
-          totalBitStreamSize += pNals[j].sizeBytes;
-        }
-        if((pNals[0].type & X265_TYPE_IDR) != 0)
-          {
-          encodedFrameType = FrameTypeKey;
-          }
-        else
-          {
-          // To do, assign other frame type too.
-          encodedFrameType = FrameTypeUnKnown;
-          }
-        videoMessage->SetFrameType(encodedFrameType);
-        videoMessage->SetBitStreamSize(totalBitStreamSize);
-        videoMessage->AllocateScalars();
-        videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
-        videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_X265);
-        videoMessage->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
-        videoMessage->SetWidth(pSrcPic->picWidth);
-        videoMessage->SetHeight(pSrcPic->picHeight);
-        encodedFrameType = pNals[iNal-1].type;
-        if (isGrayImage)
-          {
-          encodedFrameType = pNals[iNal-1].type<<8;
-          }
-        videoMessage->SetFrameType(encodedFrameType);
-        int nalSize = 0;
-        FILE* testFile = fopen("Test.265", "a");
-        for(int j=0;j<iNal;j++){
-          memcpy(&(videoMessage->GetPackFragmentPointer(2)[nalSize]), pNals[j].payload, pNals[j].sizeBytes);
-          nalSize += pNals[j].sizeBytes;
-          //fwrite(pNals[j].payload, 1 , pNals[j].sizeBytes, testFile);
-        }
-        fclose(testFile);
-        videoMessage->Pack();
-        return 0;
-        }
+      igtl_uint64 totalBitStreamSize = 0;
+      for(int j=0;j<iNal;j++){
+        totalBitStreamSize += pNals[j].sizeBytes;
       }
-    else
-      {
-      return this->PackUncompressedData(pSrcPic, videoMessage, isGrayImage);
+      if((pNals[0].type & X265_TYPE_IDR) != 0)
+        {
+        encodedFrameType = FrameTypeKey;
+        }
+      else
+        {
+        // To do, assign other frame type too.
+        encodedFrameType = FrameTypeUnKnown;
+        }
+      videoMessage->SetFrameType(encodedFrameType);
+      videoMessage->SetBitStreamSize(totalBitStreamSize);
+      videoMessage->AllocateScalars();
+      videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_X265);
+      videoMessage->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
+      videoMessage->SetWidth(pSrcPic->picWidth);
+      videoMessage->SetHeight(pSrcPic->picHeight);
+      encodedFrameType = pNals[iNal-1].type;
+      if (isGrayImage)
+        {
+        encodedFrameType = pNals[iNal-1].type<<8;
+        }
+      videoMessage->SetFrameType(encodedFrameType);
+      int nalSize = 0;
+      FILE* testFile = fopen("Test.265", "a");
+      for(int j=0;j<iNal;j++){
+        memcpy(&(videoMessage->GetPackFragmentPointer(2)[nalSize]), pNals[j].payload, pNals[j].sizeBytes);
+        nalSize += pNals[j].sizeBytes;
+        //fwrite(pNals[j].payload, 1 , pNals[j].sizeBytes, testFile);
+      }
+      fclose(testFile);
+      videoMessage->Pack();
+      return 0;
       }
     }
   return -1;

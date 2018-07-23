@@ -244,53 +244,44 @@ int igtlAV1Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::
     static igtl_uint32 messageID = 6;
     messageID ++;
     this->ConvertToLocalImageFormat(pSrcPic);
-    videoMessage->SetUseCompress(this->useCompress);
-    if (this->useCompress)
+    const aom_codec_err_t res2 = aom_codec_encode(codec, inputImage, messageID, 1, 0);
+    if (res2 != AOM_CODEC_OK)
       {
-      const aom_codec_err_t res2 = aom_codec_encode(codec, inputImage, messageID, 1, 0);
-      if (res2 != AOM_CODEC_OK)
+      error_output(codec, "Failed to encode frame");
+      return -1;
+      }
+    iter = NULL;
+    while ((pkt = aom_codec_get_cx_data(codec, &iter)) != NULL)
+      {
+      if (pkt->kind == AOM_CODEC_CX_FRAME_PKT)
         {
-        error_output(codec, "Failed to encode frame");
-        return -1;
-        }
-      iter = NULL;
-      while ((pkt = aom_codec_get_cx_data(codec, &iter)) != NULL)
-        {
-        if (pkt->kind == AOM_CODEC_CX_FRAME_PKT)
+        if((pkt->data.frame.flags & AOM_FRAME_IS_KEY) != 0)
           {
-          if((pkt->data.frame.flags & AOM_FRAME_IS_KEY) != 0)
-            {
-            encodedFrameType = FrameTypeKey;
-            }
-          else
-            {
-            // To do, assign other frame type too.
-            encodedFrameType = FrameTypeUnKnown;
-            }
-          videoMessage->SetBitStreamSize(pkt->data.frame.sz);
-          videoMessage->AllocateScalars();
-          videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
-          videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_AV1);
-          videoMessage->SetEndian(igtl_is_little_endian() == true ? 2 : 1); //little endian is 2 big endian is 1
-          videoMessage->SetWidth(pSrcPic->picWidth);
-          videoMessage->SetHeight(pSrcPic->picHeight);
-          if (isGrayImage)
-            {
-            encodedFrameType = encodedFrameType << 8;
-            }
-          videoMessage->SetFrameType(encodedFrameType);
-          memcpy(videoMessage->GetPackFragmentPointer(2), pkt->data.frame.buf, pkt->data.frame.sz);
-          videoMessage->Pack();
-        }
+          encodedFrameType = FrameTypeKey;
+          }
+        else
+          {
+          // To do, assign other frame type too.
+          encodedFrameType = FrameTypeUnKnown;
+          }
+        videoMessage->SetBitStreamSize(pkt->data.frame.sz);
+        videoMessage->AllocateScalars();
+        videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_AV1);
+        videoMessage->SetEndian(igtl_is_little_endian() == true ? 2 : 1); //little endian is 2 big endian is 1
+        videoMessage->SetWidth(pSrcPic->picWidth);
+        videoMessage->SetHeight(pSrcPic->picHeight);
+        if (isGrayImage)
+          {
+          encodedFrameType = encodedFrameType << 8;
+          }
+        videoMessage->SetFrameType(encodedFrameType);
+        memcpy(videoMessage->GetPackFragmentPointer(2), pkt->data.frame.buf, pkt->data.frame.sz);
+        videoMessage->Pack();
       }
-      if (videoMessage->GetBitStreamSize())
-        {
-        return 0;
-        }
-      }
-    else
+    }
+    if (videoMessage->GetBitStreamSize())
       {
-      return this->PackUncompressedData(pSrcPic, videoMessage,  isGrayImage);
+      return 0;
       }
     return -1;
     }

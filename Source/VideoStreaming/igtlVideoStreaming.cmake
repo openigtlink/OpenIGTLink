@@ -7,6 +7,8 @@ LIST(APPEND OpenIGTLink_SOURCES
   ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoStreamIGTLinkReceiver.cxx
   ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlCodecCommonClasses.cxx
   ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoMetaMessage.cxx
+  ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlI420Decoder.cxx
+  ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlI420Encoder.cxx
   )
 LIST(APPEND OpenIGTLink_INCLUDE_DIRS
   ${PROJECT_SOURCE_DIR}/Source/VideoStreaming
@@ -19,6 +21,8 @@ LIST(APPEND OpenIGTLink_INCLUDE_FILES
   ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoStreamIGTLinkReceiver.h
   ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlCodecCommonClasses.h
   ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVideoMetaMessage.h
+  ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlI420Decoder.h
+  ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlI420Encoder.h
   )
 IF(OpenIGTLink_USE_H264)
   INCLUDE(${OpenIGTLink_SOURCE_DIR}/SuperBuild/External_openh264.cmake)

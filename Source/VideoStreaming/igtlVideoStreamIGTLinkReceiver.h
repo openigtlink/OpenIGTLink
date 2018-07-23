@@ -104,8 +104,6 @@ private:
   
   int   interval;
   
-  bool  useCompress;
-  
   ReadConfigFile cRdCfg;
   
   int TCPServerPort;

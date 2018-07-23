@@ -183,10 +183,6 @@ int VideoStreamIGTLinkServer::ParseConfigForServer()
         {
         this->transportMethod = atoi(strTag[1].c_str());
         }
-      if (strTag[0].compare ("UseCompress") == 0)
-        {
-        this->useCompress = atoi(strTag[1].c_str());
-        }
       if (strTag[0].compare ("NetWorkBandWidth") == 0)
         {
         this->netWorkBandWidth = atoi(strTag[1].c_str());
@@ -220,7 +216,6 @@ int VideoStreamIGTLinkServer::InitializeEncoder()
     {
     this->videoEncoder->SetConfigurationFile(encoderConfigFile);
     this->videoEncoder->SetPicWidthAndHeight(pSrcPic->picWidth,pSrcPic->picHeight);
-    this->videoEncoder->SetUseCompression(this->useCompress);
     iRet = this->videoEncoder->InitializeEncoder();
     }
   return iRet;
@@ -337,7 +332,6 @@ static void* ThreadFunctionServer(void* ptr)
             if (c & igtl::MessageHeader::UNPACK_BODY && strcmp(startVideoMsg->GetCodecType().c_str(), "H264")) // if CRC check is OK
               {
               parentObj->interval = startVideoMsg->GetTimeInterval();
-              parentObj->useCompress = startVideoMsg->GetUseCompress();
               strncpy(parentObj->codecName, startVideoMsg->GetCodecType().c_str(), IGTL_VIDEO_CODEC_NAME_SIZE);
               parentObj->serverConnected     = true;
               parentObj->conditionVar->Signal();
@@ -602,55 +596,51 @@ void VideoStreamIGTLinkServer::CheckEncodedFrameMap()
 
 void VideoStreamIGTLinkServer::SendOriginalData()
 {
-  if(this->useCompress == 0)
+  int kiPicResSize = pSrcPic->picWidth*pSrcPic->picHeight*3>>1;
+  igtl_uint8* pYUV = new igtl_uint8[kiPicResSize];
+  static int messageID = -1;
+  while(this->iTotalFrameToEncode)
     {
-    int kiPicResSize = pSrcPic->picWidth*pSrcPic->picHeight*3>>1;
-    igtl_uint8* pYUV = new igtl_uint8[kiPicResSize];
-    static int messageID = -1;
-    while(this->iTotalFrameToEncode)
+    this->glockInFrame->Lock();
+    int frameNum = this->incommingFrames.size();
+    this->glockInFrame->Unlock();
+    while(frameNum)
       {
       this->glockInFrame->Lock();
-      int frameNum = this->incommingFrames.size();
+      std::map<igtlUint32, igtl_uint8*>::iterator it = this->incommingFrames.begin();
+      memcpy(pYUV,it->second,kiPicResSize);
+      delete it->second;
+      it->second = NULL;
+      this->incommingFrames.erase(it);
+      frameNum = this->incommingFrames.size();
       this->glockInFrame->Unlock();
-      while(frameNum)
-        {
-        this->glockInFrame->Lock();
-        std::map<igtlUint32, igtl_uint8*>::iterator it = this->incommingFrames.begin();
-        memcpy(pYUV,it->second,kiPicResSize);
-        delete it->second;
-        it->second = NULL;
-        this->incommingFrames.erase(it);
-        frameNum = this->incommingFrames.size();
-        this->glockInFrame->Unlock();
-        messageID ++;
-        igtl::VideoMessage::Pointer videoMsg;
-        videoMsg = igtl::VideoMessage::New();
-        videoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
-        videoMsg->SetDeviceName(this->deviceName.c_str());
-        videoMsg->SetBitStreamSize(kiPicResSize);
-        videoMsg->AllocateScalars();
-        videoMsg->SetScalarType(videoMsg->TYPE_UINT8);
-        int endian = (int) (igtl_is_little_endian() == true ? IGTL_VIDEO_ENDIAN_LITTLE : IGTL_VIDEO_ENDIAN_BIG);
-        videoMsg->SetEndian(endian); //little endian is 2 big endian is 1
-        videoMsg->SetWidth(pSrcPic->picWidth);
-        videoMsg->SetHeight(pSrcPic->picHeight);
-        videoMsg->SetMessageID(messageID);
-        memcpy(videoMsg->GetPackFragmentPointer(2), pYUV, kiPicResSize);
-        ServerTimer->GetTime();
-        videoMsg->SetTimeStamp(ServerTimer);
-        videoMsg->Pack();
-        encodedFrame* frame = new encodedFrame();
-        memcpy(frame->messagePackPointer, videoMsg->GetPackPointer(), videoMsg->GetBufferSize());
-        frame->messageDataLength = videoMsg->GetBufferSize();
-        this->glock->Lock();
-        this->CheckEncodedFrameMap();
-        this->encodedFrames.insert(std::pair<igtlUint32, VideoStreamIGTLinkServer::encodedFrame*>(messageID, frame));
-        this->glock->Unlock();
-        }
+      messageID ++;
+      igtl::VideoMessage::Pointer videoMsg;
+      videoMsg = igtl::VideoMessage::New();
+      videoMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
+      videoMsg->SetDeviceName(this->deviceName.c_str());
+      videoMsg->SetBitStreamSize(kiPicResSize);
+      videoMsg->AllocateScalars();
+      int endian = (int) (igtl_is_little_endian() == true ? IGTL_VIDEO_ENDIAN_LITTLE : IGTL_VIDEO_ENDIAN_BIG);
+      videoMsg->SetEndian(endian); //little endian is 2 big endian is 1
+      videoMsg->SetWidth(pSrcPic->picWidth);
+      videoMsg->SetHeight(pSrcPic->picHeight);
+      videoMsg->SetMessageID(messageID);
+      memcpy(videoMsg->GetPackFragmentPointer(2), pYUV, kiPicResSize);
+      ServerTimer->GetTime();
+      videoMsg->SetTimeStamp(ServerTimer);
+      videoMsg->Pack();
+      encodedFrame* frame = new encodedFrame();
+      memcpy(frame->messagePackPointer, videoMsg->GetPackPointer(), videoMsg->GetBufferSize());
+      frame->messageDataLength = videoMsg->GetBufferSize();
+      this->glock->Lock();
+      this->CheckEncodedFrameMap();
+      this->encodedFrames.insert(std::pair<igtlUint32, VideoStreamIGTLinkServer::encodedFrame*>(messageID, frame));
+      this->glock->Unlock();
       }
-    delete[] pYUV;
-    pYUV = NULL;
     }
+  delete[] pYUV;
+  pYUV = NULL;
 }
 
 int VideoStreamIGTLinkServer::EncodeFile(void)

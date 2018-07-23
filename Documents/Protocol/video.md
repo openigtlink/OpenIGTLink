@@ -24,25 +24,23 @@ VIDEO
 
  Data                 | Type             | Description
 ----------------------|------------------|-------------------------------------------------
- VERSION              | uint16           | version number    
- CODEC                | char[4]          | The codec name, Default codec="VP9 ".
- SCALAR_TYPE          | uint8            | Scalar type (2:int8 3:uint8 4:int16 5:uint16 6:int32 7:uint32 10:float32 11:float64)
+ HEADER_VERSION       | uint16           | Header version number
  ENDIAN               | uint8            | Endian for image data (1:BIG 2:LITTLE)
- WIDTH                | uint32           | Video Frame Width
- HEIGHT               | uint32           | Video Frame Height
- ADDITIONALZDIMENSION | uint32           | The frame could be a 3D volume, this field is reserved for future development
+ ENCODING             | char[4]          | FourCC codec name, Default codec="VP90"
  FRAMETYPE            | uint16           | Field to identify frame type, such as key frame or invalid frame. Also, if the type value is larger than 0xFF, it indicates gray frames are encoded
- USECOMPRESS          | int8             | Field indicates if current data is compressed or not. Original data without compression could be transmitted as well.
- BITSTREAM            | uint8[]          | Binary bit stream data
+ COORD                | uint8[3]         | Coordinate system (1:RAS 2:LPS)
+ SIZE                 | uint16           | Video frame size
+ MATRIX               | float32[12]      | Orientation / origin of image
+ SUBVOL_OFFSET        | uint16[3]        | Sub volume offset
+ SUBVOL_SIZE          | uint16[3]        | Sub volume size
 
 STT_VIDEO
 -------------------
 
  Data          | Type          | Description
 ---------------|---------------|-------------------------------------------------
- CODEC         | char[4]       | Command Parameter. The Codec name indicates which codec to use for compression, Default codec="VP9 ".
+ CODEC         | char[4]       | Command Parameter. The Codec name indicates which codec to use for compression, Default codec="VP90".
  TIME_INTERVAL | uint32        | Command Parameter. Minimum time between two frames. Unit is millisecond. Default = 50 ms
- USECOMPRESS   | int8          | Command Parameter. Field indicates if use compression or not.
 
 STP_VIDEO
 -------------------
