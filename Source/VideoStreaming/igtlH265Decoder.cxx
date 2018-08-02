@@ -94,16 +94,7 @@ int H265Decoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage,
     pDecodedPic->stride[1] = pDecodedPic->stride[2] = iWidth>>1;
     pDecodedPic->stride[3] = 0;
     igtl_uint32 dimensions[2] = {static_cast<igtl_uint32>(iWidth), static_cast<igtl_uint32>(iHeight)};
-    int iRet = -1;
-    if (videoMessage->GetUseCompress())
-      {
-      iRet = this->DecodeBitStreamIntoFrame(videoMessage->GetPackFragmentPointer(2), pDecodedPic->data[0], dimensions, iStreamSize);
-      }
-    else
-      {
-      iRet = this->UnpackUncompressedData(videoMessage, pDecodedPic);
-      }
-    return iRet;
+    return this->DecodeBitStreamIntoFrame(videoMessage->GetPackFragmentPointer(2), pDecodedPic->data[0], dimensions, iStreamSize);
     }
   return -1;
 }

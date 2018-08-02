@@ -91,9 +91,7 @@ public:
     this->configFile = std::string("");
     
     this->encodedFrameType = -1;
-    
-    this->useCompress = true;
-    
+
     this->isLossLessLink  = true;
     
     this->initializationDone = false;
@@ -145,12 +143,6 @@ public:
   
   virtual unsigned int GetPicHeight(){return this->picHeight;};
   
-  virtual void SetUseCompression(bool useCompression){
-    this->useCompress = useCompression;
-  };
-  
-  virtual bool GetUseCompression(){return useCompress;};
-  
   virtual int SetLosslessLink(bool linkMethod){this->isLossLessLink = linkMethod; return 0;};
   
   virtual bool GetLosslessLink(){return this->isLossLessLink;};
@@ -180,9 +172,7 @@ protected:
   int encodedFrameType;
   
   ReadConfigFile cRdCfg;
-  
-  bool  useCompress;
-  
+    
   std::string configFile;
   
   bool initializationDone;

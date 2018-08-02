@@ -770,54 +770,45 @@ int H264Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vid
     int frameSize = 0;
     int iLayer = 0;
     this->ConvertToLocalImageFormat(pSrcPic);
-    videoMessage->SetUseCompress(this->useCompress);
-    if(this->useCompress)
+    encodeRet = pSVCEncoder->EncodeFrame(&h264SrcPicture, &sFbi);
+    videoMessage->SetBitStreamSize(sFbi.iFrameSizeInBytes);
+    videoMessage->AllocateScalars();
+    videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_H264);
+    videoMessage->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
+    videoMessage->SetWidth(pSrcPic->picWidth);
+    videoMessage->SetHeight(pSrcPic->picHeight);
+    if (sFbi.eFrameType == videoFrameTypeIDR)
       {
-      encodeRet = pSVCEncoder->EncodeFrame(&h264SrcPicture, &sFbi);
-      videoMessage->SetBitStreamSize(sFbi.iFrameSizeInBytes);
-      videoMessage->AllocateScalars();
-      videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
-      videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_H264);
-      videoMessage->SetEndian(igtl_is_little_endian()==true?2:1); //little endian is 2 big endian is 1
-      videoMessage->SetWidth(pSrcPic->picWidth);
-      videoMessage->SetHeight(pSrcPic->picHeight);
-      if (sFbi.eFrameType == videoFrameTypeIDR)
-        {
-        encodedFrameType = FrameTypeKey;
-        }
-      else
-        {
-        // To do, assign other frame type too.
-        encodedFrameType = FrameTypeUnKnown;
-        }
-      if (isGrayImage)
-        {
-        encodedFrameType = sFbi.eFrameType<<8;
-        }
-      videoMessage->SetFrameType(encodedFrameType);
-      while (iLayer < sFbi.iLayerNum) {
-        SLayerBSInfo* pLayerBsInfo = &sFbi.sLayerInfo[iLayer];
-        if (pLayerBsInfo != NULL) {
-          int iLayerSize = 0;
-          int iNalIdx = pLayerBsInfo->iNalCount - 1;
-          do {
-            iLayerSize += pLayerBsInfo->pNalLengthInByte[iNalIdx];
-            -- iNalIdx;
-          } while (iNalIdx >= 0);
-          frameSize += iLayerSize;
-          for (int i = 0; i < iLayerSize ; i++)
-            {
-            videoMessage->GetPackFragmentPointer(2)[frameSize-iLayerSize+i] = pLayerBsInfo->pBsBuf[i];
-            }
-        }
-        ++ iLayer;
-      }
-      videoMessage->Pack();
+      encodedFrameType = FrameTypeKey;
       }
     else
       {
-      return this->PackUncompressedData(pSrcPic, videoMessage,  isGrayImage);
+      // To do, assign other frame type too.
+      encodedFrameType = FrameTypeUnKnown;
       }
+    if (isGrayImage)
+      {
+      encodedFrameType = sFbi.eFrameType<<8;
+      }
+    videoMessage->SetFrameType(encodedFrameType);
+    while (iLayer < sFbi.iLayerNum) {
+      SLayerBSInfo* pLayerBsInfo = &sFbi.sLayerInfo[iLayer];
+      if (pLayerBsInfo != NULL) {
+        int iLayerSize = 0;
+        int iNalIdx = pLayerBsInfo->iNalCount - 1;
+        do {
+          iLayerSize += pLayerBsInfo->pNalLengthInByte[iNalIdx];
+          -- iNalIdx;
+        } while (iNalIdx >= 0);
+        frameSize += iLayerSize;
+        for (int i = 0; i < iLayerSize ; i++)
+          {
+          videoMessage->GetPackFragmentPointer(2)[frameSize-iLayerSize+i] = pLayerBsInfo->pBsBuf[i];
+          }
+      }
+      ++ iLayer;
+    }
+    videoMessage->Pack();
     }
   return encodeRet;
 };

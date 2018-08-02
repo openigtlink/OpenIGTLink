@@ -168,8 +168,6 @@ public:
   
   int   interval;
   
-  bool  useCompress;
-  
   int   netWorkBandWidth; // in kbps
   
   char  codecName[IGTL_VIDEO_CODEC_NAME_SIZE];

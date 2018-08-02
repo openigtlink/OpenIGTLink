@@ -37,6 +37,9 @@
   #include "igtlMessageFormat2TestMacro.h"
 #endif
 
+#include "igtlI420Encoder.h"
+#include "igtlI420Decoder.h"
+
 #if defined(OpenIGTLink_USE_H264)
   #include "igtlH264Encoder.h"
   #include "igtlH264Decoder.h"
@@ -232,6 +235,14 @@ TEST(VideoMessageTest, YUVandRGBConversion)
 
 TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
   {
+  std::cerr << "--------------------------- " << std::endl;
+  std::cerr << "Begin of I420 tests " << std::endl;
+  I420Encoder* I420StreamEncoder = new I420Encoder();
+  I420Decoder* I420StreamDecoder = new I420Decoder();
+  EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, I420StreamEncoder, I420StreamDecoder, true), 0);
+  std::cerr << "End of I420 tests " << std::endl;
+  std::cerr << "--------------------------- " << std::endl;
+
 #if defined(OpenIGTLink_USE_VP9)
   std::cerr<<"--------------------------- "<<std::endl;
   std::cerr<<"Begin of VPX tests "<<std::endl;
@@ -280,6 +291,14 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
   TEST(VideoMessageTest, EncodeAndDecodeFormatVersion2)
     {
+    std::cerr << "--------------------------- " << std::endl;
+    std::cerr << "Begin of I420 tests " << std::endl;
+    I420Encoder* I420StreamEncoder = new I420Encoder();
+    I420Decoder* I420StreamDecoder = new I420Decoder();
+    EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_2, I420StreamEncoder, I420StreamDecoder, true), 0);
+    std::cerr << "End of I420 tests " << std::endl;
+    std::cerr << "--------------------------- " << std::endl;
+
   #if defined(OpenIGTLink_USE_VP9)
     std::cerr<<"--------------------------- "<<std::endl;
     std::cerr<<"Begin of VPX tests "<<std::endl;

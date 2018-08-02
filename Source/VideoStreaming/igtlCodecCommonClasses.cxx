@@ -299,29 +299,24 @@ void GenericEncoder::ConvertRGBToYUV(igtlUint8 *rgb, igtlUint8 *destination, uns
 
 int GenericEncoder::PackUncompressedData(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage)
 {
-  if(!this->useCompress)
+  int iSourceWidth = pSrcPic->picWidth;
+  int iSourceHeight = pSrcPic->picHeight;
+  long kiPicResSize = iSourceWidth*iSourceHeight * 3 >> 1;
+  videoMessage->SetBitStreamSize(kiPicResSize);
+  videoMessage->AllocateScalars();
+  int endian = (int) (igtl_is_little_endian() == true ? IGTL_VIDEO_ENDIAN_LITTLE : IGTL_VIDEO_ENDIAN_BIG);
+  videoMessage->SetEndian(endian); //little endian is 2 big endian is 1
+  videoMessage->SetWidth(pSrcPic->picWidth);
+  videoMessage->SetHeight(pSrcPic->picHeight);
+  encodedFrameType = FrameTypeKey;
+  if (isGrayImage)
     {
-    int iSourceWidth = pSrcPic->picWidth;
-    int iSourceHeight = pSrcPic->picHeight;
-    long kiPicResSize = iSourceWidth*iSourceHeight * 3 >> 1;
-    videoMessage->SetBitStreamSize(kiPicResSize);
-    videoMessage->AllocateScalars();
-    videoMessage->SetScalarType(videoMessage->TYPE_UINT8);
-    int endian = (int) (igtl_is_little_endian() == true ? IGTL_VIDEO_ENDIAN_LITTLE : IGTL_VIDEO_ENDIAN_BIG);
-    videoMessage->SetEndian(endian); //little endian is 2 big endian is 1
-    videoMessage->SetWidth(pSrcPic->picWidth);
-    videoMessage->SetHeight(pSrcPic->picHeight);
-    encodedFrameType = FrameTypeKey;
-    if (isGrayImage)
-      {
-      encodedFrameType = FrameTypeKey << 8;
-      }
-    videoMessage->SetFrameType(encodedFrameType);
-    memcpy(videoMessage->GetPackFragmentPointer(2), pSrcPic->data[0], kiPicResSize);
-    videoMessage->Pack();
-    return 0;
+    encodedFrameType = FrameTypeKey << 8;
     }
-  return -1;
+  videoMessage->SetFrameType(encodedFrameType);
+  memcpy(videoMessage->GetPackFragmentPointer(2), pSrcPic->data[0], kiPicResSize);
+  videoMessage->Pack();
+  return 0;
 }
 
 } //namespace igtl

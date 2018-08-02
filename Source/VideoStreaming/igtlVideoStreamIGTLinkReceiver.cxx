@@ -86,7 +86,6 @@ VideoStreamIGTLinkReceiver::VideoStreamIGTLinkReceiver(char *fileName)
   this->configFile     = fileName;
   this->rtpWrapper = igtl::MessageRTPWrapper::New();
   strncpy(this->codecType, "H264",4);
-  this->useCompress      = true;
   
   this->interval = 10; //10ms
   this->kpOuputFileName = (char*)"decodedOutput.yuv";
@@ -130,7 +129,6 @@ int VideoStreamIGTLinkReceiver::RunOnTCPSocket()
   startVideoMsg->SetDeviceName("MacCamera5");
   startVideoMsg->SetCodecType(codecType);
   startVideoMsg->SetTimeInterval(interval);
-  startVideoMsg->SetUseCompress(useCompress);
   startVideoMsg->Pack();
   socket->Send(startVideoMsg->GetPackPointer(), startVideoMsg->GetPackSize());
   while (1)
@@ -366,10 +364,6 @@ int VideoStreamIGTLinkReceiver::ParseConfigForClient()
         {
         this->transportMethod = atoi(strTag[1].c_str());
         }
-      if (strTag[0].compare ("UseCompress") == 0)
-        {
-        this->useCompress = atoi(strTag[1].c_str());
-        }
       
       if (strTag[0].compare ("DecodedFile") == 0)
         {
@@ -409,51 +403,34 @@ int VideoStreamIGTLinkReceiver::ProcessVideoStream(igtl_uint8* bitStream, int st
     {
     return 0;
     }
-  if (useCompress)
+
+  this->InitializeDecodedFrame();
+  igtl_uint32 dimensions[2] = {static_cast<igtl_uint32>(Width), static_cast<igtl_uint32>(Height)};
+  igtl_uint64 bitStreamLength = streamLength;
+  int status = decodeInstance->DecodeBitStreamIntoFrame(bitStream, this->decodedFrame, dimensions , bitStreamLength);
+  // return 2 for succefully decode one frame
+  FILE* pYuvFile    = NULL;
+  // Lenght input mode support
+  if (kpOuputFileName.c_str())
     {
-    this->InitializeDecodedFrame();
-    igtl_uint32 dimensions[2] = {static_cast<igtl_uint32>(Width), static_cast<igtl_uint32>(Height)};
-    igtl_uint64 bitStreamLength = streamLength;
-    int status = decodeInstance->DecodeBitStreamIntoFrame(bitStream, this->decodedFrame, dimensions , bitStreamLength);
-    // return 2 for succefully decode one frame
-    FILE* pYuvFile    = NULL;
-    // Lenght input mode support
-    if (kpOuputFileName.c_str()) {
-      pYuvFile = fopen (kpOuputFileName.c_str(), "ab");
-      if (pYuvFile == NULL) {
-        fprintf (stderr, "Can not open yuv file to output result of decoding..\n");
-      }
-    }
-    igtl_uint32 stride[2] = {static_cast<igtl_uint32>(Width), static_cast<igtl_uint32>(Width/2)};
-    SourcePicture pic;
-    pic.data[0] = this->decodedFrame;
-    pic.data[1] = this->decodedFrame+Width*Height;
-    pic.data[2] = this->decodedFrame+Width*Height*5/4;
-    //pic.data[0] =
-    if(pYuvFile)
-      {
-      decodeInstance->Write2File (pYuvFile, pic.data, dimensions, stride);
-      fclose (pYuvFile);
-      }
-    return status;
-    }
-  else
-    {
-    //std::cerr << "No using compression, data size in byte is: " << Width*Height*3/2  <<std::endl;
-    FILE* pYuvFile    = NULL;
     pYuvFile = fopen (kpOuputFileName.c_str(), "ab");
-    unsigned char* pData[3];
-    igtl_uint32 iStride[2] = {static_cast<igtl_uint32>(Width), static_cast<igtl_uint32>(Width/2)};
-    pData[0] = bitStream;
-    pData[1] = pData[0] + Width * Height;
-    pData[2] = pData[1] + Width * Height/4;
-    igtl_uint32 dimensions[2] = {static_cast<igtl_uint32>(Width), static_cast<igtl_uint32>(Height)};
-    decodeInstance->Write2File (pYuvFile, pData, dimensions, iStride);
-    fclose (pYuvFile);
-    pYuvFile = NULL;
-    return 2;
+    if (pYuvFile == NULL)
+      {
+      fprintf (stderr, "Can not open yuv file to output result of decoding..\n");
+      }
     }
-  return 0;
+  igtl_uint32 stride[2] = {static_cast<igtl_uint32>(Width), static_cast<igtl_uint32>(Width/2)};
+  SourcePicture pic;
+  pic.data[0] = this->decodedFrame;
+  pic.data[1] = this->decodedFrame+Width*Height;
+  pic.data[2] = this->decodedFrame+Width*Height*5/4;
+  //pic.data[0] =
+  if(pYuvFile)
+    {
+    decodeInstance->Write2File (pYuvFile, pic.data, dimensions, stride);
+    fclose (pYuvFile);
+    }
+  return status;
 }
 
 }// namespace igtl
