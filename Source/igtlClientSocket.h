@@ -41,11 +41,6 @@ class ServerSocket;
 class IGTLCommon_EXPORT ClientSocket : public Socket
 {
 public:
-  typedef ClientSocket              Self;
-  typedef Socket                    Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
-
   igtlTypeMacro(igtl::ClientSocket, igtl::Socket)
   igtlNewMacro(igtl::ClientSocket);
 

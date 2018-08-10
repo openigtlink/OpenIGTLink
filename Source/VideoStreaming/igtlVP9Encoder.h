@@ -46,6 +46,9 @@ using namespace std;
 class IGTLCommon_EXPORT VP9Encoder: public GenericEncoder
 {
 public:
+  igtlTypeMacro(VP9Encoder, GenericEncoder);
+  igtlNewMacro(VP9Encoder);
+
   VP9Encoder(char * configFile = NULL);
   ~VP9Encoder();
 

@@ -154,12 +154,7 @@ namespace igtl
   
   class IGTLCommon_EXPORT MessageRTPWrapper: public Object
   {
-  public:
-    typedef MessageRTPWrapper              Self;
-    typedef Object               Superclass;
-    typedef SmartPointer<Self>        Pointer;
-    typedef SmartPointer<const Self>  ConstPointer;
-    
+  public:   
     igtlTypeMacro(igtl::MessageRTPWrapper, Object)
     igtlNewMacro(igtl::MessageRTPWrapper);
     

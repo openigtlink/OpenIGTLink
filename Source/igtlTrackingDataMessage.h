@@ -30,11 +30,6 @@ namespace igtl
 class IGTLCommon_EXPORT TrackingDataElement: public Object
 {
 public:
-  typedef TrackingDataElement               Self;
-  typedef Object                         Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::TrackingDataElement, igtl::Object);
   igtlNewMacro(igtl::TrackingDataElement);
 
@@ -104,11 +99,6 @@ class IGTLCommon_EXPORT StartTrackingDataMessage: public MessageBase
 {
 
 public:
-  typedef StartTrackingDataMessage        Self;
-  typedef MessageBase                     Superclass;
-  typedef SmartPointer<Self>              Pointer;
-  typedef SmartPointer<const Self>        ConstPointer;
-
   igtlTypeMacro(igtl::StartTrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StartTrackingDataMessage);
 
@@ -149,11 +139,6 @@ protected:
 class IGTLCommon_EXPORT StopTrackingDataMessage: public MessageBase
 {
 public:
-  typedef StopTrackingDataMessage         Self;
-  typedef MessageBase                     Superclass;
-  typedef SmartPointer<Self>              Pointer;
-  typedef SmartPointer<const Self>        ConstPointer;
-
   igtlTypeMacro(igtl::StopTrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StopTrackingDataMessage);
 
@@ -173,11 +158,6 @@ protected:
 class IGTLCommon_EXPORT RTSTrackingDataMessage: public MessageBase
 {
 public:
-  typedef RTSTrackingDataMessage          Self;
-  typedef MessageBase                     Superclass;
-  typedef SmartPointer<Self>              Pointer;
-  typedef SmartPointer<const Self>        ConstPointer;
-
   /// Status type
   enum {
     STATUS_SUCCESS = 0,
@@ -216,11 +196,6 @@ protected:
 class IGTLCommon_EXPORT TrackingDataMessage: public MessageBase
 {
 public:
-  typedef TrackingDataMessage             Self;
-  typedef MessageBase                     Superclass;
-  typedef SmartPointer<Self>              Pointer;
-  typedef SmartPointer<const Self>        ConstPointer;
-
   igtlTypeMacro(igtl::TrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::TrackingDataMessage);
 

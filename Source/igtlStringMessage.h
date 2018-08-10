@@ -31,11 +31,6 @@ namespace igtl
 class IGTLCommon_EXPORT StringMessage: public MessageBase
 {
 public:
-  typedef StringMessage                  Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::StringMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StringMessage);
 

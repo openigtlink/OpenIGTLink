@@ -36,7 +36,10 @@ extern "C" {
 #define NO_DELAY_DECODING
 class IGTLCommon_EXPORT igtlAV1Decoder : public GenericDecoder
 {
-public: 
+public:
+  igtlTypeMacro(igtlAV1Decoder, GenericDecoder);
+  igtlNewMacro(igtlAV1Decoder);
+
   igtlAV1Decoder();
   ~igtlAV1Decoder();
   

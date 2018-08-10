@@ -129,18 +129,12 @@ protected:
 class IGTLCommon_EXPORT MutexLock : public Object
 {
 public:
-  /** Standard class typedefs. */
-  typedef MutexLock       Self;
-  typedef Object  Superclass;
-  typedef SmartPointer<Self>  Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  /** Run-time information. */
+  igtlTypeMacro(MutexLock,Object);
   
   /** Method for creation. */
   igtlNewMacro(Self);
   
-  /** Run-time information. */
-  igtlTypeMacro(MutexLock,Object);
-
   /** Lock the igtlMutexLock. */
   void Lock( void );
 

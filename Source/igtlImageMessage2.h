@@ -38,11 +38,6 @@ namespace igtl
 class IGTLCommon_EXPORT GetImageMessage2: public MessageBase
 {
 public:
-  typedef GetImageMessage2                Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::GetImageMessage2, igtl::MessageBase);
   igtlNewMacro(igtl::GetImageMessage2);
 
@@ -79,11 +74,6 @@ protected:
 class IGTLCommon_EXPORT ImageMessage2: public MessageBase
 {
 public:
-  typedef ImageMessage2              Self;
-  typedef MessageBase               Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
-
   igtlTypeMacro(igtl::ImageMessage2, igtl::MessageBase)
   igtlNewMacro(igtl::ImageMessage2);
 

@@ -44,11 +44,6 @@ public:
   };
 
 public:
-  typedef PositionMessage                Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::PositionMessage, igtl::MessageBase);
   igtlNewMacro(igtl::PositionMessage);
 

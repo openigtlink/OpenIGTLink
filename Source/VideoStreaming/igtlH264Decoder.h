@@ -60,7 +60,10 @@ namespace igtl {
 
 class IGTLCommon_EXPORT H264Decoder:public GenericDecoder
 {
-public: 
+public:
+  igtlTypeMacro(H264Decoder, GenericDecoder);
+  igtlNewMacro(H264Decoder);
+
   H264Decoder();
   ~H264Decoder();
   

@@ -68,6 +68,9 @@ typedef enum {
 class IGTLCommon_EXPORT H265Encoder: public GenericEncoder
 {
 public:
+  igtlTypeMacro(H265Encoder, GenericEncoder);
+  igtlNewMacro(H265Encoder);
+
   H265Encoder(char * configFile = NULL);
   ~H265Encoder();
   

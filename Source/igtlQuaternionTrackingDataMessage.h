@@ -32,11 +32,6 @@ namespace igtl
 class IGTLCommon_EXPORT QuaternionTrackingDataElement: public Object
 {
 public:
-  typedef QuaternionTrackingDataElement  Self;
-  typedef Object                         Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::QuaternionTrackingDataElement, igtl::Object);
   igtlNewMacro(igtl::QuaternionTrackingDataElement);
 
@@ -114,11 +109,6 @@ class IGTLCommon_EXPORT StartQuaternionTrackingDataMessage: public MessageBase
 {
 
 public:
-  typedef StartQuaternionTrackingDataMessage  Self;
-  typedef MessageBase                         Superclass;
-  typedef SmartPointer<Self>                  Pointer;
-  typedef SmartPointer<const Self>            ConstPointer;
-
   igtlTypeMacro(igtl::StartQuaternionTrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StartQuaternionTrackingDataMessage);
 
@@ -159,11 +149,6 @@ protected:
 class IGTLCommon_EXPORT StopQuaternionTrackingDataMessage: public MessageBase
 {
 public:
-  typedef StopQuaternionTrackingDataMessage   Self;
-  typedef MessageBase                         Superclass;
-  typedef SmartPointer<Self>                  Pointer;
-  typedef SmartPointer<const Self>            ConstPointer;
-
   igtlTypeMacro(igtl::StopQuaternionTrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StopQuaternionTrackingDataMessage);
 
@@ -183,11 +168,6 @@ protected:
 class IGTLCommon_EXPORT RTSQuaternionTrackingDataMessage: public MessageBase
 {
 public:
-  typedef RTSQuaternionTrackingDataMessage  Self;
-  typedef MessageBase                       Superclass;
-  typedef SmartPointer<Self>                Pointer;
-  typedef SmartPointer<const Self>          ConstPointer;
-
   /// Status types
   enum {
     STATUS_SUCCESS = 0,
@@ -224,11 +204,6 @@ protected:
 class IGTLCommon_EXPORT QuaternionTrackingDataMessage: public MessageBase
 {
 public:
-  typedef QuaternionTrackingDataMessage       Self;
-  typedef MessageBase                         Superclass;
-  typedef SmartPointer<Self>                  Pointer;
-  typedef SmartPointer<const Self>            ConstPointer;
-
   igtlTypeMacro(igtl::QuaternionTrackingDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::QuaternionTrackingDataMessage);
 

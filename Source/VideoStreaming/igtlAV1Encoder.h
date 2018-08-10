@@ -36,6 +36,9 @@ extern "C" {
 class IGTLCommon_EXPORT igtlAV1Encoder : public GenericEncoder
 {
 public:
+  igtlTypeMacro(igtlAV1Encoder, GenericEncoder);
+  igtlNewMacro(igtlAV1Encoder);
+
   igtlAV1Encoder(char * configFile = NULL);
   ~igtlAV1Encoder();
 

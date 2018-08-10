@@ -66,12 +66,7 @@ namespace igtl
   /// class IGTL_EXPORT Socket
   class IGTLCommon_EXPORT GeneralSocket : public Object
   {
-  public:
-    typedef GeneralSocket              Self;
-    typedef Object  Superclass;
-    typedef SmartPointer<Self>        Pointer;
-    typedef SmartPointer<const Self>  ConstPointer;
-    
+  public:  
     igtlTypeMacro(igtl::GeneralSocket, igtl::Object)
     igtlNewMacro(igtl::GeneralSocket);
     

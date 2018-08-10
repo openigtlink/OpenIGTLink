@@ -62,11 +62,6 @@ int ReceiveImageData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::P
 class StopImageSendingMessage: public igtl::MessageBase
 {
 public:
-  typedef StopImageSendingMessage  Self;
-  typedef MessageBase                        Superclass;
-  typedef igtl::SmartPointer<Self>                 Pointer;
-  typedef igtl::SmartPointer<const Self>           ConstPointer;
-  
   igtlTypeMacro(StopImageSendingMessage, igtl::MessageBase);
   igtlNewMacro(StopImageSendingMessage);
   

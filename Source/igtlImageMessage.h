@@ -28,11 +28,6 @@ namespace igtl
 class IGTLCommon_EXPORT GetImageMessage: public HeaderOnlyMessageBase
 {
 public:
-  typedef GetImageMessage                Self;
-  typedef HeaderOnlyMessageBase          Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::GetImageMessage, igtl::HeaderOnlyMessageBase);
   igtlNewMacro(igtl::GetImageMessage);
 
@@ -46,12 +41,7 @@ protected:
 // A class for the STP_IMAGE message type.
 class IGTLCommon_EXPORT StopImageMessage: public HeaderOnlyMessageBase
 {
-public:
-  typedef StopImageMessage                Self;
-  typedef HeaderOnlyMessageBase          Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-  
+public: 
   igtlTypeMacro(igtl::StopImageMessage, igtl::HeaderOnlyMessageBase);
   igtlNewMacro(igtl::StopImageMessage);
   
@@ -79,11 +69,6 @@ protected:
 class IGTLCommon_EXPORT ImageMessage: public MessageBase
 {
 public:
-  typedef ImageMessage              Self;
-  typedef MessageBase               Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
-
   igtlTypeMacro(igtl::ImageMessage, igtl::MessageBase)
   igtlNewMacro(igtl::ImageMessage);
 

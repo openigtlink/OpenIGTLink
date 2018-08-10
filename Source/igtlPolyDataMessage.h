@@ -30,11 +30,6 @@ namespace igtl
 class IGTLCommon_EXPORT GetPolyDataMessage: public MessageBase
 {
 public:
-  typedef GetPolyDataMessage            Self;
-  typedef MessageBase                   Superclass;
-  typedef SmartPointer<Self>            Pointer;
-  typedef SmartPointer<const Self>      ConstPointer;
-
   igtlTypeMacro(igtl::GetPolyDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::GetPolyDataMessage);
 
@@ -51,11 +46,6 @@ protected:
 class IGTLCommon_EXPORT RTSPolyDataMessage : public MessageBase
 {
 public:
-  typedef RTSPolyDataMessage            Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::RTSPolyDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::RTSPolyDataMessage);
 
@@ -80,11 +70,6 @@ protected:
 class IGTLCommon_EXPORT StopPolyDataMessage: public MessageBase
 {
 public:
-  typedef StopPolyDataMessage            Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-  
   igtlTypeMacro(igtl::StopPolyDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StopPolyDataMessage);
   
@@ -101,11 +86,6 @@ protected:
 class IGTLCommon_EXPORT StartPolyDataMessage : public MessageBase
 {
 public:
-  typedef StartPolyDataMessage            Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::StartPolyDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StartPolyDataMessage);
 
@@ -129,11 +109,6 @@ class IGTLCommon_EXPORT PolyDataPointArray : public Object {
   typedef std::vector<igtlFloat32> Point;
 
  public:
-  typedef PolyDataPointArray        Self;
-  typedef Object                    Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
-
   igtlTypeMacro(igtl::PolyDataPointArray, igtl::Object);
   igtlNewMacro(igtl::PolyDataPointArray);
   
@@ -194,11 +169,6 @@ class IGTLCommon_EXPORT PolyDataCellArray : public Object {
   };
 
  public:
-  typedef PolyDataCellArray         Self;
-  typedef Object                    Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
-  
   igtlTypeMacro(igtl::PolyDataCellArray, igtl::Object);
   igtlNewMacro(igtl::PolyDataCellArray);
 
@@ -273,11 +243,6 @@ class IGTLCommon_EXPORT PolyDataAttribute : public Object {
   };
 
  public:
-  typedef PolyDataAttribute         Self;
-  typedef Object                    Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
-  
   igtlTypeMacro(igtl::PolyDataAttribute, igtl::Object);
   igtlNewMacro(igtl::PolyDataAttribute);
 
@@ -378,11 +343,6 @@ class IGTLCommon_EXPORT PolyDataMessage: public MessageBase
 {
 public:
   typedef std::vector<PolyDataAttribute::Pointer> AttributeList;
-
-  typedef PolyDataMessage                Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
 
   igtlTypeMacro(igtl::PolyDataMessage, igtl::MessageBase);
   igtlNewMacro(igtl::PolyDataMessage);

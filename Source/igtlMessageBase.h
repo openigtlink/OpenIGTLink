@@ -78,17 +78,13 @@ namespace igtl
   class IGTLCommon_EXPORT MessageBase: public Object
   {
   public:
-    typedef MessageBase               Self;
-    typedef Object                    Superclass;
-    typedef SmartPointer<Self>        Pointer;
-    typedef SmartPointer<const Self>  ConstPointer;
 
 #if OpenIGTLink_HEADER_VERSION >= 2
     // Types for managing meta data
     typedef std::map<std::string, std::pair<IANA_ENCODING_TYPE, std::string> > MetaDataMap;
 #endif
 
-    igtlTypeMacro(igtl::MessageBase, igtl::Object)
+    igtlTypeMacro(MessageBase, Object)
     igtlNewMacro(igtl::MessageBase);
 
     /// Unpack status. They are returned by the Unpack() function.
@@ -372,11 +368,6 @@ namespace igtl
   class IGTLCommon_EXPORT HeaderOnlyMessageBase: public MessageBase
   {
   public:
-    typedef HeaderOnlyMessageBase        Self;
-    typedef MessageBase                  Superclass;
-    typedef SmartPointer<Self>           Pointer;
-    typedef SmartPointer<const Self>     ConstPointer;
-
     igtlTypeMacro(igtl::HeaderOnlyMessageBase, igtl::MessageBase);
     igtlNewMacro(igtl::HeaderOnlyMessageBase);
 
@@ -410,11 +401,6 @@ namespace igtl
 class IGTLCommon_EXPORT name : public  HeaderOnlyMessageBase\
 { \
 public: \
-typedef name                           Self; \
-typedef HeaderOnlyMessageBase          Superclass; \
-typedef SmartPointer<Self>             Pointer; \
-typedef SmartPointer<const Self>       ConstPointer; \
-\
 igtlTypeMacro(igtl::name, igtl::HeaderOnlyMessageBase); \
 igtlNewMacro(igtl::name); \
 \

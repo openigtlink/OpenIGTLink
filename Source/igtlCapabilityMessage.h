@@ -29,11 +29,6 @@ class IGTLCommon_EXPORT CapabilityMessage: public MessageBase
 {
 
 public:
-  typedef CapabilityMessage          Self;
-  typedef MessageBase                Superclass;
-  typedef SmartPointer<Self>         Pointer;
-  typedef SmartPointer<const Self>   ConstPointer;
-
   igtlTypeMacro(igtl::CapabilityMessage, igtl::MessageBase);
   igtlNewMacro(igtl::CapabilityMessage);
 

@@ -27,11 +27,6 @@ namespace igtl
 class IGTLCommon_EXPORT GetColorTableMessage: public MessageBase
 {
 public:
-  typedef GetColorTableMessage           Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::GetColorTableMessage, igtl::MessageBase);
   igtlNewMacro(igtl::GetColorTableMessage);
 
@@ -50,11 +45,6 @@ protected:
 class IGTLCommon_EXPORT ColorTableMessage: public MessageBase
 {
 public:
-  typedef ColorTableMessage         Self;
-  typedef MessageBase               Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
-
   igtlTypeMacro(igtl::ColorTableMessage, igtl::MessageBase)
   igtlNewMacro(igtl::ColorTableMessage);
 

@@ -22,6 +22,9 @@ using namespace std;
 class IGTLCommon_EXPORT I420Encoder: public GenericEncoder
 {
 public:
+  igtlTypeMacro(I420Encoder, GenericEncoder);
+  igtlNewMacro(I420Encoder);
+
   I420Encoder(char * configFile = NULL);
   ~I420Encoder();
   

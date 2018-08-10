@@ -30,11 +30,6 @@ namespace igtl
 class IGTLCommon_EXPORT BindMessageBase: public MessageBase
 {
 public:
-  typedef BindMessageBase                Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::BindMessageBase, igtl::MessageBase);
   igtlNewMacro(igtl::BindMessageBase);
 
@@ -89,11 +84,6 @@ protected:
 class IGTLCommon_EXPORT BindMessage: public BindMessageBase
 {
 public:
-  typedef BindMessage                    Self;
-  typedef BindMessageBase                Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::BindMessage, igtl::BindMessageBase);
   igtlNewMacro(igtl::BindMessage);
 
@@ -122,11 +112,6 @@ protected:
 class IGTLCommon_EXPORT GetBindMessage: public BindMessageBase
 {
 public:
-  typedef GetBindMessage               Self;
-  typedef BindMessageBase              Superclass;
-  typedef SmartPointer<Self>           Pointer;
-  typedef SmartPointer<const Self>     ConstPointer;
-
   igtlTypeMacro(igtl::GetBindMessage, igtl::BindMessageBase);
   igtlNewMacro(igtl::GetBindMessage);
 
@@ -155,11 +140,6 @@ protected:
 class IGTLCommon_EXPORT StartBindMessage: public GetBindMessage
 {
 public:
-  typedef StartBindMessage             Self;
-  typedef GetBindMessage               Superclass;
-  typedef SmartPointer<Self>           Pointer;
-  typedef SmartPointer<const Self>     ConstPointer;
-
   igtlTypeMacro(igtl::StartBindMessage, igtl::GetBindMessage);
   igtlNewMacro(igtl::StartBindMessage);
 
@@ -193,11 +173,6 @@ protected:
 class IGTLCommon_EXPORT StopBindMessage: public MessageBase
 {
 public:
-  typedef StopBindMessage                Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::StopBindMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StopBindMessage);
 
@@ -218,11 +193,6 @@ protected:
 class IGTLCommon_EXPORT RTSBindMessage: public MessageBase
 {
 public:
-  typedef RTSBindMessage                  Self;
-  typedef MessageBase                     Superclass;
-  typedef SmartPointer<Self>              Pointer;
-  typedef SmartPointer<const Self>        ConstPointer;
-
   // Status type
   enum {
     STATUS_SUCCESS = 0,

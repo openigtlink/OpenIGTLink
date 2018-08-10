@@ -26,11 +26,6 @@ namespace igtl
 class IGTLCommon_EXPORT GetTransformMessage: public HeaderOnlyMessageBase
 {
 public:
-  typedef GetTransformMessage          Self;
-  typedef HeaderOnlyMessageBase        Superclass;
-  typedef SmartPointer<Self>           Pointer;
-  typedef SmartPointer<const Self>     ConstPointer;
-
   igtlTypeMacro(igtl::GetTransformMessage, igtl::HeaderOnlyMessageBase);
   igtlNewMacro(igtl::GetTransformMessage);
 
@@ -51,12 +46,6 @@ class IGTLCommon_EXPORT TransformMessage: public MessageBase
 {
 
 public:
-
-  typedef TransformMessage               Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::TransformMessage, igtl::MessageBase);
   igtlNewMacro(igtl::TransformMessage);
 

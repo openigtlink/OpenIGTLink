@@ -458,12 +458,14 @@ static Pointer New(void) \
   return smartPtr; \
 }
 
-/** Macro used to add standard methods to all classes, mainly type
+/** Macro used to add standard methods and typedef to all classes, mainly type
  * information. */
 #define igtlTypeMacro(thisClass,superclass) \
-    virtual const char *GetNameOfClass() const \
-        {return #thisClass;} 
-
+    virtual const char *GetNameOfClass() const {return #thisClass;} \
+    typedef thisClass Self; \
+    typedef superclass Superclass; \
+    typedef SmartPointer<Self> Pointer; \
+    typedef SmartPointer<const Self> ConstPointer;
 
 //namespace igtl
 //{

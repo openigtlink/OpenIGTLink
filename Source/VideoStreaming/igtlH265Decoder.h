@@ -35,6 +35,9 @@ namespace igtl {
   class IGTLCommon_EXPORT H265Decoder:public GenericDecoder
   {
   public: 
+    igtlTypeMacro(H265Decoder, GenericDecoder);
+    igtlNewMacro(H265Decoder);
+
     H265Decoder();
     ~H265Decoder();
     

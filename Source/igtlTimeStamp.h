@@ -30,11 +30,6 @@ namespace igtl
 class IGTLCommon_EXPORT TimeStamp : public Object
 {
 public:
-  typedef TimeStamp                  Self;
-  typedef Object                     Superclass;
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
-
   igtlTypeMacro(TimeStamp, Object);
   igtlNewMacro(Self);
 

@@ -33,11 +33,6 @@ namespace igtl
 class IGTLCommon_EXPORT SensorMessage: public MessageBase
 {
 public:
-  typedef SensorMessage                  Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::SensorMessage, igtl::MessageBase);
   igtlNewMacro(igtl::SensorMessage);
 

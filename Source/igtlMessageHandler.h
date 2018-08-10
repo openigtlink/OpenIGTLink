@@ -26,12 +26,6 @@ namespace igtl
 class IGTLCommon_EXPORT MessageHandler: public Object
 {
  public:
-
-  typedef MessageHandler   Self;
-  typedef Object                    Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
-
   igtlTypeMacro(igtl::MessageHandler, igtl::Object)
   igtlNewMacro(igtl::MessageHandler);
 

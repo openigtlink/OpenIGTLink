@@ -136,11 +136,6 @@ public:
   };
 
 public:
-  typedef NDArrayMessage                 Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::NDArrayMessage, igtl::MessageBase);
   igtlNewMacro(igtl::NDArrayMessage);
 

@@ -24,6 +24,9 @@ namespace igtl {
   class IGTLCommon_EXPORT I420Decoder :public GenericDecoder
   {
   public:
+    igtlTypeMacro(I420Decoder, GenericDecoder);
+    igtlNewMacro(I420Decoder);
+
     I420Decoder();
     ~I420Decoder();
 

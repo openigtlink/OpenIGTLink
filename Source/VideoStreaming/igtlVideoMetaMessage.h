@@ -32,11 +32,6 @@ namespace igtl
 class IGTLCommon_EXPORT VideoMetaElement: public Object
 {
 public:
-  typedef VideoMetaElement               Self;
-  typedef Object                         Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::VideoMetaElement, igtl::Object);
   igtlNewMacro(igtl::VideoMetaElement);
 
@@ -162,11 +157,6 @@ protected:
 class IGTLCommon_EXPORT GetVideoMetaMessage: public MessageBase
 {
 public:
-  typedef GetVideoMetaMessage             Self;
-  typedef MessageBase                     Superclass;
-  typedef SmartPointer<Self>              Pointer;
-  typedef SmartPointer<const Self>        ConstPointer;
-
   igtlTypeMacro(igtl::GetVideoMetaMessage, igtl::MessageBase);
   igtlNewMacro(igtl::GetVideoMetaMessage);
 
@@ -188,11 +178,6 @@ protected:
 class IGTLCommon_EXPORT VideoMetaMessage: public MessageBase
 {
 public:
-  typedef VideoMetaMessage                Self;
-  typedef MessageBase                     Superclass;
-  typedef SmartPointer<Self>              Pointer;
-  typedef SmartPointer<const Self>        ConstPointer;
-
   igtlTypeMacro(igtl::VideoMetaMessage, igtl::MessageBase);
   igtlNewMacro(igtl::VideoMetaMessage);
 
