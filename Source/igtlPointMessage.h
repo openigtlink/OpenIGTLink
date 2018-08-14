@@ -33,11 +33,6 @@ namespace igtl
 class IGTLCommon_EXPORT PointElement: public Object
 {
 public:
-  typedef PointElement                   Self;
-  typedef Object                         Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::PointElement, igtl::Object);
   igtlNewMacro(igtl::PointElement);
 
@@ -120,11 +115,6 @@ protected:
 class IGTLCommon_EXPORT GetPointMessage: public MessageBase
 {
 public:
-  typedef GetPointMessage                 Self;
-  typedef MessageBase                     Superclass;
-  typedef SmartPointer<Self>              Pointer;
-  typedef SmartPointer<const Self>        ConstPointer;
-
   igtlTypeMacro(igtl::GetPointMessage, igtl::MessageBase);
   igtlNewMacro(igtl::GetPointMessage);
 
@@ -143,11 +133,6 @@ protected:
 class IGTLCommon_EXPORT PointMessage: public MessageBase
 {
 public:
-  typedef PointMessage                    Self;
-  typedef MessageBase                     Superclass;
-  typedef SmartPointer<Self>              Pointer;
-  typedef SmartPointer<const Self>        ConstPointer;
-
   igtlTypeMacro(igtl::PointMessage, igtl::MessageBase);
   igtlNewMacro(igtl::PointMessage);
 

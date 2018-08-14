@@ -82,17 +82,11 @@ namespace igtl {
 class IGTLCommon_EXPORT ConditionVariable : public LightObject
 {
 public:
-  /** Standard class typedefs. */
-  typedef ConditionVariable        Self;
-  typedef LightObject              Superclass;
-  typedef SmartPointer<Self>       Pointer;
-  typedef SmartPointer<const Self> ConstPointer;
+  /** Run-time type information (and related methods). */
+  igtlTypeMacro(ConditionVariable, LightObject);
   
   /** Method for creation through the object factory. */
   igtlNewMacro(Self);
-  
-  /** Run-time type information (and related methods). */
-  igtlTypeMacro(ConditionVariable, LightObject);
 
   /** Suspend execution of this thread until the condition is signaled. The
    *  argument is a SimpleMutex object that must be locked prior to calling

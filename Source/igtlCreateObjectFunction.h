@@ -22,8 +22,8 @@
   Copyright (c) Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -43,12 +43,7 @@ namespace igtl
 class CreateObjectFunctionBase: public Object
 {
 public:
-  /** Standard typedefs. */
-  typedef CreateObjectFunctionBase  Self;
-  typedef Object                    Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
-  
+  igtlTypeMacro(CreateObjectFunctionBase, Object);
   /** Create an object and return a pointer to it as an
    * igtl::LightObject. */
   virtual SmartPointer<LightObject> CreateObject() = 0;
@@ -73,10 +68,9 @@ template <class T>
 class CreateObjectFunction : public CreateObjectFunctionBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef CreateObjectFunction  Self;
-  typedef SmartPointer<Self>    Pointer;
-    
+
+  igtlTypeMacro(CreateObjectFunction, CreateObjectFunctionBase);
+
   /** Methods from igtl:LightObject. */
   igtlFactorylessNewMacro(Self);
   LightObject::Pointer CreateObject() { return T::New().GetPointer(); }

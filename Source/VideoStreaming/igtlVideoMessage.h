@@ -32,11 +32,6 @@ class IGTLCommon_EXPORT StartVideoMessage: public MessageBase
 {
   
 public:
-  typedef StartVideoMessage        Self;
-  typedef MessageBase                     Superclass;
-  typedef SmartPointer<Self>              Pointer;
-  typedef SmartPointer<const Self>        ConstPointer;
-  
   igtlTypeMacro(igtl::StartVideoMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StartVideoMessage);
   
@@ -82,11 +77,6 @@ protected:
 class IGTLCommon_EXPORT VideoMessageHeader: public MessageHeader
 {
 public:
-  typedef VideoMessageHeader                Self;
-  typedef MessageHeader                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-  
   igtlTypeMacro(igtl::VideoMessageHeader, igtl::MessageBase);
   igtlNewMacro(igtl::VideoMessageHeader);
   virtual int  GetBodyPackSize() { return m_BodySizeToRead; };
@@ -103,11 +93,6 @@ protected:
 class IGTLCommon_EXPORT StopVideoMessage: public MessageBase
 {
 public:
-  typedef StopVideoMessage                Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-  
   igtlTypeMacro(igtl::StopVideoMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StopVideoMessage);
   
@@ -123,11 +108,6 @@ protected:
 class IGTLCommon_EXPORT VideoMessage: public MessageBase
 {
 public:
-  typedef VideoMessage              Self;
-  typedef MessageBase               Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
-
   igtlTypeMacro(igtl::VideoMessage, igtl::MessageBase)
   igtlNewMacro(igtl::VideoMessage);
 

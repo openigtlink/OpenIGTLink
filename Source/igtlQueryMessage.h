@@ -30,11 +30,6 @@ namespace igtl
 class IGTLCommon_EXPORT QueryMessage: public MessageBase
 {
 public:
-  typedef QueryMessage                  Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::QueryMessage, igtl::MessageBase);
   igtlNewMacro(igtl::QueryMessage);
 

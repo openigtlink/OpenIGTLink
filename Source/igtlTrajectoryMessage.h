@@ -32,11 +32,6 @@ namespace igtl
 class IGTLCommon_EXPORT TrajectoryElement: public Object
 {
 public:
-  typedef TrajectoryElement              Self;
-  typedef Object                         Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::TrajectoryElement, igtl::Object);
   igtlNewMacro(igtl::TrajectoryElement);
 
@@ -150,11 +145,6 @@ protected:
 class IGTLCommon_EXPORT GetTrajectoryMessage: public MessageBase
 {
 public:
-  typedef GetTrajectoryMessage            Self;
-  typedef MessageBase                     Superclass;
-  typedef SmartPointer<Self>              Pointer;
-  typedef SmartPointer<const Self>        ConstPointer;
-
   igtlTypeMacro(igtl::GetTrajectoryMessage, igtl::MessageBase);
   igtlNewMacro(igtl::GetTrajectoryMessage);
 
@@ -173,11 +163,6 @@ protected:
 class IGTLCommon_EXPORT TrajectoryMessage: public MessageBase
 {
 public:
-  typedef TrajectoryMessage               Self;
-  typedef MessageBase                     Superclass;
-  typedef SmartPointer<Self>              Pointer;
-  typedef SmartPointer<const Self>        ConstPointer;
-
   igtlTypeMacro(igtl::TrajectoryMessage, igtl::MessageBase);
   igtlNewMacro(igtl::TrajectoryMessage);
 

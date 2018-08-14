@@ -28,11 +28,6 @@ namespace igtl
 class IGTLCommon_EXPORT GetStatusMessage: public HeaderOnlyMessageBase
 {
 public:
-  typedef GetStatusMessage          Self;
-  typedef HeaderOnlyMessageBase        Superclass;
-  typedef SmartPointer<Self>           Pointer;
-  typedef SmartPointer<const Self>     ConstPointer;
-
   igtlTypeMacro(igtl::GetStatusMessage, igtl::HeaderOnlyMessageBase);
   igtlNewMacro(igtl::GetStatusMessage);
 
@@ -53,11 +48,6 @@ protected:
 class IGTLCommon_EXPORT StatusMessage: public MessageBase
 {
 public:
-  typedef StatusMessage                  Self;
-  typedef MessageBase                    Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::StatusMessage, igtl::MessageBase);
   igtlNewMacro(igtl::StatusMessage);
 

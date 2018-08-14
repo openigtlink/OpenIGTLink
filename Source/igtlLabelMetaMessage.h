@@ -31,11 +31,6 @@ namespace igtl
 class IGTLCommon_EXPORT LabelMetaElement: public Object
 {
 public:
-  typedef LabelMetaElement               Self;
-  typedef Object                         Superclass;
-  typedef SmartPointer<Self>             Pointer;
-  typedef SmartPointer<const Self>       ConstPointer;
-
   igtlTypeMacro(igtl::LabelMetaElement, igtl::Object);
   igtlNewMacro(igtl::LabelMetaElement);
 
@@ -123,11 +118,6 @@ protected:
 class IGTLCommon_EXPORT GetLabelMetaMessage: public MessageBase
 {
 public:
-  typedef GetLabelMetaMessage             Self;
-  typedef MessageBase                     Superclass;
-  typedef SmartPointer<Self>              Pointer;
-  typedef SmartPointer<const Self>        ConstPointer;
-
   igtlTypeMacro(igtl::GetLabelMetaMessage, igtl::MessageBase);
   igtlNewMacro(igtl::GetLabelMetaMessage);
 
@@ -147,11 +137,6 @@ protected:
 class IGTLCommon_EXPORT LabelMetaMessage: public MessageBase
 {
 public:
-  typedef LabelMetaMessage                Self;
-  typedef MessageBase                     Superclass;
-  typedef SmartPointer<Self>              Pointer;
-  typedef SmartPointer<const Self>        ConstPointer;
-
   igtlTypeMacro(igtl::LabelMetaMessage, igtl::MessageBase);
   igtlNewMacro(igtl::LabelMetaMessage);
 

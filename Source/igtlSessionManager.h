@@ -28,12 +28,6 @@ namespace igtl
 class IGTLCommon_EXPORT SessionManager: public Object
 {
  public:
-
-  typedef SessionManager   Self;
-  typedef Object                    Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
-
   igtlTypeMacro(SessionManager, Object)
   igtlNewMacro(SessionManager);
 

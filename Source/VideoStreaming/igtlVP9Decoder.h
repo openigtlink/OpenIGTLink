@@ -54,7 +54,10 @@ extern "C" {
 #define NO_DELAY_DECODING
 class IGTLCommon_EXPORT VP9Decoder:public GenericDecoder
 {
-public: 
+public:
+  igtlTypeMacro(VP9Decoder, GenericDecoder);
+  igtlNewMacro(VP9Decoder);
+
   VP9Decoder();
   ~VP9Decoder();
   

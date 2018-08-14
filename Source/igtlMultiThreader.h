@@ -132,14 +132,8 @@ typedef int MultiThreaderIDType;
 class IGTLCommon_EXPORT MultiThreader : public Object 
 {
 public:
-  /** Standard class typedefs. */
-  typedef MultiThreader         Self;
-  typedef Object  Superclass;
-  typedef SmartPointer<Self>  Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
-
-  igtlNewMacro(Self);  
   igtlTypeMacro(MultiThreader, Object);
+  igtlNewMacro(Self);  
 
   // Description:
   // This is the structure that is passed to the thread that is

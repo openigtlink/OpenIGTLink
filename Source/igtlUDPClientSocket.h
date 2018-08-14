@@ -42,11 +42,6 @@ class UDPServerSocket;
 class IGTLCommon_EXPORT UDPClientSocket : public GeneralSocket
 {
 public:
-  typedef UDPClientSocket              Self;
-  typedef GeneralSocket                Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
-
   igtlTypeMacro(igtl::UDPClientSocket, igtl::GeneralSocket)
   igtlNewMacro(igtl::UDPClientSocket);
   

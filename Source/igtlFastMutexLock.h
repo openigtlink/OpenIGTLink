@@ -64,17 +64,11 @@ namespace igtl
 class IGTLCommon_EXPORT FastMutexLock : public Object
 {
 public:
-  /** Standard class typedefs. */
-  typedef FastMutexLock       Self;
-  typedef Object  Superclass;
-  typedef SmartPointer<Self>  Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  /** Run-time type information. */
+  igtlTypeMacro(FastMutexLock,Object);
   
   /** Method for creation. */
   igtlNewMacro(Self);
-
-  /** Run-time type information. */
-  igtlTypeMacro(FastMutexLock,Object);
 
   /** Lock the igtlFastMutexLock. */
   void Lock();

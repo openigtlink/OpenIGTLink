@@ -62,13 +62,7 @@ class OverRideMap;
 
 class IGTLCommon_EXPORT ObjectFactoryBase : public Object
 {
-public:  
-  /** Standard class typedefs. */
-  typedef ObjectFactoryBase        Self;
-  typedef Object                   Superclass;
-  typedef SmartPointer<Self>       Pointer;
-  typedef SmartPointer<const Self> ConstPointer;
-  
+public:   
   /** Run-time type information (and related methods). */
   igtlTypeMacro(ObjectFactoryBase, Object);
 

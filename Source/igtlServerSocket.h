@@ -42,11 +42,6 @@ namespace igtl
 class IGTLCommon_EXPORT ServerSocket : public Socket
 {
 public:
-  typedef ServerSocket              Self;
-  typedef Socket  Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
-
   igtlTypeMacro(igtl::ServerSocket, igtl::Socket);
   igtlNewMacro(igtl::ServerSocket);
 

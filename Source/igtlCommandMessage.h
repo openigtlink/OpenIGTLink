@@ -30,11 +30,6 @@ public:
   static const int validEncodings[257];
 
 public:
-  typedef CommandMessage            Self;
-  typedef MessageBase               Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
-
   igtlTypeMacro(igtl::CommandMessage, igtl::MessageBase)
   igtlNewMacro(igtl::CommandMessage);
 
@@ -102,11 +97,6 @@ protected:
 class IGTLCommon_EXPORT RTSCommandMessage : public CommandMessage
 {
 public:
-  typedef RTSCommandMessage            Self;
-  typedef CommandMessage               Superclass;
-  typedef SmartPointer<Self>           Pointer;
-  typedef SmartPointer<const Self>     ConstPointer;
-
   igtlTypeMacro(igtl::RTSCommandMessage, igtl::CommandMessage)
   igtlNewMacro(igtl::RTSCommandMessage);
 

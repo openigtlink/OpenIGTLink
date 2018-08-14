@@ -87,6 +87,8 @@ private:
 class IGTLCommon_EXPORT GenericEncoder : public Object
 {
 public:
+  igtlTypeMacro(GenericEncoder, Object);
+
   GenericEncoder(){
     this->configFile = std::string("");
     
@@ -186,6 +188,8 @@ protected:
 class IGTLCommon_EXPORT GenericDecoder : public Object
 {
 public:
+  igtlTypeMacro(igtl::GenericDecoder, igtl::Object);
+
   GenericDecoder(){deviceName = ""; isGrayImage = false;};
   virtual ~GenericDecoder(){};
   

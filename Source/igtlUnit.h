@@ -104,11 +104,6 @@ public:
 
 
 public:
-  typedef Unit                       Self;
-  typedef Object                     Superclass;
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
-
   igtlTypeMacro(Unit, Object);
   igtlNewMacro(Self);
 

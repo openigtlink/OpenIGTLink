@@ -34,10 +34,6 @@
   class classname : public ::igtl::MessageHandler                 \
   {                                                               \
   public:                                                         \
-    typedef classname                      Self;                  \
-    typedef ::igtl::MessageHandler    Superclass;                 \
-    typedef igtl::SmartPointer<Self>             Pointer;         \
-    typedef igtl::SmartPointer<const Self>       ConstPointer;    \
     igtlTypeMacro(classname, ::igtl::MessageHandler);             \
     igtlNewMacro(classname);                                      \
   public:                                                         \
@@ -110,10 +106,6 @@
   class classname : public ::igtl::MessageHandler                         \
   {                                                                     \
   public:                                                               \
-    typedef classname                      Self;                        \
-    typedef ::igtl::MessageHandler    Superclass;                       \
-    typedef igtl::SmartPointer<Self>             Pointer;               \
-    typedef igtl::SmartPointer<const Self>       ConstPointer;          \
     igtlTypeMacro(classname, ::igtl::MessageHandler);                   \
     igtlNewMacro(classname);                                            \
   public:                                                               \
