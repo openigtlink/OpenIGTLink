@@ -36,7 +36,7 @@ If you find any issues or have feature request, please feel free to post
 to [Issues](https://github.com/openigtlink/OpenIGTLink/issues).
 
 The OpenIGTLink community is adapted to the collaborative development model on GitHub.
-[GitHub's instruction"](https://help.github.com/articles/about-collaborative-development-models/)
+[GitHub's instruction](https://help.github.com/articles/about-collaborative-development-models/)
 provides a nice overview of collaborative development models and workflows.
 
 License
