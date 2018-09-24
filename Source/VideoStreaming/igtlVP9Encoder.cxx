@@ -118,7 +118,7 @@ int VP9Encoder::SetRCTaregetBitRate(unsigned int bitRate)
   int bitRateInKilo = bitRate/1000;
   this->cfg.rc_target_bitrate = bitRateInKilo;
   this->cfg.layer_target_bitrate[0] = bitRateInKilo;
-  for (int i = 0; i < this->cfg.ss_number_layers; i++)
+  for (unsigned int i = 0; i < this->cfg.ss_number_layers; i++)
     {
     this->cfg.ss_target_bitrate[i] = bitRateInKilo/this->cfg.ss_number_layers;
     }
@@ -210,7 +210,7 @@ int VP9Encoder::SetPicWidthAndHeight(unsigned int width, unsigned int height)
   this->picHeight = height;
   if(this->picHeight != this->cfg.g_h || this->picWidth != this->cfg.g_w )
     {
-    bool iRet = this->InitializeEncoder();
+    bool iRet = (this->InitializeEncoder() == 1);
     if(iRet==0)
       {
       return 0;
@@ -282,7 +282,7 @@ int VP9Encoder::EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::Vide
         videoMessage->SetBitStreamSize(pkt->data.frame.sz);
         videoMessage->AllocateScalars();
         videoMessage->SetCodecType(IGTL_VIDEO_CODEC_NAME_VP9);
-        int endian = (int) (igtl_is_little_endian() == true ? IGTL_VIDEO_ENDIAN_LITTLE : IGTL_VIDEO_ENDIAN_BIG);
+        int endian = (igtl_is_little_endian() == 1 ? IGTL_VIDEO_ENDIAN_LITTLE : IGTL_VIDEO_ENDIAN_BIG);
         videoMessage->SetEndian(endian); //little endian is 2 big endian is 1
         videoMessage->SetWidth(pSrcPic->picWidth);
         videoMessage->SetHeight(pSrcPic->picHeight);

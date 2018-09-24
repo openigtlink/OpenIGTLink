@@ -65,8 +65,7 @@ int VideoStreamIGTLinkServer::StartTCPServer ()
 {
   if (this->serverIsSet)
     {
-    //----------------------------
-    
+
     if(this->transportMethod==VideoStreamIGTLinkServer::UseTCP)
       {
       serverThreadID = threader->SpawnThread((igtl::ThreadFunctionType)&ThreadFunctionServer, this);
@@ -621,7 +620,7 @@ void VideoStreamIGTLinkServer::SendOriginalData()
       videoMsg->SetDeviceName(this->deviceName.c_str());
       videoMsg->SetBitStreamSize(kiPicResSize);
       videoMsg->AllocateScalars();
-      int endian = (int) (igtl_is_little_endian() == true ? IGTL_VIDEO_ENDIAN_LITTLE : IGTL_VIDEO_ENDIAN_BIG);
+      int endian = (igtl_is_little_endian() == 1 ? IGTL_VIDEO_ENDIAN_LITTLE : IGTL_VIDEO_ENDIAN_BIG);
       videoMsg->SetEndian(endian); //little endian is 2 big endian is 1
       videoMsg->SetWidth(pSrcPic->picWidth);
       videoMsg->SetHeight(pSrcPic->picHeight);

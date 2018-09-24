@@ -106,7 +106,7 @@ const std::string& ReadConfigFile::GetFileName() {
 
 void GenericDecoder::Write2File (FILE* pFp, unsigned char* pData[], igtl_uint32 iDimensions[], igtl_uint32 iStride[])
 {
-  int i;
+  igtl_uint32 i;
   unsigned char*  pPtr = NULL;
   igtl_uint32 iWidth = iDimensions[0];
   igtl_uint32 iHeight = iDimensions[1];
@@ -304,7 +304,7 @@ int GenericEncoder::PackUncompressedData(SourcePicture* pSrcPic, igtl::VideoMess
   long kiPicResSize = iSourceWidth*iSourceHeight * 3 >> 1;
   videoMessage->SetBitStreamSize(kiPicResSize);
   videoMessage->AllocateScalars();
-  int endian = (int) (igtl_is_little_endian() == true ? IGTL_VIDEO_ENDIAN_LITTLE : IGTL_VIDEO_ENDIAN_BIG);
+  int endian = (igtl_is_little_endian() == 1 ? IGTL_VIDEO_ENDIAN_LITTLE : IGTL_VIDEO_ENDIAN_BIG);
   videoMessage->SetEndian(endian); //little endian is 2 big endian is 1
   videoMessage->SetWidth(pSrcPic->picWidth);
   videoMessage->SetHeight(pSrcPic->picHeight);

@@ -110,7 +110,7 @@ public:
   /**
    Get Server connection status, true for connected, false for not connected
    */
-  bool GetServerConnectStatus(){return serverConnected;}
+  bool GetServerConnectStatus(){return serverConnected == 1;}
   
   /**
    Encode the video stream from a source file

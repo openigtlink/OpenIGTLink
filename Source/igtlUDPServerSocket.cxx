@@ -55,6 +55,7 @@ UDPServerSocket::~UDPServerSocket()
 {
 }
 
+//-----------------------------------------------------------------------------
 bool UDPServerSocket::IsMulticastAddreesValid(const char* add)
 {
   //224.0.0.0 through 224.0.0.255, are not routable
@@ -66,12 +67,13 @@ bool UDPServerSocket::IsMulticastAddreesValid(const char* add)
   return address >  0xE00000FF &&
   address <= 0xEFFFFFFF;
 }
-  
+
+//-----------------------------------------------------------------------------
 int UDPServerSocket::AddGroup(const char* add, igtl_uint16 port, unsigned int groupID)
 {
   if (IsMulticastAddreesValid(add))
   {
-    for(int i = 0; i < this->groups.size(); i++)
+    for(std::vector<GroupDest>::size_type i = 0; i < this->groups.size(); i++)
     {
       if (this->groups[i].groupID == groupID &&
           (strcmp((const char *)this->groups[i].address ,add)==0)
@@ -85,10 +87,11 @@ int UDPServerSocket::AddGroup(const char* add, igtl_uint16 port, unsigned int gr
   }
   return 0;
 }
-  
+
+//-----------------------------------------------------------------------------
 int UDPServerSocket::AddClient(const char* add, igtl_uint16 port, unsigned int clientID)
 {
-  for(int i = 0; i < this->clients.size(); i++)
+  for(std::vector<ClientDest>::size_type i = 0; i < this->clients.size(); i++)
   {
     if (this->clients[i].clientID == clientID &&
         (strcmp((const char *)this->clients[i].address ,add)==0)
@@ -101,17 +104,18 @@ int UDPServerSocket::AddClient(const char* add, igtl_uint16 port, unsigned int c
   this->clients.push_back(ClientDest(add, port, clientID));
   return 0;
 }
-  
+
+//-----------------------------------------------------------------------------
 int UDPServerSocket::WriteSocket(unsigned char* buffer, unsigned bufferSize)
 {
   int numByteSend = 0;
-  for(int i = 0; i < this->groups.size(); i++)
+  for(std::vector<GroupDest>::size_type i = 0; i < this->groups.size(); i++)
   {
     this->SetIPAddress((const char*)this->groups[i].address);
     this->SetPortNumber(this->groups[i].portNum);
     numByteSend = SendUDP((char*)buffer, bufferSize);
   }
-  for(int i = 0; i < this->clients.size(); i++)
+  for(std::vector<ClientDest>::size_type i = 0; i < this->clients.size(); i++)
   {
     this->SetIPAddress((const char*)this->clients[i].address);
     this->SetPortNumber(this->clients[i].portNum);
@@ -119,7 +123,8 @@ int UDPServerSocket::WriteSocket(unsigned char* buffer, unsigned bufferSize)
   }
   return numByteSend;
 }
-  
+
+//-----------------------------------------------------------------------------
 int UDPServerSocket::CreateUDPServer()
 {
   if (this->m_SocketDescriptor != -1)
@@ -135,10 +140,11 @@ int UDPServerSocket::CreateUDPServer()
   }
   return 0;
 }
-  
+
+//-----------------------------------------------------------------------------
 int UDPServerSocket::DeleteClient(unsigned int groupID)
 {
-  for(int i = 0; this->groups.size(); i++)
+  for(std::vector<GroupDest>::size_type i = 0; this->groups.size(); i++)
   {
     if (this->groups[i].groupID == groupID)
     {
@@ -154,6 +160,5 @@ void UDPServerSocket::PrintSelf(std::ostream& os) const
 {
   this->Superclass::PrintSelf(os);
 }
-
 
 } // end of igtl namespace
