@@ -464,8 +464,8 @@ static Pointer New(void) \
     virtual const char *GetNameOfClass() const {return #thisClass;} \
     typedef thisClass Self; \
     typedef superclass Superclass; \
-    typedef SmartPointer<Self> Pointer; \
-    typedef SmartPointer<const Self> ConstPointer;
+    typedef igtl::SmartPointer<Self> Pointer; \
+    typedef igtl::SmartPointer<const Self> ConstPointer;
 
 //namespace igtl
 //{
