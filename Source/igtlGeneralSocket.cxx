@@ -28,6 +28,7 @@
 
 #include "igtlGeneralSocket.h"
 #include <string.h>
+#include <stdio.h>
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #include <winsock2.h>
@@ -123,43 +124,12 @@ namespace igtl
       }
   #endif
     int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    const igtl_uint8 loop = 1; //enable loop back to the host, mainly for debug purpose
-    if (setsockopt(sock, IPPROTO_IP, IP_MULTICAST_LOOP,
-                   (const char*)&loop, sizeof loop) < 0) {
-      CloseSocket(sock);
-      return -1;
-    }
-    
-    
-    /*bstruct in_addr addr;
-     addr.s_addr = INADDR_ANY; // the address could be others
-     #if defined (_WIN32)
-     if (setsockopt(sock, IPPROTO_IP, IP_MULTICAST_IF, (const char*)&addr, sizeof addr) < 0) {
-     CloseSocket(sock);
-     return -1;
-     }
-     #else
-     if (setsockopt(this->m_SocketDescriptor, IPPROTO_IP, IP_MULTICAST_IF, &addr, sizeof(struct in_addr)) < 0) {
-     CloseSocket(this->m_SocketDescriptor);
-     return -1;
-     }
-     #endif */
-    
-    //If not otherwise specified, multicast datagrams are sent with a default value of 1, to prevent them to be forwarded beyond the local network. To change the TTL to the value you desire (from 0 to 255), put that value into a variable (here I name it "ttl") and write somewhere in your program:
-    TTL_TYPE ttl = 64;
-    if (setsockopt(sock, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl))<0)
+    int bcast = 1;
+    if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char *)&bcast, sizeof(bcast)) < 0)
       {
       CloseSocket(sock);
       return -1;
       }
-    /*if ( this->BindSocket(this->m_SocketDescriptor, port) != 0)
-     {
-     // failed to bind or listen.
-     this->CloseSocket(this->m_SocketDescriptor);
-     this->m_SocketDescriptor = -1;
-     return -1;
-     }*/ // Bind socket in the server would conflict the binding in the client.
-    // Success.
     return sock;
   }
   
@@ -178,29 +148,45 @@ namespace igtl
       return -1;
       }
   #endif
-    this->m_SocketDescriptor = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    if (BindSocket(this->m_SocketDescriptor, this->PortNum) == 0)
+    int err;
+    struct addrinfo * info;
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_DGRAM;
+    // maximum port number is less than 65536, 128byte is sufficient. std::to_string needs c++ 11 support
+    char portStr[128];
+    sprintf(portStr, "%d", this->PortNum);
+    if (0 != (err = getaddrinfo(this->IPAddress, portStr, &hints, &info)))
       {
-      /*With UDP, you have to bind() the socket in the client because UDP is connectionless, so there is no other way for the stack to know which program to deliver datagrams to for a particular port.
-       
-       If you could recvfrom() without bind(), you'd essentially be asking the stack to give your program all UDP datagrams sent to that computer. Since the stack delivers datagrams to only one program, this would break DNS, Windows' Network Neighborhood, network time sync....*/
-      if (this->joinGroup)
-        {
-        struct ip_mreq imreq;
-        imreq.imr_multiaddr.s_addr = inet_addr(this->IPAddress);
-        imreq.imr_interface.s_addr = INADDR_ANY; // use DEFAULT interface
-        // JOIN multicast group on default interface
-        if (setsockopt(this->m_SocketDescriptor, IPPROTO_IP, IP_ADD_MEMBERSHIP,
-                       (const char *)&imreq, sizeof(struct ip_mreq)) == 0) // windows use (const char*), unix like system use (const void*)
-          {
-          return this->m_SocketDescriptor;
-          }
-        }
-      return this->m_SocketDescriptor;
+      return -1;
       }
-    return -1;
+    int sock;
+    struct addrinfo * p;
+    for (p = info; p != NULL; p = p->ai_next)
+      {
+      if (0 > (sock = socket(p->ai_family, p->ai_socktype, p->ai_protocol)))
+        {
+        continue;
+        }
+
+      if (0 > bind(sock, p->ai_addr, p->ai_addrlen))
+        {
+        CloseSocket(sock);
+        continue;
+        }
+
+      break;
+      }
+    int bcast = 1;
+    if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char *)&bcast, sizeof(bcast)) < 0)
+      {
+      CloseSocket(sock);
+      return -1;
+      }
+    return sock;
   }
-  
+
   //-----------------------------------------------------------------------------
   int GeneralSocket::BindSocket(int socketdescriptor, int port)
   {
@@ -279,7 +265,7 @@ namespace igtl
     // The indicated socket has some activity on it.
     return 1;
   }
-  
+
   //-----------------------------------------------------------------------------
   int GeneralSocket::SelectSockets(const int* sockets_to_select, int size,
                                    unsigned long msec, int* selected_index)
@@ -588,21 +574,19 @@ namespace igtl
   #if defined(_WIN32) && !defined(__CYGWIN__)
     int trys = 0;
   #endif
-    struct sockaddr_in dest;
-    dest.sin_family = AF_INET;
-    dest.sin_addr.s_addr = htonl(INADDR_ANY);
+    struct sockaddr_storage from;
   #if defined(OpenIGTLink_HAVE_GETSOCKNAME_WITH_SOCKLEN_T)
     // store this IP address in dest:
-    socklen_t addressLen = sizeof dest;
+    socklen_t addressLen = sizeof(from);
   #else
-    int addressLen = sizeof(dest);
+    int addressLen = sizeof(from);
   #endif
     
-    dest.sin_port = htons(this->PortNum);
+    //dest.sin_port = htons(this->PortNum);
   #if defined(_WIN32) && !defined(__CYGWIN__)
-    int n = recvfrom(this->m_SocketDescriptor, buffer, length, 0, (struct sockaddr*)&dest, &addressLen);
+    int n = recvfrom(this->m_SocketDescriptor, buffer, length, 0, (struct sockaddr*)&from, &addressLen);
   #else
-    int n = recvfrom(this->m_SocketDescriptor, (void*)buffer, length, 0, (struct sockaddr*)&dest, &addressLen);
+    int n = recvfrom(this->m_SocketDescriptor, (void*)buffer, length, 0, (struct sockaddr*)&from, &addressLen);
   #endif
   #if defined(_WIN32) && !defined(__CYGWIN__)
     if(n == 0)
@@ -636,7 +620,7 @@ namespace igtl
   #endif
     return n;
   }
-  
+
   
   //-----------------------------------------------------------------------------
   int GeneralSocket::SetTimeout(int timeout)

@@ -41,11 +41,10 @@ UDPClientSocket::~UDPClientSocket()
 {
 }
   
-int UDPClientSocket::JoinNetwork(const char* groupIPAddr, int portNum, bool joinGroup)
+int UDPClientSocket::JoinNetwork(const char* groupIPAddr, int portNum)
 {
   this->SetIPAddress(groupIPAddr);
   this->SetPortNumber(portNum);  
-  this->SetJoinGroup(joinGroup);
   this->m_SocketDescriptor = this->CreateUDPClientSocket();
   return this->m_SocketDescriptor;
 }

@@ -113,6 +113,7 @@ namespace igtl
     int SendUDP(const void* data, int length);
     
     /// Receive UDP Diagram data from the socket.
+    /// This function is able to receive the data at a group Ip (broadcast IP) by setting the IP Address 'SetIPAddress()'
     /// This call blocks until some data is read from the socket, unless timeout is set
     /// by SetTimeout() or SetReceiveTimeout().
     int ReceiveUDP(void* data, int length);
@@ -195,7 +196,6 @@ namespace igtl
     static int SelectSockets(const int* sockets_to_select, int size,
                              unsigned long msec, int* selected_index);
 
-    void SetJoinGroup(bool value) { this->joinGroup = value; };
     
   private:
     GeneralSocket(const GeneralSocket&); // Not implemented.
@@ -216,10 +216,7 @@ namespace igtl
     int m_ReceiveTimeoutFlag;
     
     short PortNum;
-    char IPAddress[IP4AddressStrLen];
-
-    bool joinGroup;
-    
+    char IPAddress[IP4AddressStrLen];    
   };
   
 }

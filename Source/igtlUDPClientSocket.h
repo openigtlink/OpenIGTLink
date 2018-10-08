@@ -44,8 +44,8 @@ class IGTLCommon_EXPORT UDPClientSocket : public GeneralSocket
 public:
   igtlTypeMacro(igtl::UDPClientSocket, igtl::GeneralSocket)
   igtlNewMacro(igtl::UDPClientSocket);
-  
-  int JoinNetwork(const char* groupIPAddr, int portNum, bool joinGroup);
+
+  int JoinNetwork(const char* groupIPAddr, int portNum);
 
   int ReadSocket(unsigned char* buffer, unsigned bufferSize);
   

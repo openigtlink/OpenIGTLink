@@ -222,7 +222,7 @@ int VideoStreamIGTLinkReceiver::RunOnUDPSocket()
 {
   igtl::ConditionVariable::Pointer conditionVar = igtl::ConditionVariable::New();
   igtl::SimpleMutexLock* glock = igtl::SimpleMutexLock::New();
-  UDPSocket->JoinNetwork("127.0.0.1", UDPClientPort, 0);
+  UDPSocket->JoinNetwork("127.0.0.1", UDPClientPort);
   ReadSocketAndPush info;
   info.wrapper = rtpWrapper;
   info.clientSocket = UDPSocket;
