@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 
   igtl::UDPClientSocket::Pointer socket;
   socket = igtl::UDPClientSocket::New();
-  int success = socket->JoinNetwork("127.0.0.1", port, 1);
+  int success = socket->JoinNetwork("127.0.0.1", port);
   if (success<0)
     {
       std::cerr << "unable to join network, check if your local machine joined the host more than once. " << std::endl;
