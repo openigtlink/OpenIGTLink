@@ -146,13 +146,13 @@ ADD_TEST(igtlMultiThreaderTest2 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/igtlMultiThrea
 ADD_TEST(igtlMultiThreaderTest3 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/igtlMultiThreaderTest3)
 ADD_TEST(igtlMessageFactoryTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/igtlMessageFactoryTest)
 ADD_TEST(igtlTimeStampTest1 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/igtlTimeStampTest1)
-ADD_TEST(igtlMessageBaseTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/igtlMessageBaseTest ${TestStringFormat1})
+ADD_TEST(igtlMessageBaseTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/igtlMessageBaseTest)
 ADD_TEST(igtlConditionVariableTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/igtlConditionVariableTest ${TestStringFormat1})
 
-ADD_TEST(igtlImageMessageTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/igtlImageMessageTest ${TestStringFormat1})
-ADD_TEST(igtlImageMessage2Test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/igtlImageMessage2Test ${TestStringFormat1})
-ADD_TEST(igtlCapabilityMessageTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/igtlCapabilityMessageTest ${TestStringFormat1})
-ADD_TEST(igtlStatusMessageTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/igtlStatusMessageTest ${TestStringFormat1})
+ADD_TEST(igtlImageMessageTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/igtlImageMessageTest)
+ADD_TEST(igtlImageMessage2Test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/igtlImageMessage2Test)
+ADD_TEST(igtlCapabilityMessageTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/igtlCapabilityMessageTest)
+ADD_TEST(igtlStatusMessageTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/igtlStatusMessageTest)
 ADD_TEST(igtlTransformMessageTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/igtlTransformMessageTest ${TestStringFormat1})
 ADD_TEST(igtlPositionMessageTest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/igtlPositionMessageTest ${TestStringFormat1})
 

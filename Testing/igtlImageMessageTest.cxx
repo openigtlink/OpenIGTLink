@@ -111,6 +111,56 @@ TEST(ImageMessageTest, Unpack)
   EXPECT_EQ(r, 0);
 }
 
+#if OpenIGTLink_PROTOCOL_VERSION >= 3
+
+TEST(ImageMessageTest, MetaDataGetsPackedAndRestoredFormatVersion2)
+{
+  // Message construction
+  int ext_x=2, ext_y=3, ext_z=4;
+  igtl::ImageMessage::Pointer msg = igtl::ImageMessage::New();
+  msg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
+  msg->SetScalarTypeToUint16();
+  msg->SetDimensions(2, 3, 4);
+  msg->SetNumComponents(1);
+  msg->AllocateScalars();
+  igtlUint16* data = static_cast<igtlUint16*>(msg->GetScalarPointer());
+  for (igtlUint16 i = 0; i < ext_x*ext_y*ext_z; ++i, ++data) {
+    *data = 42;
+  }
+  msg->SetMetaDataElement("key", IANA_TYPE_UTF_8, "value");
+  msg->Pack();
+  
+  // Message transport
+  igtl::MessageHeader::Pointer header = igtl::MessageHeader::New();
+  header->InitPack();
+  memcpy(header->GetPackPointer(), msg->GetPackPointer(), header->GetPackSize());
+  header->Unpack();
+  
+  EXPECT_EQ(IGTL_HEADER_VERSION_2, header->GetHeaderVersion());
+  
+  igtl::ImageMessage::Pointer target = igtl::ImageMessage::New();
+  target->SetMessageHeader(header);
+  target->AllocatePack();
+  
+  EXPECT_EQ(target->GetPackBodySize(), msg->GetPackBodySize());
+  
+  memcpy(target->GetPackBodyPointer(), msg->GetPackBodyPointer(), target->GetPackBodySize());
+  target->Unpack();
+  
+  // Message comparison
+  EXPECT_EQ(IGTL_HEADER_VERSION_2, target->GetHeaderVersion());
+  
+  target->GetDimensions(ext_x, ext_y, ext_z);
+  EXPECT_EQ(2, ext_x); // fails!
+  EXPECT_EQ(3, ext_y); // fails!
+  EXPECT_EQ(4, ext_z); // fails!
+  
+  data = static_cast<igtlUint16*>(target->GetScalarPointer());
+  for (igtlUint16 i = 0; i < ext_x*ext_y*ext_z; ++i, ++data) {
+    EXPECT_EQ(42, *data); // even leads to access violations!
+  }
+}
+#endif
 
 int main(int argc, char **argv)
 {

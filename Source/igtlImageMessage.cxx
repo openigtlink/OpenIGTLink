@@ -354,8 +354,8 @@ int ImageMessage::CalculateContentBufferSize()
 
 int ImageMessage::PackContent()
 {
-  AllocateBuffer();
-
+  AllocateScalars();
+  
   igtl_image_header* image_header = (igtl_image_header*)m_ImageHeader;
 
   image_header->header_version           = IGTL_IMAGE_HEADER_VERSION;
