@@ -1,0 +1,17 @@
+import sys
+sys.path.append('../../build/bin')
+import OpenIGTLinkPython
+serverSocket=OpenIGTLinkPython.ServerSocket_New()
+serverSocket.CreateServer(18944)
+socket=serverSocket.WaitForConnection(10000)
+header=OpenIGTLinkPython.MessageBase_New()
+header.InitPack()
+socket.Receive(header.GetPackPointer(),header.GetPackSize())
+header.Unpack()
+transformMSG=OpenIGTLinkPython.TransformMessage_New()
+transformMSG.SetMessageHeader(header.GetPointer())
+transformMSG.AllocatePack()
+socket.Receive(transformMSG.GetPackBodyPointer(),transformMSG.GetPackBodySize())
+transformMSG.Unpack(1)
+pos=OpenIGTLinkPython.floatArray(3)
+transformMSG.GetPosition(pos)

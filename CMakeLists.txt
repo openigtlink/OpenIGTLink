@@ -40,6 +40,10 @@ OPTION(OpenIGTLink_USE_AV1 "Link the AV1 tree." OFF)
 OPTION(OpenIGTLink_USE_WEBSOCKET "Build the Websocket." OFF)
 
 #-----------------------------------------------------------------------------
+# Configure SWIG for Python
+OPTION(USE_SWIG_PYTHON "Use SWIG for Python wrapping." OFF)
+
+#-----------------------------------------------------------------------------
 # OpenIGTLink build configuration options.
 OPTION(BUILD_SHARED_LIBS "Build OpenIGTLink with shared libraries." OFF)
 SET(OpenIGTLink_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
@@ -298,3 +302,33 @@ ENDIF()
 IF(OpenIGTLink_BUILD_DOCUMENTATION)
   ADD_SUBDIRECTORY(Documents/Doxygen)
 ENDIF()
+
+#-----------------------------------------------------------------------------
+# SWIG for Python
+IF(${OpenIGTLink_PROTOCOL_VERSION} GREATER "2" AND USE_SWIG_PYTHON)
+    FIND_PACKAGE(SWIG REQUIRED)
+    INCLUDE(${SWIG_USE_FILE})
+    INCLUDE_DIRECTORIES(${OpenIGTLink_INCLUDE_DIRS})
+    set(CMAKE SWIG OUTDIR {root})
+
+    SET(CMAKE_SWIG_FLAGS "")
+    FIND_PACKAGE(PythonLibs REQUIRED)
+    INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
+
+    CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/igtlConfigure.h.in
+      ${OpenIGTLink_SOURCE_DIR}/Source/igtlConfigure.h)
+
+    SET_SOURCE_FILES_PROPERTIES(OpenIGTLinkPython.i PROPERTIES CPLUSPLUS ON)
+    SET_SOURCE_FILES_PROPERTIES(OpenIGTLinkPython.i PROPERTIES SWIG_FLAGS "-cpperraswarn")
+    IF(NOT OpenIGTLink_BUILD_SHARED_LIBS)
+    Message(FATAL_ERROR, "When working with multiple SWIG modules, you should take care not to use static libraries. For example,
+        if you have a static library libfoo.a and you link a collection of SWIG modules with that library,
+        each module will get its own private copy of the library code inserted into it.
+        This is very often NOT what you want and it can lead to unexpected or bizarre program behavior.
+        When working with dynamically loadable modules, you should try to work exclusively with shared libraries.")
+    ELSE()
+        SWIG_ADD_LIBRARY(OpenIGTLinkPython LANGUAGE python TYPE MODULE SOURCES OpenIGTLinkPython.i)
+    ENDIF()
+    SWIG_LINK_LIBRARIES(OpenIGTLinkPython ${PYTHON_LIBRARIES} ${LINK_LIBS} OpenIGTLink)
+ENDIF()
+

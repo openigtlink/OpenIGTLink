@@ -50,9 +50,6 @@ public:
   /// Gets the device uid.
   std::string GetDeviceUID();
   
-  /// Gets the data type.
-  std::string GetDataType();
-  
 protected:
   QueryMessage();
   ~QueryMessage();
