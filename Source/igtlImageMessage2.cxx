@@ -398,6 +398,17 @@ void* ImageMessage2::GetScalarPointer()
   return (void*)m_Image;
 }
 
+int ImageMessage2::SetScalarPointer(char* image, igtlUint64 size)
+{
+  memcpy(m_Image, &image[0], size);
+  return 1;
+}
+
+void ImageMessage2::GetImageData(char* destDataPointer)
+{
+    memcpy(destDataPointer, m_Image, GetImageSize());
+}
+
 #ifdef FRAGMENTED_PACK  
 void  ImageMessage2::SetScalarPointer(void * p)
 {

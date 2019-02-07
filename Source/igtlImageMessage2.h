@@ -271,6 +271,12 @@ public:
   /// Gets a pointer to the scalar data.
   virtual void* GetScalarPointer();
 
+  /// Copys a char pointer with size into the scalar pointer
+  int SetScalarPointer(char* image, igtlUint64 size);
+
+  /// Copy the m_image pointer to external char pointer
+  void GetImageData(char * destDataPointer);
+
 #ifdef  FRAGMENTED_PACK 
   /// Sets the pointer to the scalar data (for fragmented pack support).
   virtual void  SetScalarPointer(void * p);

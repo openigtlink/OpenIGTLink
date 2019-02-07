@@ -16,6 +16,7 @@
 
 #include "igtl_header.h"
 #include "igtl_image.h"
+#include "string.h"
 
 namespace igtl {
 
@@ -345,6 +346,17 @@ void ImageMessage::AllocateScalars()
 void* ImageMessage::GetScalarPointer()
 {
   return (void*)m_Image;
+}
+
+int ImageMessage::SetScalarPointer(char* image, igtlUint64 size)
+{
+  memcpy(m_Image, &image[0], size);
+  return 1;
+}
+
+void ImageMessage::GetImageData(char* destDataPointer)
+{
+    memcpy(destDataPointer, m_Image, GetImageSize());
 }
 
 int ImageMessage::CalculateContentBufferSize()
