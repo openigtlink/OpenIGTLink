@@ -56,22 +56,76 @@ int VP9Decoder::DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, 
     igtl_uint64 iStreamSize = videoMessage->GetBitStreamSize();
     pDecodedPic->picWidth = iWidth;
     pDecodedPic->picHeight = iHeight;
-    pDecodedPic->data[1]= pDecodedPic->data[0] + iWidth*iHeight;
-    pDecodedPic->data[2]= pDecodedPic->data[1] + iWidth*iHeight/4;
-    pDecodedPic->stride[0] = iWidth;
-    pDecodedPic->stride[1] = pDecodedPic->stride[2] = iWidth>>1;
-    pDecodedPic->stride[3] = 0;
-    igtl_uint32 dimensions[2] = {static_cast<igtl_uint32>(iWidth), static_cast<igtl_uint32>(iHeight)};
-    return this->DecodeBitStreamIntoFrame(videoMessage->GetPackFragmentPointer(2), pDecodedPic->data[0], dimensions, iStreamSize);
-    }
+    if (!vpx_codec_decode(&codec, videoMessage->GetPackFragmentPointer(2), (unsigned int)iStreamSize, NULL, 0))
+      {
+      iter = NULL;
+      if ((outputImage = vpx_codec_get_frame(&codec, &iter)) != NULL)
+        {
+        int stride[3] = { outputImage->stride[0], outputImage->stride[1], outputImage->stride[2] };
+        int convertedDimensions[2] = { vpx_img_plane_width(outputImage, 0) *
+          ((outputImage->fmt & VPX_IMG_FMT_HIGHBITDEPTH) ? 2 : 1), vpx_img_plane_height(outputImage, 0) };
+        if (outputImage->fmt == VPX_IMG_FMT_I420)
+        {
+            pDecodedPic->data[1]= pDecodedPic->data[0] + iWidth*iHeight;
+            pDecodedPic->data[2]= pDecodedPic->data[1] + iWidth*iHeight/4;
+            pDecodedPic->stride[0] = iWidth;
+            pDecodedPic->stride[1] = pDecodedPic->stride[2] = iWidth>>1;
+            pDecodedPic->stride[3] = 0;
+            ComposeByteSteam(outputImage->planes, convertedDimensions, stride, pDecodedPic->data[0], FormatI420);
+        }
+        else if (outputImage->fmt == VPX_IMG_FMT_I444)
+        {
+            pDecodedPic->data[1]= pDecodedPic->data[0] + iWidth*iHeight;
+            pDecodedPic->data[2]= pDecodedPic->data[1] + iWidth*iHeight;
+            pDecodedPic->stride[0] = iWidth;
+            pDecodedPic->stride[1] = pDecodedPic->stride[2] = iWidth;
+            pDecodedPic->stride[3] = 0;
+            ComposeByteSteam(outputImage->planes, convertedDimensions, stride, pDecodedPic->data[0], FormatI444);
+        }
+        else
+        {
+            return -1;
+        }
+        return 2;
+        }
+      }
+    else
+      {
+      vpx_codec_dec_init(&codec, decoder->codec_interface(), NULL, 0);
+      std::cerr << "decode failed" << std::endl;
+      }
+    return -1;
+  }
   return -1;
 }
 
-void VP9Decoder::ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[3], igtl_uint8 *outputFrame)
+void VP9Decoder::ComposeByteSteam(igtl_uint8** inputData, int dimension[2], int iStride[3], igtl_uint8 *outputFrame, VideoFormatType format)
 {
   int plane;
-  int dimensionW [3] = {dimension[0],dimension[0]/2,dimension[0]/2};
-  int dimensionH [3] = {dimension[1],dimension[1]/2,dimension[1]/2};
+  int dimensionW [3];
+  int dimensionH [3];
+  if(format==FormatI420)
+  {
+     dimensionW [0] = dimension[0];
+     dimensionW [1] = dimension[0]/2;
+     dimensionW [2] = dimension[0]/2;
+     dimensionH [0] = dimension[1];
+     dimensionH [1] = dimension[1]/2;
+     dimensionH [2] = dimension[1]/2;
+  }
+  else if(format==FormatI444)
+  {
+     dimensionW [0] = dimension[0];
+     dimensionW [1] = dimension[0];
+     dimensionW [2] = dimension[0];
+     dimensionH [0] = dimension[0];
+     dimensionH [1] = dimension[1];
+     dimensionH [2] = dimension[1];
+  }
+  else
+  {
+      return;
+  }
   int shift = 0;
   for (plane = 0; plane < 3; ++plane)
     {
@@ -100,7 +154,18 @@ int VP9Decoder::DecodeBitStreamIntoFrame(unsigned char* bitstream,igtl_uint8* ou
       int stride[3] = { outputImage->stride[0], outputImage->stride[1], outputImage->stride[2] };
       int convertedDimensions[2] = { vpx_img_plane_width(outputImage, 0) *
         ((outputImage->fmt & VPX_IMG_FMT_HIGHBITDEPTH) ? 2 : 1), vpx_img_plane_height(outputImage, 0) };
-      ComposeByteSteam(outputImage->planes, convertedDimensions, stride, outputFrame);
+      if (outputImage->fmt == VPX_IMG_FMT_I420)
+      {
+          ComposeByteSteam(outputImage->planes, convertedDimensions, stride, outputFrame, FormatI420);
+      }
+      else if (outputImage->fmt == VPX_IMG_FMT_I444)
+      {
+          ComposeByteSteam(outputImage->planes, convertedDimensions, stride, outputFrame, FormatI444);
+      }
+      else
+      {
+          return -1;
+      }
       return 2;
       }
     }

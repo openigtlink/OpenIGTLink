@@ -28,10 +28,11 @@
 namespace igtl {
 
 /**
- * @brief Enumerate the type of video format
+ * @brief Enumerate the type of video format,  Only YV12, I420, I422, I444 images are supported in the codec. RGB format are not supported yet.
  */
 typedef enum {
-  FormatI420       = 1     //// only YUV420 is supported now
+  FormatI420       = 1,     ////  YUV420
+  FormatI444        = 2     //// I444,
 } VideoFormatType;
 
 typedef enum {

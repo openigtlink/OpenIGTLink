@@ -72,25 +72,45 @@ std::string testFileName(OpenIGTLink_SOURCE_ROOTDIR);
 int startIndex = 0;
 int  inputFrameNum = 20;
 
-int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDecoder* videoStreamDecoder, bool compareImage)
+int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDecoder* videoStreamDecoder, VideoFormatType type, bool compareImage)
 {
   // Get thread information
   int kiPicResSize = Width*Height;
-  igtl_uint8* imagePointer = new igtl_uint8[kiPicResSize*3/2];
-  memset(imagePointer, 0, Width * Height * 3 / 2);
   SourcePicture* pSrcPic = new SourcePicture();
-  pSrcPic->colorFormat = FormatI420;
-  pSrcPic->picWidth = Width; // check the test image
-  pSrcPic->picHeight = Height;
-  pSrcPic->data[0] = imagePointer;
-  pSrcPic->data[1] = pSrcPic->data[0] + kiPicResSize;
-  pSrcPic->data[2] = pSrcPic->data[1] + kiPicResSize/4;
-  pSrcPic->stride[0] = pSrcPic->picWidth;
-  pSrcPic->stride[1] = pSrcPic->stride[2] = pSrcPic->stride[0] >> 1;
-  
   SourcePicture* pDecodedPic = new SourcePicture();
-  pDecodedPic->data[0] = new igtl_uint8[kiPicResSize*3/2];
-  memset(pDecodedPic->data[0], 0, Width * Height * 3 / 2);
+  igtl_uint8* imagePointer;
+  if(type == FormatI420)
+  {
+      imagePointer = new igtl_uint8[kiPicResSize*3/2];
+      memset(imagePointer, 0, Width * Height * 3 / 2);
+      pSrcPic->colorFormat = FormatI420;
+      pSrcPic->picWidth = Width; // check the test image
+      pSrcPic->picHeight = Height;
+      pSrcPic->data[0] = imagePointer;
+      pSrcPic->data[1] = pSrcPic->data[0] + kiPicResSize;
+      pSrcPic->data[2] = pSrcPic->data[1] + kiPicResSize/4;
+      pSrcPic->stride[0] = pSrcPic->picWidth;
+      pSrcPic->stride[1] = pSrcPic->stride[2] = pSrcPic->stride[0] >> 1;
+
+      pDecodedPic->data[0] = new igtl_uint8[kiPicResSize*3/2];
+      memset(pDecodedPic->data[0], 0, Width * Height * 3 / 2);
+  }
+  else if(type == FormatI444)
+  {
+      imagePointer = new igtl_uint8[kiPicResSize*3];
+      memset(imagePointer, 0, Width * Height * 3);
+      pSrcPic->colorFormat = FormatI444;
+      pSrcPic->picWidth = Width; // check the test image
+      pSrcPic->picHeight = Height;
+      pSrcPic->data[0] = imagePointer;
+      pSrcPic->data[1] = pSrcPic->data[0] + kiPicResSize;
+      pSrcPic->data[2] = pSrcPic->data[1] + kiPicResSize;
+      pSrcPic->stride[0] = pSrcPic->picWidth;
+      pSrcPic->stride[1] = pSrcPic->stride[2] = pSrcPic->stride[0];
+
+      pDecodedPic->data[0] = new igtl_uint8[kiPicResSize*3];
+      memset(pDecodedPic->data[0], 0, Width * Height * 3);
+  }
   int totalFrame = 0;
   for(int i = 0; i <inputFrameNum; i++)
   {
@@ -176,10 +196,21 @@ int TestWithVersion(int version, GenericEncoder* videoStreamEncoder, GenericDeco
             if (compareImage)
             {
               //TestDebugCharArrayCmp(pDecodedPic->data[0], imagePointer, kiPicResSize * 3 / 2);
-              if (memcmp(pDecodedPic->data[0], imagePointer, kiPicResSize * 3 / 2) != 0)
+              if(type == FormatI420)
               {
-                return -1;
+                 if (memcmp(pDecodedPic->data[0], imagePointer, kiPicResSize * 3 / 2) != 0)
+                 {
+                   return -1;
+                 }
               }
+              else if(type == FormatI444)
+              {
+                  if (memcmp(pDecodedPic->data[0], imagePointer, kiPicResSize * 3) != 0)
+                  {
+                    return -1;
+                  }
+              }
+
             }
               //EXPECT_EQ(memcmp(pDecodedPic->data[0], pSrcPic->data[0],kiPicResSize*3/2),0);
           }
@@ -239,7 +270,7 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
   std::cerr << "Begin of I420 tests " << std::endl;
   I420Encoder* I420StreamEncoder = new I420Encoder();
   I420Decoder* I420StreamDecoder = new I420Decoder();
-  EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, I420StreamEncoder, I420StreamDecoder, true), 0);
+  EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, I420StreamEncoder, I420StreamDecoder, FormatI420, true), 0);
   std::cerr << "End of I420 tests " << std::endl;
   std::cerr << "--------------------------- " << std::endl;
 
@@ -251,11 +282,11 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
   VPXStreamEncoder->SetPicWidthAndHeight(Width,Height);
   VPXStreamEncoder->SetLosslessLink(true);
   VPXStreamEncoder->InitializeEncoder();
-  EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, VPXStreamEncoder, VPXStreamDecoder,true),0);
+  EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, VPXStreamEncoder, VPXStreamDecoder,FormatI420, true),0);
   VPXStreamEncoder->SetSpeed(VPXStreamEncoder->FastestSpeed);
   VPXStreamEncoder->SetLosslessLink(false);
   std::cerr<<"Encoding Time Using Maximum Speed: "<<std::endl;
-  EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, VPXStreamEncoder, VPXStreamDecoder, false),0);
+  EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, VPXStreamEncoder, VPXStreamDecoder, FormatI420, false),0);
   std::cerr<<"End of VPX tests "<<std::endl;
   std::cerr<<"--------------------------- "<<std::endl;
 #endif
@@ -266,7 +297,7 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
   H264Decoder* H264StreamDecoder = new H264Decoder();
   H264StreamEncoder->SetPicWidthAndHeight(Width,Height);
   H264StreamEncoder->InitializeEncoder();
-  TestWithVersion(IGTL_HEADER_VERSION_1, H264StreamEncoder, H264StreamDecoder,false);
+  TestWithVersion(IGTL_HEADER_VERSION_1, H264StreamEncoder, H264StreamDecoder, FormatI420, false);
   std::cerr<<"End of H264 tests "<<std::endl;
   std::cerr<<"--------------------------- "<<std::endl;
 #endif
@@ -278,11 +309,11 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
   AOStreamEncoder->SetPicWidthAndHeight(Width, Height);
   AOStreamEncoder->SetLosslessLink(true);
   AOStreamEncoder->InitializeEncoder();
-  EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, AOStreamEncoder, AOMStreamDecoder, true), 0);
+  EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, AOStreamEncoder, AOMStreamDecoder, FormatI420, true), 0);
   AOStreamEncoder->SetSpeed(AOStreamEncoder->FastestSpeed);
   AOStreamEncoder->SetLosslessLink(false);
   std::cerr << "Encoding Time Using Maximum Speed: " << std::endl;
-  EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, AOStreamEncoder, AOMStreamDecoder, false), 0);
+  EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_1, AOStreamEncoder, AOMStreamDecoder, FormatI420, false), 0);
   std::cerr << "End of AOM tests " << std::endl;
   std::cerr << "--------------------------- " << std::endl;
 #endif
@@ -295,7 +326,7 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
     std::cerr << "Begin of I420 tests " << std::endl;
     I420Encoder* I420StreamEncoder = new I420Encoder();
     I420Decoder* I420StreamDecoder = new I420Decoder();
-    EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_2, I420StreamEncoder, I420StreamDecoder, true), 0);
+    EXPECT_EQ(TestWithVersion(IGTL_HEADER_VERSION_2, I420StreamEncoder, I420StreamDecoder, FormatI420, true), 0);
     std::cerr << "End of I420 tests " << std::endl;
     std::cerr << "--------------------------- " << std::endl;
 
@@ -307,11 +338,11 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
     VPXStreamEncoder->SetPicWidthAndHeight(Width,Height);
     VPXStreamEncoder->InitializeEncoder();
     VPXStreamEncoder->SetLosslessLink(true);
-    TestWithVersion(IGTL_HEADER_VERSION_2, VPXStreamEncoder, VPXStreamDecoder,true);
+    TestWithVersion(IGTL_HEADER_VERSION_2, VPXStreamEncoder, VPXStreamDecoder, FormatI420, true);
     VPXStreamEncoder->SetSpeed(VPXStreamEncoder->FastestSpeed);
     VPXStreamEncoder->SetLosslessLink(false);
     std::cerr<<"Encoding Time Using Maximum Speed: "<<std::endl;
-    TestWithVersion(IGTL_HEADER_VERSION_2, VPXStreamEncoder, VPXStreamDecoder,false);
+    TestWithVersion(IGTL_HEADER_VERSION_2, VPXStreamEncoder, VPXStreamDecoder, FormatI420, false);
     std::cerr<<"End of VPX tests "<<std::endl;
     std::cerr<<"--------------------------- "<<std::endl;
   #endif
@@ -322,7 +353,7 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
     H264Decoder* H264StreamDecoder = new H264Decoder();
     H264StreamEncoder->SetPicWidthAndHeight(Width,Height);
     H264StreamEncoder->InitializeEncoder();
-    TestWithVersion(IGTL_HEADER_VERSION_2, H264StreamEncoder, H264StreamDecoder,false);
+    TestWithVersion(IGTL_HEADER_VERSION_2, H264StreamEncoder, H264StreamDecoder, FormatI420, false);
     std::cerr<<"End of H264 tests "<<std::endl;
     std::cerr<<"--------------------------- "<<std::endl;
   #endif
@@ -334,11 +365,11 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
       H265StreamEncoder->SetPicWidthAndHeight(Width,Height);
       H265StreamEncoder->InitializeEncoder();
       H265StreamEncoder->SetLosslessLink(true);
-      TestWithVersion(IGTL_HEADER_VERSION_2, H265StreamEncoder, H265StreamDecoder,true);
+      TestWithVersion(IGTL_HEADER_VERSION_2, H265StreamEncoder, H265StreamDecoder, FormatI420, true);
       H265StreamEncoder->SetSpeed(8);
       H265StreamEncoder->SetLosslessLink(false);
       std::cerr<<"Encoding Time Using Maximum Speed: "<<std::endl;
-      TestWithVersion(IGTL_HEADER_VERSION_2, H265StreamEncoder, H265StreamDecoder,false);
+      TestWithVersion(IGTL_HEADER_VERSION_2, H265StreamEncoder, H265StreamDecoder, FormatI420, false);
       std::cerr<<"End of OpenHEVC tests "<<std::endl;
       std::cerr<<"--------------------------- "<<std::endl;
   #endif
@@ -350,13 +381,34 @@ TEST(VideoMessageTest, EncodeAndDecodeFormatVersion1)
     AOMStreamEncoder->SetPicWidthAndHeight(Width, Height);
     AOMStreamEncoder->InitializeEncoder();
     AOMStreamEncoder->SetLosslessLink(true);
-    TestWithVersion(IGTL_HEADER_VERSION_2, AOMStreamEncoder, AOMStreamDecoder, true);
+    TestWithVersion(IGTL_HEADER_VERSION_2, AOMStreamEncoder, AOMStreamDecoder, FormatI420, true);
     AOMStreamEncoder->SetSpeed(AOMStreamEncoder->FastestSpeed);
     AOMStreamEncoder->SetLosslessLink(false);
     std::cerr << "Encoding Time Using Maximum Speed: " << std::endl;
-    TestWithVersion(IGTL_HEADER_VERSION_2, AOMStreamEncoder, AOMStreamDecoder, false);
+    TestWithVersion(IGTL_HEADER_VERSION_2, AOMStreamEncoder, AOMStreamDecoder, FormatI420, false);
     std::cerr << "End of AOM tests " << std::endl;
     std::cerr << "--------------------------- " << std::endl;
+  #endif
+    }
+
+  TEST(VideoMessageTest, I444EncodeAndDecodeFormatVersion2)
+    {
+  #if defined(OpenIGTLink_USE_VP9)
+    std::cerr<<"--------------------------- "<<std::endl;
+    std::cerr<<"Begin of VPX I444 frame tests "<<std::endl;
+    VP9Encoder* VPXStreamEncoder = new VP9Encoder();
+    VP9Decoder* VPXStreamDecoder = new VP9Decoder();
+    VPXStreamEncoder->SetPicWidthAndHeight(Width,Height);
+    VPXStreamEncoder->SetImageFormat(FormatI444);
+    bool status = VPXStreamEncoder->InitializeEncoder();
+    VPXStreamEncoder->SetLosslessLink(true);
+    TestWithVersion(IGTL_HEADER_VERSION_2, VPXStreamEncoder, VPXStreamDecoder, FormatI444, true);
+    VPXStreamEncoder->SetSpeed(VPXStreamEncoder->FastestSpeed);
+    VPXStreamEncoder->SetLosslessLink(false);
+    std::cerr<<"Encoding Time Using Maximum Speed: "<<std::endl;
+    TestWithVersion(IGTL_HEADER_VERSION_2, VPXStreamEncoder, VPXStreamDecoder, FormatI444, false);
+    std::cerr<<"End of VPX tests "<<std::endl;
+    std::cerr<<"--------------------------- "<<std::endl;
   #endif
     }
 #endif

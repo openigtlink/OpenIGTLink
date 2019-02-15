@@ -56,6 +56,7 @@ VP9Encoder::VP9Encoder(char *configFile):GenericEncoder()
   isLossLessLink = true;
   codecSpeed = 0;
   FillSpecificParameters ();
+  SetImageFormat(FormatI420);
 }
 
 VP9Encoder::~VP9Encoder()
@@ -96,6 +97,26 @@ int VP9Encoder::SetRCMode(int value)
     error_output(codec, "Failed to set RC mode");
     return -1;
     }
+  return 0;
+}
+
+int VP9Encoder::SetImageFormat(VideoFormatType value)
+{
+  if (value == FormatI420)
+  {
+     this->cfg.g_profile = 0;
+     inputImage->fmt = VPX_IMG_FMT_I420;
+  }
+  else if (value == FormatI444)
+  {
+     this->cfg.g_profile = 1;
+     inputImage->fmt = VPX_IMG_FMT_I444;
+  }
+  else
+  {
+      error_output(codec, "Not supported image format");
+      return -1;
+  }
   return 0;
 }
 
@@ -178,7 +199,11 @@ int VP9Encoder::InitializeEncoder()
   cfg.g_lag_in_frames = 0;
   cfg.g_w = this->GetPicWidth();
   cfg.g_h = this->GetPicHeight();
-  vpx_img_alloc(inputImage, VPX_IMG_FMT_I420, cfg.g_w,
+  if (inputImage->fmt == VPX_IMG_FMT_NONE)
+  {
+      return -1;
+  }
+  vpx_img_alloc(inputImage, inputImage->fmt, cfg.g_w,
                 cfg.g_h, 1);
   if (vpx_codec_enc_init(codec, encoder->codec_interface(), &cfg, 0))
     {
@@ -235,10 +260,11 @@ int VP9Encoder::ConvertToLocalImageFormat(SourcePicture* pSrcPic)
   int plane;
   for (plane = 0; plane < 3; ++plane)
     {
-    unsigned char *buf = inputImage->planes[plane];
+    unsigned char *buf ;
     const int w = vpx_img_plane_width(inputImage, plane) *
     ((inputImage->fmt & VPX_IMG_FMT_HIGHBITDEPTH) ? 2 : 1);
     const int h = vpx_img_plane_height(inputImage, plane);
+    buf = inputImage->planes[plane];
     memcpy(buf, pSrcPic->data[plane], w*h);
     }
   
