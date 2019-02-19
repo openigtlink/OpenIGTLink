@@ -235,7 +235,7 @@ void igtl_export igtl_message_dump_hex(FILE* stream, const void* message, int by
 
   for (j = 0; j < cols_in_last_row; j ++)
     {
-    fprintf(stream, "%02x ", p[i]);
+    fprintf(stream, "%02x ", p[j]);
     }
   fprintf(stream, "\n");
   
