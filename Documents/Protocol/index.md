@@ -77,7 +77,7 @@ Size as the total size of Extended Header, Content, and Metadata, because
 this new definition allows the old OpenIGTLink programs can still tell the
 size of the rest of the message, and skip reading the byte stream until the
 beginning of the next message. The size of the content can be computed as:
-BODY_SIZE - (EXT_HEADER_SIZE + METADAT_SIZE).
+BODY_SIZE - (EXT_HEADER_SIZE + METADATA_SIZE).
 
 
 Header + Extended Header
@@ -96,10 +96,10 @@ Header + Extended Header
   +---------------+---------------+---------------+
   
   
-  58                60              64        68         72
-  +-----------------+---------------+---------+-----------+
-  | EXT_HEADER_SIZE | METADATA_SIZE | MSG_ID  | RESERVED  |
-  +-----------------+---------------+---------+-----------+
+  58                60                     62              66       70
+  +-----------------+----------------------+---------------+--------+
+  | EXT_HEADER_SIZE | METADATA_HEADER_SIZE | METADATA_SIZE | MSG_ID |
+  +-----------------+----------------------+---------------+--------+
 ~~~~
 
 The formats of the Header and Extended Header sections are consistent among
