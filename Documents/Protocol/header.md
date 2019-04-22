@@ -68,7 +68,7 @@ CRC
 ---
 The 64-bit CRC used in OpenIGTLink protocol is based on
 [ECMA-182 standard](http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-182.pdf).
-An example code is available in [igtl_util.c](/Source/igtlutil/igtl_unit.h)
+An example code is available in [igtl_util.c](/Source/igtlutil/igtl_util.c)
 in the OpenIGTLink library.
 
 Extended Header Fields
