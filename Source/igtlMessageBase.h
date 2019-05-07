@@ -321,7 +321,7 @@ namespace igtl
     unsigned short m_HeaderVersion;
 
     /// A character string for the device name (message name).
-    std::string    m_DeviceName;
+    mutable std::string m_DeviceName;
 
     /// A time stamp (second) for message creation. It consists of fields for seconds
     /// (m_TimeStampSec)and fractions of a second (m_TimeStampSecFraction).
