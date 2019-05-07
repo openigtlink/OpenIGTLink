@@ -488,6 +488,12 @@ bool MessageBase::UnpackMetaData()
       m_MetaDataMap[key] = std::pair<IANA_ENCODING_TYPE, std::string>((IANA_ENCODING_TYPE)metaDataEntries[i].value_encoding, value);
       }
 
+    if (m_MetaDataMap.find(IGTL_DEVICE_NAME_METADATA_KEY) != m_MetaDataMap.end())
+    {
+      // Overwrite device name to workaround 20 character device name limit
+      m_DeviceName = m_MetaDataMap.find(IGTL_DEVICE_NAME_METADATA_KEY)->second.second;
+    }
+
     return true;
     }
 
