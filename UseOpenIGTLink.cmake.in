@@ -25,5 +25,6 @@ include(${OpenIGTLink_LIBRARY_TARGETS_FILE})
 
 IF(OpenIGTLink_USE_WEBSOCKET)
   SET(CMAKE_PREFIX_PATH "${CMAKE_BINARY_DIR}/websocketpp")
-  find_package(WebSocket REQUIRED)
+  find_package(websocketpp REQUIRED)
+  INCLUDE(${OpenIGTLink_DIR}/UseWebSocket.cmake)
 ENDIF()  
