@@ -104,7 +104,7 @@ int webSocketClient::Receive(void* data, int& length)
     }
   std::string a = m_messages.front();
   int messageLen = a.length();
-  if(length and messageLen>=length)
+  if(length && messageLen>=length)
     {
     memcpy(data, a.c_str(), length);
     }

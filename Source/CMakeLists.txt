@@ -211,9 +211,11 @@ IF (NOT (${CMAKE_VERSION} VERSION_LESS 3.4))
   # Configure WebSocket
   # Create the link to the WebSocket libraries
   IF(OpenIGTLink_USE_WEBSOCKET)
-    FIND_PACKAGE(WebSocket REQUIRED)
-    LIST(APPEND LINK_LIBS WebSocket)
-
+    FIND_PACKAGE(websocketpp REQUIRED)
+    INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/UseWebSocket.cmake)
+    # Copy the UseWebSocket.cmake file to the binary tree for setting up websocket build environment.
+    CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/Source/WebSocket/UseWebSocket.cmake
+      ${OpenIGTLink_BINARY_DIR}/UseWebSocket.cmake COPYONLY IMMEDIATE)
     LIST(APPEND OpenIGTLink_SOURCES
       ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebServerSocket.cxx
       ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebClientSocket.cxx
@@ -223,9 +225,9 @@ IF (NOT (${CMAKE_VERSION} VERSION_LESS 3.4))
       ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebServerSocket.h
       ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket/igtlWebClientSocket.h
     )
-
     LIST(APPEND OpenIGTLink_INCLUDE_DIRS
       ${CMAKE_CURRENT_SOURCE_DIR}/WebSocket
+      ${WEBSOCKETPP_INCLUDE_DIR}
       )
   ENDIF()
 ELSE()
@@ -261,9 +263,6 @@ IF (NOT (${CMAKE_VERSION} VERSION_LESS 3.4))
     IF(OpenIGTLink_USE_AV1 AND (NOT AV1_FOUND))
       add_dependencies(OpenIGTLink AV1)
     ENDIF()
-  ENDIF()
-  IF(OpenIGTLink_USE_WEBSOCKET)
-    add_dependencies(OpenIGTLink WebSocket)
   ENDIF()
 ENDIF()
 

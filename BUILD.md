@@ -107,6 +107,30 @@ Useful OpenHEVC build intructions:
 
 http://openhevc.github.io/openHEVC/
 
+WebSocket
+---------------
+You might want to use OpenIGTLink library to perform websocket communication. 
+
+* Prerequisites
+This functionality is only tested for Mac OSX platform and Windows platform (VS 2015, boost version 1.62). The websocketpp project needs to be build and installed first, below is a build example for Mac OSX platform, Windows build uses CMAKE GUI for configuration. 
+~~~~
+$ git clone https://github.com/zaphoyd/websocketpp
+$ mkdir websocketpp-build
+$ cd websocketpp-build
+$ cmake -DCMAKE_INSTALL_PREFIX=${path-to-your-installation} ../websocketpp
+$ make & make install
+~~~~
+
+Then go to the build directory of the OpenIGTLink, run these commands:
+
+~~~~
+$ cmake -DOpenIGTLink_USE_WEBSOCKET=ON -DBUILD_EXAMPLES=ON -Dwebsocketpp_DIR:PATH=${path-to-your-installation}/lib/cmake/websocketpp ${your-openigtlink_source}
+$ make
+$ ./bin/WebSocketServer ${your-openigtlink_source}/Examples/WebSocket 9002
+~~~~
+
+Open your browser and type: localhost:9002, there will be a connect button on the page, simply click it and you will see updating tracking data.
+
 Other Platforms
 ---------------
 
