@@ -16,7 +16,7 @@ Then configure using CMake. The library requires CMake version higher than 2.4.
 ~~~~
 $ mkdir OpenIGTLink-build
 $ cd OpenIGTLink-build
-$ cmake -DBUILD_EXAMPLES:BOOL=ON ../OpenIGTLink
+$ cmake -DBUILD_EXAMPLES:BOOL=ON ../
 $ make
 ~~~~
 
@@ -71,14 +71,14 @@ In the case of Linux and Mac, after installing the required program in the Prere
 the build of openigtlink with codec is very straightforward: 
 
 ~~~~
-$ cmake -DBUILD_VIDEOSTREAM:BOOL=ON -DLINK_H264:BOOL=ON -DOpenIGTLink_PROTOCOL_VERSION_3:BOOL=ON ../OpenIGTLink
+$ cmake -DBUILD_VIDEOSTREAM:BOOL=ON -DLINK_H264:BOOL=ON -DOpenIGTLink_PROTOCOL_VERSION_3:BOOL=ON ../
 $ make
 ~~~~
 
 or for VP9 configuration:
 
 ~~~~
-$ cmake -DBUILD_VIDEOSTREAM:BOOL=ON -DOpenIGTLink_USE_VP9:BOOL=ON -DOpenIGTLink_PROTOCOL_VERSION_3:BOOL=ON ../OpenIGTLink
+$ cmake -DBUILD_VIDEOSTREAM:BOOL=ON -DOpenIGTLink_USE_VP9:BOOL=ON -DOpenIGTLink_PROTOCOL_VERSION_3:BOOL=ON ../
 $ make
 ~~~~
 
