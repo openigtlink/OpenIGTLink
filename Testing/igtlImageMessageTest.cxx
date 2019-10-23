@@ -109,6 +109,50 @@ TEST(ImageMessageTest, Unpack)
   //The imageHeader is byte-wized converted, so we skip the comparison of the image header.
   int r = memcmp((const char*)imageReceiveMsg->GetPackBodyPointer()+IGTL_IMAGE_HEADER_SIZE, (const void*)(test_image_message+IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE), (size_t)(TEST_IMAGE_MESSAGE_SIZE));
   EXPECT_EQ(r, 0);
+    
+    
+  // Reuse message test
+  igtl::Matrix4x4 inMatrix2 = {{inT[1],inS[0],inN[2],inOrigin[0]},
+    {inT[0],inS[2],inN[0],inOrigin[1]},
+    {inT[2],inS[1],inN[1],inOrigin[2]},
+    {inT[3],inS[3],inN[3],inOrigin[3]}};
+  imageSendMsg->SetMatrix(inMatrix2);
+  imageSendMsg->Pack();
+  headerMsg->InitPack();
+  memcpy(headerMsg->GetPackPointer(), (const void*)imageSendMsg->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
+  imageReceiveMsg->SetMessageHeader(headerMsg);
+  imageReceiveMsg->AllocatePack();
+  memcpy(imageReceiveMsg->GetPackBodyPointer(), imageSendMsg->GetPackBodyPointer(), IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
+  imageReceiveMsg->Unpack();
+  
+  messageHeader = (igtl_header *)imageReceiveMsg->GetPackPointer();
+  EXPECT_STREQ(messageHeader->device_name, "DeviceName");
+  EXPECT_STREQ(messageHeader->name, "IMAGE");
+  EXPECT_EQ(messageHeader->header_version, 1);
+  EXPECT_EQ(messageHeader->timestamp, 1234567892);
+  EXPECT_EQ(messageHeader->body_size, IGTL_IMAGE_HEADER_SIZE+TEST_IMAGE_MESSAGE_SIZE);
+  
+  imageReceiveMsg->GetDimensions(returnSize);
+  EXPECT_THAT(returnSize,testing::ElementsAreArray(size));
+  imageReceiveMsg->GetSpacing(returnSpacing);
+  EXPECT_TRUE(ArrayFloatComparison(returnSpacing, spacing, 3, ABS_ERROR));
+  imageReceiveMsg->GetSubVolume(returnSvsize, returnSvoffset);
+  EXPECT_THAT(returnSvsize,testing::ElementsAreArray(svsize));
+  EXPECT_THAT(returnSvoffset,testing::ElementsAreArray(svoffset));
+  EXPECT_EQ(imageReceiveMsg->GetScalarType(), IGTL_IMAGE_STYPE_TYPE_UINT8);
+  EXPECT_EQ(imageReceiveMsg->GetEndian(), IGTL_IMAGE_ENDIAN_LITTLE);
+  EXPECT_EQ(imageReceiveMsg->GetCoordinateSystem(), IGTL_IMAGE_COORD_RAS);
+  
+  igtl::Matrix4x4 outMatrix2 = {{0.0,0.0,0.0,0.0},
+    {0.0,0.0,0.0,0.0},
+    {0.0,0.0,0.0,0.0},
+    {0.0,0.0,0.0,0.0}};
+  imageReceiveMsg->GetMatrix(outMatrix2);
+  EXPECT_TRUE(MatrixComparison(outMatrix2, inMatrix2, ABS_ERROR));
+  //The imageHeader is byte-wized converted, so we skip the comparison of the image header.
+  r = memcmp((const char*)imageReceiveMsg->GetPackBodyPointer()+IGTL_IMAGE_HEADER_SIZE, (const void*)(test_image_message+IGTL_HEADER_SIZE+IGTL_IMAGE_HEADER_SIZE), (size_t)(TEST_IMAGE_MESSAGE_SIZE));
+  EXPECT_EQ(r, 0);
 }
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
@@ -159,6 +203,44 @@ TEST(ImageMessageTest, MetaDataGetsPackedAndRestoredFormatVersion2)
   for (igtlUint16 i = 0; i < ext_x*ext_y*ext_z; ++i, ++data) {
     EXPECT_EQ(42, *data); // even leads to access violations!
   }
+  
+  
+  // reuse message test
+  msg->SetMatrix(inMatrix);
+  msg->Pack();
+  header->InitPack();
+  memcpy(header->GetPackPointer(), msg->GetPackPointer(), header->GetPackSize());
+  header->Unpack();
+  
+  EXPECT_EQ(IGTL_HEADER_VERSION_2, header->GetHeaderVersion());
+  
+  target = igtl::ImageMessage::New();
+  target->SetMessageHeader(header);
+  target->AllocatePack();
+  
+  EXPECT_EQ(target->GetPackBodySize(), msg->GetPackBodySize());
+  
+  memcpy(target->GetPackBodyPointer(), msg->GetPackBodyPointer(), target->GetPackBodySize());
+  target->Unpack();
+  
+  // Message comparison
+  EXPECT_EQ(IGTL_HEADER_VERSION_2, target->GetHeaderVersion());
+  
+  target->GetDimensions(ext_x, ext_y, ext_z);
+  EXPECT_EQ(2, ext_x); // fails!
+  EXPECT_EQ(3, ext_y); // fails!
+  EXPECT_EQ(4, ext_z); // fails!
+  
+  data = static_cast<igtlUint16*>(target->GetScalarPointer());
+  for (igtlUint16 i = 0; i < ext_x*ext_y*ext_z; ++i, ++data) {
+    EXPECT_EQ(42, *data); // even leads to access violations!
+  }
+  igtl::Matrix4x4 outMatrix = {{0.0,0.0,0.0,0.0},
+    {0.0,0.0,0.0,0.0},
+    {0.0,0.0,0.0,0.0},
+    {0.0,0.0,0.0,0.0}};
+  msg->GetMatrix(outMatrix);
+  EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
 }
 #endif
 

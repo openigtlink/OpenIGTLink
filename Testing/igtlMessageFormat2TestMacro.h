@@ -28,6 +28,7 @@
   object->SetMessageID(1);
 
 #define igtlMetaDataComparisonMacro(object) \
+  {\
   std::vector<std::string> groundTruth(0); \
   groundTruth.push_back("First patient age");\
   groundTruth.push_back("Second patient age");\
@@ -45,6 +46,7 @@
     EXPECT_STREQ(it->first.c_str(), groundTruth[i].c_str());\
     EXPECT_EQ(it->second.first, IANA_TYPE_US_ASCII);\
     EXPECT_STREQ(it->second.second.c_str(), groundTruthAge[i].c_str());\
+  }\
   }
 
 

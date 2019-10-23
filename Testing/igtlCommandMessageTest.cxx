@@ -68,7 +68,35 @@ TEST(CommandMessageTest, UnPackFormatVersion1)
   }
   EXPECT_EQ(messageHeader->crc, crc);
   EXPECT_STREQ(receiveCommandMsg->GetCommandContent().c_str(), "Start the tracking machine");
+  EXPECT_EQ(receiveCommandMsg->GetContentEncoding(), 3);
+  
+  // Test start
+  // reuse the command message.
+  sendCommandMsg->SetContentEncoding(4);
+  sendCommandMsg->Pack();
+  headerMsg->InitBuffer();
+  memcpy(headerMsg->GetBufferPointer(), (const void*)sendCommandMsg->GetBufferPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
+  receiveCommandMsg->SetMessageHeader(headerMsg);
+  receiveCommandMsg->AllocatePack();
+  memcpy(receiveCommandMsg->GetBufferBodyPointer(), sendCommandMsg->GetBufferBodyPointer(), headerMsg->GetBodySizeToRead());
+  receiveCommandMsg->Unpack();
+  //header should still be the same, though crc should be different
+  messageHeader = (igtl_header *)receiveCommandMsg->GetBufferPointer();
+  EXPECT_STREQ(messageHeader->device_name, "");
+  EXPECT_STREQ(messageHeader->name, "COMMAND");
+  EXPECT_EQ(messageHeader->header_version, 1);
+  EXPECT_EQ(messageHeader->timestamp, 0);
+  EXPECT_EQ(messageHeader->body_size, sizeof(test_command_message)-IGTL_HEADER_SIZE);
+  if(igtl_is_little_endian())
+  {
+    crc = BYTE_SWAP_INT64(crc);
+  }
+  EXPECT_NE(messageHeader->crc, crc); // should not be equal as the content changed
+  EXPECT_EQ(receiveCommandMsg->GetContentEncoding(), 4);
+
 }
+
 
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
@@ -130,6 +158,33 @@ TEST(CommandMessageTest, UnpackFormatVersion2)
     crc = BYTE_SWAP_INT64(crc);
   }
   EXPECT_EQ(messageHeader->crc, crc);
+  EXPECT_STREQ(receiveCommandMsg->GetCommandContent().c_str(), "Start the tracking machine");
+  igtlMetaDataComparisonMacro(receiveCommandMsg);
+  
+  // Test start
+  // reuse the command message.
+  sendCommandMsg->SetContentEncoding(4);
+  sendCommandMsg->Pack();
+  headerMsg->InitBuffer();
+  memcpy(headerMsg->GetBufferPointer(), (const void*)sendCommandMsg->GetBufferPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
+  receiveCommandMsg->SetMessageHeader(headerMsg);
+  receiveCommandMsg->AllocatePack();
+  memcpy(receiveCommandMsg->GetBufferBodyPointer(), sendCommandMsg->GetBufferBodyPointer(), headerMsg->GetBodySizeToRead());
+  receiveCommandMsg->Unpack();
+  //header should still be the same, though crc should be different
+  messageHeader = (igtl_header *)receiveCommandMsg->GetBufferPointer();
+  EXPECT_STREQ(messageHeader->device_name, "OpticalTracker");
+  EXPECT_STREQ(messageHeader->name, "COMMAND");
+  EXPECT_EQ(messageHeader->header_version, 2);
+  EXPECT_EQ(messageHeader->timestamp, 0);
+  EXPECT_EQ(messageHeader->body_size, sizeof(test_command_messageFormat2)-IGTL_HEADER_SIZE);
+  if(igtl_is_little_endian())
+  {
+    crc = BYTE_SWAP_INT64(crc);
+  }
+  EXPECT_NE(messageHeader->crc, crc); // should not be equal as the content changed
+  EXPECT_EQ(receiveCommandMsg->GetContentEncoding(), 4);
   EXPECT_STREQ(receiveCommandMsg->GetCommandContent().c_str(), "Start the tracking machine");
   igtlMetaDataComparisonMacro(receiveCommandMsg);
 }

@@ -176,6 +176,7 @@ PointMessage::~PointMessage()
 
 int PointMessage::AddPointElement(PointElement::Pointer& elem)
 {
+  m_IsBodyPacked = false;
   this->m_PointList.push_back(elem);
   return this->m_PointList.size();
 }

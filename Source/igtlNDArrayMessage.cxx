@@ -154,6 +154,7 @@ NDArrayMessage::~NDArrayMessage()
 
 int NDArrayMessage::SetArray(int type, ArrayBase * a)
 {
+  m_IsBodyPacked = false;
   // Check if type is valid
   if (type < 2 || type > 13 ||
       type == 8 || type == 9 || type == 12)

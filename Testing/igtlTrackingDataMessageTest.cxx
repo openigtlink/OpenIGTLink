@@ -25,6 +25,7 @@ igtl::TrackingDataMessage::Pointer trackingReceiveMsg = igtl::TrackingDataMessag
 igtl::TrackingDataElement::Pointer trackingElement0 = igtl::TrackingDataElement::New();
 igtl::TrackingDataElement::Pointer trackingElement1 = igtl::TrackingDataElement::New();
 igtl::TrackingDataElement::Pointer trackingElement2 = igtl::TrackingDataElement::New();
+igtl::TrackingDataElement::Pointer trackingElement3 = igtl::TrackingDataElement::New();
 
 float inT[4] = {-0.954892f, 0.196632f, -0.222525f, 0.0};
 float inS[4] = {-0.196632f, 0.142857f, 0.970014f, 0.0};
@@ -106,6 +107,41 @@ TEST(TrackingMessageTest, Unpack)
     elem->GetMatrix(outMatrix);
     EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
     }
+  
+  // reuse message test
+  trackingElement3->SetName("Tracker3");
+  trackingElement3->SetType(IGTL_TDATA_TYPE_6D);
+  trackingElement3->SetMatrix(inMatrix);
+  trackingSendMsg->AddTrackingDataElement(trackingElement3); // there are 4 tracking element now in the message
+  trackingSendMsg->Pack();
+  headerMsg->InitPack();
+  memcpy(headerMsg->GetPackPointer(), (const void*)trackingSendMsg->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
+  trackingReceiveMsg->SetMessageHeader(headerMsg);
+  trackingReceiveMsg->AllocatePack();
+  memcpy(trackingReceiveMsg->GetPackBodyPointer(), trackingSendMsg->GetPackBodyPointer(), IGTL_TDATA_ELEMENT_SIZE*4);
+  trackingReceiveMsg->Unpack();
+  messageHeader = (igtl_header *)trackingReceiveMsg->GetPackPointer();
+  EXPECT_STREQ(messageHeader->device_name, "DeviceName");
+  EXPECT_STREQ(messageHeader->name, "TDATA");
+  EXPECT_EQ(messageHeader->header_version, 1);
+  EXPECT_EQ(messageHeader->timestamp, 1234567892);
+  EXPECT_EQ(messageHeader->body_size, IGTL_TDATA_ELEMENT_SIZE*4);
+
+  trackerDescription.push_back((char*)"Tracker3");
+  
+  for (int i = 0; i<4;++i)
+  {
+    igtl::TrackingDataElement::Pointer elem = igtl::TrackingDataElement::New();
+    trackingReceiveMsg->GetTrackingDataElement(i, elem);
+    EXPECT_EQ(strncmp((char*)(elem->GetName()), trackerDescription[i], 8),0);
+    igtl::Matrix4x4 outMatrix = {{0.0,0.0,0.0,0.0},
+      {0.0,0.0,0.0,0.0},
+      {0.0,0.0,0.0,0.0},
+      {0.0,0.0,0.0,0.0}};
+    elem->GetMatrix(outMatrix);
+    EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
+  }
 }
 
 
@@ -167,6 +203,42 @@ TEST(TrackingMessageTest, UnpackFormatVersion2)
     EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
     }
   
+  igtlMetaDataComparisonMacro(trackingReceiveMsg);
+  
+  // reuse message test
+  trackingElement3->SetName("Tracker3");
+  trackingElement3->SetType(IGTL_TDATA_TYPE_6D);
+  trackingElement3->SetMatrix(inMatrix);
+  trackingSendMsg->AddTrackingDataElement(trackingElement3); // there are 4 tracking element now in the message
+  trackingSendMsg->Pack();
+  headerMsg->InitPack();
+  memcpy(headerMsg->GetPackPointer(), (const void*)trackingSendMsg->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
+  trackingReceiveMsg->SetMessageHeader(headerMsg);
+  trackingReceiveMsg->AllocatePack();
+  memcpy(trackingReceiveMsg->GetPackBodyPointer(), trackingSendMsg->GetPackBodyPointer(), IGTL_TDATA_ELEMENT_SIZE*4 + EXTENDED_CONTENT_SIZE);
+  trackingReceiveMsg->Unpack();
+  messageHeader = (igtl_header *)trackingReceiveMsg->GetPackPointer();
+  EXPECT_STREQ(messageHeader->device_name, "DeviceName");
+  EXPECT_STREQ(messageHeader->name, "TDATA");
+  EXPECT_EQ(messageHeader->header_version, 2);
+  EXPECT_EQ(messageHeader->timestamp, 1234567892);
+  EXPECT_EQ(messageHeader->body_size, IGTL_TDATA_ELEMENT_SIZE*4 + EXTENDED_CONTENT_SIZE);
+  
+  trackerDescription.push_back((char*)"Tracker3");
+  
+  for (int i = 0; i<4;++i)
+  {
+    igtl::TrackingDataElement::Pointer elem = igtl::TrackingDataElement::New();
+    trackingReceiveMsg->GetTrackingDataElement(i, elem);
+    EXPECT_EQ(strncmp((char*)(elem->GetName()), trackerDescription[i], 8),0);
+    igtl::Matrix4x4 outMatrix = {{0.0,0.0,0.0,0.0},
+      {0.0,0.0,0.0,0.0},
+      {0.0,0.0,0.0,0.0},
+      {0.0,0.0,0.0,0.0}};
+    elem->GetMatrix(outMatrix);
+    EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
+  }
   igtlMetaDataComparisonMacro(trackingReceiveMsg);
 }
 

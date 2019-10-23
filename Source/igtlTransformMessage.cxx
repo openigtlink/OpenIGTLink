@@ -57,6 +57,7 @@ TransformMessage::~TransformMessage()
   
 void TransformMessage::SetPosition(float p[3])
 {
+  m_IsBodyPacked = false;
   matrix[0][3] = p[0];
   matrix[1][3] = p[1];
   matrix[2][3] = p[2];
@@ -72,6 +73,7 @@ void TransformMessage::GetPosition(float p[3])
   
 void TransformMessage::SetPosition(float px, float py, float pz)
 {
+  m_IsBodyPacked = false;
   matrix[0][3] = px;
   matrix[1][3] = py;
   matrix[2][3] = pz;
@@ -86,6 +88,7 @@ void TransformMessage::GetPosition(float* px, float* py, float* pz)
   
 void TransformMessage::SetNormals(float o[3][3])
 {
+  m_IsBodyPacked = false;
   matrix[0][0] = o[0][0];
   matrix[0][1] = o[0][1];
   matrix[0][2] = o[0][2];
@@ -112,6 +115,7 @@ void TransformMessage::GetNormals(float o[3][3])
   
 void TransformMessage::SetNormals(float t[3], float s[3], float n[3])
 {
+  m_IsBodyPacked = false;
   matrix[0][0] = t[0];
   matrix[1][0] = t[1];
   matrix[2][0] = t[2];
@@ -138,6 +142,7 @@ void TransformMessage::GetNormals(float t[3], float s[3], float n[3])
   
 void TransformMessage::SetMatrix(Matrix4x4& mat)
 {
+  m_IsBodyPacked = false;
   matrix[0][0] = mat[0][0];
   matrix[1][0] = mat[1][0];
   matrix[2][0] = mat[2][0];

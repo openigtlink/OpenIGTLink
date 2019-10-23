@@ -64,6 +64,7 @@ CommandMessage::~CommandMessage()
   
 int CommandMessage::SetCommandId(igtlUint32 aId)
 {
+  m_IsBodyPacked = false;
   this->m_CommandId = aId;
   return 1;
 }
@@ -75,6 +76,7 @@ int CommandMessage::SetCommandName(const char* aCommandName)
     {
     return 0;
     }
+  m_IsBodyPacked = false;
   strcpy((char*)m_CommandName, aCommandName);
   return 1;
 }
@@ -92,6 +94,7 @@ int CommandMessage::SetCommandContent(const char* string)
     {
     return 0;
     }
+  m_IsBodyPacked = false;
   this->m_Command = string;
   return (int) this->m_Command.length();
 }
@@ -103,6 +106,7 @@ int CommandMessage::SetCommandContent(const std::string & string)
     {
     return 0;
     }
+  m_IsBodyPacked = false;
   this->m_Command = string;
   return (int) this->m_Command.length();
 }
@@ -114,6 +118,7 @@ int CommandMessage::SetContentEncoding(igtlUint16 enc)
     {
     return 0;
     }
+  m_IsBodyPacked = false;
   this->m_Encoding = enc;
   return 1;
 }
@@ -218,6 +223,7 @@ int RTSCommandMessage::SetCommandErrorString(const char* anErrorString)
     {
     return 0;
     }
+  m_IsBodyPacked = false;
   strcpy((char*)m_CommandName, anErrorString);
   return 1;
 }
@@ -229,6 +235,7 @@ int RTSCommandMessage::SetCommandErrorString(const std::string& anErrorString)
     {
     return 0;
     }
+  m_IsBodyPacked = false;
   strcpy((char*)m_CommandName, anErrorString.c_str());
   return 1;
 }

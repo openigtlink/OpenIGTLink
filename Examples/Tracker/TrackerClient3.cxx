@@ -97,7 +97,6 @@ int main(int argc, char* argv[])
     {
     for (int i = 0; i < numdev; i ++)
       {
-      transMsg->InitPack();
       transMsg->SetDeviceName(devicename[i]);
       igtl::Matrix4x4 matrix;
       GetRandomTestMatrix(matrix, phi[i], theta[i]);

@@ -181,6 +181,7 @@ LabelMetaMessage::~LabelMetaMessage()
 
 int LabelMetaMessage::AddLabelMetaElement(LabelMetaElement::Pointer& elem)
 {
+  m_IsBodyPacked = false;
   this->m_LabelMetaList.push_back(elem);
   return this->m_LabelMetaList.size();
 }

@@ -953,6 +953,7 @@ void PolyDataMessage::ClearAttributes()
 
 void PolyDataMessage::AddAttribute(PolyDataAttribute * att)
 {
+  m_IsBodyPacked = false;
   this->m_Attributes.push_back(att);
 }
 
@@ -1009,6 +1010,7 @@ bool RTSPolyDataMessage::GetStatus() const
 
 void RTSPolyDataMessage::SetStatus(bool status)
 {
+  m_IsBodyPacked = false;
   m_Status = status ? 1 : 0;
 }
 

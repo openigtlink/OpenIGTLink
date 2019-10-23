@@ -42,6 +42,7 @@ int StringMessage::SetString(const char* string)
     {
     return 0;
     }
+  m_IsBodyPacked = false;
   this->m_String = string;
   return (int) this->m_String.length();
 }
@@ -53,6 +54,7 @@ int StringMessage::SetString(const std::string & string)
     {
     return 0;
     }
+  m_IsBodyPacked = false;
   this->m_String = string;
   return (int) this->m_String.length();
 }
@@ -62,6 +64,7 @@ int StringMessage::SetEncoding(igtlUint16 enc)
 {
   // TODO: the argument should be validated before it is substituted
   this->m_Encoding = enc;
+  m_IsBodyPacked = false;
   return 1;
 }
 

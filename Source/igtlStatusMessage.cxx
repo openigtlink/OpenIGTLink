@@ -42,7 +42,7 @@ StatusMessage::~StatusMessage()
 
 void StatusMessage::SetCode(int code)
 {
-
+  m_IsBodyPacked = false;
   if (code >= 0 && code < STATUS_NUM_TYPES)
     {
     this->m_Code = code;
@@ -60,6 +60,7 @@ int StatusMessage::GetCode()
 
 void StatusMessage::SetSubCode(igtlInt64 subcode)
 {
+  m_IsBodyPacked = false;
   this->m_SubCode = subcode;
 }
 
@@ -70,6 +71,7 @@ igtlInt64 StatusMessage::GetSubCode()
 
 void StatusMessage::SetErrorName(const char* name)
 {
+  m_IsBodyPacked = false;
   this->m_ErrorName[IGTL_STATUS_ERROR_NAME_LENGTH-1] = '\0';
   strncpy(this->m_ErrorName, name, IGTL_STATUS_ERROR_NAME_LENGTH);
 }
@@ -81,6 +83,7 @@ const char* StatusMessage::GetErrorName()
 
 void StatusMessage::SetStatusString(const char* str)
 {
+  m_IsBodyPacked = false;
   this->m_StatusMessageString = str;
 }
 
