@@ -67,6 +67,7 @@ ImageMessage::~ImageMessage()
 
 void ImageMessage::SetDimensions(int s[3])
 {
+  m_IsBodyPacked = false;
   dimensions[0] = s[0];
   dimensions[1] = s[1];
   dimensions[2] = s[2];
@@ -82,6 +83,7 @@ void ImageMessage::SetDimensions(int s[3])
 
 void ImageMessage::SetDimensions(int i, int j, int k)
 {
+  m_IsBodyPacked = false;
   dimensions[0] = i;
   dimensions[1] = j;
   dimensions[2] = k;
@@ -116,6 +118,7 @@ int ImageMessage::SetSubVolume(int dim[3], int off[3])
       off[1] + dim[1] <= dimensions[1] &&
       off[2] + dim[2] <= dimensions[2])
     {
+    m_IsBodyPacked = false;
     subDimensions[0] = dim[0];
     subDimensions[1] = dim[1];
     subDimensions[2] = dim[2];
@@ -137,6 +140,7 @@ int ImageMessage::SetSubVolume(int dimi, int dimj, int dimk, int offi, int offj,
       offj + dimj <= dimensions[1] &&
       offk + dimk <= dimensions[2])
     {
+    m_IsBodyPacked = false;
     subDimensions[0] = dimi;
     subDimensions[1] = dimj;
     subDimensions[2] = dimk;
@@ -175,6 +179,7 @@ void ImageMessage::GetSubVolume(int &dimi, int &dimj, int &dimk,
 
 void ImageMessage::SetSpacing(float s[3])
 {
+  m_IsBodyPacked = false;
   spacing[0] = s[0];
   spacing[1] = s[1];
   spacing[2] = s[2];
@@ -182,6 +187,7 @@ void ImageMessage::SetSpacing(float s[3])
 
 void ImageMessage::SetSpacing(float si, float sj, float sk)
 {
+  m_IsBodyPacked = false;
   spacing[0] = si;
   spacing[1] = sj;
   spacing[2] = sk;
@@ -203,6 +209,7 @@ void ImageMessage::GetSpacing(float &si, float &sj, float &sk)
   
 void ImageMessage::SetOrigin(float p[3])
 {
+  m_IsBodyPacked = false;
   matrix[0][3] = p[0];
   matrix[1][3] = p[1];
   matrix[2][3] = p[2];
@@ -210,6 +217,7 @@ void ImageMessage::SetOrigin(float p[3])
 
 void ImageMessage::SetOrigin(float px, float py, float pz)
 {
+  m_IsBodyPacked = false;
   matrix[0][3] = px;
   matrix[1][3] = py;
   matrix[2][3] = pz;
@@ -231,6 +239,7 @@ void ImageMessage::GetOrigin(float &px, float &py, float &pz)
 
 void ImageMessage::SetNormals(float o[3][3])
 {
+  m_IsBodyPacked = false;
   matrix[0][0] = o[0][0];
   matrix[0][1] = o[0][1];
   matrix[0][2] = o[0][2];
@@ -244,6 +253,7 @@ void ImageMessage::SetNormals(float o[3][3])
 
 void ImageMessage::SetNormals(float t[3], float s[3], float n[3])
 {
+  m_IsBodyPacked = false;
   matrix[0][0] = t[0];
   matrix[1][0] = t[1];
   matrix[2][0] = t[2];
@@ -283,6 +293,7 @@ void ImageMessage::GetNormals(float t[3], float s[3], float n[3])
 
 void ImageMessage::SetMatrix(Matrix4x4& mat)
 {
+  m_IsBodyPacked = false;
   matrix[0][0] = mat[0][0];
   matrix[1][0] = mat[1][0];
   matrix[2][0] = mat[2][0];

@@ -52,6 +52,7 @@ CapabilityMessage::~CapabilityMessage()
 
 void CapabilityMessage::SetTypes(std::vector<std::string> types)
 {
+  m_IsBodyPacked = false;
   this->m_TypeNames.clear();
   this->m_TypeNames = types;
 }
@@ -61,6 +62,7 @@ int CapabilityMessage::SetType(int id, const char* type)
 {
   if (id < (int)this->m_TypeNames.size() && strlen(type) < IGTL_HEADER_TYPE_SIZE)
     {
+    m_IsBodyPacked = false;
     this->m_TypeNames[id] = type;
     return 1;
     }

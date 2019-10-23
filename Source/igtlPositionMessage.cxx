@@ -57,6 +57,7 @@ void PositionMessage::SetPackType(int t)
 
 int PositionMessage::SetPackTypeByContentSize(int s)
 {
+  m_IsBodyPacked = false;
   if (s == IGTL_POSITION_MESSAGE_POSITON_ONLY_SIZE)
     {
     this->m_PackType = POSITION_ONLY;
@@ -81,6 +82,7 @@ int PositionMessage::SetPackTypeByContentSize(int s)
 
 void PositionMessage::SetPosition(const float* pos)
 {
+  m_IsBodyPacked = false;
   this->m_Position[0] = pos[0];
   this->m_Position[1] = pos[1];
   this->m_Position[2] = pos[2];
@@ -88,6 +90,7 @@ void PositionMessage::SetPosition(const float* pos)
 
 void PositionMessage::SetPosition(float x, float y, float z)
 {
+  m_IsBodyPacked = false;
   this->m_Position[0] = x;
   this->m_Position[1] = y;
   this->m_Position[2] = z;
@@ -96,6 +99,7 @@ void PositionMessage::SetPosition(float x, float y, float z)
 
 void PositionMessage::SetQuaternion(const float* quat)
 {
+  m_IsBodyPacked = false;
   this->m_Quaternion[0] = quat[0];
   this->m_Quaternion[1] = quat[1];
   this->m_Quaternion[2] = quat[2];
@@ -104,6 +108,7 @@ void PositionMessage::SetQuaternion(const float* quat)
 
 void PositionMessage::SetQuaternion(float ox, float oy, float oz, float w)
 {
+  m_IsBodyPacked = false;
   this->m_Quaternion[0] = ox;
   this->m_Quaternion[1] = oy;
   this->m_Quaternion[2] = oz;

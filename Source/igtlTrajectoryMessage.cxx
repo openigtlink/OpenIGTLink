@@ -228,6 +228,7 @@ TrajectoryMessage::~TrajectoryMessage()
 
 int TrajectoryMessage::AddTrajectoryElement(TrajectoryElement::Pointer& elem)
 {
+  m_IsBodyPacked = false;
   this->m_TrajectoryList.push_back(elem);
   return this->m_TrajectoryList.size();
 }

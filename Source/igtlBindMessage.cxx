@@ -42,6 +42,7 @@ void BindMessageBase::Init()
 
 int BindMessageBase::SetNumberOfChildMessages(unsigned int n)
 {
+  m_IsBodyPacked = false;
   this->m_ChildMessages.resize(n);
   return this->m_ChildMessages.size();
 }
@@ -57,6 +58,7 @@ int BindMessageBase::AppendChildMessage(igtl::MessageBase * child)
 {
   if (this->m_ChildMessages.size() < 0xFFFF)
     {
+    m_IsBodyPacked = false;
     ChildMessageInfo info;
 #if OpenIGTLink_HEADER_VERSION >= 2
     info.type = child->GetMessageType();
@@ -81,6 +83,7 @@ int BindMessageBase::SetChildMessage(unsigned int i, igtl::MessageBase * child)
 {
   if (i < this->m_ChildMessages.size())
     {
+    m_IsBodyPacked = false;
 #if OpenIGTLink_HEADER_VERSION >= 2
     this->m_ChildMessages[i].type = child->GetMessageType();
 #else
@@ -300,6 +303,7 @@ int GetBindMessage::AppendChildMessage(const char * type, const char * name)
   if (strlen(type) < IGTL_HEADER_TYPE_SIZE &&
       strlen(name) < IGTL_HEADER_NAME_SIZE)
     {
+    m_IsBodyPacked = false;
     BindMessageBase::ChildMessageInfo info;
     info.type = type;
     info.name = name;
@@ -408,6 +412,7 @@ StartBindMessage::~StartBindMessage()
 
 void StartBindMessage::SetResolution(igtlUint64 res)
 {
+  m_IsBodyPacked = false;
   this->m_Resolution = res; 
 }
 

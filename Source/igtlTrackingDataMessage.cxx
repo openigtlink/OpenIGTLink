@@ -273,6 +273,7 @@ TrackingDataMessage::~TrackingDataMessage()
   
 int TrackingDataMessage::AddTrackingDataElement(TrackingDataElement::Pointer& elem)
 {
+  m_IsBodyPacked = false;
   this->m_TrackingDataList.push_back(elem);
   return this->m_TrackingDataList.size();
 }

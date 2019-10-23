@@ -203,6 +203,7 @@ ImageMetaMessage::~ImageMetaMessage()
 
 int ImageMetaMessage::AddImageMetaElement(ImageMetaElement::Pointer& elem)
 {
+  m_IsBodyPacked = false;
   this->m_ImageMetaList.push_back(elem);
   return this->m_ImageMetaList.size();
 }

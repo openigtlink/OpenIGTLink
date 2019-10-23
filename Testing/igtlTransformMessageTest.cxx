@@ -72,7 +72,35 @@ TEST(TransformMessageTest, UnpackFormatVersion1)
                                {0.0,0.0,0.0,0.0}};
   transformReceiveMsg->GetMatrix(outMatrix);
   EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
+
+  //Reuse message test
+  igtl::Matrix4x4 inMatrix2 = {{inT[1],inS[0],inN[0],inOrigin[0]},
+    {inT[2],inS[1],inN[3],inOrigin[2]},
+    {inT[0],inS[3],inN[2],inOrigin[2]},
+    {inT[3],inS[3],inN[3],inOrigin[3]}};
   
+  transformSendMsg->SetMatrix(inMatrix2);
+  transformSendMsg->Pack();
+  headerMsg->InitPack();
+  memcpy(headerMsg->GetPackPointer(), (const void*)transformSendMsg->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
+  transformReceiveMsg->SetMessageHeader(headerMsg);
+  transformReceiveMsg->AllocatePack();
+  memcpy(transformReceiveMsg->GetPackBodyPointer(), transformSendMsg->GetPackBodyPointer(), transformReceiveMsg->GetPackBodySize());
+  transformReceiveMsg->Unpack();
+  messageHeader = (igtl_header *)transformReceiveMsg->GetPackPointer();
+  EXPECT_STREQ(messageHeader->device_name, "DeviceName");
+  EXPECT_STREQ(messageHeader->name, "TRANSFORM");
+  EXPECT_EQ(messageHeader->header_version, 1);
+  EXPECT_EQ(messageHeader->timestamp, 1234567892);
+  EXPECT_EQ(messageHeader->body_size, IGTL_TRANSFORM_SIZE);
+  
+  igtl::Matrix4x4 outMatrix2 = {{0.0,0.0,0.0,0.0},
+    {0.0,0.0,0.0,0.0},
+    {0.0,0.0,0.0,0.0},
+    {0.0,0.0,0.0,0.0}};
+  transformReceiveMsg->GetMatrix(outMatrix2);
+  EXPECT_TRUE(MatrixComparison(outMatrix2, inMatrix2, ABS_ERROR));
 }
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 3
@@ -122,6 +150,36 @@ TEST(TransformMessageTest, UnpackFormatVersion2)
                                {0.0,0.0,0.0,0.0}};
   transformReceiveMsg->GetMatrix(outMatrix);
   EXPECT_TRUE(MatrixComparison(outMatrix, inMatrix, ABS_ERROR));
+  igtlMetaDataComparisonMacro(transformReceiveMsg);
+  
+  //Reuse message test
+  igtl::Matrix4x4 inMatrix2 = {{inT[1],inS[0],inN[0],inOrigin[0]},
+    {inT[2],inS[1],inN[3],inOrigin[2]},
+    {inT[0],inS[3],inN[2],inOrigin[2]},
+    {inT[3],inS[3],inN[3],inOrigin[3]}};
+  
+  transformSendMsg->SetMatrix(inMatrix2);
+  transformSendMsg->Pack();
+  headerMsg->InitPack();
+  memcpy(headerMsg->GetPackPointer(), (const void*)transformSendMsg->GetPackPointer(), IGTL_HEADER_SIZE);
+  headerMsg->Unpack();
+  transformReceiveMsg->SetMessageHeader(headerMsg);
+  transformReceiveMsg->AllocatePack();
+  memcpy(transformReceiveMsg->GetPackBodyPointer(), transformSendMsg->GetPackBodyPointer(), transformReceiveMsg->GetPackBodySize());
+  transformReceiveMsg->Unpack();
+  messageHeader = (igtl_header *)transformReceiveMsg->GetPackPointer();
+  EXPECT_STREQ(messageHeader->device_name, "DeviceName");
+  EXPECT_STREQ(messageHeader->name, "TRANSFORM");
+  EXPECT_EQ(messageHeader->header_version, 2);
+  EXPECT_EQ(messageHeader->timestamp, 1234567892);
+  EXPECT_EQ(messageHeader->body_size, IGTL_TRANSFORM_SIZE + EXTENDED_CONTENT_SIZE);
+  
+  igtl::Matrix4x4 outMatrix2 = {{0.0,0.0,0.0,0.0},
+    {0.0,0.0,0.0,0.0},
+    {0.0,0.0,0.0,0.0},
+    {0.0,0.0,0.0,0.0}};
+  transformReceiveMsg->GetMatrix(outMatrix2);
+  EXPECT_TRUE(MatrixComparison(outMatrix2, inMatrix2, ABS_ERROR));
   igtlMetaDataComparisonMacro(transformReceiveMsg);
 }
 
