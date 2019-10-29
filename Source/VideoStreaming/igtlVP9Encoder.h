@@ -74,6 +74,8 @@ public:
   virtual unsigned int GetPicHeight(){return this->picHeight;};
   
   virtual int SetRCMode(int value);
+
+  virtual int SetImageFormat(VideoFormatType value);
   
   virtual int SetKeyFrameDistance(int frameNum);
   
