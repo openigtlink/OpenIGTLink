@@ -48,7 +48,6 @@
 #if defined(OpenIGTLink_USE_VP9)
   #include "igtlVP9Encoder.h"
   #include "igtlVP9Decoder.h"
-  #include "./vpx_config.h"
 #endif
 
 #if defined(OpenIGTLink_USE_OpenHEVC) && defined(OpenIGTLink_USE_X265)

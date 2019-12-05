@@ -56,9 +56,7 @@ IF(OpenIGTLink_USE_VP9)
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVP9Decoder.h
       ${PROJECT_SOURCE_DIR}/Source/VideoStreaming/igtlVP9Encoder.h
     )
-    LIST(APPEND OpenIGTLink_INCLUDE_DIRS
-      ${VP9_LIBRARY_DIR} )
-    LINK_DIRECTORIES("${VP9_LIBRARY_DIR}/lib")
+    LINK_DIRECTORIES("${VP9_LIBRARY_DIR}")
   ELSE()
     MESSAGE("VP9_INCLUDE_DIR or VP9_LIBRARY_DIR no found")
   ENDIF()
@@ -116,11 +114,7 @@ IF(WIN32) # for Windows
   IF(OpenIGTLink_USE_VP9)
     #To do, library name depends on the compiler setting, could be vpxmt.lib and vpxmtd also. Make sure the setting matches.
     #SET(VP9_lib optimized ${VP9_LIBRARY_DIR}\\Release\\vpxmd.lib debug ${VP9_LIBRARY_DIR}\\Debug\\vpxmdd.lib)
-    if("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
-      SET(VP9_lib optimized ${VP9_LIBRARY_DIR}\\x64\\Release\\vpxmd.lib debug ${VP9_LIBRARY_DIR}\\x64\\Debug\\vpxmdd.lib)
-    else()
-      SET(VP9_lib optimized ${VP9_LIBRARY_DIR}\\Win32\\Release\\vpxmd.lib debug ${VP9_LIBRARY_DIR}\\Win32\\Debug\\vpxmdd.lib)
-    endif()
+    SET(VP9_lib ${VP9_LIBRARY_DIR}\\libvpx.lib)
     LIST(APPEND LINK_LIBS
       ${VP9_lib}
     )
