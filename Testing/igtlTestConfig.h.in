@@ -172,6 +172,13 @@ namespace testing {
     return;                                     \
     }
 
+#define EXPECT_NE(a, b)                         \
+  if (a == b)                                   \
+    {                                           \
+    this->result = TEST_FAILURE;                \
+    return;                                     \
+    }
+
 #define EXPECT_LT(a, b)                         \
   if (a >= b)                                   \
     {                                           \
