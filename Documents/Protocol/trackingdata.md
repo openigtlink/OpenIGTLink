@@ -56,7 +56,6 @@ STT_TDATA
 
  Data         | Type          | Description
 --------------|---------------|-------------------------------------------------
- STATUS       | uint8         | 0: Success; 1: Error
  RESOL        | uint32        | Minimum time between two frames. Use 0 for as fast as possible. If e.g. 50 ms is specified, the maximum update rate will be 20 Hz.
  COORD_NAME   | char[32]      | Name of coordinate system to use. Can be empty for default coordinate system. (not included if action = 2)
 
