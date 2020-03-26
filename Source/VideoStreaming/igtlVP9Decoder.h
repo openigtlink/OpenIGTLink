@@ -31,7 +31,6 @@
 #include "igtlVideoMessage.h"
 #include "igtlCodecCommonClasses.h"
 #include "vpx_decoder.h"
-#include "vpx_config.h"
 #include "vp8dx.h"
 #include "vpx_codec.h"
 #include "vpx_image.h"
