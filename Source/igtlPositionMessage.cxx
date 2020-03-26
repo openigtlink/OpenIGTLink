@@ -148,7 +148,7 @@ void PositionMessage::GetQuaternion(float* ox, float* oy, float* oz, float* w)
 int PositionMessage::SetMessageHeader(const MessageHeader* mb)
 {
   int rc = Copy(mb);
-  int rt = SetPackTypeByContentSize(this->CalculateContentBufferSize());
+  int rt = SetPackTypeByContentSize(this->CalculateReceiveContentSize());
 
   return (rc && rt);  
 }
