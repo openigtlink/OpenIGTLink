@@ -145,14 +145,6 @@ void PositionMessage::GetQuaternion(float* ox, float* oy, float* oz, float* w)
   *w  = this->m_Quaternion[3];
 }
 
-int PositionMessage::SetMessageHeader(const MessageHeader* mb)
-{
-  int rc = Copy(mb);
-  int rt = SetPackTypeByContentSize(this->CalculateReceiveContentSize());
-
-  return (rc && rt);  
-}
-
 int PositionMessage::CalculateContentBufferSize()
 {
   int ret;
@@ -202,8 +194,18 @@ int PositionMessage::PackContent()
     p->quaternion[3] = this->m_Quaternion[3];
     }
 
-    
-  igtl_position_convert_byte_order(p);
+  switch (this->m_PackType)
+    {
+    case POSITION_ONLY:
+      igtl_position_convert_byte_order_position_only(p);
+      break;
+    case WITH_QUATERNION3:
+      igtl_position_convert_byte_order_quaternion3(p);
+      break;
+    default: //IGTL_POSITION_MESSAGE_DEFAULT_SIZE
+      igtl_position_convert_byte_order(p);
+      break;
+    }
 
   return 1;
 }
