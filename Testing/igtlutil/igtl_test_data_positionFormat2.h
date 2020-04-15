@@ -45,7 +45,7 @@ unsigned char test_position_messageFormat2[] = {
   0x3f, 0x13, 0xcd, 0x3a, 0x3f, 0x13, 0xcd, 0x3a, /* oy, oz */
   0x3e, 0xaa, 0xaa, 0xab,                         /* ow     */
   
-  /*---------- TRAJECTORY Meta data body ------------*/
+  /*---------- POSITION Meta data body ------------*/
   0x00, 0x02,                                     /* Index Count */
   0x00, 0x11, 0x00, 0x03, 0x00, 0x00, 0x00, 0x02, /* first element Key size(2 Bytes), value coding(2 Bytes), value size(4 Bytes)*/
   0x00, 0x12, 0x00, 0x03, 0x00, 0x00, 0x00, 0x02, /* second element Key size, value coding, value size*/

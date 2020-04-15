@@ -85,10 +85,6 @@ public:
   /// Gets the quaternion. The function substitutes the elements of the quaternion in 'ox', 'oy', 'oz' and 'w'.
   void         GetQuaternion(float* ox, float* oy, float* oz, float* w);
 
-  /// Sets the message header.
-  // TODO: Is this needed or integrated in igtlMessageBase?
-  virtual int SetMessageHeader(const MessageHeader* mb);
-
 protected:
   PositionMessage();
   ~PositionMessage();
