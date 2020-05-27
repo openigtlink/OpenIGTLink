@@ -26,6 +26,7 @@
 #include "igtlStatusMessage.h"
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 2
+#include "igtlSensorMessage.h"
 #include "igtlPointMessage.h"
 #include "igtlTrajectoryMessage.h"
 #include "igtlStringMessage.h"
@@ -40,6 +41,7 @@ int ReceiveImage(igtl::Socket * socket, igtl::MessageHeader::Pointer& header);
 int ReceiveStatus(igtl::Socket * socket, igtl::MessageHeader::Pointer& header);
 
 #if OpenIGTLink_PROTOCOL_VERSION >= 2
+  int ReceiveSensor(igtl::Socket * socket, igtl::MessageHeader::Pointer& header);
   int ReceivePoint(igtl::Socket * socket, igtl::MessageHeader::Pointer& header);
   int ReceiveTrajectory(igtl::Socket * socket, igtl::MessageHeader::Pointer& header);
   int ReceiveString(igtl::Socket * socket, igtl::MessageHeader::Pointer& header);
@@ -81,9 +83,9 @@ int main(int argc, char* argv[])
   // Create a message buffer to receive header
   igtl::MessageHeader::Pointer headerMsg;
   headerMsg = igtl::MessageHeader::New();
-  
+
   //------------------------------------------------------------
-  // Allocate a time stamp 
+  // Allocate a time stamp
   igtl::TimeStamp::Pointer ts;
   ts = igtl::TimeStamp::New();
 
@@ -94,10 +96,10 @@ int main(int argc, char* argv[])
     // loop
     for (int i = 0; i < 100; i ++)
       {
-      
+
       // Initialize receive buffer
       headerMsg->InitPack();
-      
+
       // Receive generic header from the socket
       int r = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
       if (r == 0)
@@ -109,7 +111,7 @@ int main(int argc, char* argv[])
         {
         continue;
         }
-      
+
       // Deserialize the header
       headerMsg->Unpack();
 
@@ -120,10 +122,11 @@ int main(int argc, char* argv[])
       headerMsg->GetTimeStamp(ts);
       ts->GetTimeStamp(&sec, &nanosec);
 
+      std::cerr << "Name: " << headerMsg->GetDeviceName() << std::endl;
       std::cerr << "Time stamp: "
-                << sec << "." << std::setw(9) << std::setfill('0') 
+                << sec << "." << std::setw(9) << std::setfill('0')
                 << nanosec << std::endl;
-      
+
       // Check data type and receive data body
       if (strcmp(headerMsg->GetDeviceType(), "TRANSFORM") == 0)
         {
@@ -142,6 +145,10 @@ int main(int argc, char* argv[])
         ReceiveStatus(socket, headerMsg);
         }
 #if OpenIGTLink_PROTOCOL_VERSION >= 2
+      else if (strcmp(headerMsg->GetDeviceType(), "SENSOR") == 0)
+        {
+          ReceiveSensor(socket, headerMsg);
+        }
       else if (strcmp(headerMsg->GetDeviceType(), "POINT") == 0)
         {
         ReceivePoint(socket, headerMsg);
@@ -177,7 +184,7 @@ int main(int argc, char* argv[])
 
   //------------------------------------------------------------
   // Close connection (The example code never reaches this section ...)
-  
+
   socket->CloseSocket();
 
 }
@@ -186,20 +193,20 @@ int main(int argc, char* argv[])
 int ReceiveTransform(igtl::Socket * socket, igtl::MessageHeader::Pointer& header)
 {
   std::cerr << "Receiving TRANSFORM data type." << std::endl;
-  
-  // Create a message buffer to receive transform data
+
+  // Create a message buffer to receive transform datag
   igtl::TransformMessage::Pointer transMsg;
   transMsg = igtl::TransformMessage::New();
   transMsg->SetMessageHeader(header);
   transMsg->AllocatePack();
-  
+
   // Receive transform data from the socket
   socket->Receive(transMsg->GetPackBodyPointer(), transMsg->GetPackBodySize());
-  
+
   // Deserialize the transform data
   // If you want to skip CRC check, call Unpack() without argument.
   int c = transMsg->Unpack(1);
-  
+
   if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
     {
     // Retrive the transform data
@@ -213,23 +220,52 @@ int ReceiveTransform(igtl::Socket * socket, igtl::MessageHeader::Pointer& header
   return 0;
 }
 
+int ReceiveSensor(igtl::Socket * socket, igtl::MessageHeader::Pointer& header)
+{
+  std::cerr << "Receiving SENSOR data type." << std::endl;
+
+  // Create a message buffer to receive transform datag
+  igtl::SensorMessage::Pointer sensMsg;
+  sensMsg = igtl::SensorMessage::New();
+  sensMsg->SetMessageHeader(header);
+  sensMsg->AllocatePack();
+
+  // Receive transform data from the socket
+  socket->Receive(sensMsg->GetPackBodyPointer(), sensMsg->GetPackBodySize());
+
+  // Deserialize the transform data
+  // If you want to skip CRC check, call Unpack() without argument.
+  int c = sensMsg->Unpack(1);
+
+  if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
+    {
+    for (size_t i = 0; i < sensMsg->GetLength(); ++i) {
+	std::cerr << "v[" << i << "]: " << sensMsg->GetValue(i) << " ";
+    }
+    std::cerr << std::endl;
+    return 1;
+  }
+
+  return 0;
+}
+
 int ReceivePosition(igtl::Socket * socket, igtl::MessageHeader::Pointer& header)
 {
   std::cerr << "Receiving POSITION data type." << std::endl;
-  
+
   // Create a message buffer to receive transform data
   igtl::PositionMessage::Pointer positionMsg;
   positionMsg = igtl::PositionMessage::New();
   positionMsg->SetMessageHeader(header);
   positionMsg->AllocatePack();
-  
+
   // Receive position position data from the socket
   socket->Receive(positionMsg->GetPackBodyPointer(), positionMsg->GetPackBodySize());
-  
+
   // Deserialize the transform data
   // If you want to skip CRC check, call Unpack() without argument.
   int c = positionMsg->Unpack(1);
-  
+
   if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
     {
     // Retrive the transform data
@@ -258,14 +294,14 @@ int ReceiveImage(igtl::Socket * socket, igtl::MessageHeader::Pointer& header)
   imgMsg = igtl::ImageMessage::New();
   imgMsg->SetMessageHeader(header);
   imgMsg->AllocatePack();
-  
+
   // Receive transform data from the socket
   socket->Receive(imgMsg->GetPackBodyPointer(), imgMsg->GetPackBodySize());
-  
+
   // Deserialize the transform data
   // If you want to skip CRC check, call Unpack() without argument.
   int c = imgMsg->Unpack(1);
-  
+
   if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
     {
     // Retrive the image data
@@ -312,14 +348,14 @@ int ReceiveStatus(igtl::Socket * socket, igtl::MessageHeader::Pointer& header)
   statusMsg = igtl::StatusMessage::New();
   statusMsg->SetMessageHeader(header);
   statusMsg->AllocatePack();
-  
+
   // Receive transform data from the socket
   socket->Receive(statusMsg->GetPackBodyPointer(), statusMsg->GetPackBodySize());
-  
+
   // Deserialize the transform data
   // If you want to skip CRC check, call Unpack() without argument.
   int c = statusMsg->Unpack(1);
-  
+
   if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
     {
     std::cerr << "========== STATUS ==========" << std::endl;
@@ -460,7 +496,7 @@ int ReceiveString(igtl::Socket * socket, igtl::MessageHeader::Pointer& header)
 int ReceiveTrackingData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Pointer& header)
 {
   std::cerr << "Receiving TDATA data type." << std::endl;
-  
+
   // Create a message buffer to receive transform data
   igtl::TrackingDataMessage::Pointer trackingData;
   trackingData = igtl::TrackingDataMessage::New();
@@ -501,7 +537,7 @@ int ReceiveTrackingData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader
 int ReceiveQuaternionTrackingData(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::Pointer& header)
 {
   std::cerr << "Receiving QTDATA data type." << std::endl;
-  
+
   // Create a message buffer to receive transform data
   igtl::QuaternionTrackingDataMessage::Pointer quaternionTrackingData;
   quaternionTrackingData = igtl::QuaternionTrackingDataMessage::New();
@@ -542,7 +578,7 @@ int ReceiveQuaternionTrackingData(igtl::ClientSocket::Pointer& socket, igtl::Mes
 
 int ReceiveCapability(igtl::Socket * socket, igtl::MessageHeader * header)
 {
-  
+
   std::cerr << "Receiving CAPABILITY data type." << std::endl;
 
   // Create a message buffer to receive transform data
@@ -557,7 +593,7 @@ int ReceiveCapability(igtl::Socket * socket, igtl::MessageHeader * header)
   // Deserialize the transform data
   // If you want to skip CRC check, call Unpack() without argument.
   int c = capabilMsg->Unpack(1);
-  
+
   if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
     {
     int nTypes = capabilMsg->GetNumberOfTypes();
@@ -568,7 +604,7 @@ int ReceiveCapability(igtl::Socket * socket, igtl::MessageHeader * header)
     }
 
   return 1;
-  
+
 }
 
 #endif //OpenIGTLink_PROTOCOL_VERSION >= 2
