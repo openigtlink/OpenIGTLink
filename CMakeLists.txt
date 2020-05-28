@@ -228,6 +228,13 @@ CONFIGURE_FILE(${OpenIGTLink_SOURCE_DIR}/UseOpenIGTLink.cmake.in
 # Create the OpenIGTLinkConfig.cmake file containing the OpenIGTLink configuration.
 INCLUDE(${OpenIGTLink_SOURCE_DIR}/CMake/GenerateOpenIGTLinkConfig.cmake)
 
+# Create the OpenIGTLinkVersion.cmake file containing the OpenIGTLink version.
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+  ${OpenIGTLink_BINARY_DIR}/OpenIGTLinkConfigVersion.cmake
+  VERSION "${OpenIGTLink_VERSION_MAJOR}.${OpenIGTLink_VERSION_MINOR}.${OpenIGTLink_VERSION_PATCH}"
+  COMPATIBILITY SameMajorVersion)
+
 # Save the compiler settings so another project can import them.
 # The functionality of this module has been dropped as of CMake 2.8.  It was
 # deemed harmful (confusing users by changing their compiler). CMAKE_EXPORT_BUILD_SETTINGS should be removed
@@ -237,6 +244,7 @@ INCLUDE(${OpenIGTLink_SOURCE_DIR}/CMake/GenerateOpenIGTLinkConfig.cmake)
 INSTALL(FILES
   ${OpenIGTLink_BINARY_DIR}/UseOpenIGTLink.cmake
   ${OpenIGTLink_BINARY_DIR}/Utilities/OpenIGTLinkConfig.cmake
+  ${OpenIGTLink_BINARY_DIR}/OpenIGTLinkConfigVersion.cmake
   DESTINATION ${OpenIGTLink_INSTALL_PACKAGE_DIR}
   COMPONENT Development
   )
