@@ -20,6 +20,7 @@ if (${OpenIGTLink_PROTOCOL_VERSION} GREATER 1)
     QuaternionTrackingData
     ImageDatabaseServer
     String
+    Sensor
     Bind
     PolyData
     Capability
