@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
   std::cout << std::endl;
 
   //------------------------------------------------------------
-  // Allocate Transform Message Class
+  // Allocate Sensor Message Class
   igtl::SensorMessage::Pointer sensorMsg;
   sensorMsg = igtl::SensorMessage::New();
   sensorMsg->SetDeviceName(device);

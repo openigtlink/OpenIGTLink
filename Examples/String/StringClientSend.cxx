@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 	    << "\". Message: " << string << std::endl;
 
   //------------------------------------------------------------
-  // Allocate Transform Message Class
+  // Allocate String Message Class
   igtl::StringMessage::Pointer stringMsg;
   stringMsg = igtl::StringMessage::New();
   stringMsg->SetDeviceName(device);
