@@ -523,7 +523,7 @@ void MessageBase::GetTimeStamp(igtl::TimeStamp::Pointer& ts)
 }
 
 
-int MessageBase::Pack()
+int MessageBase::Pack(bool crccheck)
 {
   if (m_IsBodyPacked)
     {
@@ -562,7 +562,14 @@ int MessageBase::Pack()
 
   h->timestamp = ts;
   h->body_size = GetBufferBodySize();
-  h->crc       = crc64((unsigned char*)m_Body, h->body_size, crc);
+  if (crccheck)
+    {
+    h->crc = crc64((unsigned char*)m_Body, h->body_size, crc);
+    }
+  else
+    {
+    h->crc = 0;
+    }
 
   strncpy(h->name, m_SendMessageType.c_str(), 12);
 

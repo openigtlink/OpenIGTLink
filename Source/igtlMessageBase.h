@@ -187,7 +187,7 @@ namespace igtl
 
     /// Pack() serializes the header and body based on the member variables.
     /// PackContent() must be implemented in the child class.
-    virtual int Pack();
+    virtual int Pack(bool crccheck = true);
 
     /// Unpack() deserializes the header and/or body, extracting data from
     /// the byte stream. If the header has already been deserilized, Unpack()
