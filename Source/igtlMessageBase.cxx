@@ -523,7 +523,7 @@ void MessageBase::GetTimeStamp(igtl::TimeStamp::Pointer& ts)
 }
 
 
-int MessageBase::Pack()
+int MessageBase::Pack(bool crccheck)
 {
   if (m_IsBodyPacked)
     {
@@ -562,7 +562,19 @@ int MessageBase::Pack()
 
   h->timestamp = ts;
   h->body_size = GetBufferBodySize();
-  h->crc       = crc64((unsigned char*)m_Body, h->body_size, crc);
+  if (!crccheck && m_HeaderVersion >= OpenIGTLink_HEADER_VERSION)
+    {
+    h->crc = 0;
+    this->SetMetaDataElement("CrcValid", IANA_TYPE_US_ASCII, "false");
+    }
+  else
+    {
+    h->crc = crc64((unsigned char*)m_Body, h->body_size, crc);
+    if (m_HeaderVersion >= OpenIGTLink_HEADER_VERSION)
+      {
+      this->SetMetaDataElement("CrcValid", IANA_TYPE_US_ASCII, "true");
+      }
+    }
 
   strncpy(h->name, m_SendMessageType.c_str(), 12);
 
