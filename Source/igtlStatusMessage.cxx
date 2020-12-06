@@ -133,7 +133,7 @@ int StatusMessage::UnpackContent()
   strncpy(this->m_ErrorName, status_header->error_name, IGTL_STATUS_ERROR_NAME_LENGTH);
 
   // make sure that the status message in the pack ends with '\0'
-  if (m_StatusMessage[this->m_BodySizeToRead-IGTL_STATUS_HEADER_SIZE-1] == '\0')
+  if (m_StatusMessage[CalculateReceiveContentSize()-IGTL_STATUS_HEADER_SIZE-1] == '\0')
     {
     this->m_StatusMessageString = m_StatusMessage;
     }
