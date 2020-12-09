@@ -266,13 +266,13 @@ public:
 
 protected:
   ImageMessage();
-  ~ImageMessage();
+  ~ImageMessage() override;
   
 protected:
 
-  virtual int  CalculateContentBufferSize();
-  virtual int  PackContent();
-  virtual int  UnpackContent();
+  int  CalculateContentBufferSize() override;
+  int  PackContent() override;
+  int  UnpackContent() override;
 
   /// A vector containing the numbers of voxels in i, j and k directions.
   int    dimensions[3];
