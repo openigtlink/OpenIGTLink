@@ -72,7 +72,7 @@ public:
    * object that is exactly the same type as the referring object.
    * This is useful in cases where an object has been cast back to a
    * base class. */
-  virtual LightObject::Pointer CreateAnother() const;
+  LightObject::Pointer CreateAnother() const override;
 
   /** Turn debugging output on.  */
   virtual void DebugOn() const;
@@ -94,13 +94,13 @@ public:
   //  virtual void Modified() const;
   
   /** Increase the reference count (mark as used by another object).  */
-  virtual void Register() const;
+  void Register() const override;
 
   /** Decrease the reference count (release by another object).  */
-  virtual void UnRegister() const;
+  void UnRegister() const override;
 
   /** Sets the reference count (use with care)  */
-  virtual void SetReferenceCount(int);
+  void SetReferenceCount(int) override;
 
   /** This is a global flag that controls whether any debug, warning
    *  or error messages are displayed.  */

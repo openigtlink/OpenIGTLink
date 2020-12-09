@@ -379,16 +379,16 @@ namespace igtl
     ~HeaderOnlyMessageBase() {};
 
   protected:
-    virtual int  CalculateContentBufferSize()
+    int  CalculateContentBufferSize() override
     {
       return 0;
     };
-    virtual int  PackContent()
+    int  PackContent() override
     {
       AllocateBuffer();
       return 1;
     };
-    virtual int  UnpackContent()
+    int  UnpackContent() override
     {
       return 1;
     };

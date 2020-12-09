@@ -146,7 +146,7 @@ public:
     };
 
 protected:
-  virtual void PrintSelf(std::ostream& os) const;
+  void PrintSelf(std::ostream& os) const override;
 
   /** Register object creation information with the factory. */
   void RegisterOverride(const char* classOverride,
