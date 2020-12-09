@@ -420,7 +420,7 @@ static Pointer New(void) \
   smartPtr->UnRegister(); \
   return smartPtr; \
 } \
-virtual ::igtl::LightObject::Pointer CreateAnother(void) const \
+::igtl::LightObject::Pointer CreateAnother(void) const override\
 { \
   return x::New().GetPointer(); \
 } \
@@ -461,7 +461,7 @@ static Pointer New(void) \
 /** Macro used to add standard methods and typedef to all classes, mainly type
  * information. */
 #define igtlTypeMacro(thisClass,superclass) \
-    virtual const char *GetNameOfClass() const {return #thisClass;} \
+    const char *GetNameOfClass() const override {return #thisClass;} \
     typedef thisClass Self; \
     typedef superclass Superclass; \
     typedef igtl::SmartPointer<Self> Pointer; \
