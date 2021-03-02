@@ -52,7 +52,7 @@ PointElement::~PointElement()
 
 int PointElement::SetName(const char* name)
 {
-  if (strlen(name) <= IGTL_POINT_LEN_NAME)
+  if (name != NULL && strlen(name) <= IGTL_POINT_LEN_NAME)
     {
     this->m_Name = name;
     return 1;
@@ -66,7 +66,7 @@ int PointElement::SetName(const char* name)
 
 int PointElement::SetGroupName(const char* grpname)
 {
-  if (strlen(grpname) <= IGTL_POINT_LEN_GROUP_NAME)
+  if (grpname != NULL && strlen(grpname) <= IGTL_POINT_LEN_GROUP_NAME)
     {
     this->m_GroupName = grpname;
     return 1;
@@ -147,7 +147,7 @@ void PointElement::GetPosition(igtlFloat32& x, igtlFloat32& y, igtlFloat32& z)
 
 int PointElement::SetOwner(const char* owner)
 {
-  if (strlen(owner) <= IGTL_POINT_LEN_OWNER)
+  if (owner != NULL && strlen(owner) <= IGTL_POINT_LEN_OWNER)
     {
     this->m_Owner = owner;
     return 1;

@@ -35,7 +35,7 @@ QueryMessage::~QueryMessage()
 
 int QueryMessage::SetDeviceUID(const char* string)
 {
-  if (strlen(string) > 0xFFFF) /* If the length is beyond the range of unsigned short */
+  if (string == NULL || strlen(string) > 0xFFFF) /* If the length is beyond the range of unsigned short */
     {
     return 0;
     }
@@ -64,7 +64,7 @@ std::string QueryMessage::GetDeviceUID()
   
 int QueryMessage::SetDataType(const char* dataType)
 {
-  if (strlen(dataType) > IGTL_QUERY_DATE_TYPE_SIZE) /* If the length is beyond the range specified by the spec */
+  if (dataType == NULL || strlen(dataType) > IGTL_QUERY_DATE_TYPE_SIZE) /* If the length is beyond the range specified by the spec */
   {
     return 0;
   }

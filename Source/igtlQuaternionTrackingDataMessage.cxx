@@ -53,7 +53,7 @@ QuaternionTrackingDataElement::~QuaternionTrackingDataElement()
 
 int QuaternionTrackingDataElement::SetName(const char* name)
 {
-  if (strlen(name) <= IGTL_QTDATA_LEN_NAME)
+  if (name != NULL && strlen(name) <= IGTL_QTDATA_LEN_NAME)
     {
     this->m_Name = name;
     return 1;
@@ -168,7 +168,7 @@ StartQuaternionTrackingDataMessage::~StartQuaternionTrackingDataMessage()
 
 int StartQuaternionTrackingDataMessage::SetCoordinateName(const char* name)
 {
-  if (strlen(name) <= IGTL_STT_QTDATA_LEN_COORDNAME)
+  if (name != NULL && strlen(name) <= IGTL_STT_QTDATA_LEN_COORDNAME)
     {
     this->m_CoordinateName = name;
     return 1;
