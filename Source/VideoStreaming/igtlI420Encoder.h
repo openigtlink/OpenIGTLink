@@ -28,13 +28,13 @@ public:
   I420Encoder(char * configFile = NULL);
   ~I420Encoder();
   
-  virtual int InitializeEncoder() { return 0; };
+  int InitializeEncoder() override { return 0; };
 
   /**
    Encode a frame, for performance issue, before encode the frame, make sure the frame pointer is updated with a new frame.
    Otherwize, the old frame will be encoded.
    */
-  virtual int EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage = false );
+  int EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage = false ) override;
 };
 
 

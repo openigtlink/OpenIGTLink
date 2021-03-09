@@ -156,9 +156,9 @@ protected:
   
 protected:
 
-  virtual int  CalculateContentBufferSize();
-  virtual int  PackContent();
-  virtual int  UnpackContent();
+  int  CalculateContentBufferSize() override;
+  int  PackContent() override;
+  int  UnpackContent() override;
   
   /// A pointer to the N-D array.
   ArrayBase *  m_Array;

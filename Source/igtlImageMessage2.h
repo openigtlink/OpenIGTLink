@@ -45,9 +45,9 @@ protected:
   GetImageMessage2() : MessageBase() { this->m_SendMessageType  = "GET_IMAGE"; };
   ~GetImageMessage2() {};
 protected:
-  virtual int  CalculateContentBufferSize() { return 0; };
-  virtual int  PackContent()        { AllocateBuffer(); return 1; };
-  virtual int  UnpackContent()      { return 1; };
+  int  CalculateContentBufferSize() override { return 0; };
+  int  PackContent()   override      { AllocateBuffer(); return 1; };
+  int  UnpackContent()   override    { return 1; };
 };
 
 
@@ -296,23 +296,23 @@ protected:
   
 protected:
 
-  virtual int  CalculateContentBufferSize();
+  int  CalculateContentBufferSize()  override;
 
 #ifdef FRAGMENTED_PACK  
 public:  
   /// Pack() serializes the header and body based on the member variables.
   /// PackBody() must be implemented in the child class. (for fragmented pack support)
-  virtual int   Pack();
+  int   Pack()  override;
 public:
 #endif //FRAGMENTED_PACK  
 
-  virtual int  PackContent();
-  virtual int  UnpackContent();
+  int  PackContent() override;
+  int  UnpackContent() override;
 
 #ifdef FRAGMENTED_PACK  
   /// Allocate memory specifying the body size
   /// (used when create a brank package to receive data) (for fragmented pack support)
-  virtual void AllocateBuffer(int contentSize);
+  void AllocateBuffer(int contentSize) override;
 #endif //FRAGMENTED_PACK  
 
   /// A vector containing the numbers of voxels in i, j and k directions.

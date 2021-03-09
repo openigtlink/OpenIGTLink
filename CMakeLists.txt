@@ -1,12 +1,14 @@
 PROJECT(OpenIGTLink)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 
 INCLUDE(ExternalProject)
 
 IF(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 ENDIF(COMMAND cmake_policy)
+
+set (CMAKE_CXX_STANDARD 11)
 #-----------------------------------------------------------------------------
 # OpenIGTlink version number.
 SET(OpenIGTLink_VERSION_MAJOR "3")

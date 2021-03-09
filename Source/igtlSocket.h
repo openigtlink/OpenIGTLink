@@ -122,7 +122,7 @@ protected:
   Socket();
   ~Socket();
 
-  void PrintSelf(std::ostream& os) const;
+  void PrintSelf(std::ostream& os) const override;
 
   int m_SocketDescriptor;
   igtlGetMacro(SocketDescriptor, int);

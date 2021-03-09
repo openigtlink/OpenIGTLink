@@ -42,36 +42,36 @@ public:
   igtlAV1Encoder(char * configFile = NULL);
   ~igtlAV1Encoder();
 
-  virtual int FillSpecificParameters();
+  int FillSpecificParameters()  override;
   
   /**
    Parse the configuration file to initialize the encoder and server.
    */
-  virtual int InitializeEncoder();
+  int InitializeEncoder()  override;
   
-  virtual int ConvertToLocalImageFormat(SourcePicture* pSrcPic);
+  int ConvertToLocalImageFormat(SourcePicture* pSrcPic) override;
   
   /**
    Encode a frame, for performance issue, before encode the frame, make sure the frame pointer is updated with a new frame.
    Otherwize, the old frame will be encoded.
    */
-  virtual int EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage = false );
+  int EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage = false ) override;
   
-  virtual int SetPicWidthAndHeight(unsigned int width, unsigned int height);
+  int SetPicWidthAndHeight(unsigned int width, unsigned int height) override;
   
-  virtual unsigned int GetPicWidth(){return this->picWidth;};
+  unsigned int GetPicWidth() override {return this->picWidth;};
   
-  virtual unsigned int GetPicHeight(){return this->picHeight;};
+  unsigned int GetPicHeight() override {return this->picHeight;};
   
-  virtual int SetRCMode(int value);
+  int SetRCMode(int value) override;
   
-  virtual int SetKeyFrameDistance(int frameNum);
+  int SetKeyFrameDistance(int frameNum) override;
   
-  virtual int SetQP(int maxQP, int minQP);
+  int SetQP(int maxQP, int minQP) override;
   
-  virtual int SetRCTargetBitRate(unsigned int bitRate);
+  int SetRCTargetBitRate(unsigned int bitRate) override;
   
-  virtual int SetLosslessLink(bool linkMethod);
+  int SetLosslessLink(bool linkMethod) override;
   
   /* Speed value Should be set between -8 to 8 for AV1.
      Values greater than 0 will increase encoder speed at the expense of quality.
@@ -81,7 +81,7 @@ public:
     SlowestSpeed = 0,
     FastestSpeed = 8
   };
-  virtual int SetSpeed(int speed);
+  int SetSpeed(int speed) override;
   
   /*!\brief deadline parameter analogous to VPx REALTIME mode. */
   //#define VPX_DL_REALTIME (1)

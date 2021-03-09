@@ -99,9 +99,9 @@ protected:
   
 protected:
 
-  virtual int  CalculateContentBufferSize();
-  virtual int  PackContent();
-  virtual int  UnpackContent();
+  int  CalculateContentBufferSize() override;
+  int  PackContent() override;
+  int  UnpackContent() override;
 
 };
 
@@ -127,9 +127,9 @@ protected:
   
 protected:
   
-  virtual int  CalculateContentBufferSize();
-  virtual int  PackContent();
-  virtual int  UnpackContent();
+  int  CalculateContentBufferSize() override;
+  int  PackContent() override;
+  int  UnpackContent() override;
 
 };
 
@@ -159,9 +159,9 @@ protected:
   
 protected:
 
-  virtual int  CalculateContentBufferSize();
-  virtual int  PackContent();
-  virtual int  UnpackContent();
+  int  CalculateContentBufferSize() override;
+  int  PackContent() override;
+  int  UnpackContent() override;
 
   igtlUint64   m_Resolution;
 
@@ -181,9 +181,9 @@ protected:
   ~StopBindMessage() {};
 
 protected:
-  virtual int  CalculateContentBufferSize() { return 0; };
-  virtual int  PackContent()        { AllocateBuffer(); return 1; };
-  virtual int  UnpackContent()      { return 1; };
+  int  CalculateContentBufferSize() override { return 0; };
+  int  PackContent()   override     { AllocateBuffer(); return 1; };
+  int  UnpackContent()   override   { return 1; };
 
 };
 
@@ -216,9 +216,9 @@ protected:
   igtlUint8 m_Status;
 
 protected:
-  virtual int  CalculateContentBufferSize();
-  virtual int  PackContent();
-  virtual int  UnpackContent();
+  int  CalculateContentBufferSize() override;
+  int  PackContent() override;
+  int  UnpackContent() override;
 
 };
 
