@@ -41,7 +41,7 @@ TrackingDataElement::~TrackingDataElement()
   
 int TrackingDataElement::SetName(const char* name)
 {
-  if (strlen(name) <= IGTL_TDATA_LEN_NAME)
+  if (name != NULL && strlen(name) <= IGTL_TDATA_LEN_NAME)
     {
     this->m_Name = name;
     return 1;
@@ -168,7 +168,7 @@ StartTrackingDataMessage::~StartTrackingDataMessage()
   
 int StartTrackingDataMessage::SetCoordinateName(const char* name)
 {
-  if (strlen(name) <= IGTL_STT_TDATA_LEN_COORDNAME)
+  if (name != NULL && strlen(name) <= IGTL_STT_TDATA_LEN_COORDNAME)
     {
     this->m_CoordinateName = name;
     return 1;

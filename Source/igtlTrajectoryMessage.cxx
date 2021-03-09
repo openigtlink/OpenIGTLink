@@ -56,7 +56,7 @@ TrajectoryElement::~TrajectoryElement()
 
 int TrajectoryElement::SetName(const char* name)
 {
-  if (strlen(name) <= IGTL_TRAJECTORY_LEN_NAME)
+  if (name != NULL && strlen(name) <= IGTL_TRAJECTORY_LEN_NAME)
     {
     this->m_Name = name;
     return 1;
@@ -70,7 +70,7 @@ int TrajectoryElement::SetName(const char* name)
 
 int TrajectoryElement::SetGroupName(const char* grpname)
 {
-  if (strlen(grpname) <= IGTL_TRAJECTORY_LEN_GROUP_NAME)
+  if (grpname != NULL && strlen(grpname) <= IGTL_TRAJECTORY_LEN_GROUP_NAME)
     {
     this->m_GroupName = grpname;
     return 1;
