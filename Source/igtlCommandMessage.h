@@ -76,9 +76,9 @@ protected:
   ~CommandMessage();
 
 protected:
-  virtual int  CalculateContentBufferSize();
-  virtual int  PackContent();
-  virtual int  UnpackContent();
+  int  CalculateContentBufferSize() override;
+  int  PackContent() override;
+  int  UnpackContent() override;
 
   /// The unique ID of the command
   igtlUint32   m_CommandId;

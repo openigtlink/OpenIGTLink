@@ -170,7 +170,7 @@ protected:
    * including superclasses. Typically not called by the user (use Print()
    * instead) but used in the hierarchical print process to combine the
    * output of several classes.  */
-  virtual void PrintSelf(std::ostream& os) const;
+  virtual void PrintSelf(std::ostream& os) const override;
 
   //bool PrintObservers(std::ostream& os) const;
 

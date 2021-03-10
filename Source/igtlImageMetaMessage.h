@@ -139,9 +139,9 @@ protected:
   GetImageMetaMessage() : MessageBase() { this->m_SendMessageType  = "GET_IMGMETA"; };
   ~GetImageMetaMessage() {};
 protected:
-  virtual int  CalculateContentBufferSize() { return 0; };
-  virtual int  PackContent()        { AllocateBuffer(); return 1; };
-  virtual int  UnpackContent()      { return 1; };
+  int  CalculateContentBufferSize() override { return 0; };
+  int  PackContent()  override       { AllocateBuffer(); return 1; };
+  int  UnpackContent()   override    { return 1; };
 };
 
 
@@ -178,9 +178,9 @@ protected:
   
 protected:
 
-  virtual int  CalculateContentBufferSize();
-  virtual int  PackContent();
-  virtual int  UnpackContent();
+  int  CalculateContentBufferSize() override;
+  int  PackContent() override;
+  int  UnpackContent() override;
 
   /// A list of pointers to image meta data.
   std::vector<ImageMetaElement::Pointer> m_ImageMetaList;

@@ -64,7 +64,7 @@ protected:
   ServerSocket();
   ~ServerSocket();
 
-  void PrintSelf(std::ostream& os) const;
+  void PrintSelf(std::ostream& os) const override;
 
 private:
   ServerSocket(const ServerSocket&); // Not implemented.

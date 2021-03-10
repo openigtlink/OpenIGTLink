@@ -47,9 +47,9 @@ protected:
 
 protected:
 
-  virtual int  CalculateContentBufferSize();
-  virtual int  PackContent();
-  virtual int  UnpackContent();
+  int  CalculateContentBufferSize() override;
+  int  PackContent() override;
+  int  UnpackContent() override;
 
   std::vector<std::string>  m_TypeNames;
 

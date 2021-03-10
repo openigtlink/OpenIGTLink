@@ -233,7 +233,7 @@ protected:
   MultiThreader();
   ~MultiThreader();
 
-  void PrintSelf(std::ostream& os) const;
+  void PrintSelf(std::ostream& os) const override;
 
   // The number of threads to use
   int                        m_NumberOfThreads;

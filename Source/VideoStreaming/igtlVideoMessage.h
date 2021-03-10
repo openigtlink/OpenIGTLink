@@ -56,12 +56,12 @@ protected:
   ~StartVideoMessage();
   
   /// Gets the size of the serialized content.
-  virtual int  CalculateContentBufferSize();
+  int  CalculateContentBufferSize() override;
   
 protected:
   virtual int  GetBodyPackSize();
-  virtual int  PackContent();
-  virtual int  UnpackContent();
+  int  PackContent() override;
+  int  UnpackContent() override;
   
 protected:
   
@@ -100,9 +100,9 @@ protected:
   StopVideoMessage() : MessageBase() { this->m_SendMessageType  = "STP_VIDEO"; };
   ~StopVideoMessage() {};
 protected:
-  virtual int  CalculateContentBufferSize() { return 0; };
-  virtual int  PackContent()        { AllocateBuffer(); return 1; };
-  virtual int  UnpackContent()      { return 1; };
+  int  CalculateContentBufferSize()  override { return 0; };
+  int  PackContent()    override     { AllocateBuffer(); return 1; };
+  int  UnpackContent()   override    { return 1; };
 };
 
 class IGTLCommon_EXPORT VideoMessage: public MessageBase
@@ -301,10 +301,10 @@ protected:
   
   /// Pack() serializes the header and body based on the member variables.
   /// PackBody() must be implemented in the child class. (for fragmented pack support)
-  virtual int  PackContent();
-  virtual int  UnpackContent();
+  int  PackContent() override;
+  int  UnpackContent() override;
   
-  virtual int  CalculateContentBufferSize();
+  int  CalculateContentBufferSize() override;
 
 private:
 

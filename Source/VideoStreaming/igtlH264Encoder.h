@@ -109,7 +109,7 @@ public:
   H264Encoder(char * configFile = NULL);
   ~H264Encoder();
   
-  virtual int FillSpecificParameters();
+ int FillSpecificParameters() override;
   
   /**
    * @brief Enumerate the type of rate control mode
@@ -122,32 +122,32 @@ public:
       RC_OFF_MODE = -1,         ///< rate control off mode
     } RC_MODES;
    */
-  virtual int SetRCMode(int value);
+  int SetRCMode(int value) override;
   
-  virtual int SetKeyFrameDistance(int frameNum){return -1;};
+  int SetKeyFrameDistance(int frameNum) override {return -1;};
   
-  virtual int SetQP(int maxQP, int minQP);
+  int SetQP(int maxQP, int minQP) override;
   
   /**
    Parse the configuration file to initialize the encoder and server.
    */
-  virtual int InitializeEncoder();
+  int InitializeEncoder() override;
   
-  virtual int ConvertToLocalImageFormat(SourcePicture* pSrcPic);
+  int ConvertToLocalImageFormat(SourcePicture* pSrcPic) override;
   
   /**
    Encode a frame, for performance issue, before encode the frame, make sure the frame pointer is updated with a new frame.
    Otherwize, the old frame will be encoded.
    */
-  virtual int EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage = false );
+  int EncodeSingleFrameIntoVideoMSG(SourcePicture* pSrcPic, igtl::VideoMessage* videoMessage, bool isGrayImage = false ) override;
   
-  virtual int SetPicWidthAndHeight(unsigned int Width, unsigned int Height);
+  int SetPicWidthAndHeight(unsigned int Width, unsigned int Height) override;
   
-  virtual unsigned int GetPicWidth(){return this->sSvcParam.iPicWidth;};
+  unsigned int GetPicWidth() override {return this->sSvcParam.iPicWidth;};
   
-  virtual unsigned int GetPicHeight(){return this->sSvcParam.iPicHeight;};
+  unsigned int GetPicHeight() override {return this->sSvcParam.iPicHeight;};
   
-  virtual int SetLosslessLink(bool linkMethod);
+  int SetLosslessLink(bool linkMethod) override;
   
   /**
    typedef enum {
@@ -156,11 +156,11 @@ public:
    HIGH_COMPLEXITY             ///< high complexity, lowest speed, high quality
    } ECOMPLEXITY_MODE;
    */
-  virtual int SetSpeed(int speed);
+  int SetSpeed(int speed) override;
   
-  virtual int SetRCTaregetBitRate(unsigned int bitRate);
+  int SetRCTaregetBitRate(unsigned int bitRate) override;
   
-  virtual bool GetLosslessLink(){return this->sSvcParam.bIsLosslessLink;};
+  bool GetLosslessLink() override {return this->sSvcParam.bIsLosslessLink;};
   
 private:
   int ParseLayerConfig (string strTag[], const int iLayer, SEncParamExt& pSvcParam);

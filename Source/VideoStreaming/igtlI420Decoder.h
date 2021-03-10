@@ -30,8 +30,8 @@ namespace igtl {
     I420Decoder();
     ~I420Decoder();
 
-    virtual int DecodeBitStreamIntoFrame(unsigned char* bitStream, igtl_uint8* outputFrame, igtl_uint32 iDimensions[2], igtl_uint64 &iStreamSize) { return -1; };
-    virtual int DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* pDecodedPic);
+    int DecodeBitStreamIntoFrame(unsigned char* bitStream, igtl_uint8* outputFrame, igtl_uint32 iDimensions[2], igtl_uint64 &iStreamSize) override { return -1; };
+    int DecodeVideoMSGIntoSingleFrame(igtl::VideoMessage* videoMessage, SourcePicture* pDecodedPic) override;
 
   };
 
