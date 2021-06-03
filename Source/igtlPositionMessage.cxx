@@ -219,8 +219,9 @@ int PositionMessage::UnpackContent()
   p = (igtl_position*)(this->m_Body);
 #endif
 
-  int contentSize = CalculateReceiveContentSize();
-  if( contentSize == -1 )
+  bool isUnpacked(true);
+  igtl_uint64 contentSize = CalculateReceiveContentSize(isUnpacked);
+  if( !isUnpacked)
   {
     return 0;
   }

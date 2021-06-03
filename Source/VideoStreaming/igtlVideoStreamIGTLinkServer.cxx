@@ -263,7 +263,8 @@ static void* ThreadFunctionServer(void* ptr)
         while (parentObj->serverConnected)
           {
           headerMsg->InitPack();
-          int rs = parentObj->socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
+          bool timeout(false);
+          int rs = parentObj->socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize(), timeout);
           if (rs == 0)
             {
             std::cerr << "Disconnecting the client." << std::endl;
@@ -283,9 +284,9 @@ static void* ThreadFunctionServer(void* ptr)
           {
           // Initialize receive buffer
           headerMsg->InitPack();
-          
+          bool timeout(false);
           // Receive generic header from the socket
-          int rs = parentObj->socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
+          int rs = parentObj->socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize(), timeout);
           if (rs == 0)
             {
             std::cerr << "Disconnecting the client." << std::endl;
@@ -325,7 +326,8 @@ static void* ThreadFunctionServer(void* ptr)
             startVideoMsg->SetMessageHeader(headerMsg);
             startVideoMsg->AllocatePack();
             parentObj->glock->Lock();
-            parentObj->socket->Receive(startVideoMsg->GetPackBodyPointer(), startVideoMsg->GetPackBodySize());
+            bool timeout(false);
+            parentObj->socket->Receive(startVideoMsg->GetPackBodyPointer(), startVideoMsg->GetPackBodySize(), timeout);
             parentObj->glock->Unlock();
             int c = startVideoMsg->Unpack(1);
             if (c & igtl::MessageHeader::UNPACK_BODY && strcmp(startVideoMsg->GetCodecType().c_str(), "H264")) // if CRC check is OK
@@ -624,7 +626,6 @@ void VideoStreamIGTLinkServer::SendOriginalData()
       videoMsg->SetEndian(endian); //little endian is 2 big endian is 1
       videoMsg->SetWidth(pSrcPic->picWidth);
       videoMsg->SetHeight(pSrcPic->picHeight);
-      videoMsg->SetMessageID(messageID);
       memcpy(videoMsg->GetPackFragmentPointer(2), pYUV, kiPicResSize);
       ServerTimer->GetTime();
       videoMsg->SetTimeStamp(ServerTimer);

@@ -125,7 +125,8 @@ int CapabilityMessage::UnpackContent()
   igtl_capability_info info;
 
   igtl_capability_init_info(&info);
-  igtl_capability_unpack(this->m_Content, &info, this->CalculateReceiveContentSize());
+  bool isUnpacked(true);
+  igtl_capability_unpack(this->m_Content, &info, this->CalculateReceiveContentSize(isUnpacked));
 
   int ntypes = info.ntypes;
 

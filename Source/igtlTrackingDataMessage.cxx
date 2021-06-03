@@ -349,7 +349,8 @@ int TrackingDataMessage::UnpackContent()
   int nElement = 0;
 
   element = (igtl_tdata_element*)(this->m_Content);
-  nElement = igtl_tdata_get_data_n(CalculateReceiveContentSize());
+  bool isUnpacked(true);
+  nElement = igtl_tdata_get_data_n(CalculateReceiveContentSize(isUnpacked));
     
   igtl_tdata_convert_byte_order(element, nElement);
     

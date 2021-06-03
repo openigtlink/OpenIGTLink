@@ -800,7 +800,8 @@ int PolyDataMessage::UnpackContent()
   
   int r = 0;
 
-  r = igtl_polydata_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Content, &info, this->CalculateReceiveContentSize());
+  bool isUnpacked(true);
+  r = igtl_polydata_unpack(IGTL_TYPE_PREFIX_NONE, (void*)this->m_Content, &info, this->CalculateReceiveContentSize(isUnpacked));
 
   if ( r == 0)
     {

@@ -312,7 +312,7 @@ public:
 #ifdef FRAGMENTED_PACK  
   /// Allocate memory specifying the body size
   /// (used when create a brank package to receive data) (for fragmented pack support)
-  void AllocateBuffer(int contentSize) override;
+  void AllocateBuffer(igtlUint64 contentSize) override;
 #endif //FRAGMENTED_PACK  
 
   /// A vector containing the numbers of voxels in i, j and k directions.

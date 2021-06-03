@@ -214,17 +214,17 @@ namespace igtl
     void* GetPackBodyPointer() { return GetBufferBodyPointer(); }
 
     /// Gets the size of the serialized message data.
-    int GetBufferSize();
-    int GetPackSize() { return GetBufferSize(); }
+    igtl_uint64 GetBufferSize();
+    igtl_uint64 GetPackSize() { return GetBufferSize(); }
 
     /// Gets the size of the serialized body data.
-    int GetBufferBodySize();
-    int GetPackBodySize() { return GetBufferBodySize(); }
+    igtl_uint64 GetBufferBodySize();
+    igtl_uint64 GetPackBodySize() { return GetBufferBodySize(); }
 
     /// Calculate the size of the received content data
     /// Returns -1 if the extended header has not been properly initialized (meta data size, meta data header size, etc...)
     /// Used when receiving data, not sending
-    int CalculateReceiveContentSize();
+    igtl_uint64 CalculateReceiveContentSize(bool& isUnpacked);
 
     /// Gets the type of the body.
     const char* GetBodyType();
@@ -254,7 +254,7 @@ namespace igtl
 
     /// GetBodySizeToRead() returns the size of the body to be read. This function must be called
     /// after the message header is set.
-    int GetBodySizeToRead();
+    igtl_uint64 GetBodySizeToRead();
 
   protected:
     MessageBase();
@@ -271,11 +271,11 @@ namespace igtl
 
     /// Allocates memory specifying the content size.
     /// Implicitly allocates extended header, metadata header and metadata in addition to content
-    virtual void AllocateBuffer(int contentSize);
+    virtual void AllocateBuffer(igtlUint64 contentSize);
 
     /// Allocates memory specifying the unpack content size
     /// Size of body to allocate is determined from v1 message header field 'body_size'
-    virtual void AllocateUnpack(int bodySizeToRead);
+    virtual void AllocateUnpack(igtl_uint64 bodySizeToRead);
 
     /// Copies the serialized body data
     int CopyBody(const MessageBase* mb);
@@ -291,7 +291,7 @@ namespace igtl
     void UnpackBody(int crccheck, int& r);
 
   protected:
-    int            m_MessageSize;
+    igtl_uint64    m_MessageSize;
 
     /// A pointer to the byte array for the serialized header. To prevent large
     /// copy of the byte array in the Pack() function, header byte array is
@@ -308,7 +308,7 @@ namespace igtl
 
     /// The size of the body to be read. This function must be called
     /// after the message header is set.
-    int            m_BodySizeToRead;
+    igtl_uint64    m_BodySizeToRead;
 
     /// A character string for the send device type (message type).
     std::string    m_SendMessageType;

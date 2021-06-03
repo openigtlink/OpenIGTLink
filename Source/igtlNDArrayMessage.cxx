@@ -238,7 +238,8 @@ int NDArrayMessage::PackContent()
 int NDArrayMessage::UnpackContent()
 {
   igtl_ndarray_info info;
-  igtl_ndarray_unpack(IGTL_TYPE_PREFIX_NONE, this->m_Content, &info, this->CalculateReceiveContentSize());
+  bool isUnpacked(true);
+  igtl_ndarray_unpack(IGTL_TYPE_PREFIX_NONE, this->m_Content, &info, this->CalculateReceiveContentSize(isUnpacked));
 
   this->m_Type = info.type;
   ArrayBase::IndexType size;
