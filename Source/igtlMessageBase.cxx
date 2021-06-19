@@ -327,8 +327,8 @@ bool MessageBase::PackExtendedHeader()
 {
   if( m_HeaderVersion == IGTL_HEADER_VERSION_2 )
     {
-    igtlUint64 aSize = m_MessageSize - IGTL_HEADER_SIZE - sizeof(igtl_extended_header);
-    if( aSize < 0 )
+    //igtlUint64 aSize = m_MessageSize - IGTL_HEADER_SIZE - sizeof(igtl_extended_header);
+    if(m_MessageSize < (IGTL_HEADER_SIZE + sizeof(igtl_extended_header)))
       {
       // Ensure we have enough space to write the header
       AllocateBuffer(0);
