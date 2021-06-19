@@ -31,7 +31,7 @@
 #include <cmath>
 #include <igtlConfigure.h>
 #ifdef _WIN32
-#include <typeinfo.h>
+#include <typeinfo>
 #endif
 
 #define TEST_FAILURE 1
