@@ -16,7 +16,6 @@
 #define __igtlImageMessage2_h
 
 #include "igtlObject.h"
-//#include "igtlMacros.h"
 #include "igtlMacro.h"
 #include "igtlMath.h"
 #include "igtlMessageBase.h"
@@ -31,7 +30,7 @@ namespace igtl
 
 /// A class for the GET_IMAGE message type. The difference between the ImageMessage and
 /// ImageMessage2 classes is that the ImageMessage2 class supports fragmented pack.
-/// Fragmeted pack allows allocating memory for each segment independently.
+/// Fragmented pack allows allocating memory for each segment independently.
 /// The version 1 library assumes that the memory area for entire message pack
 /// is allocated at once, causing extra memory copies in some applications.
 /// (For example, copying image from source into the pack memory)
@@ -45,7 +44,7 @@ protected:
   GetImageMessage2() : MessageBase() { this->m_SendMessageType  = "GET_IMAGE"; };
   ~GetImageMessage2() {};
 protected:
-  int  CalculateContentBufferSize() override { return 0; };
+  igtlUint64 CalculateContentBufferSize() override { return 0; };
   int  PackContent()   override      { AllocateBuffer(); return 1; };
   int  UnpackContent()   override    { return 1; };
 };
@@ -177,14 +176,14 @@ public:
   void GetOrigin(float &px, float &py, float &pz);
 
   /// Sets the orientation of the image by an array of the normal vectors for the i, j
-  /// and k indeces.
+  /// and k indices.
   void SetNormals(float o[3][3]);
 
   /// Sets the orientation of the image by the normal vectors for the i, j and k indeces.
   void SetNormals(float t[3], float s[3], float n[3]);
 
   /// Gets the orientation of the image using an array of the normal vectors for the i, j
-  /// and k indeces.
+  /// and k indices.
   void GetNormals(float o[3][3]);
 
   /// Gets the orientation of the image using the normal vectors for the i, j and k indeces.
@@ -256,7 +255,7 @@ public:
   /// Gets the size (length) of the byte array for the subvolume image data.
   /// The size is defined by subDimensions[0]*subDimensions[1]*subDimensions[2]*
   /// scalarSize*numComponents.
-  int  GetSubVolumeImageSize()
+  igtlUint64  GetSubVolumeImageSize()
   {
     return subDimensions[0]*subDimensions[1]*subDimensions[2]*GetScalarSize()*numComponents;
   };
@@ -265,7 +264,7 @@ public:
   /// Allocates a memory area for the scalar data based on the dimensions of the subvolume,
   /// the number of components, and the scalar type.
   /// Note: If FragmentedPack is active, GetScalarPointer() causes extra memory allocation to
-  /// create a single pack memroy degrading the performance.
+  /// create a single pack memory degrading the performance.
   virtual void  AllocateScalars();
 
   /// Gets a pointer to the scalar data.
@@ -296,7 +295,7 @@ protected:
   
 protected:
 
-  int  CalculateContentBufferSize()  override;
+  igtlUint64 CalculateContentBufferSize()  override;
 
 #ifdef FRAGMENTED_PACK  
 public:  

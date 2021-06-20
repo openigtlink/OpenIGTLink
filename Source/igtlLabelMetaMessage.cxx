@@ -208,7 +208,7 @@ void LabelMetaMessage::GetLabelMetaElement(int index, LabelMetaElement::Pointer&
 }
 
 
-int LabelMetaMessage::CalculateContentBufferSize()
+igtlUint64 LabelMetaMessage::CalculateContentBufferSize()
 {
   // The body size sum of the header size and status message size.
   return IGTL_LBMETA_ELEMENT_SIZE * this->m_LabelMetaList.size();

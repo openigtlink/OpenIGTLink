@@ -650,7 +650,7 @@ void IGTLCommon_EXPORT UnSetPolyDataInfoAttribute(igtl_polydata_info * info)
 }
 
 
-int PolyDataMessage::CalculateContentBufferSize()
+igtlUint64 PolyDataMessage::CalculateContentBufferSize()
 {
   // TODO: The current implementation of GetBodyPackSize() allocates
   // igtl_polydata_info and the array of igtl_polydata_attribute to calculate
@@ -1015,7 +1015,7 @@ void RTSPolyDataMessage::SetStatus(bool status)
   m_Status = status ? 1 : 0;
 }
 
-int RTSPolyDataMessage::CalculateContentBufferSize()
+igtlUint64 RTSPolyDataMessage::CalculateContentBufferSize()
 {
   return sizeof(igtl_uint8);
 }

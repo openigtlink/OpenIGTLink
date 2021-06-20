@@ -145,9 +145,9 @@ void PositionMessage::GetQuaternion(float* ox, float* oy, float* oz, float* w)
   *w  = this->m_Quaternion[3];
 }
 
-int PositionMessage::CalculateContentBufferSize()
+igtlUint64 PositionMessage::CalculateContentBufferSize()
 {
-  int ret;
+  igtlUint64 ret;
 
   switch (this->m_PackType)
     {

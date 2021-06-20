@@ -86,7 +86,7 @@ const char* CapabilityMessage::GetType(int id)
 }
 
 
-int CapabilityMessage::CalculateContentBufferSize()
+igtlUint64 CapabilityMessage::CalculateContentBufferSize()
 {
   return (sizeof(char) * IGTL_HEADER_TYPE_SIZE * this->m_TypeNames.size());
 }

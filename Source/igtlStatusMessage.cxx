@@ -93,7 +93,7 @@ const char* StatusMessage::GetStatusString()
 }
 
 
-int StatusMessage::CalculateContentBufferSize()
+igtlUint64 StatusMessage::CalculateContentBufferSize()
 {
   // The body size sum of the header size and status message size.
   // Note that the status message ends with '\0'

@@ -35,7 +35,7 @@ protected:
   ~GetColorTableMessage() {};
 
 protected:
-  int  CalculateContentBufferSize() override { return 0; };
+  igtlUint64 CalculateContentBufferSize() override { return 0; };
   int  PackContent()     override    { AllocateBuffer(); return 1; };
   int  UnpackContent()   override    { return 1; };
 };
@@ -100,7 +100,7 @@ protected:
   
 protected:
 
-  int  CalculateContentBufferSize() override;
+  igtlUint64 CalculateContentBufferSize() override;
   int  PackContent() override;
   int  UnpackContent() override;
   

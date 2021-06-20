@@ -37,7 +37,7 @@ protected:
   GetPolyDataMessage();
   ~GetPolyDataMessage() {};
 protected:
-  int  CalculateContentBufferSize() override { return 0; };
+  igtlUint64 CalculateContentBufferSize() override { return 0; };
   int  PackContent()   override      { AllocateBuffer(); return 1; };
   int  UnpackContent()  override     { return 1; };
 };
@@ -57,7 +57,7 @@ protected:
   ~RTSPolyDataMessage() {};
 
 protected:
-  int  CalculateContentBufferSize() override;
+  igtlUint64 CalculateContentBufferSize() override;
   int  PackContent() override;
   int  UnpackContent() override;
 
@@ -405,7 +405,7 @@ protected:
   ~PolyDataMessage();
 
 protected:
-  int  CalculateContentBufferSize() override;
+  igtlUint64 CalculateContentBufferSize() override;
   int  PackContent() override;
   int  UnpackContent() override;
 

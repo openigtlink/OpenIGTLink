@@ -28,7 +28,7 @@ namespace igtl {
     return IGTL_STT_VIDEO_SIZE;
   }
   
-  int StartVideoMessage::CalculateContentBufferSize()
+  igtlUint64 StartVideoMessage::CalculateContentBufferSize()
   {
     return IGTL_STT_VIDEO_SIZE;
   }
@@ -168,7 +168,7 @@ namespace igtl {
   }
   
   
-  int VideoMessage::CalculateContentBufferSize()
+  igtlUint64 VideoMessage::CalculateContentBufferSize()
   {
     return  IGTL_VIDEO_HEADER_SIZE + GetBitStreamSize();
   }

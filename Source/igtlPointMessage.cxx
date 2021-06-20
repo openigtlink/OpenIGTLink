@@ -203,7 +203,7 @@ void PointMessage::GetPointElement(int index, PointElement::Pointer& elem)
 }
 
 
-int PointMessage::CalculateContentBufferSize()
+igtlUint64 PointMessage::CalculateContentBufferSize()
 {
   // The content size is the sum of the header size and status message size.
   return IGTL_POINT_ELEMENT_SIZE * this->m_PointList.size();

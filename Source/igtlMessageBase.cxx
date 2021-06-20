@@ -73,7 +73,7 @@ MessageBase::~MessageBase()
     }
 }
 
-int MessageBase::CalculateContentBufferSize()
+igtlUint64 MessageBase::CalculateContentBufferSize()
 {
   return 0;
 }
@@ -741,7 +741,7 @@ void MessageBase::AllocateBuffer(igtlUint64 contentSize)
     message_size = IGTL_HEADER_SIZE + contentSize;
     }
 #else
-  int message_size = IGTL_HEADER_SIZE + contentSize;
+  igtlUint64 message_size = IGTL_HEADER_SIZE + contentSize;
 #endif
 
   if (m_Header == NULL)
@@ -909,13 +909,13 @@ void MessageBase::UnpackBody(int crccheck, int& r)
 
 void MessageBase::AllocateUnpack(igtl_uint64 bodySizeToRead)
 {
-  if (bodySizeToRead <= 0)
+  if (bodySizeToRead == 0)
     {
     bodySizeToRead = 0;
     m_IsBodyUnpacked = false;
     }
 
-  int message_size = IGTL_HEADER_SIZE + bodySizeToRead;
+  igtl_uint64 message_size = IGTL_HEADER_SIZE + bodySizeToRead;
 
   if (m_Header == NULL)
     {

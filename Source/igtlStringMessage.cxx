@@ -81,7 +81,7 @@ igtlUint16 StringMessage::GetEncoding()
 }
 
 
-int StringMessage::CalculateContentBufferSize()
+igtlUint64 StringMessage::CalculateContentBufferSize()
 {
   // Body pack size is the sum of ENCODING, LENGTH and STRING fields
   return sizeof(igtlUint16)*2 + this->m_String.length();

@@ -262,7 +262,7 @@ namespace igtl
 
   protected:
     /// Gets the size of the serialized content.
-    virtual int CalculateContentBufferSize();
+    virtual igtlUint64 CalculateContentBufferSize();
 
     /// Packs (serialize) the content. Must be implemented in all child classes.
     virtual int PackContent();
@@ -379,7 +379,7 @@ namespace igtl
     ~HeaderOnlyMessageBase() {};
 
   protected:
-    int  CalculateContentBufferSize() override
+    igtlUint64 CalculateContentBufferSize() override
     {
       return 0;
     };

@@ -24,7 +24,7 @@
 namespace igtl
 {
 
-// A class for the GEt_IMAGE message type.
+// A class for the GET_IMAGE message type.
 class IGTLCommon_EXPORT GetImageMessage: public HeaderOnlyMessageBase
 {
 public:
@@ -74,7 +74,7 @@ public:
 
 public:
 
-  /// Coordinate sysmtem. Either left-posterior-superior (LPS) or right-anterior-superior (RAS).
+  /// Coordinate system. Either left-posterior-superior (LPS) or right-anterior-superior (RAS).
   enum {
     COORDINATE_RAS=1,
     COORDINATE_LPS=2
@@ -172,14 +172,14 @@ public:
   void GetOrigin(float &px, float &py, float &pz);
 
   /// Sets the orientation of the image by an array of the normal vectors for the i, j
-  /// and k indeces.
+  /// and k indices.
   void SetNormals(float o[3][3]);
 
   /// Sets the orientation of the image by the normal vectors for the i, j and k indeces.
   void SetNormals(float t[3], float s[3], float n[3]);
 
   /// Gets the orientation of the image using an array of the normal vectors for the i, j
-  /// and k indeces.
+  /// and k indices.
   void GetNormals(float o[3][3]);
 
   /// Gets the orientation of the image using the normal vectors for the i, j and k indeces.
@@ -252,7 +252,7 @@ public:
   /// Gets the size (length) of the byte array for the subvolume image data.
   /// The size is defined by subDimensions[0]*subDimensions[1]*subDimensions[2]*
   /// scalarSize*numComponents.
-  int  GetSubVolumeImageSize()
+  igtlUint64 GetSubVolumeImageSize()
   {
     return subDimensions[0]*subDimensions[1]*subDimensions[2]*GetScalarSize()*numComponents;
   };
@@ -270,7 +270,7 @@ protected:
   
 protected:
 
-  int  CalculateContentBufferSize() override;
+  igtlUint64 CalculateContentBufferSize() override;
   int  PackContent() override;
   int  UnpackContent() override;
 

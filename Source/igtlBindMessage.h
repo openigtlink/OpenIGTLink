@@ -67,11 +67,11 @@ protected:
   /// A structure to manage properties of a child message, including message type, message name,
   /// size and pointer to the class instance of the child message. A ChildMessageInfo structure is
   /// allocated per child message and managed by a vector m_ChildMessages.
-  typedef struct {
-    std::string  type;
-    std::string  name;
-    igtlUint64   size;
-    void *       ptr;
+  typedef struct _ChildMessageInfo {
+    std::string  type = "";
+    std::string  name = "";
+    igtlUint64   size = 0;
+    void *       ptr = nullptr;
   } ChildMessageInfo;
 
   /// A vector to manage a list of ChildMessageInfo structures. 
@@ -99,7 +99,7 @@ protected:
   
 protected:
 
-  int  CalculateContentBufferSize() override;
+  igtlUint64 CalculateContentBufferSize() override;
   int  PackContent() override;
   int  UnpackContent() override;
 
@@ -127,7 +127,7 @@ protected:
   
 protected:
   
-  int  CalculateContentBufferSize() override;
+  igtlUint64 CalculateContentBufferSize() override;
   int  PackContent() override;
   int  UnpackContent() override;
 
@@ -159,7 +159,7 @@ protected:
   
 protected:
 
-  int  CalculateContentBufferSize() override;
+  igtlUint64 CalculateContentBufferSize() override;
   int  PackContent() override;
   int  UnpackContent() override;
 
@@ -181,7 +181,7 @@ protected:
   ~StopBindMessage() {};
 
 protected:
-  int  CalculateContentBufferSize() override { return 0; };
+  igtlUint64 CalculateContentBufferSize() override { return 0; };
   int  PackContent()   override     { AllocateBuffer(); return 1; };
   int  UnpackContent()   override   { return 1; };
 
@@ -216,7 +216,7 @@ protected:
   igtlUint8 m_Status;
 
 protected:
-  int  CalculateContentBufferSize() override;
+  igtlUint64 CalculateContentBufferSize() override;
   int  PackContent() override;
   int  UnpackContent() override;
 

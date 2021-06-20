@@ -512,7 +512,7 @@ int ImageMessage2::GetPackFragmentSize(int id)
 #endif // FRAGMENTED_PACK  
 
 
-int ImageMessage2::CalculateContentBufferSize()
+igtlUint64 ImageMessage2::CalculateContentBufferSize()
 {
   // This function is called by:
   //   MessageBase::Pack()

@@ -175,9 +175,9 @@ int NDArrayMessage::SetArray(int type, ArrayBase * a)
 }
 
 
-int NDArrayMessage::CalculateContentBufferSize()
+igtlUint64 NDArrayMessage::CalculateContentBufferSize()
 {
-  int dataSize;
+  igtlUint64 dataSize;
   int dim;
   if (this->m_Array == NULL)
   {

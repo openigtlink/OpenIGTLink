@@ -110,7 +110,7 @@ protected:
   
 protected:
 
-  int  CalculateContentBufferSize() override;
+  igtlUint64 CalculateContentBufferSize() override;
   int  PackContent() override;
   int  UnpackContent() override;
 

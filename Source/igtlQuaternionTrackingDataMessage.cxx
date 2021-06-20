@@ -180,7 +180,7 @@ int StartQuaternionTrackingDataMessage::SetCoordinateName(const char* name)
 }
 
 
-int StartQuaternionTrackingDataMessage::CalculateContentBufferSize()
+igtlUint64 StartQuaternionTrackingDataMessage::CalculateContentBufferSize()
 {
   return IGTL_STT_QTDATA_SIZE;
 }
@@ -230,7 +230,7 @@ RTSQuaternionTrackingDataMessage::RTSQuaternionTrackingDataMessage()
 //----------------------------------------------------------------------
 // igtl::RTSQuaternionTrackingDataMessage class
 
-int  RTSQuaternionTrackingDataMessage::CalculateContentBufferSize()
+igtlUint64  RTSQuaternionTrackingDataMessage::CalculateContentBufferSize()
 { 
   return IGTL_RTS_QTDATA_SIZE; 
 }
@@ -305,7 +305,7 @@ void QuaternionTrackingDataMessage::GetQuaternionTrackingDataElement(int index, 
 }
 
 
-int QuaternionTrackingDataMessage::CalculateContentBufferSize()
+igtlUint64 QuaternionTrackingDataMessage::CalculateContentBufferSize()
 {
   return IGTL_QTDATA_ELEMENT_SIZE * this->m_QuaternionTrackingDataList.size();
 }

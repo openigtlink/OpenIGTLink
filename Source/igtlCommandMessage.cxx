@@ -154,7 +154,7 @@ igtlUint16 CommandMessage::GetContentEncoding() const
 }
 
 
-int CommandMessage::CalculateContentBufferSize()
+igtlUint64 CommandMessage::CalculateContentBufferSize()
 {
   // Body pack size is the sum of ENCODING, LENGTH and STRING fields
   return sizeof(igtl_command_header) + this->m_Command.length();

@@ -262,7 +262,7 @@ void TrajectoryMessage::GetTrajectoryElement(int index, TrajectoryElement::Point
 }
 
 
-int TrajectoryMessage::CalculateContentBufferSize()
+igtlUint64 TrajectoryMessage::CalculateContentBufferSize()
 {
   return IGTL_TRAJECTORY_ELEMENT_SIZE * this->m_TrajectoryList.size();
 }

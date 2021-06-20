@@ -120,7 +120,7 @@ protected:
   ~StartTrackingDataMessage();
 
 protected:
-  int  CalculateContentBufferSize() override;
+  igtlUint64 CalculateContentBufferSize() override;
   int  PackContent() override;
   int  UnpackContent() override;
 
@@ -147,7 +147,7 @@ protected:
   ~StopTrackingDataMessage() {};
 
 protected:
-  int  CalculateContentBufferSize() override { return 0; };
+  igtlUint64 CalculateContentBufferSize() override { return 0; };
   int  PackContent()    override     { AllocateBuffer(); return 1; };
   int  UnpackContent()   override    { return 1; };
 
@@ -181,7 +181,7 @@ protected:
   igtlUint8 m_Status;
 
 protected:
-  int  CalculateContentBufferSize() override;
+  igtlUint64 CalculateContentBufferSize() override;
   int  PackContent() override;
   int  UnpackContent() override;
 
@@ -222,7 +222,7 @@ protected:
   
 protected:
 
-  int  CalculateContentBufferSize() override;
+  igtlUint64 CalculateContentBufferSize() override;
   int  PackContent() override;
   int  UnpackContent() override;
 
