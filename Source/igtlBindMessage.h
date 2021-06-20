@@ -68,10 +68,10 @@ protected:
   /// size and pointer to the class instance of the child message. A ChildMessageInfo structure is
   /// allocated per child message and managed by a vector m_ChildMessages.
   typedef struct _ChildMessageInfo {
-    std::string  type = "";
-    std::string  name = "";
-    igtlUint64   size = 0;
-    void *       ptr = nullptr;
+    std::string  type;
+    std::string  name;
+    igtlUint64   size;
+    void *       ptr;
   } ChildMessageInfo;
 
   /// A vector to manage a list of ChildMessageInfo structures. 
