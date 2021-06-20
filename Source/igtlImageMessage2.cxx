@@ -512,7 +512,7 @@ int ImageMessage2::GetPackFragmentSize(int id)
 #endif // FRAGMENTED_PACK  
 
 
-int ImageMessage2::CalculateContentBufferSize()
+igtlUint64 ImageMessage2::CalculateContentBufferSize()
 {
   // This function is called by:
   //   MessageBase::Pack()
@@ -676,52 +676,49 @@ int ImageMessage2::UnpackContent()
 }
 
 #ifdef FRAGMENTED_PACK  
-void ImageMessage2::AllocateBuffer(int contentSize)
+void ImageMessage2::AllocateBuffer(igtlUint64 contentSize)
 {
   MessageBase::AllocateBuffer(contentSize);
-  if (contentSize <= 0)
+  if (contentSize == 0)
     {
     contentSize = 0;
     this->m_IsBodyUnpacked = false;
     }
 
-  int s = IGTL_HEADER_SIZE + contentSize;
+  igtlUint64 s = IGTL_HEADER_SIZE + contentSize;
 
   m_IsHeaderUnpacked = false;
   m_IsBodyUnpacked = false;
 
-  if (contentSize > 0)
+  if (this->m_ImageHeader && this->m_SelfAllocatedImageHeader)
     {
-    if (this->m_ImageHeader && this->m_SelfAllocatedImageHeader)
-      {
-      delete [] this->m_ImageHeader;
-      this->m_ImageHeader = NULL;
-      this->m_SelfAllocatedImageHeader = 0;
-      }
-    if (this->m_Image && this->m_SelfAllocatedImage)
-      {
-      delete [] this->m_Image;
-      this->m_Image = NULL;
-      this->m_SelfAllocatedImage = 0;
-      }
-    if (this->m_Body)
-      {
-      if (this->m_MessageSize != s)
-        {
-        // If the pack area exists but needs to be reallocated
-        // m_IsHeaderUnpacked status is not changed in this case.
-        unsigned char * old = this->m_Body;
-        this->m_Body = new unsigned char [contentSize];
-        memcpy(this->m_Body, old, contentSize);
-        delete [] old;
-        }
-      }
-    else 
-      {
-      this->m_Body = new unsigned char [contentSize];
-      }
-    this->m_MessageSize = s;
+    delete[] this->m_ImageHeader;
+    this->m_ImageHeader = NULL;
+    this->m_SelfAllocatedImageHeader = 0;
     }
+  if (this->m_Image && this->m_SelfAllocatedImage)
+    {
+    delete[] this->m_Image;
+    this->m_Image = NULL;
+    this->m_SelfAllocatedImage = 0;
+    }
+  if (this->m_Body)
+    {
+    if (this->m_MessageSize != s)
+      {
+      // If the pack area exists but needs to be reallocated
+      // m_IsHeaderUnpacked status is not changed in this case.
+      unsigned char* old = this->m_Body;
+      this->m_Body = new unsigned char[contentSize];
+      memcpy(this->m_Body, old, contentSize);
+      delete[] old;
+      }
+    }
+  else
+    {
+    this->m_Body = new unsigned char[contentSize];
+    }
+  this->m_MessageSize = s;
 }
 #endif // FRAGMENTED_PACK  
 

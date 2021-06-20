@@ -73,7 +73,7 @@ MessageBase::~MessageBase()
     }
 }
 
-int MessageBase::CalculateContentBufferSize()
+igtlUint64 MessageBase::CalculateContentBufferSize()
 {
   return 0;
 }
@@ -86,7 +86,7 @@ igtl::MessageBase::Pointer MessageBase::Clone()
     clone = factory->CreateSendMessage(this->GetMessageType(), this->GetHeaderVersion());
     }
 
-    int bodySize = this->m_MessageSize - IGTL_HEADER_SIZE;
+    igtlUint64 bodySize = this->m_MessageSize - IGTL_HEADER_SIZE;
     clone->InitBuffer();
     clone->CopyHeader(this);
     clone->AllocateBuffer(bodySize);
@@ -327,8 +327,8 @@ bool MessageBase::PackExtendedHeader()
 {
   if( m_HeaderVersion == IGTL_HEADER_VERSION_2 )
     {
-    int aSize = m_MessageSize - IGTL_HEADER_SIZE - sizeof(igtl_extended_header);
-    if( aSize < 0 )
+    //igtlUint64 aSize = m_MessageSize - IGTL_HEADER_SIZE - sizeof(igtl_extended_header);
+    if(m_MessageSize < (IGTL_HEADER_SIZE + sizeof(igtl_extended_header)))
       {
       // Ensure we have enough space to write the header
       AllocateBuffer(0);
@@ -619,24 +619,26 @@ void* MessageBase::GetBufferBodyPointer()
   return (void*) m_Body;
 }
 
-int MessageBase::GetBufferSize()
+igtl_uint64 MessageBase::GetBufferSize()
 {
   return m_MessageSize;
 }
 
-int MessageBase::GetBufferBodySize()
+igtl_uint64 MessageBase::GetBufferBodySize()
 {
   return GetBufferSize() - IGTL_HEADER_SIZE;
 }
 
-int MessageBase::CalculateReceiveContentSize()
+igtl_uint64 MessageBase::CalculateReceiveContentSize(bool& isUnpacked)
 {
+  isUnpacked = true;
 #if OpenIGTLink_HEADER_VERSION >= 2
   if( m_HeaderVersion >= IGTL_HEADER_VERSION_2 )
     {
     if( !m_IsExtendedHeaderUnpacked )
       {
-      return -1;
+      isUnpacked = false;
+      return 0;
       }
     igtl_extended_header* header = (igtl_extended_header*)m_ExtendedHeader;
     return GetBufferSize() - IGTL_HEADER_SIZE - header->extended_header_size - header->meta_data_header_size - header->meta_data_size;
@@ -690,7 +692,7 @@ void MessageBase::InitBuffer()
   m_ReceiveMessageType         = "";
 
   // Re-allocate header area
-  int message_size = IGTL_HEADER_SIZE;
+  igtlUint64 message_size = IGTL_HEADER_SIZE;
 
   if (m_Header == NULL)
     {
@@ -726,10 +728,10 @@ void MessageBase::InitBuffer()
   m_MessageSize = message_size;
 }
 
-void MessageBase::AllocateBuffer(int contentSize)
+void MessageBase::AllocateBuffer(igtlUint64 contentSize)
 {
 #if OpenIGTLink_HEADER_VERSION >= 2
-  int message_size(-1);
+  igtlUint64 message_size(0);
   if (m_HeaderVersion == IGTL_HEADER_VERSION_2)
     {
     message_size = IGTL_HEADER_SIZE + contentSize + sizeof(igtl_extended_header) + GetMetaDataHeaderSize() + GetMetaDataSize();
@@ -739,7 +741,7 @@ void MessageBase::AllocateBuffer(int contentSize)
     message_size = IGTL_HEADER_SIZE + contentSize;
     }
 #else
-  int message_size = IGTL_HEADER_SIZE + contentSize;
+  igtlUint64 message_size = IGTL_HEADER_SIZE + contentSize;
 #endif
 
   if (m_Header == NULL)
@@ -808,7 +810,7 @@ int MessageBase::CopyHeader(const MessageBase* mb)
 
 int MessageBase::CopyBody(const MessageBase *mb)
 {
-  int bodySize = m_MessageSize - IGTL_HEADER_SIZE;
+  igtlUint64 bodySize = m_MessageSize - IGTL_HEADER_SIZE;
   if (m_Body != NULL && mb->m_Body != NULL && bodySize > 0)
     {
     memcpy(m_Body, mb->m_Body, bodySize);
@@ -905,15 +907,15 @@ void MessageBase::UnpackBody(int crccheck, int& r)
     }
 }
 
-void MessageBase::AllocateUnpack(int bodySizeToRead)
+void MessageBase::AllocateUnpack(igtl_uint64 bodySizeToRead)
 {
-  if (bodySizeToRead <= 0)
+  if (bodySizeToRead == 0)
     {
     bodySizeToRead = 0;
     m_IsBodyUnpacked = false;
     }
 
-  int message_size = IGTL_HEADER_SIZE + bodySizeToRead;
+  igtl_uint64 message_size = IGTL_HEADER_SIZE + bodySizeToRead;
 
   if (m_Header == NULL)
     {
@@ -968,7 +970,7 @@ int MessageBase::Copy(const MessageBase* mb)
     // Set the header version before calling any functions, as it determines later behavior
     m_HeaderVersion = mb->m_HeaderVersion;
 
-    int bodySize = mb->m_MessageSize - IGTL_HEADER_SIZE;
+    igtlUint64 bodySize = mb->m_MessageSize - IGTL_HEADER_SIZE;
     AllocateBuffer(bodySize);
     CopyHeader(mb);
     if (bodySize > 0)
@@ -988,7 +990,7 @@ int MessageBase::SetMessageHeader(const MessageHeader* mb)
   return Copy(mb);
 }
 
-int MessageBase::GetBodySizeToRead()
+igtl_uint64 MessageBase::GetBodySizeToRead()
 {
   return m_BodySizeToRead;
 }

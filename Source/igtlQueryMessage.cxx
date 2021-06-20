@@ -80,7 +80,7 @@ int QueryMessage::SetDataType(const std::string& dataType)
 
 
 
-int QueryMessage::CalculateContentBufferSize()
+igtlUint64 QueryMessage::CalculateContentBufferSize()
 {
   // Body pack size is the sum of DeviceUID and data type fields
   return IGTL_QUERY_HEADER_SIZE + this->m_DeviceUID.length();

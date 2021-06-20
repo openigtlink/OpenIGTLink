@@ -34,7 +34,7 @@ class IGTLCommon_EXPORT MessageHandler: public Object
 #if OpenIGTLink_HEADER_VERSION >= 2
   virtual std::string GetMessageType() const { return std::string(""); }
 #endif
-  virtual int ReceiveMessage(Socket*, MessageBase*, int) { return 0; };
+  virtual igtl_uint64 ReceiveMessage(Socket*, MessageBase*, int) { return 0; };
 
   void SetMessageBuffer(MessageBase* buffer) { this->m_Buffer = buffer; }
   MessageBase * GetMessageBuffer() { return this->m_Buffer; }

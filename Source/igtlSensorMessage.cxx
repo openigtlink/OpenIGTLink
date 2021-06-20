@@ -122,7 +122,7 @@ igtlFloat64 SensorMessage::GetValue(unsigned int i)
 }
 
 
-int SensorMessage::CalculateContentBufferSize()
+igtlUint64 SensorMessage::CalculateContentBufferSize()
 {
   // Body pack size is the sum of LARRAY, STATUS, UNIT and DATA
   return sizeof(igtlUint8)*2 + sizeof(igtlUnit) + sizeof(igtlFloat64)*this->m_Length;

@@ -262,7 +262,7 @@ void TrajectoryMessage::GetTrajectoryElement(int index, TrajectoryElement::Point
 }
 
 
-int TrajectoryMessage::CalculateContentBufferSize()
+igtlUint64 TrajectoryMessage::CalculateContentBufferSize()
 {
   return IGTL_TRAJECTORY_ELEMENT_SIZE * this->m_TrajectoryList.size();
 }
@@ -318,14 +318,14 @@ int TrajectoryMessage::PackContent()
 
 int TrajectoryMessage::UnpackContent()
 {
-
   this->m_TrajectoryList.clear();
 
   igtl_trajectory_element* element = NULL;
   int nElement = 0;
 #if OpenIGTLink_HEADER_VERSION >= 2
   element = (igtl_trajectory_element*)(this->m_Content);
-  nElement = igtl_trajectory_get_data_n(CalculateReceiveContentSize());
+  bool isUnpacked(true);
+  nElement = igtl_trajectory_get_data_n(CalculateReceiveContentSize(isUnpacked));
 #elif OpenIGTLink_PROTOCOL_VERSION <=2
   element = (igtl_trajectory_element*)this->m_Body;
   nElement = igtl_trajectory_get_data_n(this->m_BodySizeToRead);
@@ -339,7 +339,7 @@ int TrajectoryMessage::UnpackContent()
     TrajectoryElement::Pointer elemClass = TrajectoryElement::New();
 
     // Add '\n' at the end of each string
-    // (neccesary for a case, where a string reaches the maximum length.)
+    // (necessary for a case, where a string reaches the maximum length.)
     strbuf[IGTL_TRAJECTORY_LEN_NAME] = '\n';
     strncpy(strbuf, (char*)element->name, IGTL_TRAJECTORY_LEN_NAME);
     elemClass->SetName((const char*)strbuf);

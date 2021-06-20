@@ -271,7 +271,7 @@ int igtl_polydata_convert_byteorder_topology(igtl_uint32 * dst, igtl_uint32 * sr
 
 int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_info * info, igtl_uint64 size)
 {
-  /* size = number of ponits (not number of bytes). In case of vertices, this is specfied 
+  /* size = number of points (not number of bytes). In case of vertices, this is specified 
      by size_vertices in igtl_polydata_header. */
   igtl_polydata_header * header;
   char * ptr;
@@ -464,7 +464,7 @@ int igtl_export igtl_polydata_unpack(int type, void * byte_array, igtl_polydata_
 
 int igtl_export igtl_polydata_pack(igtl_polydata_info * info, void * byte_array, int type)
 {
-  /* size = number of ponits (not number of bytes). In case of vertices, this is specfied 
+  /* size = number of points (not number of bytes). In case of vertices, this is specified 
      by size_vertices in igtl_polydata_header. */
   igtl_polydata_header * header;
   char * ptr;

@@ -56,7 +56,7 @@ protected:
   ~StartVideoMessage();
   
   /// Gets the size of the serialized content.
-  int  CalculateContentBufferSize() override;
+  igtlUint64 CalculateContentBufferSize() override;
   
 protected:
   virtual int  GetBodyPackSize();
@@ -100,7 +100,7 @@ protected:
   StopVideoMessage() : MessageBase() { this->m_SendMessageType  = "STP_VIDEO"; };
   ~StopVideoMessage() {};
 protected:
-  int  CalculateContentBufferSize()  override { return 0; };
+  igtlUint64 CalculateContentBufferSize()  override { return 0; };
   int  PackContent()    override     { AllocateBuffer(); return 1; };
   int  UnpackContent()   override    { return 1; };
 };
@@ -304,7 +304,7 @@ protected:
   int  PackContent() override;
   int  UnpackContent() override;
   
-  int  CalculateContentBufferSize() override;
+  igtlUint64 CalculateContentBufferSize() override;
 
 private:
 

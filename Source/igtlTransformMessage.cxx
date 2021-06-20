@@ -187,7 +187,7 @@ void TransformMessage::GetMatrix(Matrix4x4& mat)
   mat[3][3] = matrix[3][3];
 }
   
-int TransformMessage::CalculateContentBufferSize()
+igtlUint64 TransformMessage::CalculateContentBufferSize()
 {
   return IGTL_TRANSFORM_SIZE;
 }

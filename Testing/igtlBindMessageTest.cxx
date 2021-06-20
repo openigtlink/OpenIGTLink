@@ -133,15 +133,23 @@ void BuildUpElements()
 TEST(BindMessageTest, Pack)
 {
   BuildUpElements();
+  std::cout << "1" << std::endl;
   char * messageBody = (char*)bindSendMsg->GetPackBodyPointer() + MESSAGE_BIND_HEADER_SIZE;
+  std::cout << "2" << std::endl;
   int r = memcmp((const void*)bindSendMsg->GetPackPointer(), (const void*)test_bind_message_header,
                  (size_t)(IGTL_HEADER_SIZE));
+  std::cout << "3" << std::endl;
   EXPECT_EQ(r, 0);
   
+  std::cout << "4" << std::endl;
   r = memcmp((const void*)bindSendMsg->GetPackBodyPointer(), (const void*)test_bind_message_bind_header,  MESSAGE_BIND_HEADER_SIZE);  
+  std::cout << "5" << std::endl;
   EXPECT_EQ(r, 0);
+  std::cout << "6" << std::endl;
   messageBody = (char*)bindSendMsg->GetPackBodyPointer() + MESSAGE_BIND_HEADER_SIZE;
+  std::cout << "7" << std::endl;
   r = memcmp((const void*)(messageBody), (const void*)test_bind_message_bind_body,  MESSAGE_BIND_BODY_SIZE);
+  std::cout << "8" << std::endl;
   EXPECT_EQ(r, 0);
 }
 

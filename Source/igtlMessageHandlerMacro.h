@@ -42,16 +42,17 @@ using igtl::SmartPointer;
       return this->m_Message->GetDeviceType();                    \
     }                                                             \
     virtual int Process(messagetype*, datatype*);                 \
-    int ReceiveMessage(::igtl::Socket* socket, ::igtl::MessageBase* header, int pos) \
+    igtl_uint64 ReceiveMessage(::igtl::Socket* socket, ::igtl::MessageBase* header, int pos) \
     {                                                                   \
       if (pos == 0) /* New body */                                      \
         {                                                               \
         this->m_Message->SetMessageHeader(header);                      \
-        this->m_Message->AllocateBuffer();                                  \
+        this->m_Message->AllocateBuffer();                              \
         }                                                               \
-      int s = socket->Receive((void*)((char*)this->m_Message->GetBufferBodyPointer()+pos), \
-                              this->m_Message->GetBufferBodySize()-pos);  \
-      if (s < 0) /* Time out */                                         \
+      bool timeout(false);                                              \
+      igtl_uint64 s = socket->Receive((void*)((char*)this->m_Message->GetBufferBodyPointer()+pos), \
+                              this->m_Message->GetBufferBodySize()-pos, timeout);                  \
+      if (timeout) /* Time out */                                       \
         {                                                               \
         return pos;                                                     \
         }                                                               \
@@ -118,16 +119,17 @@ using igtl::SmartPointer;
       return this->m_Message->GetDeviceType();                          \
     }                                                                   \
     virtual int Process(messagetype*, datatype*);                       \
-    int ReceiveMessage(::igtl::Socket* socket, ::igtl::MessageBase* header, int pos) \
+    igtl_uint64 ReceiveMessage(::igtl::Socket* socket, ::igtl::MessageBase* header, int pos) \
     {                                                                   \
       if (pos == 0) /* New body */                                      \
         {                                                               \
         this->m_Message->SetMessageHeader(header);                      \
         this->m_Message->AllocateBuffer();                              \
         }                                                               \
-      int s = socket->Receive((void*)((char*)this->m_Message->GetBufferBodyPointer()+pos), \
-                              this->m_Message->GetBufferBodySize()-pos); \
-      if (s < 0) /* Time out */                                         \
+      bool timeout(false);                                              \
+      igtl_uint64 s = socket->Receive((void*)((char*)this->m_Message->GetBufferBodyPointer()+pos),  \
+                              this->m_Message->GetBufferBodySize()-pos, timeout);                   \
+      if (timeout) /* Time out */                                       \
         {                                                               \
         return pos;                                                     \
         }                                                               \

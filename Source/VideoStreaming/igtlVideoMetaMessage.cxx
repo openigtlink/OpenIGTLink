@@ -295,7 +295,7 @@ void VideoMetaMessage::GetVideoMetaElement(int index, VideoMetaElement::Pointer&
 }
 
 
-int VideoMetaMessage::CalculateContentBufferSize()
+igtlUint64 VideoMetaMessage::CalculateContentBufferSize()
 {
   // The body size sum of the header size and status message size.
   return IGTL_VIDEOMETA_ELEMENT_SIZE * this->m_VideoMetaList.size();
