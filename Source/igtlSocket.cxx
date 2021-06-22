@@ -43,6 +43,7 @@
 #endif
 
 #include <string.h>
+#include <limits>
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #define WSA_VERSION MAKEWORD(1,1)
