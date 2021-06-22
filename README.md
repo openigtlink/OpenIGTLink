@@ -20,8 +20,8 @@ can be found in [Protocol Documentation](Documents/Protocol/index.md)
 
 Build Status
 ------------
-
-* Linux/Mac: [![Build Status](https://travis-ci.org/openigtlink/OpenIGTLink.svg?branch=master)](https://travis-ci.org/openigtlink/OpenIGTLink)
+https://travis-ci.com/openigtlink/OpenIGTLink.svg?branch=master
+* Linux/Mac: [![Build Status](https://travis-ci.com/openigtlink/OpenIGTLink.svg?branch=master)](https://travis-ci.com/openigtlink/OpenIGTLink)
 * Windows: [![Build status](https://ci.appveyor.com/api/projects/status/beo8cej2nxu55ex0?svg=true)](https://ci.appveyor.com/project/openigtlink/openigtlink)
 
 Build Instruction
