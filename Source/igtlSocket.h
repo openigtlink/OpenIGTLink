@@ -87,7 +87,8 @@ public:
   /// by SetTimeout() or SetReceiveTimeout().
   /// When the readFully flag is set, this call will block until all the requested data is
   /// read from the socket. The readFully flag will be ignored if the timeout is active.
-  /// 0 on error, -1 on timeout, else number of bytes read is returned.
+  /// 0 on error, else number of bytes read is returned.
+  /// On timeout, the timeout variable will be set to true and the return value is ignored
   igtlUint64 Receive(void* data, igtlUint64 length, bool& timeout, int readFully=1);
 
   /// Set sending/receiving timeout for the existing socket in millisecond.
