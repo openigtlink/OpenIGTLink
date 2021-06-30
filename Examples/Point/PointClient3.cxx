@@ -75,7 +75,8 @@ int main(int argc, char* argv[])
     igtl::MessageHeader::Pointer headerMsg;
     headerMsg = igtl::MessageHeader::New();
     headerMsg->InitPack();
-    int rs = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
+    bool timeout(false);
+    igtlUint64 rs = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize(), timeout);
     if (rs == 0)
     {
       std::cerr << "Connection closed." << std::endl;
@@ -98,7 +99,6 @@ int main(int argc, char* argv[])
     }
     if (strcmp(headerMsg->GetDeviceName(), "PointSender") == 0)
     {
-      
       std::cerr << "Receiving Point data type." << std::endl;
       
       //------------------------------------------------------------
@@ -110,7 +110,8 @@ int main(int argc, char* argv[])
       pointData->AllocatePack();
       
       // Receive body from the socket
-      socket->Receive(pointData->GetPackBodyPointer(), pointData->GetPackBodySize());
+      bool timeout(false);
+      socket->Receive(pointData->GetPackBodyPointer(), pointData->GetPackBodySize(), timeout);
       
       // Deserialize the transform data
       // If you want to skip CRC check, call Unpack() without argument.

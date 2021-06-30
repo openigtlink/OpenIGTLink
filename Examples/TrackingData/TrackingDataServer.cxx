@@ -90,7 +90,8 @@ int main(int argc, char* argv[])
         headerMsg->InitPack();
 
         // Receive generic header from the socket
-        int rs = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
+        bool timeout(false);
+        igtlUint64 rs = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize(), timeout);
         if (rs == 0)
           {
           if (threadID >= 0)
@@ -122,7 +123,8 @@ int main(int argc, char* argv[])
           startTracking->SetMessageHeader(headerMsg);
           startTracking->AllocatePack();
         
-          int r2 = socket->Receive(startTracking->GetPackBodyPointer(), startTracking->GetPackBodySize());
+          bool timeout(false);
+          igtlUint64 r2 = socket->Receive(startTracking->GetPackBodyPointer(), startTracking->GetPackBodySize(), timeout);
           int c = startTracking->Unpack(1);
           if (c & igtl::MessageHeader::UNPACK_BODY) // if CRC check is OK
             {

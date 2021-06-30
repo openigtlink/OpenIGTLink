@@ -72,7 +72,8 @@ int main(int argc, char* argv[])
     igtl::MessageHeader::Pointer headerMsg;
     headerMsg = igtl::MessageHeader::New();
     headerMsg->InitPack();
-    int rs = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
+    bool timeout(false);
+    igtlUint64 rs = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize(), timeout);
     if (rs == 0)
       {
       std::cerr << "Connection closed." << std::endl;
@@ -118,7 +119,8 @@ int ReceiveImageMeta(igtl::ClientSocket::Pointer& socket, igtl::MessageHeader::P
   imgMeta->AllocatePack();
   
   // Receive transform data from the socket
-  socket->Receive(imgMeta->GetPackBodyPointer(), imgMeta->GetPackBodySize());
+  bool timeout(false);
+  socket->Receive(imgMeta->GetPackBodyPointer(), imgMeta->GetPackBodySize(), timeout);
   
   // Deserialize the transform data
   // If you want to skip CRC check, call Unpack() without argument.

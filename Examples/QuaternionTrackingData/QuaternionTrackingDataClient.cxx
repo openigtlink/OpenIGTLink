@@ -76,7 +76,8 @@ int main(int argc, char* argv[])
     igtl::MessageHeader::Pointer headerMsg;
     headerMsg = igtl::MessageHeader::New();
     headerMsg->InitPack();
-    int rs = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize());
+    bool timeout(false);
+    igtlUint64 rs = socket->Receive(headerMsg->GetPackPointer(), headerMsg->GetPackSize(), timeout);
     if (rs == 0)
       {
       std::cerr << "Connection closed." << std::endl;
@@ -129,7 +130,8 @@ int ReceiveQuaternionTrackingData(igtl::ClientSocket::Pointer& socket, igtl::Mes
   quaternionTrackingData->AllocatePack();
 
   // Receive body from the socket
-  socket->Receive(quaternionTrackingData->GetPackBodyPointer(), quaternionTrackingData->GetPackBodySize());
+  bool timeout(false);
+  socket->Receive(quaternionTrackingData->GetPackBodyPointer(), quaternionTrackingData->GetPackBodySize(), timeout);
 
   // Deserialize position and quaternion (orientation) data
   // If you want to skip CRC check, call Unpack() without argument.
