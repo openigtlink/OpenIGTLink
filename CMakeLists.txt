@@ -206,6 +206,10 @@ SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${OpenIGTLink_REQUIR
 
 #-----------------------------------------------------------------------------
 # Configure Subdirectories
+SET(igtlutil_INCLUDE_DIRS CACHE STRING "")
+MARK_AS_ADVANCED(igtlutil_INCLUDE_DIRS)
+SET(OpenIGTLink_INCLUDE_DIRS CACHE STRING "")
+MARK_AS_ADVANCED(OpenIGTLink_INCLUDE_DIRS)
 ADD_SUBDIRECTORY(Source/igtlutil)
 ADD_SUBDIRECTORY(Source)
 ADD_SUBDIRECTORY(Tools)

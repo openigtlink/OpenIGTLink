@@ -29,8 +29,7 @@ SET(OpenIGTLink_LIBRARY_DIRS_CONFIG ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 # Determine the include directories needed.
 SET(OpenIGTLink_INCLUDE_DIRS_CONFIG
-  ${OpenIGTLink_INCLUDE_DIRS_BUILD_TREE}
-  ${OpenIGTLink_INCLUDE_DIRS_SYSTEM}
+  ${OpenIGTLink_INCLUDE_DIRS}
 )
 
 #-----------------------------------------------------------------------------
@@ -60,7 +59,7 @@ FOREACH(DIR ${OpenIGTLink_INCLUDE_RELATIVE_DIRS})
 ENDFOREACH(DIR)
 IF(OpenIGTLink_INCLUDE_DIRS_SYSTEM)
   LIST(APPEND OpenIGTLink_INCLUDE_DIRS_CONFIG ${OpenIGTLink_INCLUDE_DIRS_SYSTEM})
-ENDIF(OpenIGTLink_INCLUDE_DIRS_SYSTEM)
+ENDIF()
 
 # Link directories.
 SET(OpenIGTLink_LIBRARY_DIRS_CONFIG "\${OpenIGTLink_INSTALL_PREFIX}/${OpenIGTLink_INSTALL_LIB_DIR}")
