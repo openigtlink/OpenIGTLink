@@ -65,6 +65,31 @@ TEST(StatusMessageTest, Unpack)
 }
 
 
+#if OpenIGTLink_HEADER_VERSION >= 2
+TEST(StatusMessageTest, UnpackInvalidMetaData)
+{
+  statusSendMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
+  statusSendMsg->SetMetaDataElement("metaData1", 1);
+  statusSendMsg->AllocatePack();
+  statusSendMsg->Pack();
+
+  // set an invalid meta data element number to force wrong memory access 
+  ((char*)statusSendMsg->GetBufferPointer())[statusSendMsg->GetBufferSize() - 13] = 20;
+
+  igtl::MessageHeader::Pointer headerMsg = igtl::MessageHeader::New();
+  headerMsg->AllocatePack();
+  memcpy(headerMsg->GetPackPointer(), statusSendMsg->GetPackPointer(), IGTL_HEADER_SIZE); 
+  headerMsg->Unpack();
+
+  statusReceiveMsg->SetMessageHeader(headerMsg);
+  statusReceiveMsg->AllocatePack();
+  memcpy(statusReceiveMsg->GetPackBodyPointer(), statusSendMsg->GetPackBodyPointer(), statusSendMsg->GetPackBodySize());
+  
+  EXPECT_NE(statusReceiveMsg->Unpack(), igtl::MessageBase::UNPACK_BODY);
+}
+#endif
+
+
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);
