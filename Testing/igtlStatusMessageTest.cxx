@@ -65,6 +65,7 @@ TEST(StatusMessageTest, Unpack)
 }
 
 
+TEST(StatusMessageTest, UnpackInvalidMetaData)
 {
   statusSendMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
   statusSendMsg->SetMetaDataElement("metaData1", 1);
