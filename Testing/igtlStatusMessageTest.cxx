@@ -65,6 +65,7 @@ TEST(StatusMessageTest, Unpack)
 }
 
 
+#if OpenIGTLink_HEADER_VERSION >= 2
 TEST(StatusMessageTest, UnpackInvalidMetaData)
 {
   statusSendMsg->SetHeaderVersion(IGTL_HEADER_VERSION_2);
@@ -86,6 +87,7 @@ TEST(StatusMessageTest, UnpackInvalidMetaData)
   
   EXPECT_NE(statusReceiveMsg->Unpack(), igtl::MessageBase::UNPACK_BODY);
 }
+#endif
 
 
 int main(int argc, char **argv)
