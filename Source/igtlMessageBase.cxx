@@ -457,8 +457,16 @@ bool MessageBase::UnpackMetaData()
     std::vector<igtl_metadata_header_entry> metaDataEntries;
     igtl_metadata_header_entry entry;
     unsigned char* entryPointer = &m_MetaDataHeader[META_DATA_INDEX_COUNT_SIZE];
+    const igtl_uint16 metaDataHeaderSize = ((igtl_extended_header*)m_ExtendedHeader)->meta_data_header_size;
+    igtl_uint16 currentMetaDataHeaderRead = 0;
     for (int i = 0; i < index_count; i++)
       {
+      currentMetaDataHeaderRead += sizeof(igtl_metadata_header_entry);
+      if (currentMetaDataHeaderRead > metaDataHeaderSize)
+      {
+        return false;
+      }
+
       memcpy(&entry.key_size, &entryPointer[0], sizeof(igtlUint16));
       memcpy(&entry.value_encoding, &entryPointer[2], sizeof(igtlUint16));
       memcpy(&entry.value_size, &entryPointer[4], sizeof(igtlUint32));
@@ -477,8 +485,15 @@ bool MessageBase::UnpackMetaData()
     m_MetaDataMap.clear();
 
     unsigned char* metaDataPointer = m_MetaData;
+    const igtl_uint16 metaDataSize = ((igtl_extended_header*)m_ExtendedHeader)->meta_data_size;
+    igtl_uint16 currentMetaDataRead = 0;
     for (int i = 0; i < index_count; i++)
       {
+      currentMetaDataRead += metaDataEntries[i].key_size + metaDataEntries[i].value_size;
+      if (currentMetaDataRead > metaDataSize)
+      {
+        return false;
+      }
       std::string key;
       key.assign(metaDataPointer, metaDataPointer + metaDataEntries[i].key_size);
       metaDataPointer += metaDataEntries[i].key_size;
@@ -890,16 +905,20 @@ void MessageBase::UnpackBody(int crccheck, int& r)
 
   if (crc == h->crc)
     {
+    bool unpackSuccessful = true;
     // Unpack (deserialize) the Body
 #if OpenIGTLink_HEADER_VERSION >= 2
-    UnpackExtendedHeader();
+    unpackSuccessful &= UnpackExtendedHeader();
 #endif
-    UnpackContent();
+    unpackSuccessful &= UnpackContent();
 #if OpenIGTLink_HEADER_VERSION >= 2
-    UnpackMetaData();
+    unpackSuccessful &= UnpackMetaData();
 #endif
-    m_IsBodyUnpacked = true;
-    r |= UNPACK_BODY;
+    m_IsBodyUnpacked = unpackSuccessful;
+    if (unpackSuccessful)
+      {
+      r |= UNPACK_BODY;
+      }
     }
   else
     {
