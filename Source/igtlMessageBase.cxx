@@ -458,7 +458,7 @@ bool MessageBase::UnpackMetaData()
     igtl_metadata_header_entry entry;
     unsigned char* entryPointer = &m_MetaDataHeader[META_DATA_INDEX_COUNT_SIZE];
     const igtl_uint16 metaDataHeaderSize = ((igtl_extended_header*)m_ExtendedHeader)->meta_data_header_size;
-    igtl_uint16 currentMetaDataHeaderRead = 0;
+    igtl_uint32 currentMetaDataHeaderRead = 0;
     for (int i = 0; i < index_count; i++)
       {
       currentMetaDataHeaderRead += sizeof(igtl_metadata_header_entry);
@@ -486,7 +486,7 @@ bool MessageBase::UnpackMetaData()
 
     unsigned char* metaDataPointer = m_MetaData;
     const igtl_uint16 metaDataSize = ((igtl_extended_header*)m_ExtendedHeader)->meta_data_size;
-    igtl_uint16 currentMetaDataRead = 0;
+    igtl_uint32 currentMetaDataRead = 0;
     for (int i = 0; i < index_count; i++)
       {
       currentMetaDataRead += metaDataEntries[i].key_size + metaDataEntries[i].value_size;
