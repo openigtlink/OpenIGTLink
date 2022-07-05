@@ -908,11 +908,17 @@ void MessageBase::UnpackBody(int crccheck, int& r)
     bool unpackSuccessful = true;
     // Unpack (deserialize) the Body
 #if OpenIGTLink_HEADER_VERSION >= 2
-    unpackSuccessful &= UnpackExtendedHeader();
+    if (h->header_version >= 2)
+    {
+      unpackSuccessful &= UnpackExtendedHeader();
+    }
 #endif
     unpackSuccessful &= UnpackContent();
 #if OpenIGTLink_HEADER_VERSION >= 2
-    unpackSuccessful &= UnpackMetaData();
+    if (h->header_version >= 2)
+    {
+      unpackSuccessful &= UnpackMetaData();
+    }
 #endif
     m_IsBodyUnpacked = unpackSuccessful;
     if (unpackSuccessful)
