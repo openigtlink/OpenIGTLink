@@ -57,7 +57,11 @@ void igtl_export igtl_ndarray_init_info(igtl_ndarray_info * info);
 
 /** Allocates size array and ND-array pointed from igtl_ndarray_info.
  *  'type' and 'dim' in igtl_ndarray_info must be specified before
- *  calling igtl_ndarray_alloc_info(). */
+ *  calling igtl_ndarray_alloc_info().
+ *
+ *  For example: Given info->type = 10 (i.e. 4 bytes), info->dim = 2 and size[dim] = {2, 3},
+ *  the amount of memory allocated is 2 * 3 * 4 = 24 bytes.
+ */
 int igtl_export igtl_ndarray_alloc_info(igtl_ndarray_info * info, const igtl_uint16 * size);
 
 /** Frees ndarray */
