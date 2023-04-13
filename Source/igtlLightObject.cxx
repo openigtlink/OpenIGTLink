@@ -214,12 +214,12 @@ void
 LightObject
 ::PrintSelf(std::ostream& os) const
 {
+  const char* indent = "    ";
+
 #ifdef GCC_USEDEMANGLE
   char const * mangledName = typeid(*this).name();
   int status;
   char* unmangled = abi::__cxa_demangle(mangledName, 0, 0, &status);
-
-  const char* indent = "    ";
 
   os << indent << "RTTI typeinfo:   ";
 
@@ -235,7 +235,6 @@ LightObject
 
   os << std::endl;
 #else
-  char* indent = "    ";  
   os << indent << "RTTI typeinfo:   " << typeid( *this ).name() << std::endl;
 #endif
   os << indent << "Reference Count: " << m_ReferenceCount << std::endl;
