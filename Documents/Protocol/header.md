@@ -77,9 +77,9 @@ Extended Header Fields
  Data            | Type          | Description
 -----------------|---------------|----------------------------------------------
  EXT_HEADER_SIZE | uint16        | Length of Extended Header section
- METADATA_SIZE   | uint16        | Length of Metadata section
+ META_HEADER_SIZE| uint16        | Length of Metadata Header
+ META_SIZE       | uint32        | Length of Metadata section
  MSG_ID          | uint32        | Message ID
- (Reserved)      | Uint32        | (Reserved)
 
 
 Metadata Fields
