@@ -83,20 +83,24 @@ public:
 
   
   // Description:
-  // Add a client socket with given address at a given port and binds to it.
+  // Add a multicast socket with given address at a given port and binds to it.
   // Returns -1 on error. return clientID on success.
-  int AddGroup(const char* add, igtl_uint16 port, unsigned int clientID);
+  int AddGroup(const char* add, igtl_uint16 port, unsigned int groupID);
   
   // Description:
   // Add a client socket with given address at a given port and binds to it.
   // Returns -1 on error. return clientID on success.
   int AddClient(const char* add, igtl_uint16 port, unsigned int clientID);
   
-  
   // Description:
-  // Add a client socket with given address at a given port and binds to it.
+  // Delete a multicast socket with given ID.
   // Returns -1 on error. 0 on success.
-  int DeleteClient(unsigned int groupID);
+  int DeleteGroup(unsigned int groupID);
+
+  // Description:
+  // Delete a client socket with given ID.
+  // Returns -1 on error. 0 on success.
+  int DeleteClient(unsigned int clientID);
   
   // Description:
   // Creates a UDP server socket at a given port and binds to it.
