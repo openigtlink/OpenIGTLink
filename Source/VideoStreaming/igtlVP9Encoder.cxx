@@ -133,7 +133,7 @@ int VP9Encoder::SetKeyFrameDistance(int frameNum)
 }
 
 
-int VP9Encoder::SetRCTaregetBitRate(unsigned int bitRate)
+int VP9Encoder::SetRCTargetBitRate(unsigned int bitRate)
 {
   // The bit rate in VPX is in Kilo
   int bitRateInKilo = bitRate/1000;

@@ -184,7 +184,7 @@ int H264Encoder::FillSpecificParameters() {
   return 0;
 }
 
-int H264Encoder::SetRCTaregetBitRate(unsigned int bitRate)
+int H264Encoder::SetRCTargetBitRate(unsigned int bitRate)
 {
   this->sSvcParam.iTargetBitrate = bitRate;
   for (int i = 0; i < this->sSvcParam.iSpatialLayerNum; i++)

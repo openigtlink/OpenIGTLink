@@ -28,7 +28,7 @@ ELSE()
       ENDIF()  
     ENDIF()
   ENDIF()
-  SET (AV1_INCLUDE_DIR "${CMAKE_BINARY_DIR}/Deps/AV1/aom" CACHE PATH "AV1 source directory" FORCE)
+  SET (AV1_INCLUDE_DIR "${CMAKE_BINARY_DIR}/Deps/AV1" CACHE PATH "AV1 source directory" FORCE)
   SET (AV1_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Deps/AV1-bin" CACHE PATH "AV1 library directory" FORCE)
   ExternalProject_Add(AV1
     PREFIX "${CMAKE_BINARY_DIR}/Deps/AV1-prefix"
