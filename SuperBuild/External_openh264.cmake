@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.2)
+cmake_minimum_required(VERSION 3.5)
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 include(${OpenIGTLink_SOURCE_DIR}/SuperBuild/FindOpenH264.cmake)
 IF(OpenH264_FOUND)
@@ -7,7 +7,7 @@ IF(OpenH264_FOUND)
     MESSAGE(FATAL_ERROR "Video streaming requires a build of OpenIGTLink with v3 support enabled. Please set the OpenIGTLink_PROTOCOL_VERSION_3 to true.")
   ENDIF()
 ELSE()
-  # OpenIGTLink has not been built yet, so download and build it as an external project
+  # Openh264 has not been built yet, so download and build it as an external project
   MESSAGE(STATUS "Downloading openh264 from https://github.com/cisco/openh264.git.")  
   SET (OpenH264_INCLUDE_DIR "${CMAKE_BINARY_DIR}/Deps/openh264/codec/api/wels" CACHE PATH "H264 source directory" FORCE)
   SET (OpenH264_LIBRARY_DIR "${CMAKE_BINARY_DIR}/Deps/openh264" CACHE PATH "H264 source directory" FORCE)
@@ -25,7 +25,16 @@ ELSE()
       TEST_COMMAND      ""
     )  
   else()
-    # ToDo: if it is a window os platform, make the build successful
+    set( architecture "" )
+    if( ${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "AMD64" )
+       set( architecture "Win64" )
+    elseif( ${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "ARM64" )
+      set( architecture "ARM64" )
+    elseif( ${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "X86" )
+      set( architecture "Win32" )
+    else()
+      MESSAGE( FATAL_ERROR "OpenH264 does not support architecture ${CMAKE_SYSTEM_PROCESSOR} on Windows.")
+    endif()
     ExternalProject_Add(OpenH264
       PREFIX "${CMAKE_BINARY_DIR}/Deps/openh264-prefix"
       SOURCE_DIR "${CMAKE_BINARY_DIR}/Deps/openh264"
@@ -33,7 +42,8 @@ ELSE()
       GIT_TAG master
       CONFIGURE_COMMAND ""
       BUILD_ALWAYS 1
-      BUILD_COMMAND     ""
+      BUILD_IN_SOURCE 1
+      BUILD_COMMAND     cd build COMMAND ./AutoBuildForWindows.bat ${architecture}-Release-ASM
       INSTALL_COMMAND   ""
       TEST_COMMAND      ""
     )     
