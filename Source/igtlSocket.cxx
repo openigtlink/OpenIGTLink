@@ -350,11 +350,11 @@ int Socket::Send(const void* data, igtlUint64 length)
 }
 
 //-----------------------------------------------------------------------------
-igtlUint64 Socket::Receive(void* data, igtlUint64 length, bool& timeout, int readFully/*=1*/)
+igtlUint64 Socket::Receive(void* data, igtlUint64 length, bool& error, int readFully/*=1*/)
 {
   if (!this->GetConnected())
     {
-    timeout = false;
+    error = false;
     return 0;
     }
 
@@ -365,16 +365,15 @@ igtlUint64 Socket::Receive(void* data, igtlUint64 length, bool& timeout, int rea
 #if defined(_WIN32) && !defined(__CYGWIN__)
     int trys = 0;
 #endif
-
-    int n = recv(this->m_SocketDescriptor, buffer + total, (length > std::numeric_limits<int>::max() ? std::numeric_limits<int>::max() : length - total), 0);
-
+    int readLength = (length > std::numeric_limits<int>::max() ? std::numeric_limits<int>::max() : length - total);
+    int n = recv(this->m_SocketDescriptor, buffer + total, readLength, 0);
 #if defined(_WIN32) && !defined(__CYGWIN__)
     if(n == 0)
       {
       // On long messages, Windows recv sometimes fails with WSAENOBUFS, but
       // will work if you try again.
-      int error = WSAGetLastError();
-      if ((error == WSAENOBUFS) && (trys++ < 1000))
+      int lastError = WSAGetLastError();
+      if ((lastError == WSAENOBUFS) && (trys++ < 1000))
         {
         Sleep(1);
         continue;
@@ -385,8 +384,13 @@ igtlUint64 Socket::Receive(void* data, igtlUint64 length, bool& timeout, int rea
     else if (n < 0)
       {
       // TODO: Need to check if this means timeout.
-      timeout = true;
-      return 0;
+      int errCode = WSAGetLastError();
+      if (errCode != WSAETIMEDOUT)
+      {
+          error = true;
+          return 0;
+      }
+      return total;
       }
 #else
     if(n == 0) // Disconnected
@@ -397,13 +401,14 @@ igtlUint64 Socket::Receive(void* data, igtlUint64 length, bool& timeout, int rea
     else if (n < 0) // Error (including time out)
       {
       // TODO: If it is time-out, errno == EAGAIN
-      timeout = true;
+      error = true;
       return 0;
       }
 #endif
 
     total += n;
-    } while(readFully && total < length);
+    
+  } while(readFully && total < length);
   return total;
 }
 
