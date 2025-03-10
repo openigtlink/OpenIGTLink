@@ -89,7 +89,7 @@ public:
   /// read from the socket. The readFully flag will be ignored if the timeout is active.
   /// 0 on error, else number of bytes read is returned.
   /// On timeout, the timeout variable will be set to true and the return value is ignored
-  igtlUint64 Receive(void* data, igtlUint64 length, bool& timeout, int readFully=1);
+  igtlUint64 Receive(void* data, igtlUint64 length, bool& error, int readFully=1);
 
   /// Set sending/receiving timeout for the existing socket in millisecond.
   /// This function should be called after opening the socket.
