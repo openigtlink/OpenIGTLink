@@ -47,7 +47,11 @@
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
 #define WSA_VERSION MAKEWORD(1,1)
-#define igtlCloseSocketMacro(sock) (closesocket(sock))
+#define igtlCloseSocketMacro(sock) \
+      {                            \
+        shutdown(sock, SD_BOTH);   \
+        closesocket(sock);         \
+      }
 #else
 #define igtlCloseSocketMacro(sock) \
       {                            \
