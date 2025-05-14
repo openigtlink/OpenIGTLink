@@ -36,9 +36,9 @@ public:
 
 protected:
   ArrayBase();
-  ~ArrayBase();
 
 public:
+  virtual ~ArrayBase();
 
   /// Sets the size of the N-D array. Returns non-zero value, if success.
   int                     SetSize(IndexType size);
@@ -47,7 +47,7 @@ public:
   IndexType               GetSize()         { return this->m_Size;      };
 
   /// Gets the dimension of the N-D array.
-  int                     GetDimension()    { return this->m_Size.size(); };
+  int                     GetDimension()    { return static_cast<int>(this->m_Size.size()); };
 
   /// Sets an array from a byte array. Size and dimension must be specified prior to 
   /// calling the SetArray() function.
