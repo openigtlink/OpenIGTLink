@@ -25,7 +25,7 @@ SET( OpenH264_PATH_HINTS
 
 unset(OpenH264_INCLUDE_DIR CACHE)    
 find_path(OpenH264_INCLUDE_DIR NAMES codec_api.h codec_app_def.h codec_def.h
-  PATH_SUFFIXES include/wels codec/api/svc
+  PATH_SUFFIXES include/wels codec/api/wels
   HINTS ${OpenH264_PATH_HINTS}
   )
 unset(OpenH264_LIBRARY_DIR CACHE) 
