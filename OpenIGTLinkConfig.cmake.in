@@ -57,4 +57,3 @@ SET(OpenIGTLink_LIBRARIES OpenIGTLink)
 
 # The OpenIGTLink library targets.
 SET(OpenIGTLink_LIBRARY_TARGETS_FILE "@OpenIGTLink_LIBRARY_TARGETS_FILE@")
-include(${OpenIGTLink_LIBRARY_TARGETS_FILE})
