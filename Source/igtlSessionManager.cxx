@@ -186,8 +186,8 @@ int SessionManager::ProcessMessage()
     this->m_Header->InitBuffer();
   
     // Receive generic header from the socket
-    bool timeout(false);
-    igtl_uint64 r = this->m_Socket->Receive(this->m_Header->GetBufferPointer(), this->m_Header->GetBufferSize(), timeout, 0);
+    bool error(false);
+    igtl_uint64 r = this->m_Socket->Receive(this->m_Header->GetBufferPointer(), this->m_Header->GetBufferSize(), error, 0);
     if (r == 0)
       {
       this->m_CurrentReadIndex = 0;
@@ -197,7 +197,7 @@ int SessionManager::ProcessMessage()
     if (r != this->m_Header->GetBufferSize())
       {
       // Only a part of header has arrived.
-      if (timeout) // timeout
+      if (error) // Error, not timeout
         {
         this->m_CurrentReadIndex = 0;
         }
@@ -213,9 +213,9 @@ int SessionManager::ProcessMessage()
   else if (this->m_CurrentReadIndex < IGTL_HEADER_SIZE)
     {
     // Message transfer was interrupted in the header
-    bool timeout(false);
+    bool error(false);
     igtl_uint64 r = this->m_Socket->Receive((void*)((char*)this->m_Header->GetBufferPointer()+this->m_CurrentReadIndex),
-                                    this->m_Header->GetBufferSize()-this->m_CurrentReadIndex, timeout, 0);
+                                    this->m_Header->GetBufferSize()-this->m_CurrentReadIndex, error, 0);
     if (r == 0)
       {
       this->m_CurrentReadIndex = 0;
@@ -290,15 +290,15 @@ int SessionManager::ProcessMessage()
 
   igtl_uint64 r = this->m_CurrentMessageHandler->ReceiveMessage(this->m_Socket, this->m_Header,
                                                         this->m_CurrentReadIndex-IGTL_HEADER_SIZE);
-  if (r == this->m_Header->GetBodySizeToRead())
-    {
-    this->m_CurrentReadIndex = 0;
-    this->m_HeaderDeserialized = 0;
-    }
-  else
-    {
-    this->m_CurrentReadIndex += IGTL_HEADER_SIZE + r;
-    }
+
+  if (r == this->m_Header->GetBodySizeToRead() || r == -1 /*error*/)
+  {
+      ResetMessageProcessing();
+  }
+  else // Only a part of the body has arrived
+  {
+      this->m_CurrentReadIndex = IGTL_HEADER_SIZE + r;
+  }
 
   return 1;
 }  
@@ -317,5 +317,10 @@ int SessionManager::PushMessage(MessageBase* message)
     }
 }
 
+void SessionManager::ResetMessageProcessing()
+{
+  this->m_CurrentReadIndex = 0;
+  this->m_HeaderDeserialized = 0;
+}
 
 }

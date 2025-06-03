@@ -37,24 +37,24 @@ using igtl::SmartPointer;
     igtlTypeMacro(classname, ::igtl::MessageHandler);             \
     igtlNewMacro(classname);                                      \
   public:                                                         \
-    virtual const char* GetMessageType()                          \
+    virtual const char* GetMessageType() override                 \
     {                                                             \
       return this->m_Message->GetDeviceType();                    \
     }                                                             \
     virtual int Process(messagetype*, datatype*);                 \
-    igtl_uint64 ReceiveMessage(::igtl::Socket* socket, ::igtl::MessageBase* header, int pos) \
+    igtl_uint64 ReceiveMessage(::igtl::Socket* socket, ::igtl::MessageBase* header, int pos) override \
     {                                                                   \
       if (pos == 0) /* New body */                                      \
         {                                                               \
         this->m_Message->SetMessageHeader(header);                      \
         this->m_Message->AllocateBuffer();                              \
         }                                                               \
-      bool timeout(false);                                              \
+      bool error(false);                                              \
       igtl_uint64 s = socket->Receive((void*)((char*)this->m_Message->GetBufferBodyPointer()+pos), \
-                              this->m_Message->GetBufferBodySize()-pos, timeout);                  \
-      if (timeout) /* Time out */                                       \
+                              this->m_Message->GetBufferBodySize()-pos, error);                  \
+      if (error) /* Not time out */                                       \
         {                                                               \
-        return pos;                                                     \
+        return -1;                                                     \
         }                                                               \
       if (s+pos >= this->m_Message->GetBufferBodySize())                \
         {                                                               \
@@ -114,12 +114,12 @@ using igtl::SmartPointer;
     {                                                                   \
       return this->m_Message->GetMessageType();                         \
     }                                                                   \
-    virtual const char* GetMessageType()                                \
+    virtual const char* GetMessageType() override                       \
     {                                                                   \
       return this->m_Message->GetDeviceType();                          \
     }                                                                   \
     virtual int Process(messagetype*, datatype*);                       \
-    igtl_uint64 ReceiveMessage(::igtl::Socket* socket, ::igtl::MessageBase* header, int pos) \
+    igtl_uint64 ReceiveMessage(::igtl::Socket* socket, ::igtl::MessageBase* header, int pos) override \
     {                                                                   \
       if (pos == 0) /* New body */                                      \
         {                                                               \
