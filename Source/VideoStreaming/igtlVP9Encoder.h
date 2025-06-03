@@ -81,7 +81,7 @@ public:
   
   int SetQP(int maxQP, int minQP) override;
   
-  int SetRCTaregetBitRate(unsigned int bitRate) override;
+  int SetRCTargetBitRate(unsigned int bitRate) override;
   
   int SetLosslessLink(bool linkMethod) override;
   
