@@ -158,7 +158,7 @@ public:
   
   virtual int SetQP(int maxQP, int minQP){return -1;};
   
-  virtual int SetRCTaregetBitRate(unsigned int bitRate){return -1;};
+  virtual int SetRCTargetBitRate(unsigned int bitRate){return -1;};
   
   virtual int SetPicWidthAndHeight(unsigned int Width, unsigned int Height){return -1;};
   
