@@ -158,7 +158,7 @@ public:
    */
   int SetSpeed(int speed) override;
   
-  int SetRCTaregetBitRate(unsigned int bitRate) override;
+  int SetRCTargetBitRate(unsigned int bitRate) override;
   
   bool GetLosslessLink() override {return this->sSvcParam.bIsLosslessLink;};
   
