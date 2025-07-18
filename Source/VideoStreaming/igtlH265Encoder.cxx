@@ -64,7 +64,7 @@ int H265Encoder::FillSpecificParameters() {
   return 0;
 }
 
-int H265Encoder::SetRCTaregetBitRate(unsigned int bitRate)
+int H265Encoder::SetRCTargetBitRate(unsigned int bitRate)
 {
   this->sSvcParam->rc.aqMode = X265_AQ_VARIANCE;
   this->sSvcParam->rc.rateControlMode = X265_RC_ABR;
