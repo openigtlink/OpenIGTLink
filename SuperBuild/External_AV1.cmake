@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.2)
+cmake_minimum_required(VERSION 3.5.0)
 include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
 include(${OpenIGTLink_SOURCE_DIR}/SuperBuild/FindAV1.cmake)
 IF(AV1_FOUND)
