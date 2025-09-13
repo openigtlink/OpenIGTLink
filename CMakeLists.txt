@@ -1,10 +1,11 @@
-PROJECT(OpenIGTLink)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.15)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
+PROJECT(OpenIGTLink)
 
 INCLUDE(ExternalProject)
 
 IF(COMMAND cmake_policy)
+  cmake_policy(SET CMP0000 NEW)
   cmake_policy(SET CMP0003 NEW)
 ENDIF(COMMAND cmake_policy)
 
@@ -298,7 +299,7 @@ INSTALL(EXPORT OpenIGTLink
 IF(OpenIGTLink_BUILD_TESTING)
   ENABLE_TESTING()
   ADD_SUBDIRECTORY(Testing)
-  INCLUDE(${CMAKE_ROOT}/Modules/Dart.cmake)
+  INCLUDE(CTest)
 ENDIF()
 
 #-----------------------------------------------------------------------------

@@ -1,6 +1,6 @@
-PROJECT( OpenIGTLinkTesting )
+cmake_minimum_required(VERSION 3.15)
 
-cmake_minimum_required(VERSION 3.5)
+PROJECT( OpenIGTLinkTesting )
 # Use the parent project's OpenIGTLink target instead of find_package
 # since we're building OpenIGTLink in the same CMake project
 include_directories(${OpenIGTLink_SOURCE_DIR}/Source)
@@ -31,8 +31,8 @@ IF(OpenIGTLink_USE_GTEST AND (NOT OpenIGTLink_BUILD_SHARED_LIBS))
 	# Add googletest directly to our build. This adds
 	# the following targets: gtest, gtest_main, gmock
 	# and gmock_main
-	add_subdirectory("${PROJECT_BINARY_DIR}/gmock"
-									 "${PROJECT_BINARY_DIR}/gmock-build" )
+	add_subdirectory("${PROJECT_BINARY_DIR}/googletest"
+									 "${PROJECT_BINARY_DIR}/googletest-build" )
 
 	# The gtest/gmock targets carry header search path
 	# dependencies automatically when using CMake 2.8.11 or
