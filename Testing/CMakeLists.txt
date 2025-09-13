@@ -1,10 +1,10 @@
 PROJECT( OpenIGTLinkTesting )
 
-cmake_minimum_required(VERSION 2.8.11)
-find_package(OpenIGTLink REQUIRED)
-include(${OpenIGTLink_USE_FILE})
-include_directories(${OpenIGTLink_INCLUDE_DIRS})
-link_directories(${OpenIGTLink_LIBRARY_DIRS})
+cmake_minimum_required(VERSION 3.5)
+# Use the parent project's OpenIGTLink target instead of find_package
+# since we're building OpenIGTLink in the same CMake project
+include_directories(${OpenIGTLink_SOURCE_DIR}/Source)
+include_directories(${OpenIGTLink_BINARY_DIR})
 include_directories(${PROJECT_BINARY_DIR})
 configure_file(${PROJECT_SOURCE_DIR}/igtlTestConfig.h.in ${PROJECT_BINARY_DIR}/igtlTestConfig.h)
 ENABLE_TESTING()
