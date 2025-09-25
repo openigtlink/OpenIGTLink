@@ -14,7 +14,7 @@
 #include "igtlAV1Encoder.h"
 
 // AV1 includes
-#include "aomcx.h"
+#include "aom/aomcx.h"
 
 namespace igtl {
 
@@ -142,7 +142,7 @@ int igtlAV1Encoder::SetQP(int maxQP, int minQP)
 int igtlAV1Encoder::SetLosslessLink(bool linkMethod)
 {
   this->isLossLessLink = linkMethod;
-  if (aom_codec_control_(codec, AV1E_SET_LOSSLESS, linkMethod))
+  if (aom_codec_control(codec, AV1E_SET_LOSSLESS, linkMethod))
     {
     error_output(codec, "Failed to set lossless mode");
     return -1;
@@ -178,7 +178,7 @@ int igtlAV1Encoder::InitializeEncoder()
     return -1;
     }
   
-  if (aom_codec_control_(codec, AV1E_SET_LOSSLESS, this->GetLosslessLink()))
+  if (aom_codec_control(codec, AV1E_SET_LOSSLESS, this->GetLosslessLink()))
     {
     error_output(codec, "Failed to set lossless mode");
     return -1;
