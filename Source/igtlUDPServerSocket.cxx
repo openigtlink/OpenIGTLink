@@ -85,7 +85,7 @@ int UDPServerSocket::AddGroup(const char* add, igtl_uint16 port, unsigned int gr
     }
     this->groups.push_back(GroupDest(add, port, groupID));
   }
-  return 0;
+  return groupID;
 }
 
 //-----------------------------------------------------------------------------
@@ -102,7 +102,7 @@ int UDPServerSocket::AddClient(const char* add, igtl_uint16 port, unsigned int c
     }
   }
   this->clients.push_back(ClientDest(add, port, clientID));
-  return 0;
+  return clientID;
 }
 
 //-----------------------------------------------------------------------------
@@ -142,13 +142,27 @@ int UDPServerSocket::CreateUDPServer()
 }
 
 //-----------------------------------------------------------------------------
-int UDPServerSocket::DeleteClient(unsigned int groupID)
+int UDPServerSocket::DeleteGroup(unsigned int groupID)
 {
   for(std::vector<GroupDest>::size_type i = 0; this->groups.size(); i++)
   {
     if (this->groups[i].groupID == groupID)
     {
       this->groups.erase(this->groups.begin()+i);
+      return 0;
+    }
+  }
+  return -1;
+}
+
+//-----------------------------------------------------------------------------
+int UDPServerSocket::DeleteClient(unsigned int clientID)
+{
+  for(std::vector<ClientDest>::size_type i = 0; this->clients.size(); i++)
+  {
+    if (this->clients[i].clientID == clientID)
+    {
+      this->clients.erase(this->clients.begin()+i);
       return 0;
     }
   }
