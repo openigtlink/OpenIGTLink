@@ -149,6 +149,11 @@ NDArrayMessage::NDArrayMessage():
 
 NDArrayMessage::~NDArrayMessage()
 {
+    if (m_Array != NULL)
+    {
+        delete m_Array;
+        m_Array = NULL;
+    }
 }
 
 
@@ -165,15 +170,19 @@ int NDArrayMessage::SetArray(int type, ArrayBase * a)
 
   if (a)
     {
-    this->m_Array = a;
-    return 1;
+      if (this->m_Array)
+	  {
+		delete this->m_Array;
+	  }
+
+      this->m_Array = a;
+      return 1;
     }
   else
     {
     return 0;
     }
 }
-
 
 igtlUint64 NDArrayMessage::CalculateContentBufferSize()
 {
@@ -231,6 +240,8 @@ int NDArrayMessage::PackContent()
   memcpy(info.array, this->m_Array->GetRawArray(), this->m_Array->GetRawArraySize());
   igtl_ndarray_pack(&info, this->m_Content, IGTL_TYPE_PREFIX_NONE);
 
+  igtl_ndarray_free_info(&info);
+
   return 1;
 }
 
@@ -285,7 +296,9 @@ int NDArrayMessage::UnpackContent()
 
   this->m_Array->SetSize(size);
   memcpy(this->m_Array->GetRawArray(), info.array, this->m_Array->GetRawArraySize());
-  
+
+  igtl_ndarray_free_info(&info);
+
   return 1;
 }
 

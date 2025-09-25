@@ -281,6 +281,8 @@ int BindMessage::UnpackContent()
 
     }
 
+  igtl_bind_free_info(&bind_info);
+
   return 1;
 }
 

@@ -58,6 +58,7 @@ class IGTLCommon_EXPORT SessionManager: public Object
   int            Disconnect();
   int            ProcessMessage();
   int            PushMessage(MessageBase*);
+  void           ResetMessageProcessing();
 
  protected:
   SessionManager();
